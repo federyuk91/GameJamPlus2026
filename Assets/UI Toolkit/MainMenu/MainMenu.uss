@@ -1,0 +1,253 @@
+.menu-root {
+    --menu-background: rgb(103, 65, 58);
+    --menu-surface: rgb(217, 203, 174);
+    --menu-text: rgb(175, 75, 59);
+    --menu-border: rgb(124, 131, 129);
+    --menu-hover: rgb(103, 65, 58);
+    --menu-active: rgb(175, 75, 59);
+    --menu-accent: rgb(193, 133, 73);
+    --menu-focus: rgb(141, 179, 94);
+}
+
+.menu-root {
+    flex-grow: 1;
+    background-color: var(--menu-background);
+    color: var(--menu-text);
+}
+
+.background {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Backgrounds/MainMenu_Background_Placeholder.png?fileID=-6404978321015124043&guid=effbd826f27ef254f868ae48a2edbfde&type=3#MainMenu_Background_Placeholder_0");
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0.08;
+}
+
+.shade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(26, 20, 23, 0.7);
+}
+
+.content {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 36px 64px;
+}
+
+.menu-column {
+    width: 44%;
+    max-width: 520px;
+}
+
+.logo {
+    width: 160px;
+    height: 80px;
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Branding/MainMenu_Logo_Placeholder.png?fileID=-3491621129951328106&guid=0d340ae1dd0d0ae49a48c1295c9c0c0b&type=3#MainMenu_Logo_Placeholder_0");
+    -unity-background-scale-mode: scale-to-fit;
+    margin-bottom: 18px;
+    opacity: 0.8;
+}
+
+.title {
+    font-size: 42px;
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--menu-text);
+    font-size: 18px;
+    margin: 10px 0 28px 0;
+}
+
+.menu-button {
+    height: 60px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 0 12px 0;
+    padding: 0 20px;
+    background-color: var(--menu-surface);
+    color: var(--menu-text);
+    font-size: 22px;
+    border-width: 2px;
+    border-color: var(--menu-border);
+    border-radius: 8px;
+}
+
+.menu-button:hover,
+.dialog-button:hover {
+    background-color: var(--menu-hover);
+    border-color: var(--menu-accent);
+}
+
+.menu-button:focus,
+.dialog-button:focus {
+    background-color: var(--menu-hover);
+    border-color: var(--menu-focus);
+    color: var(--menu-text);
+}
+
+.menu-button:active,
+.dialog-button:active {
+    background-color: var(--menu-active);
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 18px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.new-game-icon {
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Icons/MainMenu_NewGame_Icon_Placeholder.png?fileID=-8850935367276157036&guid=7b6a0e81a7854ce41beec11f91e996a2&type=3#MainMenu_NewGame_Icon_Placeholder_0");
+}
+
+.options-icon {
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Icons/MainMenu_Options_Icon_Placeholder.png?fileID=7992765003406590909&guid=aec420251cb7da84a90ff821f6f37f8b&type=3#MainMenu_Options_Icon_Placeholder_0");
+}
+
+.credits-icon {
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Icons/MainMenu_Credits_Icon_Placeholder.png?fileID=-7490071803225947423&guid=b60cb3cb35b4a7f4e86261042fcaffb6&type=3#MainMenu_Credits_Icon_Placeholder_0");
+}
+
+.quit-icon {
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Icons/MainMenu_Quit_Icon_Placeholder.png?fileID=9121252155826900493&guid=44520e5702aa6ef4cb2298bac1415f43&type=3#MainMenu_Quit_Icon_Placeholder_0");
+}
+
+.art-column {
+    width: 38%;
+    max-width: 540px;
+    align-items: center;
+}
+
+.eyebrow {
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--menu-accent);
+    margin-bottom: 18px;
+}
+
+.key-art {
+    width: 100%;
+    height: 430px;
+    background-image: url("project://database/Assets/Art/UI/MainMenu/Illustrations/MainMenu_KeyArt_Placeholder.png?fileID=6373859727603137813&guid=005a49c56399d7d4d8bf24110a752fa3&type=3#MainMenu_KeyArt_Placeholder_0");
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.65;
+}
+
+.art-caption {
+    margin-top: 20px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--menu-text);
+}
+
+.footer {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background-color: rgba(26, 20, 23, 0.85);
+    color: var(--menu-text);
+    font-size: 13px;
+}
+
+.status {
+    color: var(--menu-focus);
+    font-size: 14px;
+    white-space: normal;
+    min-height: 22px;
+}
+
+.modal {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(26, 20, 23, 0.94);
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog {
+    width: 560px;
+    max-width: 90%;
+    padding: 36px;
+    background-color: var(--menu-surface);
+    border-width: 2px;
+    border-color: var(--menu-accent);
+    border-radius: 14px;
+}
+
+.dialog-title {
+    font-size: 28px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 28px;
+}
+
+.dialog-button {
+    height: 52px;
+    margin-top: 16px;
+    background-color: var(--menu-background);
+    color: var(--menu-text);
+    font-size: 20px;
+    border-width: 2px;
+    border-color: var(--menu-border);
+    border-radius: 8px;
+}
+
+.credits-text {
+    white-space: normal;
+    font-size: 18px;
+    color: var(--menu-text);
+}
+
+#volume {
+    margin-bottom: 24px;
+}
+
+#volume:focus,
+#fullscreen:focus {
+    border-width: 2px;
+    border-color: var(--menu-focus);
+}
+
+.hidden {
+    display: none;
+}
+
+#volume .unity-base-field__label,
+#fullscreen .unity-base-field__label {
+    color: var(--menu-text);
+}
+
+#volume .unity-base-slider__tracker {
+    background-color: var(--menu-background);
+}
+
+#volume .unity-base-slider__dragger {
+    background-color: var(--menu-focus);
+    border-color: var(--menu-background);
+}
+
+#fullscreen .unity-toggle__input {
+    background-color: var(--menu-background);
+    border-color: var(--menu-border);
+}
+
+#fullscreen .unity-toggle__checkmark {
+    -unity-background-image-tint-color: var(--menu-focus);
+}
