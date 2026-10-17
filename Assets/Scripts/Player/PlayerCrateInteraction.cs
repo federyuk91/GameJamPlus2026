@@ -34,7 +34,8 @@ namespace MousePlatformer
 
             if (held != null)
             {
-                float limited = Mathf.Clamp(requested, -Settings.crateMoveSpeed * Time.fixedDeltaTime, Settings.crateMoveSpeed * Time.fixedDeltaTime);
+                float maxDisplacement = Settings.crateMoveSpeed / held.Weight * Time.fixedDeltaTime;
+                float limited = Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
                 float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape);
                 float crateAllowed = held.Body.AllowedHorizontal(limited, body.Shape);
                 float shared = Mathf.Sign(limited) * Mathf.Min(Mathf.Abs(playerAllowed), Mathf.Abs(crateAllowed));

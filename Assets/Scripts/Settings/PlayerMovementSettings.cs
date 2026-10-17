@@ -12,6 +12,7 @@ namespace MousePlatformer
         [Tooltip("Maximum step height in world units while grounded. Zero disables stepping.")]
         [Min(0f)] public float maxStepHeight = 0.15f;
         [Range(0f, 89f)] public float maxSlopeAngle = 45f;
+        [Range(0f, 89f)] public float slopeSlideAngle = 30f;
         public bool slideOnSteepSlopes = true;
         [Min(0f)] public float slopeSlideAcceleration = 20f;
         [Min(0f)] public float slopeSlideMaxSpeed = 8f;

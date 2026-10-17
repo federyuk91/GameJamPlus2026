@@ -4,46 +4,46 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: -219455339839739400
-    second: winch drum-Sheet_0
+    second: WinchDrum_0
   - first:
       213: 2986378626398749976
-    second: winch drum-Sheet_1
+    second: WinchDrum_1
   - first:
       213: 6796431040835914919
-    second: winch drum-Sheet_2
+    second: WinchDrum_2
   - first:
       213: -7695236983598040021
-    second: winch drum-Sheet_3
+    second: WinchDrum_3
   - first:
       213: -5948099011747275276
-    second: winch drum-Sheet_4
+    second: WinchDrum_4
   - first:
       213: 3743565526166475923
-    second: winch drum-Sheet_5
+    second: WinchDrum_5
   - first:
       213: -718017600177136419
-    second: winch drum-Sheet_6
+    second: WinchDrum_6
   - first:
       213: -7904220634376495308
-    second: winch drum-Sheet_7
+    second: WinchDrum_7
   - first:
       213: -8046918162314197997
-    second: winch drum-Sheet_8
+    second: WinchDrum_8
   - first:
       213: 8576559085693751107
-    second: winch drum-Sheet_9
+    second: WinchDrum_9
   - first:
       213: -3862592782930423269
-    second: winch drum-Sheet_10
+    second: WinchDrum_10
   - first:
       213: -6024966542949750402
-    second: winch drum-Sheet_11
+    second: WinchDrum_11
   - first:
       213: 4500968152502421423
-    second: winch drum-Sheet_12
+    second: WinchDrum_12
   - first:
       213: -8724307114792086384
-    second: winch drum-Sheet_13
+    second: WinchDrum_13
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -165,7 +165,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: winch drum-Sheet_0
+      name: WinchDrum_0
       rect:
         serializedVersion: 2
         x: 20
@@ -187,7 +187,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_1
+      name: WinchDrum_1
       rect:
         serializedVersion: 2
         x: 33
@@ -209,7 +209,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_2
+      name: WinchDrum_2
       rect:
         serializedVersion: 2
         x: 100
@@ -231,7 +231,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_3
+      name: WinchDrum_3
       rect:
         serializedVersion: 2
         x: 148
@@ -253,7 +253,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_4
+      name: WinchDrum_4
       rect:
         serializedVersion: 2
         x: 225
@@ -275,7 +275,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_5
+      name: WinchDrum_5
       rect:
         serializedVersion: 2
         x: 289
@@ -297,7 +297,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_6
+      name: WinchDrum_6
       rect:
         serializedVersion: 2
         x: 353
@@ -319,7 +319,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_7
+      name: WinchDrum_7
       rect:
         serializedVersion: 2
         x: 404
@@ -341,7 +341,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_8
+      name: WinchDrum_8
       rect:
         serializedVersion: 2
         x: 468
@@ -363,7 +363,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_9
+      name: WinchDrum_9
       rect:
         serializedVersion: 2
         x: 481
@@ -385,7 +385,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_10
+      name: WinchDrum_10
       rect:
         serializedVersion: 2
         x: 212
@@ -407,7 +407,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_11
+      name: WinchDrum_11
       rect:
         serializedVersion: 2
         x: 276
@@ -429,7 +429,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_12
+      name: WinchDrum_12
       rect:
         serializedVersion: 2
         x: 340
@@ -451,7 +451,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: winch drum-Sheet_13
+      name: WinchDrum_13
       rect:
         serializedVersion: 2
         x: 3
@@ -488,20 +488,20 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      winch drum-Sheet_0: -219455339839739400
-      winch drum-Sheet_1: 2986378626398749976
-      winch drum-Sheet_10: -3862592782930423269
-      winch drum-Sheet_11: -6024966542949750402
-      winch drum-Sheet_12: 4500968152502421423
-      winch drum-Sheet_13: -8724307114792086384
-      winch drum-Sheet_2: 6796431040835914919
-      winch drum-Sheet_3: -7695236983598040021
-      winch drum-Sheet_4: -5948099011747275276
-      winch drum-Sheet_5: 3743565526166475923
-      winch drum-Sheet_6: -718017600177136419
-      winch drum-Sheet_7: -7904220634376495308
-      winch drum-Sheet_8: -8046918162314197997
-      winch drum-Sheet_9: 8576559085693751107
+      WinchDrum_0: -219455339839739400
+      WinchDrum_1: 2986378626398749976
+      WinchDrum_10: -3862592782930423269
+      WinchDrum_11: -6024966542949750402
+      WinchDrum_12: 4500968152502421423
+      WinchDrum_13: -8724307114792086384
+      WinchDrum_2: 6796431040835914919
+      WinchDrum_3: -7695236983598040021
+      WinchDrum_4: -5948099011747275276
+      WinchDrum_5: 3743565526166475923
+      WinchDrum_6: -718017600177136419
+      WinchDrum_7: -7904220634376495308
+      WinchDrum_8: -8046918162314197997
+      WinchDrum_9: 8576559085693751107
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

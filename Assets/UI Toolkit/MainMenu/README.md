@@ -16,7 +16,7 @@ MainMenu è la prima scena negli Editor Build Settings, seguita da LoopScene. Ev
 
 ## Grafica provvisoria
 
-I colori del menu sono campionati da `Assets/Art/MainPalette.png` e centralizzati nelle variabili `--menu-*` di `MainMenu.uss`: sfondo e dialoghi crema, testo quasi nero, titolo rosso mattone, pulsanti marroni, hover blu, bordi grigi, accenti rame e focus verde. `--menu-on-control` definisce i testi chiari sui controlli scuri e `--menu-title` il titolo. Anche slider e toggle usano la palette.
+I colori del menu sono campionati da `Assets/Art/Palettes/GamePalette.png` e centralizzati nelle variabili `--menu-*` di `MainMenu.uss`: sfondo e dialoghi crema, testo quasi nero, titolo rosso mattone, pulsanti marroni, hover blu, bordi grigi, accenti rame e focus verde. `--menu-on-control` definisce i testi chiari sui controlli scuri e `--menu-title` il titolo. Anche slider e toggle usano la palette.
 
 Tutti i PNG derivano dall'immagine fornita, ridimensionata mantenendo le proporzioni con padding:
 

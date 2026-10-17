@@ -23,8 +23,8 @@ namespace MousePlatformer
             if (!isActiveAndEnabled || !Settings.enabled || Active || cooldown > 0f || Mathf.Abs(horizontal) < 0.1f) return false;
             if (body == null) body = GetComponent<SimulatedBody2D>();
             float direction = Mathf.Sign(horizontal);
-            Collider2D wall = body.Probe(Vector2.right * direction, Settings.forwardReach + body.Skin, out _);
-            if (wall == null) return false;
+            Collider2D wall = body.Probe(Vector2.right * direction, Settings.forwardReach + body.Skin, out _, out Vector2 wallNormal);
+            if (wall == null || wallNormal.y > 0.01f) return false;
             Bounds bounds = body.Shape.bounds;
             float probeX = bounds.center.x + direction * (bounds.extents.x + Settings.forwardReach);
             Vector2 origin = new Vector2(probeX, bounds.min.y + Settings.maxHeight + body.Skin * 2f);
@@ -36,7 +36,9 @@ namespace MousePlatformer
                 if (hit.collider == body.Shape || hit.collider.transform.IsChildOf(transform)) continue;
                 if (hit.distance < nearest) { nearest = hit.distance; top = hit; }
             }
-            if (top.collider != wall || top.normal.y < 0.9f) return false;
+            PlayerMovementSettings movement = physicsSettings != null ? physicsSettings.player : PhysicsSettings.DefaultPlayer;
+            if (top.collider != wall || top.normal.y < 0.9f
+                || Vector2.Angle(top.normal, Vector2.up) > Mathf.Clamp(movement.maxSlopeAngle, 0f, 89f) + 0.01f) return false;
             float rise = top.point.y + body.Skin - bounds.min.y;
             if (rise <= body.Skin || rise > Settings.maxHeight) return false;
 
