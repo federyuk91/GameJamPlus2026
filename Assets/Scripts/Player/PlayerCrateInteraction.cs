@@ -10,6 +10,9 @@ namespace MousePlatformer
         private PlayerInteractionSettings Settings => physicsSettings != null ? physicsSettings.interactions : PhysicsSettings.DefaultInteractions;
         private PushableCrate held;
         public PushableCrate HeldCrate => held;
+        public bool HasReachableCrate => isActiveAndEnabled && body != null
+            && (NearbyCrate(1f, Settings.crateGrabReach, out _) != null
+                || NearbyCrate(-1f, Settings.crateGrabReach, out _) != null);
         public void Release() => held = null;
 
         private void Awake()

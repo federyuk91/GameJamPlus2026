@@ -1,0 +1,26 @@
+.endgame-root { flex-grow: 1; background-color: black; color: rgb(92, 255, 123); font-size: 13px; align-items: center; justify-content: center; }
+.endgame-frame { width: 640px; height: 360px; align-items: center; justify-content: center; }
+.black-band { position: absolute; left: 0; right: 0; height: 20px; background-color: black; }
+.black-band-top { top: 0; }
+.black-band-bottom { bottom: 0; }
+.final-report-monitor { width: 66.6667%; height: 66.6667%; padding: 12px; background-color: rgb(2, 10, 5); border-width: 1px; border-color: rgb(47, 151, 72); overflow: hidden; }
+.final-report-content { flex-grow: 1; }
+.report-title { font-size: 13px; margin: 0 0 6px 0; white-space: normal; }
+.separator { height: 1px; background-color: rgb(47, 92, 58); margin: 3px 0 6px 0; flex-shrink: 0; }
+.report-row { flex-direction: row; justify-content: space-between; height: 26px; flex-shrink: 0; }
+.report-row > Label { margin: 0; }
+.report-value { -unity-text-align: upper-right; }
+.deceased-value { color: rgb(255, 137, 121); }
+.experiment-outcome { font-size: 13px; -unity-text-align: middle-center; margin: 1px 0 5px 0; }
+.terminal-button { background-color: rgb(3, 15, 6); color: rgb(92, 255, 123); font-size: 13px; height: 28px; border-width: 1px; border-color: rgb(47, 151, 72); border-radius: 0; }
+.terminal-button:hover, .terminal-button:focus { background-color: rgb(10, 42, 18); border-color: rgb(92, 255, 123); }
+.terminal-button:active { background-color: rgb(19, 67, 29); }
+.report-continue { width: 150px; align-self: center; margin: 0; flex-shrink: 0; }
+.report-power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(207, 255, 218); opacity: 0; }
+.ending-view { position: absolute; left: 0; right: 0; top: 20px; bottom: 20px; }
+.ending-image { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.ending-caption { position: absolute; left: 16px; right: 16px; top: 14px; padding: 8px; background-color: rgba(0, 0, 0, 0.85); }
+.ending-title { font-size: 18px; -unity-font-style: bold; white-space: normal; -unity-text-align: middle-center; margin: 0; }
+.ending-description { font-size: 13px; white-space: normal; -unity-text-align: middle-center; margin: 4px 0 0 0; }
+.return-to-menu { position: absolute; width: 150px; bottom: 10px; align-self: center; margin: 0; }
+.hidden { display: none; }

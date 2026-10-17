@@ -1,0 +1,70 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="GameplayHud.uss" />
+    <ui:VisualElement name="gameplay-hud" class="gameplay-hud" picking-mode="Ignore">
+        <ui:VisualElement name="hud-frame" class="hud-frame" picking-mode="Ignore">
+            <ui:VisualElement class="black-band black-band-top" picking-mode="Ignore" />
+            <ui:VisualElement class="black-band black-band-bottom" picking-mode="Ignore" />
+            <ui:VisualElement name="test-white-cover" class="test-white-cover" picking-mode="Ignore" />
+            <ui:VisualElement name="hud-safe-area" class="hud-safe-area" picking-mode="Ignore">
+                <ui:VisualElement name="interaction-hints" class="interaction-hints" picking-mode="Ignore" />
+                <ui:VisualElement class="timer-anchor" picking-mode="Ignore">
+                    <ui:VisualElement class="timer-panel" picking-mode="Ignore">
+                        <ui:Label text="TEMPO" class="timer-caption" picking-mode="Ignore" />
+                        <ui:Label name="elapsed-time" text="00:00:00" class="elapsed-time" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="resource-counters" class="resource-counters" picking-mode="Ignore">
+                    <ui:VisualElement name="counter-primary" class="counter" picking-mode="Ignore">
+                        <ui:Label name="counter-primary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Image name="counter-primary-icon" class="counter-icon" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="counter-secondary" class="counter" picking-mode="Ignore">
+                        <ui:Label name="counter-secondary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Image name="counter-secondary-icon" class="counter-icon" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="counter-tertiary" class="counter" picking-mode="Ignore">
+                        <ui:Label name="counter-tertiary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Image name="counter-tertiary-icon" class="counter-icon" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="counter-quaternary" class="counter" picking-mode="Ignore">
+                        <ui:Label name="counter-quaternary-value" text="0×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Image name="counter-quaternary-icon" class="counter-icon" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="scientist-screen" class="scientist-screen" picking-mode="Ignore">
+                    <ui:VisualElement name="scientist-content" class="scientist-content" picking-mode="Ignore">
+                        <ui:VisualElement class="scientist-transmission" picking-mode="Ignore">
+                            <ui:Label text="SCIENZIATO / COMUNICAZIONE" class="scientist-caption" picking-mode="Ignore" />
+                            <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scientist-transcript" picking-mode="Ignore" focusable="false">
+                                <ui:Label name="scientist-text" enable-rich-text="false" class="scientist-text" picking-mode="Ignore" />
+                            </ui:ScrollView>
+                            <ui:VisualElement class="scientist-footer" picking-mode="Ignore">
+                                <ui:Label name="scientist-progress" class="scientist-progress" picking-mode="Ignore" />
+                                <ui:Button name="scientist-advance" text="Enter Reveal" class="scientist-advance" focusable="false" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scientist-portrait-frame" class="scientist-portrait-frame" picking-mode="Ignore">
+                            <ui:Image name="scientist-avatar" class="scientist-avatar" picking-mode="Ignore" />
+                            <ui:Label text="VIDEO" class="scientist-video-label" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="scientist-power-glow" class="scientist-power-glow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="test-result" class="test-result" picking-mode="Ignore">
+                <ui:Label text="TEST COMPLETATO!" class="test-title" />
+                <ui:Label name="test-elapsed" text="Successo! 0 ore 0 minuti e 0 secondi." class="test-elapsed" />
+                <ui:Label name="test-result-message" text="" enable-rich-text="false" class="test-result-message" />
+                <ui:Label name="test-universe" text="Universo-10" class="test-universe" />
+                <ui:Button name="test-next" text="Enter · Next" class="test-next" focusable="false" />
+            </ui:VisualElement>
+            <ui:VisualElement name="photo-overlay" class="photo-overlay" picking-mode="Position">
+                <ui:VisualElement class="photo-content" picking-mode="Ignore">
+                    <ui:Image name="collected-photo" class="collected-photo" picking-mode="Ignore" />
+                    <ui:Label name="photo-placeholder" text="Photo unavailable" class="photo-placeholder" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Button name="photo-close" text="Enter · Next" class="photo-close" focusable="false" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

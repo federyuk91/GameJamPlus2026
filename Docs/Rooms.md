@@ -88,3 +88,28 @@ Dopo questa modifica premere Genera stanze per sostituire il layout precedente.
 Continuare a modificare i prefab originali in Prefab Mode e rigenerare il risultato.
 Lo snap allinea le celle; resta necessario disegnare tubi con larghezze e profili
 compatibili e impostare ingombri che includano realmente la geometria della stanza.
+
+
+## Composizione manuale con snap
+
+LoopScene contiene Manual Room Grid, un contenitore vuoto con una Grid di
+riferimento (celle 1x1) e il componente ManualGridAlignment. Il prefab omonimo
+si trova in Assets/Prefabs/Rooms. Per crearne altri usare Tools > Mouse Platformer
+> Stanze > Crea contenitore griglia manuale.
+
+Trascinare sotto il contenitore le radici dei prefab stanza o direttamente
+le Grid, posizionarle liberamente e selezionare il contenitore. Il pulsante
+Allinea griglie figlie aggancia le loro origini alle intersezioni della Grid
+di riferimento. Il contenitore definisce l'origine comune; lasciarlo a zero
+per allinearsi alla griglia mondiale, oppure assegnare un'altra Reference Grid.
+
+Per una stanza viene spostata tutta la radice RoomDefinition, compensando la
+posizione della Grid interna. Sono inclusi i figli annidati e inattivi.
+L'allineamento esegue solo traslazioni: celle, rotazioni e Cell Gap devono essere
+compatibili con il riferimento. Se una stanza contiene griglie che richiedono
+spostamenti diversi, l'operazione viene annullata prima di modificare gli oggetti.
+Il pulsante e disponibile in Edit Mode e supporta Undo e gli override dei prefab.
+
+Questo flusso mantiene le Grid locali delle stanze: allinea le celle senza
+fonderle e senza scegliere automaticamente le connessioni dei tubi. Posizionare
+le stanze vicine al punto desiderato prima di applicare lo snap.

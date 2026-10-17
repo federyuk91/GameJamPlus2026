@@ -26,6 +26,8 @@ MonoBehaviour:
     jumpBuffer: 0.12
     launchControlTime: 0.25
     launchControlMultiplier: 0.15
+    runFootstepsPerSecond: 6
+    walkFootstepsPerSecond: 3
   interactions:
     crateMoveSpeed: 2.5
     crateGrabReach: 0.12

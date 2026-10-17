@@ -15,6 +15,9 @@ namespace MousePlatformer
         private DiggableTerrain terrain;
         public bool InputClaimed { get; private set; }
         public bool IsDigging { get; private set; }
+        public bool CanStartDigging => isActiveAndEnabled && body != null && Settings.enabled && !AttachedElsewhere()
+            && (TryFindTerrain(Vector2.left, out _) || TryFindTerrain(Vector2.right, out _)
+                || TryFindTerrain(Vector2.up, out _) || TryFindTerrain(Vector2.down, out _));
         private DiggingSettings Settings => physicsSettings != null ? physicsSettings.digging : PhysicsSettings.DefaultDigging;
 
         private void Awake()
@@ -27,14 +30,22 @@ namespace MousePlatformer
         {
             if (!isActiveAndEnabled || !Settings.enabled || AttachedElsewhere()) return false;
             Vector2 direction = Vector2.ClampMagnitude(new Vector2(input.Horizontal, input.Vertical), 1f);
-            if (direction.sqrMagnitude < 0.01f || terrains == null) return false;
+            if (direction.sqrMagnitude < 0.01f || !TryFindTerrain(direction, out DiggableTerrain candidate)) return false;
+            terrain = candidate;
+            InputClaimed = true;
+            return true;
+        }
+
+        private bool TryFindTerrain(Vector2 direction, out DiggableTerrain found)
+        {
+            found = null;
+            if (terrains == null) return false;
             Vector2 center = body.Shape.bounds.center;
             foreach (DiggableTerrain candidate in terrains)
             {
                 if (candidate == null || !candidate.isActiveAndEnabled) continue;
                 if (!candidate.HasEarth(center, center + direction.normalized * Settings.reach, RadiusFor(candidate))) continue;
-                terrain = candidate;
-                InputClaimed = true;
+                found = candidate;
                 return true;
             }
             return false;

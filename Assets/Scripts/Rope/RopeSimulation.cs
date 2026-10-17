@@ -6,7 +6,10 @@ namespace MousePlatformer
     [DefaultExecutionOrder(-50), DisallowMultipleComponent]
     public sealed class RopeSimulation : MonoBehaviour
     {
-        [SerializeField] private Transform[] pieces;
+        [SerializeField, Min(1), Tooltip("Numero di pezzi. La lunghezza totale e Length x Segment Length.")]
+        private int length = 1;
+        [SerializeField, HideInInspector] private Transform[] pieces;
+        [SerializeField, HideInInspector] private Vector2 restDirection = Vector2.down;
         [InspectorName("Segment Length (units)")]
         [SerializeField, Min(0.01f)] private float segmentLength = 0.5f;
         [SerializeField] private PhysicsSettings physicsSettings;
@@ -19,6 +22,9 @@ namespace MousePlatformer
         private PlayerRopeInteraction rider;
         private float gripDistance = -1f;
         private float drive;
+        public int PieceCount => pieces != null ? pieces.Length : 0;
+        public int ConfiguredPieceCount => Mathf.Max(1, length);
+        public Transform Piece(int index) => pieces[index];
         public RopeChain Chain => chain;
         public RopeSwingConstraint SwingLimits => swingLimits;
         public float Length => chain != null ? chain.Length : (pieces != null ? pieces.Length * segmentLength : 0f);
@@ -27,6 +33,31 @@ namespace MousePlatformer
         public bool HasBeenCut { get; private set; }
         public float ClimbableLength => chain != null ? chain.ConnectedLength : 0f;
         public event Action<RopeSimulation> Cut;
+
+        public void SetPieces(Transform[] value)
+        {
+            pieces = value;
+            AlignPieces();
+        }
+
+        public void AlignPieces()
+        {
+            Vector2 direction = restDirection.sqrMagnitude > 0.0001f ? restDirection.normalized : Vector2.down;
+            Quaternion rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f);
+            for (int i = 0; i < PieceCount; i++)
+            {
+                Transform piece = pieces[i];
+                if (piece == null) continue;
+                piece.localPosition = direction * ((i + 0.5f) * segmentLength);
+                piece.localRotation = rotation;
+                piece.name = i == 0 ? "Rope Piece" : "Rope Piece (" + i + ")";
+                SpriteRenderer visual = piece.GetComponent<SpriteRenderer>();
+                if (visual == null || visual.sprite == null) continue;
+                float spriteHeight = visual.sprite.bounds.size.y;
+                if (spriteHeight > 0.0001f)
+                    piece.localScale = new Vector3(piece.localScale.x, segmentLength / spriteHeight, piece.localScale.z);
+            }
+        }
 
         private void Awake()
         {
@@ -115,6 +146,8 @@ namespace MousePlatformer
         }
         private void OnValidate()
         {
+            length = Mathf.Max(1, length);
+            segmentLength = Mathf.Max(0.01f, segmentLength);
             if (swingLimits == null) swingLimits = new RopeSwingConstraint();
             swingLimits.Sanitize();
         }

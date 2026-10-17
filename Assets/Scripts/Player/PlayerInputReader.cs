@@ -10,12 +10,15 @@ namespace MousePlatformer
         private InputAction jump;
         private InputAction grab;
         private InputAction bite;
+        private InputAction collect;
+        private bool collectionConsumed;
         private bool jumpQueued;
         public float Horizontal => move == null ? 0f : move.ReadValue<Vector2>().x;
         public float Vertical => move == null ? 0f : move.ReadValue<Vector2>().y;
         public bool JumpHeld => jump != null && jump.IsPressed();
         public bool GrabHeld => grab != null && grab.IsPressed();
-        public bool BiteHeld => bite != null && bite.IsPressed();
+        public bool InteractionPressed => collect != null && collect.WasPressedThisFrame();
+        public bool BiteHeld => bite != null && bite.IsPressed() && !collectionConsumed;
 
         private void Awake()
         {
@@ -34,19 +37,30 @@ namespace MousePlatformer
             grab = new InputAction("Grab", InputActionType.Button);
             grab.AddBinding("<Keyboard>/e");
             grab.AddBinding("<Gamepad>/buttonWest");
+            collect = new InputAction("Collect", InputActionType.Button);
+            collect.AddBinding("<Keyboard>/f");
+            collect.AddBinding("<Gamepad>/buttonWest");
             bite = new InputAction("Bite", InputActionType.Button);
             bite.AddBinding("<Keyboard>/f");
             bite.AddBinding("<Gamepad>/buttonEast");
         }
         private void QueueJump(InputAction.CallbackContext context) => jumpQueued = true;
+        public void ConsumeCollectibleInteraction()
+        {
+            if (Keyboard.current != null && Keyboard.current.fKey.isPressed) collectionConsumed = true;
+        }
+        private void Update()
+        {
+            if (Keyboard.current == null || !Keyboard.current.fKey.isPressed) collectionConsumed = false;
+        }
         public bool ConsumeJump()
         {
             bool result = jumpQueued;
             jumpQueued = false;
             return result;
         }
-        private void OnEnable() { move.Enable(); jump.Enable(); grab.Enable(); bite.Enable(); }
-        private void OnDisable() { move.Disable(); jump.Disable(); grab.Disable(); bite.Disable(); jumpQueued = false; }
-        private void OnDestroy() { move.Dispose(); jump.Dispose(); grab.Dispose(); bite.Dispose(); }
+        private void OnEnable() { move.Enable(); jump.Enable(); grab.Enable(); bite.Enable(); collect.Enable(); }
+        private void OnDisable() { move.Disable(); jump.Disable(); grab.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; collectionConsumed = false; }
+        private void OnDestroy() { move.Dispose(); jump.Dispose(); grab.Dispose(); bite.Dispose(); collect.Dispose(); }
     }
 }

@@ -26,6 +26,7 @@ namespace MousePlatformer
         private bool consumedHold;
         private bool biteChosen;
         public float BiteProgress => biteProgress;
+        public bool CanStartDiggingWithSharedInput => isActiveAndEnabled && !consumedHold && !biteChosen;
 
         private void Awake()
         {
@@ -52,42 +53,7 @@ namespace MousePlatformer
             // Always evaluate reachable ropes before digging can consume the shared input.
             Physics2D.SyncTransforms();
             blockingCollider = null;
-            Transform plane = visual != null ? visual : transform;
-            float sign = facing == null || facing.FacingRight ? 1f : -1f;
-            Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
-            Vector2 forward = plane.TransformDirection(Vector2.right * sign);
-            RopeSimulation nearest = null;
-            int segment = -1;
-            float best = reach * reach;
-            // A held rope can be brought to the mouth regardless of the facing direction.
-            if (ropeInteraction != null
-                && ropeInteraction.TryGetGrip(out RopeSimulation heldRope, out int gripSegment, out Vector2 gripPoint)
-                && heldRope.CanBeCut && HasLineOfSight(mouth, gripPoint - mouth))
-            {
-                nearest = heldRope;
-                segment = gripSegment;
-            }
-            if (nearest == null)
-            {
-                foreach (RopeSimulation rope in ropes ?? System.Array.Empty<RopeSimulation>())
-                {
-                    if (rope == null || !rope.isActiveAndEnabled || !rope.CanBeCut || rope.Chain == null) continue;
-                    for (int i = 0; i < rope.Chain.SegmentCount; i++)
-                    {
-                        if (!rope.Chain.IsSegmentIntact(i)) continue;
-                        Vector2 a = rope.Chain[i];
-                        Vector2 delta = rope.Chain[i + 1] - a;
-                        float t = Mathf.Clamp01(Vector2.Dot(mouth - a, delta) / Mathf.Max(delta.sqrMagnitude, 0.000001f));
-                        Vector2 point = a + delta * t;
-                        Vector2 offset = point - mouth;
-                        float squared = offset.sqrMagnitude;
-                        if (squared > best || Vector2.Dot(offset, forward) < -0.05f || !HasLineOfSight(mouth, offset)) continue;
-                        best = squared;
-                        nearest = rope;
-                        segment = i;
-                    }
-                }
-            }
+            TryFindCutTarget(out RopeSimulation nearest, out int segment, true);
             if (nearest == null || !nearest.CanBeCut)
             {
                 ResetTarget();
@@ -121,7 +87,51 @@ namespace MousePlatformer
             }
         }
 
-        private bool HasLineOfSight(Vector2 origin, Vector2 offset)
+        public bool CanCutRope => isActiveAndEnabled && body != null && !consumedHold
+            && TryFindCutTarget(out _, out _, false);
+
+        private bool TryFindCutTarget(out RopeSimulation nearest, out int segment, bool updateDiagnostics)
+        {
+            Transform plane = visual != null ? visual : transform;
+            float sign = facing == null || facing.FacingRight ? 1f : -1f;
+            Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
+            Vector2 forward = plane.TransformDirection(Vector2.right * sign);
+            nearest = null;
+            segment = -1;
+            float best = reach * reach;
+            // A held rope can be brought to the mouth regardless of the facing direction.
+            if (ropeInteraction != null
+                && ropeInteraction.TryGetGrip(out RopeSimulation heldRope, out int gripSegment, out Vector2 gripPoint)
+                && heldRope.CanBeCut && HasLineOfSight(mouth, gripPoint - mouth, updateDiagnostics))
+            {
+                nearest = heldRope;
+                segment = gripSegment;
+            }
+            if (nearest == null)
+            {
+                foreach (RopeSimulation rope in ropes ?? System.Array.Empty<RopeSimulation>())
+                {
+                    if (rope == null || !rope.isActiveAndEnabled || !rope.CanBeCut || rope.Chain == null) continue;
+                    for (int i = 0; i < rope.Chain.SegmentCount; i++)
+                    {
+                        if (!rope.Chain.IsSegmentIntact(i)) continue;
+                        Vector2 a = rope.Chain[i];
+                        Vector2 delta = rope.Chain[i + 1] - a;
+                        float t = Mathf.Clamp01(Vector2.Dot(mouth - a, delta) / Mathf.Max(delta.sqrMagnitude, 0.000001f));
+                        Vector2 point = a + delta * t;
+                        Vector2 offset = point - mouth;
+                        float squared = offset.sqrMagnitude;
+                        if (squared > best || Vector2.Dot(offset, forward) < -0.05f || !HasLineOfSight(mouth, offset, updateDiagnostics)) continue;
+                        best = squared;
+                        nearest = rope;
+                        segment = i;
+                    }
+                }
+            }
+            return nearest != null && nearest.CanBeCut;
+        }
+
+        private bool HasLineOfSight(Vector2 origin, Vector2 offset, bool updateDiagnostics)
         {
             float distance = offset.magnitude;
             if (distance <= 0.0001f) return true;
@@ -132,7 +142,7 @@ namespace MousePlatformer
                 if (obstacle == body.Shape || obstacle.transform.IsChildOf(transform)) continue;
                 if (obstacles[i].distance < distance - 0.01f)
                 {
-                    blockingCollider = obstacle;
+                    if (updateDiagnostics) blockingCollider = obstacle;
                     return false;
                 }
             }

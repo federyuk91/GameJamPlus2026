@@ -21,6 +21,8 @@ namespace MousePlatformer
         // World units per second; 1 world unit = 32 artwork pixels.
         public Vector2 Velocity { get; private set; }
         public bool IsSliding { get; private set; }
+        public bool IsMovingOnGround { get; private set; }
+        public bool CanInteractWithCrates { get; private set; }
         private float coyoteRemaining;
         private float bufferRemaining;
         private bool jumpCut;
@@ -53,6 +55,8 @@ namespace MousePlatformer
 
         private void TickMovement()
         {
+            CanInteractWithCrates = false;
+            IsMovingOnGround = false;
             float dt = Time.fixedDeltaTime;
             bool jumpPressed = input.ConsumeJump();
             if (swimming != null) swimming.UpdateControlTimers(dt);
@@ -220,6 +224,9 @@ namespace MousePlatformer
             if (body.HitWall && surfaceMotion && !onSteepSlope) groundSpeed = 0f;
             if (body.HitCeiling || (!surfaceMotion && body.Grounded && velocity.y < 0f)) velocity.y = 0f;
             Velocity = velocity;
+            CanInteractWithCrates = surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding;
+            IsMovingOnGround = surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding
+                && Mathf.Abs(input.Horizontal) > 0.1f && Mathf.Abs(velocity.x) > 0.05f;
         }
         private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
         {
@@ -235,6 +242,8 @@ namespace MousePlatformer
         }
         private void OnDisable()
         {
+            CanInteractWithCrates = false;
+            IsMovingOnGround = false;
             ResetSurfaceMotion();
             Velocity = Vector2.zero;
             coyoteRemaining = bufferRemaining = ropeLaunchRemaining = 0f;

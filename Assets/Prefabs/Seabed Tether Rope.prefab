@@ -50,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d517c22ef0af4de0a2c7d3de6b84797f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  length: 6
+  restDirection: {x: 0, y: 1}
   pieces:
   - {fileID: 8606555548450271087}
   - {fileID: 2782523940613057953}

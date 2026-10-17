@@ -1,0 +1,56 @@
+.gameplay-hud { --scientist-green: rgb(92, 255, 123); flex-grow: 1; color: rgb(241, 244, 246); font-size: 13px; }
+.hud-frame { position: absolute; width: 640px; height: 360px; left: 0; top: 0; }
+.black-band { position: absolute; left: 0; right: 0; height: 20px; background-color: black; }
+.black-band-top { top: 0; }
+.black-band-bottom { bottom: 0; }
+.hud-safe-area { position: absolute; left: 0; right: 0; top: 20px; bottom: 20px; overflow: visible; }
+.interaction-hints { display: none; position: absolute; right: 10px; bottom: -10px; max-width: 300px; padding: 4px 6px; margin: 0; font-size: 12px; white-space: normal; background-color: rgba(12, 17, 23, 0.88); color: rgb(241, 244, 246); border-width: 1px; border-color: rgb(88, 119, 139); }
+.interaction-hint-row { flex-direction: row; align-items: center; min-height: 22px; }
+.input-key-icon { width: 20px; height: 20px; margin-right: 6px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--scientist-green); }
+.input-key-fallback { color: var(--scientist-green); margin: 0 6px 0 0; }
+.interaction-hint-description { font-size: 12px; margin: 0; white-space: normal; flex-shrink: 1; }
+.scientist-advance, .test-next { flex-direction: row; align-items: center; justify-content: center; }
+.scientist-advance .input-key-icon { width: 14px; height: 14px; margin-right: 3px; }
+.scientist-advance-label { color: var(--scientist-green); font-size: 9px; margin: 0; }
+.test-next-label { margin: 0; }
+.timer-anchor { position: absolute; top: -10px; left: 0; right: 0; align-items: center; }
+.timer-panel { width: 104px; padding: 3px 8px; background-color: rgba(12, 17, 23, 0.88); border-width: 1px; border-color: rgb(88, 119, 139); }
+.timer-caption { font-size: 9px; letter-spacing: 2px; color: rgb(150, 203, 220); margin: 0; -unity-text-align: middle-center; }
+.elapsed-time { font-size: 16px; -unity-font-style: bold; margin: 0; -unity-text-align: middle-center; }
+.resource-counters { position: absolute; left: 10px; bottom: -10px; flex-direction: row; }
+.counter { width: 60px; height: 21px; margin-right: 4px; padding: 1px 5px; flex-direction: row; align-items: center; justify-content: space-between; background-color: rgba(12, 17, 23, 0.88); border-width: 1px; border-color: rgb(88, 119, 139); }
+.counter-value { font-size: 13px; -unity-font-style: bold; margin: 0; }
+.counter-icon { width: 14px; height: 14px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; background-image: url("../../Art/Pixel Art/Props/Cheese.png"); }
+.scientist-screen { display: none; position: absolute; bottom: -10px; right: 10px; width: 0; height: 0; overflow: hidden; background-color: black; color: rgb(92, 255, 123); border-width: 1px; border-color: rgb(47, 151, 72); }
+.scientist-content { position: absolute; left: 4px; right: 4px; top: 3px; bottom: 3px; flex-direction: row; opacity: 0; }
+.scientist-portrait-frame { width: 44px; height: 52px; margin-left: 6px; padding: 1px; flex-shrink: 0; border-width: 1px; border-color: rgb(92, 255, 123); background-color: rgb(3, 15, 6); align-items: center; }
+.scientist-avatar { width: 40px; height: 48px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.scientist-video-label { display: none; }
+.portrait-missing { justify-content: center; }
+.scientist-transmission { flex-grow: 1; flex-basis: 0; min-width: 0; flex-direction: row; align-items: stretch; }
+.scientist-caption { display: none; }
+.scientist-transcript { flex-grow: 1; flex-basis: 0; min-height: 0; }
+.scientist-text { font-size: 13px; color: var(--scientist-green); white-space: normal; margin: 0; }
+.scientist-footer { width: 70px; flex-direction: column; align-items: stretch; justify-content: center; margin-left: 4px; flex-shrink: 0; }
+.scientist-progress { font-size: 9px; color: rgb(92, 255, 123); margin: 0 0 3px 0; -unity-text-align: middle-center; }
+.scientist-advance { height: 18px; padding: 0 2px; margin: 0; font-size: 9px; color: rgb(92, 255, 123); background-color: rgb(3, 15, 6); border-width: 1px; border-color: rgb(47, 151, 72); border-radius: 0; }
+.scientist-advance:hover { background-color: rgb(10, 42, 18); border-color: rgb(92, 255, 123); }
+.scientist-advance:active { background-color: rgb(19, 67, 29); }
+
+.scientist-power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(207, 255, 218); opacity: 0; }
+
+.test-white-cover { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: white; opacity: 0; }
+.test-result { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: white; color: rgb(18, 30, 22); align-items: center; justify-content: center; padding: 24px; }
+.test-title { font-size: 30px; -unity-font-style: bold; margin-bottom: 16px; -unity-text-align: middle-center; }
+.test-elapsed { font-size: 16px; color: rgb(32, 102, 54); margin-bottom: 18px; -unity-text-align: middle-center; }
+.test-result-message { font-size: 17px; max-width: 540px; white-space: normal; -unity-text-align: middle-center; margin-bottom: 22px; }
+.test-universe { font-size: 20px; -unity-font-style: bold; margin-bottom: 24px; }
+.test-next { height: 30px; padding: 4px 16px; color: rgb(18, 30, 22); background-color: rgb(231, 242, 233); border-width: 1px; border-color: rgb(32, 102, 54); border-radius: 0; }
+.test-next:hover { background-color: rgb(202, 229, 208); }
+
+.photo-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 12px; background-color: rgba(0, 0, 0, 0.94); align-items: stretch; }
+.photo-content { position: relative; flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; overflow: hidden; align-items: stretch; justify-content: center; }
+.collected-photo { position: absolute; flex-grow: 0; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.photo-placeholder { flex-grow: 1; -unity-text-align: middle-center; color: rgb(180, 190, 185); background-color: rgb(20, 25, 23); }
+.photo-close { height: 26px; flex-shrink: 0; align-self: center; margin-top: 8px; padding: 2px 16px; background-color: rgb(12, 25, 17); color: rgb(92, 255, 123); border-width: 1px; border-color: rgb(47, 151, 72); border-radius: 0; }
+.photo-close:hover { background-color: rgb(25, 50, 33); }

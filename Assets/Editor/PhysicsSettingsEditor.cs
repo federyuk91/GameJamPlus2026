@@ -34,6 +34,9 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("player.jumpBuffer", "Buffer del salto (s)");
         Field("player.launchControlTime", "Controllo ridotto dopo il distacco (s)");
         Field("player.launchControlMultiplier", "Moltiplicatore controllo dopo il distacco");
+        Section("Player — audio passi");
+        Field("player.runFootstepsPerSecond", "Frequenza passi Run (passi/s)", "0 disabilita i passi durante la corsa.");
+        Field("player.walkFootstepsPerSecond", "Frequenza passi Walk (passi/s)", "Predisposta per la futura camminata. 0 disabilita i passi.");
         Section("Player — pendenze e scivolata");
         Field("player.slopeSlideAngle", "Soglia di scivolata (°)", "Sotto questa soglia il topo resta stabile. Il valore effettivo non supera il limite di salita.");
         Field("player.maxSlopeAngle", "Limite di salita (°)", "Oltre questo angolo la salita è bloccata. Fra le due soglie puoi contrastare la scivolata con il movimento.");

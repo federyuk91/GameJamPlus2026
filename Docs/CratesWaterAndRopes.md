@@ -47,3 +47,15 @@ Il taglio elimina un collegamento della catena, libera la cassa e mantiene i seg
 ## Verifica in Unity
 
 Provare equilibrio sulla superficie, spinta per contatto prima e dopo il taglio, risalita con il topo sopra, salto dalla cassa sospesa, vincoli vicino a pareti/soffitti e morso interrotto. Verificare anche `Can Be Cut` disattivato. Il modello di immersione usa i bounds dei volumi con superficie d'acqua orizzontale; volumi ruotati o forme d'acqua irregolari richiedono un campionamento diverso.
+
+## Lunghezza delle corde in Editor
+
+Nel componente `Rope Simulation`, `Length` indica il numero di pezzi (minimo 1).
+Cambiarlo aggiunge o rimuove automaticamente i pezzi; `Segment Length (units)` stabilisce la lunghezza di ciascuno.
+Nel prefab `Rope` ogni pezzo misura 1 unità, quindi `Length = 5` corrisponde a 5 unità.
+I prefab delle casse mantengono i segmenti da 0.25 unità e le rispettive lunghezze iniziali.
+
+L'ancoraggio resta fisso. I pezzi vengono allineati senza spazi, nella direzione iniziale della corda (verso l'alto per quella sul fondo).
+Il pulsante `Ricostruisci e allinea pezzi` ripristina l'allineamento dopo modifiche manuali.
+La geometria si modifica fuori dal Play Mode; la simulazione usa poi il nuovo numero di segmenti anche per arrampicata, morso e vincolo delle casse.
+Le corde non usano un Box Collider unico: le interazioni seguono i segmenti simulati.

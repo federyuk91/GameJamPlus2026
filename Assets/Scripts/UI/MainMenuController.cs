@@ -9,20 +9,21 @@ namespace GameJamPlus.UI
     [RequireComponent(typeof(UIDocument))]
     public sealed class MainMenuController : MonoBehaviour
     {
-        private const string VolumeKey = "Settings.MasterVolume";
         private const string FullscreenKey = "Settings.Fullscreen";
 
         [SerializeField] private UIDocument document;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField, TextArea] private string creditsText =
-            "PLEASE PRESS CONTINUE\n\nSviluppo • Il tuo team\nGrafica • Il tuo team\nMusica e suoni • Il tuo team\n\nGrazie per la visita.";
+            "PLEASE PRESS CONTINUE\n\nDesigner&Programmer - Federico Bachis\nArtist - Roberta Piroddi\nPixel Artist - Andrea Serra\nSound&Music - Giuliano Cau\n\nGrazie per la visita.";
 
         private VisualElement root;
         private VisualElement mainPanel;
         private VisualElement modal;
         private VisualElement activePanel;
         private Button returnFocus;
-        private Slider volume;
+        private Slider masterVolume;
+        private Slider musicVolume;
+        private Slider effectsVolume;
         private Toggle fullscreen;
         private Label status;
         private IVisualElementScheduledItem initialFocus;
@@ -40,7 +41,9 @@ namespace GameJamPlus.UI
             mainPanel = root.Q("main-panel");
             modal = root.Q("modal");
             status = root.Q<Label>("status");
-            volume = root.Q<Slider>("volume");
+            masterVolume = root.Q<Slider>("volume");
+            musicVolume = root.Q<Slider>("music-volume");
+            effectsVolume = root.Q<Slider>("effects-volume");
             fullscreen = root.Q<Toggle>("fullscreen");
             root.Q<Label>(className: "credits-text").text = creditsText;
 
@@ -55,12 +58,16 @@ namespace GameJamPlus.UI
             root.RegisterCallback<NavigationCancelEvent>(OnCancel);
             root.RegisterCallback<NavigationMoveEvent>(OnNavigate);
 
-            AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 1f));
-            volume.SetValueWithoutNotify(AudioListener.volume);
+            GameAudioSettings.ApplySavedVolume();
+            masterVolume.SetValueWithoutNotify(GameAudioSettings.MasterVolume);
+            musicVolume.SetValueWithoutNotify(GameAudioSettings.MusicVolume);
+            effectsVolume.SetValueWithoutNotify(GameAudioSettings.EffectsVolume);
             bool savedFullscreen = PlayerPrefs.GetInt(FullscreenKey, Screen.fullScreen ? 1 : 0) == 1;
             fullscreen.SetValueWithoutNotify(savedFullscreen);
             Screen.fullScreen = savedFullscreen;
-            volume.RegisterValueChangedCallback(OnVolumeChanged);
+            masterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
+            musicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
+            effectsVolume.RegisterValueChangedCallback(OnEffectsVolumeChanged);
             fullscreen.RegisterValueChangedCallback(OnFullscreenChanged);
 
             SetMainNavigation();
@@ -83,7 +90,9 @@ namespace GameJamPlus.UI
             root.Q<Button>("quit-confirm").clicked -= QuitGame;
             root.UnregisterCallback<NavigationCancelEvent>(OnCancel);
             root.UnregisterCallback<NavigationMoveEvent>(OnNavigate);
-            volume.UnregisterValueChangedCallback(OnVolumeChanged);
+            masterVolume.UnregisterValueChangedCallback(OnMasterVolumeChanged);
+            musicVolume.UnregisterValueChangedCallback(OnMusicVolumeChanged);
+            effectsVolume.UnregisterValueChangedCallback(OnEffectsVolumeChanged);
             fullscreen.UnregisterValueChangedCallback(OnFullscreenChanged);
             PlayerPrefs.Save();
         }
@@ -96,12 +105,14 @@ namespace GameJamPlus.UI
                 return;
             }
 
+            GameJamPlus.Gameplay.GameSession.Reset();
+            Time.timeScale = 1f;
             SceneManager.LoadScene(gameplaySceneName);
         }
 
         private void OpenOptions()
         {
-            ShowModal("options-panel", "options", volume, fullscreen, root.Q<Button>("options-back"));
+            ShowModal("options-panel", "options", masterVolume, musicVolume, effectsVolume, fullscreen, root.Q<Button>("options-back"));
         }
 
         private void OpenCredits()
@@ -182,10 +193,19 @@ namespace GameJamPlus.UI
             cancelEvent.StopPropagation();
         }
 
-        private void OnVolumeChanged(ChangeEvent<float> changeEvent)
+        private void OnMasterVolumeChanged(ChangeEvent<float> changeEvent)
         {
-            AudioListener.volume = changeEvent.newValue;
-            PlayerPrefs.SetFloat(VolumeKey, changeEvent.newValue);
+            GameAudioSettings.MasterVolume = changeEvent.newValue;
+        }
+
+        private void OnMusicVolumeChanged(ChangeEvent<float> changeEvent)
+        {
+            GameAudioSettings.MusicVolume = changeEvent.newValue;
+        }
+
+        private void OnEffectsVolumeChanged(ChangeEvent<float> changeEvent)
+        {
+            GameAudioSettings.EffectsVolume = changeEvent.newValue;
         }
 
         private void OnFullscreenChanged(ChangeEvent<bool> changeEvent)

@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="EndGame.uss" />
+    <ui:VisualElement class="endgame-root">
+        <ui:VisualElement name="endgame-frame" class="endgame-frame">
+            <ui:VisualElement name="ending-view" class="ending-view hidden">
+                <ui:Image name="ending-image" class="ending-image" picking-mode="Ignore" />
+                <ui:VisualElement class="ending-caption" picking-mode="Ignore">
+                    <ui:Label name="ending-title" class="ending-title" />
+                    <ui:Label name="ending-description" class="ending-description" />
+                </ui:VisualElement>
+                <ui:Button name="return-to-menu" text="Menu principale" class="terminal-button return-to-menu" />
+            </ui:VisualElement>
+            <ui:VisualElement name="final-report-monitor" class="final-report-monitor">
+                <ui:VisualElement name="final-report-content" class="final-report-content">
+                    <ui:Label text="UNIVERSE-10 — REPORT FINALE" class="report-title" />
+                    <ui:VisualElement class="separator" />
+                    <ui:VisualElement class="report-row"><ui:Label text="Test completati" /><ui:Label name="completed-tests" text="10/10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Cavie impiegate" /><ui:Label name="subjects-used" text="10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Cavie decedute" /><ui:Label name="subjects-deceased" text="0" class="report-value deceased-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Cavie recuperate" /><ui:Label name="subjects-recovered" text="10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="separator" />
+                    <ui:Label name="experiment-outcome" text="ESITO: 100% SUCCESSO" class="experiment-outcome" />
+                    <ui:Button name="report-continue" text="Continue" class="terminal-button report-continue" />
+                </ui:VisualElement>
+                <ui:VisualElement name="report-power-glow" class="report-power-glow" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="black-band black-band-top" picking-mode="Ignore" />
+            <ui:VisualElement class="black-band black-band-bottom" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
