@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dd8896b5e8c41e5b14bf3fb834a3b41, type: 3}
+  m_Name: PhysicsSettings
+  m_EditorClassIdentifier: 
+  player:
+    speed: 5
+    groundAcceleration: 45
+    airAcceleration: 28
+    coyoteTime: 0.1
+    jumpBuffer: 0.12
+    launchControlTime: 0.25
+    launchControlMultiplier: 0.15
+  interactions:
+    crateMoveSpeed: 2.5
+    crateGrabReach: 0.12
+    ropeClimbSpeed: 2
+    ropeSwingAcceleration: 70
+    ropeGrabRadius: 0.45
+    ropeRegrabDelay: 0.3
+  gravity:
+    playerGravity: 30
+    fallGravityMultiplier: 2.2
+    playerTerminalSpeed: 26
+    jumpHeight: 2.01666667
+    jumpReleaseMultiplier: 0.45
+    crateGravity: 66
+    crateTerminalSpeed: 26
+    ropeGravity: 30
+    ropeJumpUpSpeed: 7
+    ropeJumpSwingBoost: 4
+  water:
+    strokeAcceleration: 45
+    strokeControlTime: 0.35
+    speed: 5
+    acceleration: 10
+    braking: 6
+    gravity: 7
+    maxSinkSpeed: 3.5
+    strokeSpeed: 4.8
+    verticalDrag: 1.5
+  ladder:
+    climbSpeed: 3
+    jumpHorizontalSpeed: 6
+    jumpUpSpeed: 9
+    grabReach: 0.65
+    regrabDelay: 0.3
+  ledgeClimb:
+    enabled: 1
+    maxHeight: 0.75
+    forwardReach: 0.12
+    climbSpeed: 5
+    retryDelay: 0.15
