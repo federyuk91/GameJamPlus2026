@@ -43,7 +43,7 @@ namespace MousePlatformer
 
         private void HandleCut(RopeSimulation source) => Detach();
 
-        private void Detach()
+        public void Detach()
         {
             if (!Attached) return;
             Attached = false;

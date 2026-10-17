@@ -45,6 +45,7 @@ MonoBehaviour:
     ropeJumpUpSpeed: 7
     ropeJumpSwingBoost: 4
   water:
+    bottomWalkSpeedMultiplier: 0.5
     strokeAcceleration: 45
     strokeControlTime: 0.35
     speed: 5

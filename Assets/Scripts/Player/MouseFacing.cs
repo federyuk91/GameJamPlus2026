@@ -8,6 +8,7 @@ namespace MousePlatformer
         [SerializeField] private PlayerInputReader input;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private bool spriteFacesRight = true;
+        public bool FacingRight => visual == null || visual.flipX != spriteFacesRight;
         private void Awake()
         {
             if (input == null) input = GetComponent<PlayerInputReader>();

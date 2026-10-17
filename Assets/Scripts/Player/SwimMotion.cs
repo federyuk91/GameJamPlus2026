@@ -7,6 +7,8 @@ namespace MousePlatformer
     public sealed class SwimMotion
     {
         [InspectorName("Horizontal Speed (units/s)"), Min(0f)] public float speed = 5f;
+        [Tooltip("Multiplier of the player's normal walking speed while grounded underwater.")]
+        [Min(0f)] public float bottomWalkSpeedMultiplier = 0.5f;
         [InspectorName("Acceleration (units/s²)"), Min(0f)] public float acceleration = 10f;
         [Min(0f)] public float strokeAcceleration = 45f;
         [Min(0f)] public float strokeControlTime = 0.35f;

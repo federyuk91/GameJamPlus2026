@@ -13,8 +13,10 @@ namespace MousePlatformer
         [SerializeField] private PhysicsSettings physicsSettings;
         [SerializeField] private PlayerLadderInteraction ladderInteraction;
         [SerializeField] private PlayerLedgeClimb ledgeClimb;
+        [SerializeField] private PlayerPlatformRide platformRide;
         private GravitySettings Gravity => physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity;
         private PlayerMovementSettings Movement => physicsSettings != null ? physicsSettings.player : PhysicsSettings.DefaultPlayer;
+        private SwimMotion Water => physicsSettings != null ? physicsSettings.water : PhysicsSettings.DefaultWater;
         // World units per second; 1 world unit = 32 artwork pixels.
         public Vector2 Velocity { get; private set; }
         public bool IsSliding { get; private set; }
@@ -34,8 +36,19 @@ namespace MousePlatformer
             if (swimming == null) swimming = GetComponent<PlayerSwimming>();
             if (ladderInteraction == null) ladderInteraction = GetComponent<PlayerLadderInteraction>();
             if (ledgeClimb == null) ledgeClimb = GetComponent<PlayerLedgeClimb>();
+            if (platformRide == null) platformRide = GetComponent<PlayerPlatformRide>();
         }
         private void FixedUpdate()
+        {
+            if (platformRide != null) platformRide.Carry();
+            TickMovement();
+            bool canRide = (ropeInteraction == null || !ropeInteraction.Attached)
+                && (ladderInteraction == null || !ladderInteraction.Attached)
+                && (ledgeClimb == null || !ledgeClimb.Active);
+            if (platformRide != null) platformRide.UpdateSupport(canRide);
+        }
+
+        private void TickMovement()
         {
             float dt = Time.fixedDeltaTime;
             bool jumpPressed = input.ConsumeJump();
@@ -82,7 +95,9 @@ namespace MousePlatformer
                 ropeLaunchRemaining = Movement.launchControlTime;
                 jumpPressed = false;
             }
-            if (inWater)
+            body.RefreshGround(Movement.maxSlopeAngle, followingGround || Velocity.y <= 0f);
+            bool walkingUnderwater = inWater && body.Grounded && !jumpPressed;
+            if (inWater && !walkingUnderwater)
             {
                 ResetSurfaceMotion();
                 if (crateInteraction != null) crateInteraction.Release();
@@ -90,18 +105,25 @@ namespace MousePlatformer
                 // A swim stroke is independent of jump hold duration, including at the surface.
                 jumpCut = true;
                 Vector2 swimVelocity = swimming.Step(Velocity, input.Horizontal, jumpPressed, dt);
-                body.Move(swimVelocity * dt);
+                Vector2 swimDisplacement = swimVelocity * dt;
+                if (crateInteraction != null) swimDisplacement = crateInteraction.ResolveSwimming(swimDisplacement, dt);
+                body.Move(swimDisplacement);
                 if (TryStartLedgeClimb()) return;
                 if (body.HitWall) swimVelocity.x = 0f;
                 if (body.HitCeiling || (body.Grounded && swimVelocity.y < 0f)) swimVelocity.y = 0f;
                 Velocity = swimVelocity;
                 return;
             }
-            body.RefreshGround(Movement.maxSlopeAngle, followingGround || Velocity.y <= 0f);
+            if (walkingUnderwater)
+            {
+                swimming.ResetStrokeControl();
+                ropeLaunchRemaining = 0f;
+            }
             bool onSteepSlope = body.OnSteepSlope;
             bool surfaceMotion = body.HasGroundContact;
-            bufferRemaining = jumpPressed ? Movement.jumpBuffer : Mathf.Max(0f, bufferRemaining - dt);
-            coyoteRemaining = onSteepSlope ? 0f
+            bufferRemaining = walkingUnderwater ? 0f
+                : jumpPressed ? Movement.jumpBuffer : Mathf.Max(0f, bufferRemaining - dt);
+            coyoteRemaining = onSteepSlope || walkingUnderwater ? 0f
                 : body.Grounded ? Movement.coyoteTime : Mathf.Max(0f, coyoteRemaining - dt);
             Vector2 velocity = Velocity;
             if (surfaceMotion)
@@ -109,10 +131,12 @@ namespace MousePlatformer
                 Vector2 normal = body.GroundNormal;
                 Vector2 tangent = new Vector2(normal.y, -normal.x);
                 float downhillSign = Mathf.Sign(tangent.y) * -1f;
+                float walkSpeed = Movement.speed * (walkingUnderwater ? Mathf.Max(0f, Water.bottomWalkSpeedMultiplier) : 1f);
                 if (!followingGround)
-                    groundSpeed = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, tangent.x), -Movement.speed, Movement.speed);
+                    groundSpeed = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, tangent.x), -walkSpeed, walkSpeed);
+                if (walkingUnderwater) groundSpeed = Mathf.Clamp(groundSpeed, -walkSpeed, walkSpeed);
                 groundSpeed = onSteepSlope ? 0f : Mathf.MoveTowards(groundSpeed,
-                    input.Horizontal * Movement.speed, Movement.groundAcceleration * dt);
+                    input.Horizontal * walkSpeed, Movement.groundAcceleration * dt);
 
                 float slideAngle = Mathf.Clamp(Movement.slopeSlideAngle, 0f, Movement.maxSlopeAngle);
                 IsSliding = Movement.slideOnSteepSlopes && body.GroundAngle > slideAngle + 0.01f;
@@ -139,6 +163,11 @@ namespace MousePlatformer
                 surfaceMotion = false;
                 ResetSurfaceMotion();
                 velocity.y = JumpPhysics.LaunchSpeed(Gravity.jumpHeight, Gravity.playerGravity);
+                if (platformRide != null && platformRide.HasSupport)
+                {
+                    velocity += platformRide.SupportVelocity;
+                    ropeLaunchRemaining = Movement.launchControlTime;
+                }
                 bufferRemaining = coyoteRemaining = 0f;
                 jumpCut = false;
             }
@@ -154,8 +183,11 @@ namespace MousePlatformer
             Vector2 displacement = new Vector2(velocity.x * dt, verticalDisplacement);
             if (crateInteraction != null)
             {
-                displacement.x = crateInteraction.ResolveHorizontal(displacement.x, input.GrabHeld,
-                    body.Grounded && surfaceMotion && !IsSliding);
+                if (walkingUnderwater)
+                    displacement = crateInteraction.ResolveSwimming(displacement, dt);
+                else
+                    displacement.x = crateInteraction.ResolveHorizontal(displacement.x, input.GrabHeld,
+                        body.Grounded && surfaceMotion && !IsSliding);
                 velocity.x = displacement.x / dt;
             }
             Collider2D heldShape = crateInteraction != null && crateInteraction.HeldCrate != null

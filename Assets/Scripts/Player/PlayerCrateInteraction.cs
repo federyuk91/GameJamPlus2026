@@ -27,7 +27,7 @@ namespace MousePlatformer
                 return requested;
             }
 
-            if (held != null && !CanReach(held)) held = null;
+            if (held != null && (!held.isActiveAndEnabled || !CanReach(held))) held = null;
             if (held == null)
                 held = NearbyCrate(Mathf.Sign(requested), Settings.crateGrabReach, out _)
                     ?? NearbyCrate(-Mathf.Sign(requested), Settings.crateGrabReach, out _);
@@ -57,6 +57,27 @@ namespace MousePlatformer
         {
             return crate.isActiveAndEnabled &&
                 (NearbyCrate(1f, Settings.crateGrabReach, out _) == crate || NearbyCrate(-1f, Settings.crateGrabReach, out _) == crate);
+        }
+
+        public Vector2 ResolveSwimming(Vector2 displacement, float dt)
+        {
+            Release();
+            return new Vector2(ResolveSwimmingAxis(Vector2.right, displacement.x, dt),
+                ResolveSwimmingAxis(Vector2.up, displacement.y, dt));
+        }
+
+        private float ResolveSwimmingAxis(Vector2 axis, float amount, float dt)
+        {
+            if (Mathf.Approximately(amount, 0f)) return 0f;
+            Vector2 direction = axis * Mathf.Sign(amount);
+            Collider2D obstacle = body.Probe(direction, Mathf.Abs(amount) + body.Skin, out float distance);
+            if (obstacle == null || !obstacle.TryGetComponent(out CrateMotion crate) || !crate.InWater) return amount;
+            // The swimmer's sinking acceleration must not cancel the buoyancy of their supporting crate.
+            if (axis.y > 0f && amount < 0f && crate.IsPassenger(body)) return amount;
+            float gap = Mathf.Max(0f, distance - body.Skin);
+            float push = Mathf.Min(Mathf.Max(0f, Mathf.Abs(amount) - gap), Settings.crateMoveSpeed / crate.Weight * dt);
+            Vector2 moved = crate.PushBySwimming(direction * push, body, dt);
+            return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), gap + Mathf.Max(0f, Vector2.Dot(moved, direction)));
         }
 
         private void OnDisable() => held = null;
