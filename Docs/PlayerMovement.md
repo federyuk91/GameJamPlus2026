@@ -1,5 +1,19 @@
 # Player platformer
 
+## Aggancio e risalita dei bordi
+
+`PlayerLedgeClimb` distingue gli stati None, Hanging e Climbing:
+
+- A terra, il sistema dei gradini gestisce gli ostacoli fino a `player.maxStepHeight` (0.15 unità). Un ostacolo più alto, entro `ledgeClimb.maxHeight` (0.75 unità), avvia direttamente la risalita quando il topo cammina verso di esso.
+- In aria, il bordo viene agganciato quando è vicino all'altezza della presa. Il topo resta appeso finché non viene mantenuta o premuta la direzione verso l'ostacolo; non occorre rilasciare la direzione dopo il salto.
+- Da appeso, Salto stacca il topo con uno slancio verso il lato opposto. Giù lo lascia cadere; mantenere Giù impedisce un riaggancio immediato.
+
+La risalita da terra e quella da appeso condividono lo stato Animator `ClimbUp`. `LedgeState` vale 0 nel movimento normale, 1 da appeso e 2 durante la risalita. In attesa delle clip dedicate, `Hanging` mostra un frame fermo di Idle e `ClimbUp` usa Idle come grafica provvisoria. Quando arriva l'animazione di salita, assegnarla al Motion dello stato `ClimbUp` in `Assets/Animations/Mouse/Mouse.controller`; regolare la velocità di risalita per allineare movimento e durata della clip.
+
+In PhysicsSettings, la sezione **Player — aggancio e risalita dei bordi** contiene altezza massima, distanza della sonda, altezza della presa rispetto al collider (0.85) e tolleranza verticale di aggancio (0.15 unità). L'altezza relativa della presa segue eventuali modifiche del BoxCollider2D. Il percorso viene verificato contro soffitti e ingombri, e l'aggancio segue la posizione del collider di supporto quando si muove.
+
+Da verificare in Play Mode: l'oggetto `Climbable` aggiunto alla LoopScene, approccio da entrambi i lati, aggancio con e senza direzione mantenuta, distacco con Salto/Giù e risalita su casse mobili. Le sezioni storiche sotto descrivono le prime versioni del controller; per casse, acqua e corde fare riferimento anche a `Docs/CratesWaterAndRopes.md`.
+
 Scena principale: Assets/Scenes/LoopScene.unity (gia abilitata nel build).
 
 ## Composizione

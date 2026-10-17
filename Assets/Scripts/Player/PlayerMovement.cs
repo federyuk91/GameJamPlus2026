@@ -54,14 +54,18 @@ namespace MousePlatformer
             bool jumpPressed = input.ConsumeJump();
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
-            if (ledgeClimb != null && ledgeClimb.Tick(dt, out Vector2 climbVelocity))
+            if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed,
+                out Vector2 climbVelocity, out bool ledgeReleased))
             {
                 ResetSurfaceMotion();
                 if (swimming != null) swimming.ResetStrokeControl();
                 if (crateInteraction != null) crateInteraction.Release();
                 bufferRemaining = coyoteRemaining = ropeLaunchRemaining = 0f;
                 Velocity = climbVelocity;
-                return;
+                if (!ledgeReleased) return;
+                ropeLaunchRemaining = Movement.launchControlTime;
+                jumpCut = !jumpPressed;
+                jumpPressed = false;
             }
             ropeLaunchRemaining = Mathf.Max(0f, ropeLaunchRemaining - dt);
             Vector2 ladderVelocity = Velocity;
@@ -108,7 +112,7 @@ namespace MousePlatformer
                 Vector2 swimDisplacement = swimVelocity * dt;
                 if (crateInteraction != null) swimDisplacement = crateInteraction.ResolveSwimming(swimDisplacement, dt);
                 body.Move(swimDisplacement);
-                if (TryStartLedgeClimb()) return;
+                if (TryStartLedgeClimb(false, swimVelocity.x)) return;
                 if (body.HitWall) swimVelocity.x = 0f;
                 if (body.HitCeiling || (body.Grounded && swimVelocity.y < 0f)) swimVelocity.y = 0f;
                 Velocity = swimVelocity;
@@ -193,18 +197,21 @@ namespace MousePlatformer
             Collider2D heldShape = crateInteraction != null && crateInteraction.HeldCrate != null
                 ? crateInteraction.HeldCrate.Body.Shape : null;
             Vector2 start = transform.position;
+            bool groundedApproach = surfaceMotion && body.Grounded;
             body.MovePlayer(displacement, Movement.maxStepHeight, Movement.maxSlopeAngle, heldShape, surfaceMotion);
             followingGround = surfaceMotion && body.HasGroundContact;
             if (surfaceMotion) velocity = ((Vector2)transform.position - start) / dt;
-            if (TryStartLedgeClimb()) return;
+            if (TryStartLedgeClimb(groundedApproach, velocity.x)) return;
             if (body.HitWall && !surfaceMotion) velocity.x = 0f;
             if (body.HitWall && surfaceMotion && !onSteepSlope) groundSpeed = 0f;
             if (body.HitCeiling || (!surfaceMotion && body.Grounded && velocity.y < 0f)) velocity.y = 0f;
             Velocity = velocity;
         }
-        private bool TryStartLedgeClimb()
+        private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
         {
-            if (!body.HitWall || body.OnSteepSlope || ledgeClimb == null || !ledgeClimb.TryBegin(input.Horizontal)) return false;
+            if ((!fromGround && body.OnSteepSlope) || input.Vertical < -0.1f || ledgeClimb == null) return false;
+            float direction = Mathf.Abs(input.Horizontal) >= 0.1f ? input.Horizontal : fromGround ? 0f : horizontalVelocity;
+            if (!ledgeClimb.TryBegin(direction, fromGround)) return false;
             ResetSurfaceMotion();
             if (crateInteraction != null) crateInteraction.Release();
             if (swimming != null) swimming.ResetStrokeControl();

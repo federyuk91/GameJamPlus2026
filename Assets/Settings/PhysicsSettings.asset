@@ -30,14 +30,14 @@ MonoBehaviour:
     crateMoveSpeed: 2.5
     crateGrabReach: 0.12
     ropeClimbSpeed: 2
-    ropeSwingAcceleration: 70
+    ropeSwingAcceleration: 50
     ropeGrabRadius: 0.45
     ropeRegrabDelay: 0.3
   gravity:
     playerGravity: 30
     fallGravityMultiplier: 2.2
     playerTerminalSpeed: 26
-    jumpHeight: 2.01666667
+    jumpHeight: 2.0166667
     jumpReleaseMultiplier: 0.45
     crateGravity: 66
     crateTerminalSpeed: 26
@@ -45,11 +45,11 @@ MonoBehaviour:
     ropeJumpUpSpeed: 7
     ropeJumpSwingBoost: 4
   water:
+    speed: 5
     bottomWalkSpeedMultiplier: 0.5
+    acceleration: 10
     strokeAcceleration: 45
     strokeControlTime: 0.35
-    speed: 5
-    acceleration: 10
     braking: 6
     gravity: 7
     maxSinkSpeed: 3.5
@@ -65,5 +65,7 @@ MonoBehaviour:
     enabled: 1
     maxHeight: 0.75
     forwardReach: 0.12
+    hangHeightFraction: 0.85
+    grabVerticalReach: 0.15
     climbSpeed: 5
     retryDelay: 0.15

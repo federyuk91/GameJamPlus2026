@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6ca0feecd8ac7d049b282c0f5b721a08
+guid: 9ceb528019cee17478bd5061c2d41d43
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3388198030788626711
-    second: ElettricTrap_0
+      213: -2660968328804394481
+    second: Stairs_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,16 +96,42 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ElettricTrap_0
+      name: Stairs_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 0
         y: 0
-        width: 26
+        width: 32
         height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -115,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9e67a2aa7d3baf0d0800000000000000
-      internalID: -3388198030788626711
+      spriteID: f0a9c034767521bd0800000000000000
+      internalID: -2660968328804394481
       vertices: []
       indices: 
       edges: []
@@ -135,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ElettricTrap_0: -3388198030788626711
+      Stairs_0: -2660968328804394481
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

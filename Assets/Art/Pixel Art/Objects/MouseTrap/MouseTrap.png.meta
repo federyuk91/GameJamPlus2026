@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: d769e3f00cccebc41bef9ffd8875cd33
+guid: 1d087ee503eebe74c932161d2a80dad1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 649223268058989734
-    second: Button_0
-  - first:
-      213: -9000188618666376746
-    second: Button_1
-  - first:
-      213: 8467241744927558709
-    second: Button_2
+      213: 8555344189139360066
+    second: MouseTrap_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,11 +96,37 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Button_0
+      name: MouseTrap_0
       rect:
         serializedVersion: 2
         x: 0
@@ -121,14 +141,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6a403906f11820900800000000000000
-      internalID: 649223268058989734
+      spriteID: 2499adc3630bab670800000000000000
+      internalID: 8555344189139360066
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Button_1
+      name: MouseTrap_1
       rect:
         serializedVersion: 2
         x: 32
@@ -141,16 +161,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6d180e8e228e81380800000000000000
-      internalID: -9000188618666376746
+      spriteID: ead0de375d31a064fa4ce1f8ee44b08b
+      internalID: 1741421958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Button_2
+      name: MouseTrap_2
       rect:
         serializedVersion: 2
         x: 64
@@ -163,10 +183,32 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 53c04c1718fa18570800000000000000
-      internalID: 8467241744927558709
+      spriteID: c8100ab5840bdc84f85e55bc8014a428
+      internalID: -938788153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MouseTrap_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8afff383458a39e41b120200a3965b4b
+      internalID: -1695776445
       vertices: []
       indices: 
       edges: []
@@ -175,7 +217,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7c7bb40de5539384fbf145e78daf46a8
+    spriteID: d32f7931c0fca64488f566c100d7d68b
     internalID: 0
     vertices: []
     indices: 
@@ -185,11 +227,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Button_0: 649223268058989734
-      Button_1: -9000188618666376746
-      Button_2: 8467241744927558709
+      MouseTrap_0: 8555344189139360066
+      MouseTrap_1: 1741421958
+      MouseTrap_2: -938788153
+      MouseTrap_3: -1695776445
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
