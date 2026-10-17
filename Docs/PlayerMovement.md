@@ -1,5 +1,19 @@
 # Player platformer
 
+## Aggancio e risalita dei bordi
+
+`PlayerLedgeClimb` distingue gli stati None, Hanging e Climbing:
+
+- A terra, il sistema dei gradini gestisce gli ostacoli fino a `player.maxStepHeight` (0.15 unità). Un ostacolo più alto, entro `ledgeClimb.maxHeight` (0.75 unità), avvia direttamente la risalita quando il topo cammina verso di esso.
+- In aria, il bordo viene agganciato quando è vicino all'altezza della presa. Il topo resta appeso finché non viene mantenuta o premuta la direzione verso l'ostacolo; non occorre rilasciare la direzione dopo il salto.
+- Da appeso, Salto stacca il topo con uno slancio verso il lato opposto. Giù lo lascia cadere; mantenere Giù impedisce un riaggancio immediato.
+
+La risalita da terra e quella da appeso condividono lo stato Animator `ClimbUp`. `LedgeState` vale 0 nel movimento normale, 1 da appeso e 2 durante la risalita. In attesa delle clip dedicate, `Hanging` mostra un frame fermo di Idle e `ClimbUp` usa Idle come grafica provvisoria. Quando arriva l'animazione di salita, assegnarla al Motion dello stato `ClimbUp` in `Assets/Animations/Mouse/Mouse.controller`; regolare la velocità di risalita per allineare movimento e durata della clip.
+
+In PhysicsSettings, la sezione **Player — aggancio e risalita dei bordi** contiene altezza massima, distanza della sonda, altezza della presa rispetto al collider (0.85) e tolleranza verticale di aggancio (0.15 unità). L'altezza relativa della presa segue eventuali modifiche del BoxCollider2D. Il percorso viene verificato contro soffitti e ingombri, e l'aggancio segue la posizione del collider di supporto quando si muove.
+
+Da verificare in Play Mode: l'oggetto `Climbable` aggiunto alla LoopScene, approccio da entrambi i lati, aggancio con e senza direzione mantenuta, distacco con Salto/Giù e risalita su casse mobili. Le sezioni storiche sotto descrivono le prime versioni del controller; per casse, acqua e corde fare riferimento anche a `Docs/CratesWaterAndRopes.md`.
+
 Scena principale: Assets/Scenes/LoopScene.unity (gia abilitata nel build).
 
 ## Composizione
@@ -125,3 +139,49 @@ Dopo Jump in acqua, PlayerSwimming mantiene per 0.35 s una finestra di controllo
 PhysicsSettings > Water espone strokeAcceleration (Accelerazione dopo Jump) e strokeControlTime (Durata controllo dopo Jump). Lo stato temporale e del singolo player, non dell'asset condiviso. La velocita verticale della bracciata e l'affondamento restano separati dal controllo orizzontale.
 
 Test numerici a 30/50/100 Hz superati, inclusi mantenimento della velocita durante Jump, raggiungimento rapido della velocita massima da fermo, conservazione del controllo in superficie e inversione di direzione. Compilazione C# verificata; prova completa con input/collider in Play Mode ancora necessaria.
+
+
+## Scavo e morso con F / Est
+
+F / pulsante Est del gamepad viene condiviso tra taglio delle corde e scavo.
+Una corda tagliabile raggiungibile dalla bocca ha precedenza e conserva il morso
+prolungato di 0.6 secondi. Una corda di acciaio non viene tagliata.
+In assenza di una corda tagliabile raggiungibile, F tenuto insieme a una direzione
+avvia lo scavo nella terra a portata. Una corda tagliabile raggiungibile ha precedenza anche durante lo scavo e lo
+interrompe. Dopo l'avvio del morso non si passa allo scavo durante la stessa
+pressione; dopo il taglio occorre rilasciare il pulsante.
+
+Durante lo scavo si usano entrambe le componenti del movimento, anche diagonali.
+Lasciare la direzione ferma il topo; rilasciare F ripristina movimento e gravita.
+Non si avvia lo scavo mentre il topo e appeso a corde, scale o bordi.
+Le casse mantengono E / Ovest; scale, climb e salto conservano i propri comandi.
+
+PhysicsSettings > Scavo espone abilitazione, velocita, raggio, anticipo, alpha
+post scavo (0-255) e colore della velatura. Il raggio effettivo deve contenere
+il collider del topo e viene aumentato automaticamente se necessario.
+Alpha 254 mantiene il valore richiesto ma lascia passare solo 1/255 dello sfondo:
+per una migliore leggibilita si puo abbassare l'alpha senza richiudere i tunnel.
+
+DiggableTerrain e collegato a Diggable ground in LoopScene. A runtime una maschera
+separata memorizza le celle rimosse; lo shader URP 2D unlit le mostra con la
+velatura scelta, sopra il player (ordine 10), lasciando la texture originale intatta.
+Il BoxCollider2D trigger originale definisce l'area e viene sostituito durante
+il gioco da collider solidi accorpati per rettangoli. Le collisioni del player e
+delle casse includono ora anche il layer Diggable.
+La risoluzione e configurata sul terreno: 16 celle/unita (2 pixel artistici),
+con massimo 512 celle per asse. Solo le celle modificate richiedono un aggiornamento
+della maschera e dei collider. I tunnel durano per la sessione e si ripristinano
+ricaricando la scena; non e previsto un salvataggio su disco.
+Per aggiungere altre aree assegnare riferimenti e materiale sul componente del
+terreno e aggiungerle all'elenco Terrains di PlayerDigging.
+
+La diagnostica PlayerRopeBite mostra Last Attempt, Bite Progress e Blocking Collider.
+Selezionando il player in Scene view, i Gizmos gialli mostrano posizione, raggio
+e direzione della bocca usati per cercare le corde.
+
+Da appeso, il morso seleziona prima la corda impugnata, anche se si trova dietro
+la bocca o fuori dal normale raggio frontale. Il segmento da tagliare e quello
+alla presa, sul lato dell'ancoraggio. Restano validi il flag CanBeCut, la verifica
+degli ostacoli tra bocca e presa e la pressione prolungata. Dopo il taglio il
+normale controllo della corda rilascia il topo se la presa non e piu collegata.
+Le corde non impugnate conservano raggio e ricerca davanti alla bocca.

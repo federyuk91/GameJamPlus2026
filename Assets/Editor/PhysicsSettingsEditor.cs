@@ -40,10 +40,12 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("player.slideOnSteepSlopes", "Abilita scivolata");
         Field("player.slopeSlideAcceleration", "Accelerazione scivolata (unità/s²)", "Applicata lungo la superficie in proporzione alla pendenza.");
         Field("player.slopeSlideMaxSpeed", "Velocità massima scivolata (unità/s)");
-        Section("Player — risalita automatica dei bordi");
+        Section("Player — aggancio e risalita dei bordi");
         Field("ledgeClimb.enabled", "Abilitata");
-        Field("ledgeClimb.maxHeight", "Altezza massima (unità)", "Dislivello massimo fra i piedi e la superficie del bordo.");
+        Field("ledgeClimb.maxHeight", "Altezza massima risalita (unità)", "Dislivello massimo fra i piedi e il bordo. A terra gli ostacoli sopra l'altezza dei gradini standard vengono risaliti con la direzione.");
         Field("ledgeClimb.forwardReach", "Distanza sonda oltre il bordo (unità)");
+        Field("ledgeClimb.hangHeightFraction", "Altezza presa rispetto al collider", "Frazione dell'altezza del collider misurata dai piedi: 0.85 posiziona la presa vicino alla parte superiore del corpo.");
+        Field("ledgeClimb.grabVerticalReach", "Tolleranza verticale aggancio (unità)", "Distanza massima fra il bordo e l'altezza della presa durante un salto.");
         Field("ledgeClimb.climbSpeed", "Velocità risalita (unità/s)");
         Field("ledgeClimb.retryDelay", "Pausa tra tentativi (s)");
 
@@ -84,6 +86,13 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("ladder.jumpUpSpeed", "Salto verticale (unità/s)");
         Field("ladder.grabReach", "Portata aggancio (unità)");
         Field("ladder.regrabDelay", "Ritardo riaggancio (s)");
+        Section("Scavo - F / Est condiviso con morso");
+        Field("digging.enabled", "Abilitato");
+        Field("digging.speed", "Velocita scavo (unita/s)");
+        Field("digging.radius", "Raggio tunnel (unita)", "Il raggio effettivo non scende sotto quello necessario a contenere il collider del topo.");
+        Field("digging.reach", "Anticipo scavo (unita)");
+        Field("digging.excavatedAlpha", "Alpha post scavo (0-255)", "0 = trasparente; 254 = quasi opaco. Non modifica le collisioni: il tunnel resta aperto.");
+        Field("digging.excavatedTint", "Colore velatura tunnel", "La componente alpha del colore non viene usata; regola Alpha post scavo.");
         serializedObject.ApplyModifiedProperties();
     }
 
