@@ -170,6 +170,16 @@ namespace MousePlatformer
             return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), Mathf.Max(0f, distance - skin));
         }
 
+        public Vector2 AllowedDisplacement(Vector2 displacement, Collider2D ignored = null)
+        {
+            float requested = displacement.magnitude;
+            if (requested <= 0.00001f) return Vector2.zero;
+            Vector2 direction = displacement / requested;
+            Collider2D obstacle = Probe(direction, requested + skin, out float distance, ignored);
+            float allowed = obstacle != null ? Mathf.Min(requested, Mathf.Max(0f, distance - skin)) : requested;
+            return direction * allowed;
+        }
+
         public float MoveHorizontal(float amount, Collider2D ignored = null)
         {
             float allowed = AllowedHorizontal(amount, ignored);

@@ -49,6 +49,7 @@ public sealed class PhysicsSettingsEditor : Editor
 
         Section("Acqua — movimento orizzontale");
         Field("water.speed", "Velocità orizzontale (unità/s)", "Velocità massima a destra e sinistra nell'acqua.");
+        Field("water.bottomWalkSpeedMultiplier", "Moltiplicatore velocità sul fondo", "Rispetto alla velocità normale del Player: 0.5 = metà velocità. Usato quando è immerso e appoggiato su una superficie percorribile.");
         Field("water.acceleration", "Accelerazione (unità/s²)", "Quanto rapidamente raggiunge la velocità richiesta.");
         Field("water.strokeAcceleration", "Accelerazione dopo Jump (unità/s²)", "Risposta laterale dopo la bracciata, anche appena fuori dall'acqua.");
         Field("water.strokeControlTime", "Durata controllo dopo Jump (s)");

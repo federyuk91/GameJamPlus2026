@@ -9,10 +9,43 @@ namespace MousePlatformer
         private readonly Vector2[] previous;
         private readonly Vector2[] stepStart;
         private readonly Vector2[] velocities;
+        private readonly bool[] intact;
         public int SegmentCount => points.Length - 1;
         public float SegmentLength { get; }
         public float Length => SegmentCount * SegmentLength;
         public Vector2 this[int index] => points[index];
+        public int ConnectedSegmentCount
+        {
+            get
+            {
+                int count = 0;
+                while (count < intact.Length && intact[count]) count++;
+                return count;
+            }
+        }
+        public float ConnectedLength => ConnectedSegmentCount * SegmentLength;
+        public bool IsSegmentIntact(int index) => index >= 0 && index < intact.Length && intact[index];
+
+        public bool CutSegment(int index)
+        {
+            if (!IsSegmentIntact(index)) return false;
+            intact[index] = false;
+            return true;
+        }
+
+        public void InitializeEndpoint(Vector2 anchor, Vector2 endpoint)
+        {
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = previous[i] = Vector2.Lerp(anchor, endpoint, (float)i / SegmentCount);
+                velocities[i] = Vector2.zero;
+            }
+        }
+
+        public void ReleaseEndpoint(float fixedDeltaTime)
+        {
+            previous[SegmentCount] = points[SegmentCount] - velocities[SegmentCount] * (fixedDeltaTime / 4f);
+        }
 
         public RopeChain(Vector2 anchor, int segments, float segmentLength)
         {
@@ -22,19 +55,22 @@ namespace MousePlatformer
             previous = new Vector2[segments + 1];
             stepStart = new Vector2[segments + 1];
             velocities = new Vector2[segments + 1];
+            intact = new bool[segments];
+            for (int i = 0; i < segments; i++) intact[i] = true;
             for (int i = 0; i < points.Length; i++)
                 points[i] = previous[i] = anchor + Vector2.down * (i * SegmentLength);
         }
 
         public void Step(Vector2 anchor, float dt, float gravity, float damping,
             float gripDistance, float driveAcceleration, int iterations = 24, int substeps = 4,
-            RopeSwingConstraint swingLimits = null)
+            RopeSwingConstraint swingLimits = null, Vector2? endpoint = null)
         {
             if (dt <= 0f) return;
+            if (endpoint.HasValue || ConnectedSegmentCount != SegmentCount) swingLimits = null;
             swingLimits?.Sanitize();
             for (int i = 0; i < points.Length; i++) stepStart[i] = points[i];
             int driven = Mathf.Clamp(Mathf.RoundToInt(gripDistance / SegmentLength), 1, SegmentCount);
-            float h = dt / substeps;
+            float h = dt / Mathf.Max(1, substeps);
             for (int step = 0; step < substeps; step++)
             {
                 float startAngle = RopeSwingConstraint.Angle(points[SegmentCount] - anchor);
@@ -50,24 +86,26 @@ namespace MousePlatformer
                 for (int pass = 0; pass < iterations; pass++)
                 {
                     points[0] = anchor;
+                    if (endpoint.HasValue) points[SegmentCount] = endpoint.Value;
                     for (int i = 0; i < SegmentCount; i++)
                     {
+                        if (!intact[i]) continue;
                         Vector2 delta = points[i + 1] - points[i];
                         float length = delta.magnitude;
                         if (length < 0.00001f) continue;
                         Vector2 correction = delta * ((length - SegmentLength) / length);
-                        if (i == 0) points[i + 1] -= correction;
-                        else
+                        float a = i == 0 ? 0f : i == driven && gripDistance >= 0f ? 0.25f : 1f;
+                        float b = endpoint.HasValue && i + 1 == SegmentCount ? 0f
+                            : i + 1 == driven && gripDistance >= 0f ? 0.25f : 1f;
+                        if (a + b > 0f)
                         {
-                            // The rider adds mass near the grip, without a separate solver body.
-                            float a = i == driven && gripDistance >= 0f ? 0.25f : 1f;
-                            float b = i + 1 == driven && gripDistance >= 0f ? 0.25f : 1f;
                             points[i] += correction * (a / (a + b));
                             points[i + 1] -= correction * (b / (a + b));
                         }
                     }
                 }
                 points[0] = previous[0] = anchor;
+                if (endpoint.HasValue) points[SegmentCount] = previous[SegmentCount] = endpoint.Value;
                 // Stop for the rest of this tick so zero velocity is observable before reversal.
                 float returnAcceleration = gravity / Length * Mathf.Rad2Deg * Mathf.Abs(Mathf.Sin(startAngle * Mathf.Deg2Rad));
                 if (swingLimits != null && swingLimits.Apply(points, previous, anchor, startAngle, h, returnAcceleration)) break;
@@ -91,12 +129,14 @@ namespace MousePlatformer
             return (points[index + 1] - points[index]).normalized;
         }
 
-        public float ClosestDistance(Vector2 position, out float separation)
+        public float ClosestDistance(Vector2 position, out float separation, bool anchoredOnly = false)
         {
             float nearest = float.PositiveInfinity;
             float along = 0f;
-            for (int i = 0; i < SegmentCount; i++)
+            int limit = anchoredOnly ? ConnectedSegmentCount : SegmentCount;
+            for (int i = 0; i < limit; i++)
             {
+                if (!intact[i]) continue;
                 Vector2 delta = points[i + 1] - points[i];
                 float t = Mathf.Clamp01(Vector2.Dot(position - points[i], delta) / Mathf.Max(delta.sqrMagnitude, 0.000001f));
                 float squared = (position - (points[i] + delta * t)).sqrMagnitude;
