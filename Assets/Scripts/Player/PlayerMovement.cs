@@ -119,8 +119,9 @@ namespace MousePlatformer
                     body.Grounded && velocity.y <= 0f);
                 velocity.x = displacement.x / dt;
             }
-            body.Move(displacement, crateInteraction != null && crateInteraction.HeldCrate != null
-                ? crateInteraction.HeldCrate.Body.Shape : null);
+            Collider2D heldShape = crateInteraction != null && crateInteraction.HeldCrate != null
+                ? crateInteraction.HeldCrate.Body.Shape : null;
+            body.Move(displacement, heldShape, heldShape == null ? Movement.maxStepHeight : 0f);
             if (TryStartLedgeClimb()) return;
             if (body.HitWall) velocity.x = 0f;
             if (body.HitCeiling || (body.Grounded && velocity.y < 0f)) velocity.y = 0f;

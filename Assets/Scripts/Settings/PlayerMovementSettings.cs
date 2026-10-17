@@ -9,6 +9,12 @@ namespace MousePlatformer
         [Min(0f)] public float speed = 5f;
         [Min(0f)] public float groundAcceleration = 45f;
         [Min(0f)] public float airAcceleration = 28f;
+        [Tooltip("Maximum step height in world units while grounded. Zero disables stepping.")]
+        [Min(0f)] public float maxStepHeight = 0.15f;
+        [Range(0f, 89f)] public float maxSlopeAngle = 45f;
+        public bool slideOnSteepSlopes = true;
+        [Min(0f)] public float slopeSlideAcceleration = 20f;
+        [Min(0f)] public float slopeSlideMaxSpeed = 8f;
         [Min(0f)] public float coyoteTime = 0.1f;
         [Min(0f)] public float jumpBuffer = 0.12f;
         [Min(0f)] public float launchControlTime = 0.25f;

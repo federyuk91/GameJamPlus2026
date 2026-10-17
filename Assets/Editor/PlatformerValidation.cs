@@ -26,7 +26,7 @@ public static class PlatformerValidation
             Require(pixel != null && pixel.assetsPPU == 32 && pixel.refResolutionX == 640
                 && pixel.refResolutionY == 320, "Pixel camera settings");
             var sprite = player.GetComponent<SpriteRenderer>().sprite;
-            Require(sprite.rect.size == new Vector2(32, 32) && sprite.pixelsPerUnit == 32, "Sprite scale");
+            Require(sprite.rect.size == new Vector2(40, 40) && sprite.pixelsPerUnit == 32, "Sprite scale");
             foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
                 Require(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go) == 0, "Missing script: " + go.name);
             var body = player.GetComponent<SimulatedBody2D>();
@@ -80,7 +80,10 @@ public static class PlatformerValidation
         actorBody.Move(Vector2.down * 0.01f);
         float initialX = box.transform.position.x;
         StepCrate(actorBody, interaction, 0.04f, false);
-        Require(box.transform.position.x > initialX, "Crate must push without grab");
+        Require(Mathf.Abs(box.transform.position.x - initialX) < 0.0001f && interaction.HeldCrate == null,
+            "Crate must not push without grab");
+        StepCrate(actorBody, interaction, 0.04f, true);
+        Require(box.transform.position.x > initialX && interaction.HeldCrate == crate, "Crate must push with grab");
         float pushedX = box.transform.position.x;
         // A pull can temporarily cross the player's old position; the pair must move together.
         StepCrate(actorBody, interaction, -0.04f, true);
@@ -93,7 +96,7 @@ public static class PlatformerValidation
         var wall = new GameObject("Crate wall");
         wall.transform.position = new Vector3(3, 0, 0);
         wall.AddComponent<BoxCollider2D>().size = new Vector2(1, 5);
-        for (int i = 0; i < 100; i++) StepCrate(actorBody, interaction, 0.04f, false);
+        for (int i = 0; i < 100; i++) StepCrate(actorBody, interaction, 0.04f, true);
         Require(box.transform.position.x <= 1.996f && box.transform.position.x > 1.98f,
             "Pushed crate must stop at wall");
         Require(box.transform.position.x - actor.transform.position.x >= 1f, "Blocked push must not overlap");

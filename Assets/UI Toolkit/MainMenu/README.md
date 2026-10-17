@@ -1,4 +1,6 @@
-# Main menu
+# Please Press Continue — Main menu
+
+Il menu introduce un laboratorio di puzzle tranquillo: titolo su tre righe, sala di benvenuto, indicatore di ambiente pronto e piccoli pulsanti decorativi. I testi non anticipano la rivelazione finale. Il contrasto macabro è riservato alla futura schermata conclusiva dopo le dieci ripetizioni.
 
 Aprire `Assets/Scenes/MainMenu.unity` e avviare Play.
 
@@ -7,14 +9,14 @@ Aprire `Assets/Scenes/MainMenu.unity` e avviare Play.
 - Tastiera: frecce, Tab, Invio e Esc. Mouse supportato dal modulo Input System esistente.
 - Opzioni: volume globale e schermo intero; salvataggio in PlayerPrefs. Sullo slider, sinistra/destra regolano il valore e su/giù cambiano controllo.
 - Crediti: modificare `Credits Text` sul MainMenuController nell'Inspector.
-- Nuovo Gioco: `Gameplay Scene Name` nell'Inspector, inizialmente SampleScene. La scena deve essere inclusa nel Build Profile attivo.
+- Nuovo Gioco: `Gameplay Scene Name` nell'Inspector, inizialmente LoopScene. La scena deve essere inclusa nel Build Profile attivo.
 - Esci: conferma prima di chiudere; in Editor interrompe Play.
 
-MainMenu è la prima scena negli Editor Build Settings, seguita da SampleScene. Eventuali Build Profiles con lista scene personalizzata devono includere entrambe.
+MainMenu è la prima scena negli Editor Build Settings, seguita da LoopScene. Eventuali Build Profiles con lista scene personalizzata devono includere entrambe.
 
 ## Grafica provvisoria
 
-I colori del menu sono campionati da `Assets/Art/MainPalette.png` e centralizzati nelle variabili `--menu-*` di `MainMenu.uss`: sfondo quasi nero, pannelli blu, testo crema, bordi grigi, hover marrone, pressione rosso mattone, accenti rame e focus verde. Anche slider e toggle usano la palette.
+I colori del menu sono campionati da `Assets/Art/MainPalette.png` e centralizzati nelle variabili `--menu-*` di `MainMenu.uss`: sfondo e dialoghi crema, testo quasi nero, titolo rosso mattone, pulsanti marroni, hover blu, bordi grigi, accenti rame e focus verde. `--menu-on-control` definisce i testi chiari sui controlli scuri e `--menu-title` il titolo. Anche slider e toggle usano la palette.
 
 Tutti i PNG derivano dall'immagine fornita, ridimensionata mantenendo le proporzioni con padding:
 

@@ -29,10 +29,16 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("player.speed", "Velocità orizzontale (unità/s)");
         Field("player.groundAcceleration", "Accelerazione e frenata a terra (unità/s²)");
         Field("player.airAcceleration", "Accelerazione in aria (unità/s²)");
+        Field("player.maxStepHeight", "Altezza massima gradini (unità)", "Supera automaticamente piccoli dislivelli a terra. 0 disabilita; 0.15 unità corrispondono a 4.8 pixel.");
         Field("player.coyoteTime", "Coyote time (s)");
         Field("player.jumpBuffer", "Buffer del salto (s)");
         Field("player.launchControlTime", "Controllo ridotto dopo il distacco (s)");
         Field("player.launchControlMultiplier", "Moltiplicatore controllo dopo il distacco");
+        Section("Player — pendenze e scivolata");
+        Field("player.maxSlopeAngle", "Angolo massimo percorribile (°)", "Misurato rispetto al terreno orizzontale. Le superfici più ripide non consentono salita né salto da terra.");
+        Field("player.slideOnSteepSlopes", "Scivola oltre l'angolo massimo");
+        Field("player.slopeSlideAcceleration", "Accelerazione scivolata (unità/s²)", "Applicata lungo la superficie in proporzione alla pendenza.");
+        Field("player.slopeSlideMaxSpeed", "Velocità massima scivolata (unità/s)");
         Section("Player — risalita automatica dei bordi");
         Field("ledgeClimb.enabled", "Abilitata");
         Field("ledgeClimb.maxHeight", "Altezza massima (unità)", "Dislivello massimo fra i piedi e la superficie del bordo.");

@@ -325,8 +325,8 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.MainMenuController
   document: {fileID: 528639516}
-  gameplaySceneName: SampleScene
-  creditsText: "IL TUO GIOCO\n\nSviluppo - Il tuo team\nGrafica - Il tuo team\nMusica e suoni - Il tuo team\n\nGrazie per aver giocato!"
+  gameplaySceneName: LoopScene
+  creditsText: "PLEASE PRESS CONTINUE\n\nSviluppo - Il tuo team\nGrafica - Il tuo team\nMusica e suoni - Il tuo team\n\nGrazie per la visita."
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

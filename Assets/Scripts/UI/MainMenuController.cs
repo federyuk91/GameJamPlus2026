@@ -13,9 +13,9 @@ namespace GameJamPlus.UI
         private const string FullscreenKey = "Settings.Fullscreen";
 
         [SerializeField] private UIDocument document;
-        [SerializeField] private string gameplaySceneName = "SampleScene";
+        [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField, TextArea] private string creditsText =
-            "IL TUO GIOCO\n\nSviluppo • Il tuo team\nGrafica • Il tuo team\nMusica e suoni • Il tuo team\n\nGrazie per aver giocato!";
+            "PLEASE PRESS CONTINUE\n\nSviluppo • Il tuo team\nGrafica • Il tuo team\nMusica e suoni • Il tuo team\n\nGrazie per la visita.";
 
         private VisualElement root;
         private VisualElement mainPanel;

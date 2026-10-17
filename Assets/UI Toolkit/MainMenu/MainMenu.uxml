@@ -5,9 +5,12 @@
         <ui:VisualElement picking-mode="Ignore" class="shade"/>
         <ui:VisualElement class="content">
             <ui:VisualElement class="menu-column">
-                <ui:VisualElement picking-mode="Ignore" class="logo"/>
-                <ui:Label text="IL TUO GIOCO" class="title"/>
-                <ui:Label text="Ogni avventura inizia da qui." class="subtitle"/>
+                <ui:VisualElement class="brand-row">
+                    <ui:VisualElement picking-mode="Ignore" class="logo"/>
+                    <ui:Label text="LABORATORIO&#10;AREA PUZZLE" class="brand-label"/>
+                </ui:VisualElement>
+                <ui:Label text="PLEASE&#10;PRESS&#10;CONTINUE" class="title"/>
+                <ui:Label text="Un piccolo topo. Una stanza alla volta.&#10;Prenditi il tuo tempo e trova il prossimo pulsante." class="subtitle"/>
                 <ui:VisualElement name="main-panel" class="main-panel">
                     <ui:Button name="new-game" tabindex="1" class="menu-button">
                         <ui:VisualElement picking-mode="Ignore" class="icon new-game-icon"/>
@@ -29,9 +32,20 @@
                 <ui:Label name="status" class="status"/>
             </ui:VisualElement>
             <ui:VisualElement picking-mode="Ignore" class="art-column">
-                <ui:Label text="GAME JAM PLUS / 2026" class="eyebrow"/>
-                <ui:VisualElement class="key-art"/>
-                <ui:Label text="LA TUA PROSSIMA AVVENTURA" class="art-caption"/>
+                <ui:VisualElement class="room-card">
+                    <ui:VisualElement class="room-header">
+                        <ui:Label text="SALA DI BENVENUTO" class="eyebrow"/>
+                        <ui:VisualElement class="ready-light"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="key-art"/>
+                    <ui:VisualElement class="room-controls">
+                        <ui:VisualElement class="room-button"/>
+                        <ui:VisualElement class="room-button room-button-secondary"/>
+                        <ui:VisualElement class="room-button room-button-tertiary"/>
+                    </ui:VisualElement>
+                    <ui:Label text="AMBIENTE PRONTO" class="art-caption"/>
+                </ui:VisualElement>
+                <ui:Label text="Osserva. Esplora. Premi un pulsante.&#10;Al resto pensiamo noi." class="welcome-note"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="footer">
@@ -48,11 +62,11 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="credits-panel" class="hidden">
                     <ui:Label text="Crediti" class="dialog-title"/>
-                    <ui:Label text="IL TUO GIOCO\n\nSviluppo • Il tuo team\nGrafica • Il tuo team\nMusica e suoni • Il tuo team\n\nGrazie per aver giocato!" class="credits-text"/>
+                    <ui:Label text="PLEASE PRESS CONTINUE&#10;&#10;Sviluppo • Il tuo team&#10;Grafica • Il tuo team&#10;Musica e suoni • Il tuo team&#10;&#10;Grazie per la visita." class="credits-text"/>
                     <ui:Button name="credits-back" text="Indietro" class="dialog-button"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="quit-panel" class="hidden">
-                    <ui:Label text="Vuoi uscire dal gioco?" class="dialog-title"/>
+                    <ui:Label text="Vuoi lasciare il laboratorio?" class="dialog-title"/>
                     <ui:Button name="quit-back" text="Annulla" class="dialog-button"/>
                     <ui:Button name="quit-confirm" text="Esci" class="dialog-button"/>
                 </ui:VisualElement>

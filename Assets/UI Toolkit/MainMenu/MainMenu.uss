@@ -1,12 +1,14 @@
 .menu-root {
-    --menu-background: rgb(103, 65, 58);
-    --menu-surface: rgb(217, 203, 174);
-    --menu-text: rgb(175, 75, 59);
+    --menu-background: rgb(217, 203, 174);
+    --menu-surface: rgb(103, 65, 58);
+    --menu-text: rgb(26, 20, 23);
     --menu-border: rgb(124, 131, 129);
-    --menu-hover: rgb(103, 65, 58);
-    --menu-active: rgb(175, 75, 59);
+    --menu-hover: rgb(56, 77, 100);
+    --menu-active: rgb(103, 65, 58);
     --menu-accent: rgb(193, 133, 73);
     --menu-focus: rgb(141, 179, 94);
+    --menu-on-control: rgb(217, 203, 174);
+    --menu-title: rgb(175, 75, 59);
 }
 
 .menu-root {
@@ -23,7 +25,7 @@
     bottom: 0;
     background-image: url("project://database/Assets/Art/UI/MainMenu/Backgrounds/MainMenu_Background_Placeholder.png?fileID=-6404978321015124043&guid=effbd826f27ef254f868ae48a2edbfde&type=3#MainMenu_Background_Placeholder_0");
     -unity-background-scale-mode: scale-and-crop;
-    opacity: 0.08;
+    opacity: 0.04;
 }
 
 .shade {
@@ -32,7 +34,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(26, 20, 23, 0.7);
+    background-color: rgba(217, 203, 174, 0.8);
 }
 
 .content {
@@ -40,7 +42,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    padding: 36px 64px;
+    padding: 24px 56px;
 }
 
 .menu-column {
@@ -49,40 +51,46 @@
 }
 
 .logo {
-    width: 160px;
-    height: 80px;
+    width: 72px;
+    height: 36px;
     background-image: url("project://database/Assets/Art/UI/MainMenu/Branding/MainMenu_Logo_Placeholder.png?fileID=-3491621129951328106&guid=0d340ae1dd0d0ae49a48c1295c9c0c0b&type=3#MainMenu_Logo_Placeholder_0");
     -unity-background-scale-mode: scale-to-fit;
-    margin-bottom: 18px;
+    margin-right: 14px;
     opacity: 0.8;
 }
 
 .title {
-    font-size: 42px;
+    font-size: 46px;
     -unity-font-style: bold;
     letter-spacing: 3px;
     margin: 0;
+    color: var(--menu-title);
+    white-space: normal;
+    flex-shrink: 0;
 }
 
 .subtitle {
     color: var(--menu-text);
-    font-size: 18px;
-    margin: 10px 0 28px 0;
+    font-size: 16px;
+    margin: 14px 0 22px 0;
+    white-space: normal;
+    flex-shrink: 0;
 }
 
 .menu-button {
-    height: 60px;
+    height: 56px;
+    flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
     padding: 0 20px;
     background-color: var(--menu-surface);
-    color: var(--menu-text);
+    color: var(--menu-on-control);
     font-size: 22px;
     border-width: 2px;
     border-color: var(--menu-border);
-    border-radius: 8px;
+    border-radius: 14px;
 }
 
 .menu-button:hover,
@@ -95,7 +103,7 @@
 .dialog-button:focus {
     background-color: var(--menu-hover);
     border-color: var(--menu-focus);
-    color: var(--menu-text);
+    color: var(--menu-on-control);
 }
 
 .menu-button:active,
@@ -135,23 +143,24 @@
 .eyebrow {
     font-size: 14px;
     letter-spacing: 3px;
-    color: var(--menu-accent);
-    margin-bottom: 18px;
+    color: var(--menu-on-control);
+    white-space: normal;
 }
 
 .key-art {
     width: 100%;
-    height: 430px;
+    height: 300px;
+    margin-top: 16px;
     background-image: url("project://database/Assets/Art/UI/MainMenu/Illustrations/MainMenu_KeyArt_Placeholder.png?fileID=6373859727603137813&guid=005a49c56399d7d4d8bf24110a752fa3&type=3#MainMenu_KeyArt_Placeholder_0");
     -unity-background-scale-mode: scale-to-fit;
-    opacity: 0.65;
+    opacity: 0.8;
 }
 
 .art-caption {
-    margin-top: 20px;
+    margin-top: 16px;
     font-size: 13px;
     letter-spacing: 2px;
-    color: var(--menu-text);
+    color: var(--menu-on-control);
 }
 
 .footer {
@@ -159,12 +168,12 @@
     justify-content: space-between;
     padding: 18px 40px;
     background-color: rgba(26, 20, 23, 0.85);
-    color: var(--menu-text);
+    color: var(--menu-on-control);
     font-size: 13px;
 }
 
 .status {
-    color: var(--menu-focus);
+    color: var(--menu-hover);
     font-size: 14px;
     white-space: normal;
     min-height: 22px;
@@ -176,7 +185,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(26, 20, 23, 0.94);
+    background-color: rgba(103, 65, 58, 0.6);
     align-items: center;
     justify-content: center;
 }
@@ -185,7 +194,7 @@
     width: 560px;
     max-width: 90%;
     padding: 36px;
-    background-color: var(--menu-surface);
+    background-color: var(--menu-background);
     border-width: 2px;
     border-color: var(--menu-accent);
     border-radius: 14px;
@@ -201,8 +210,8 @@
 .dialog-button {
     height: 52px;
     margin-top: 16px;
-    background-color: var(--menu-background);
-    color: var(--menu-text);
+    background-color: var(--menu-surface);
+    color: var(--menu-on-control);
     font-size: 20px;
     border-width: 2px;
     border-color: var(--menu-border);
@@ -235,7 +244,7 @@
 }
 
 #volume .unity-base-slider__tracker {
-    background-color: var(--menu-background);
+    background-color: var(--menu-border);
 }
 
 #volume .unity-base-slider__dragger {
@@ -244,10 +253,77 @@
 }
 
 #fullscreen .unity-toggle__input {
-    background-color: var(--menu-background);
+    background-color: var(--menu-surface);
     border-color: var(--menu-border);
 }
 
 #fullscreen .unity-toggle__checkmark {
     -unity-background-image-tint-color: var(--menu-focus);
+}
+
+.brand-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+}
+
+.brand-label {
+    color: var(--menu-hover);
+    font-size: 12px;
+    letter-spacing: 2px;
+    white-space: normal;
+}
+
+.room-card {
+    width: 100%;
+    padding: 22px;
+    background-color: var(--menu-hover);
+    border-width: 2px;
+    border-color: var(--menu-border);
+    border-radius: 24px;
+    align-items: center;
+}
+
+.room-header {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ready-light {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    margin-left: 12px;
+    background-color: var(--menu-focus);
+    border-radius: 6px;
+}
+
+.room-controls {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.room-button {
+    width: 28px;
+    height: 28px;
+    margin: 0 10px;
+    background-color: var(--menu-focus);
+    border-width: 3px;
+    border-color: var(--menu-background);
+    border-radius: 14px;
+}
+
+.room-button-secondary { background-color: var(--menu-accent); }
+.room-button-tertiary { background-color: var(--menu-title); }
+
+.welcome-note {
+    margin-top: 22px;
+    color: var(--menu-hover);
+    font-size: 16px;
+    white-space: normal;
+    -unity-text-align: middle-center;
 }

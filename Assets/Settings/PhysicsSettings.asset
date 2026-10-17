@@ -16,6 +16,11 @@ MonoBehaviour:
     speed: 5
     groundAcceleration: 45
     airAcceleration: 28
+    maxStepHeight: 0.15
+    maxSlopeAngle: 45
+    slideOnSteepSlopes: 1
+    slopeSlideAcceleration: 20
+    slopeSlideMaxSpeed: 8
     coyoteTime: 0.1
     jumpBuffer: 0.12
     launchControlTime: 0.25
