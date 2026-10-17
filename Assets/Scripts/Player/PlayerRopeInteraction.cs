@@ -15,6 +15,21 @@ namespace MousePlatformer
         private float cooldown;
         public bool Attached => rope != null;
 
+        public bool TryGetGrip(out RopeSimulation heldRope, out int segment, out Vector2 point)
+        {
+            heldRope = null;
+            segment = -1;
+            point = Vector2.zero;
+            if (rope == null || !rope.isActiveAndEnabled || rope.Chain == null
+                || rope.Chain.ConnectedSegmentCount == 0 || distance > rope.ClimbableLength) return false;
+            heldRope = rope;
+            // At a node, select the segment on the anchor side of the grip.
+            segment = Mathf.Clamp(Mathf.CeilToInt(distance / rope.Chain.SegmentLength) - 1,
+                0, rope.Chain.ConnectedSegmentCount - 1);
+            point = rope.Chain.Point(distance);
+            return true;
+        }
+
         private void Awake()
         {
             if (body == null) body = GetComponent<SimulatedBody2D>();

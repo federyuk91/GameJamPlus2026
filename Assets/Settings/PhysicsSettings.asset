@@ -69,3 +69,11 @@ MonoBehaviour:
     grabVerticalReach: 0.15
     climbSpeed: 5
     retryDelay: 0.15
+
+  digging:
+    enabled: 1
+    speed: 1.5
+    radius: 0.45
+    reach: 0.08
+    excavatedAlpha: 254
+    excavatedTint: {r: 0.04, g: 0.025, b: 0.015, a: 1}

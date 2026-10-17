@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1001}
+  - component: {fileID: 1002}
+  m_Layer: 0
+  m_Name: Room Layout Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88fcffe05ad64181b0020a207d56e854, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  startRoom: {fileID: 1002, guid: 6b65c65b06fc4a15bb39c7f107cd3cfa, type: 3}
+  rooms:
+  - {fileID: 1002, guid: 7ea469646ace4caaaab13451a7f04df9, type: 3}
+  - {fileID: 1002, guid: ed1ea1a7b987457aaad7704f6c4724d6, type: 3}
+  terminalRooms:
+  - {fileID: 1002, guid: f7b96250a6d941b7889bcd66180381ad, type: 3}
+  - {fileID: 1002, guid: 89eee42a44fb4c2382f45e2df08946db, type: 3}
+  - {fileID: 1002, guid: 60ddc6bb81264ff4a5f3ad3ba78fcbcf, type: 3}
+  - {fileID: 1002, guid: 1f0f6309fb434220bbe1a5e9b17a6986, type: 3}
+  roomCount: 10
+  seed: 12345
+  searchLimit: 50000
+  generatedRoot: {fileID: 0}
+  lastReport:

@@ -14,6 +14,7 @@ namespace MousePlatformer
         [SerializeField] private PlayerLadderInteraction ladderInteraction;
         [SerializeField] private PlayerLedgeClimb ledgeClimb;
         [SerializeField] private PlayerPlatformRide platformRide;
+        [SerializeField] private PlayerDigging digging;
         private GravitySettings Gravity => physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity;
         private PlayerMovementSettings Movement => physicsSettings != null ? physicsSettings.player : PhysicsSettings.DefaultPlayer;
         private SwimMotion Water => physicsSettings != null ? physicsSettings.water : PhysicsSettings.DefaultWater;
@@ -37,6 +38,7 @@ namespace MousePlatformer
             if (ladderInteraction == null) ladderInteraction = GetComponent<PlayerLadderInteraction>();
             if (ledgeClimb == null) ledgeClimb = GetComponent<PlayerLedgeClimb>();
             if (platformRide == null) platformRide = GetComponent<PlayerPlatformRide>();
+            if (digging == null) digging = GetComponent<PlayerDigging>();
         }
         private void FixedUpdate()
         {
@@ -44,7 +46,8 @@ namespace MousePlatformer
             TickMovement();
             bool canRide = (ropeInteraction == null || !ropeInteraction.Attached)
                 && (ladderInteraction == null || !ladderInteraction.Attached)
-                && (ledgeClimb == null || !ledgeClimb.Active);
+                && (ledgeClimb == null || !ledgeClimb.Active)
+                && (digging == null || !digging.InputClaimed);
             if (platformRide != null) platformRide.UpdateSupport(canRide);
         }
 
@@ -70,7 +73,8 @@ namespace MousePlatformer
             ropeLaunchRemaining = Mathf.Max(0f, ropeLaunchRemaining - dt);
             Vector2 ladderVelocity = Velocity;
             bool ladderReleased = false;
-            bool ladderHandled = ladderInteraction != null && (ropeInteraction == null || !ropeInteraction.Attached)
+            bool ladderHandled = ladderInteraction != null && (digging == null || !digging.InputClaimed)
+                && (ropeInteraction == null || !ropeInteraction.Attached)
                 && ladderInteraction.Tick(input.Horizontal, input.Vertical, jumpPressed, Velocity, dt,
                     out ladderVelocity, out ladderReleased);
             if (ladderHandled)
@@ -85,7 +89,8 @@ namespace MousePlatformer
                 ropeLaunchRemaining = Movement.launchControlTime;
                 jumpPressed = false;
             }
-            if (!ladderHandled && ropeInteraction != null && ropeInteraction.Tick(input.Horizontal, input.Vertical, input.GrabHeld,
+            if (!ladderHandled && (digging == null || !digging.InputClaimed)
+                && ropeInteraction != null && ropeInteraction.Tick(input.Horizontal, input.Vertical, input.GrabHeld,
                 jumpPressed, Velocity, dt, out Vector2 ropeVelocity, out bool released))
             {
                 ResetSurfaceMotion();
@@ -98,6 +103,15 @@ namespace MousePlatformer
                 // Preserve the rope impulse while allowing gentle steering after release.
                 ropeLaunchRemaining = Movement.launchControlTime;
                 jumpPressed = false;
+            }
+            if (digging != null && digging.Tick(dt, out Vector2 digVelocity))
+            {
+                ResetSurfaceMotion();
+                if (swimming != null) swimming.ResetStrokeControl();
+                if (crateInteraction != null) crateInteraction.Release();
+                bufferRemaining = coyoteRemaining = ropeLaunchRemaining = 0f;
+                Velocity = digVelocity;
+                return;
             }
             body.RefreshGround(Movement.maxSlopeAngle, followingGround || Velocity.y <= 0f);
             bool walkingUnderwater = inWater && body.Grounded && !jumpPressed;

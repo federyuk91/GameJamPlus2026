@@ -19,6 +19,10 @@ namespace MousePlatformer
         [Header("Automatic ledge climb")]
         public LedgeClimbSettings ledgeClimb = new LedgeClimbSettings();
 
+        [Header("Digging")]
+        public DiggingSettings digging = new DiggingSettings();
+        public static DiggingSettings DefaultDigging { get; } = new DiggingSettings();
+
         // Components created at runtime can work before an asset is assigned.
         public static GravitySettings DefaultGravity { get; } = new GravitySettings();
         public static SwimMotion DefaultWater { get; } = new SwimMotion();

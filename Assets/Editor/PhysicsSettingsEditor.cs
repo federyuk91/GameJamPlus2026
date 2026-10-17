@@ -86,6 +86,13 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("ladder.jumpUpSpeed", "Salto verticale (unità/s)");
         Field("ladder.grabReach", "Portata aggancio (unità)");
         Field("ladder.regrabDelay", "Ritardo riaggancio (s)");
+        Section("Scavo - F / Est condiviso con morso");
+        Field("digging.enabled", "Abilitato");
+        Field("digging.speed", "Velocita scavo (unita/s)");
+        Field("digging.radius", "Raggio tunnel (unita)", "Il raggio effettivo non scende sotto quello necessario a contenere il collider del topo.");
+        Field("digging.reach", "Anticipo scavo (unita)");
+        Field("digging.excavatedAlpha", "Alpha post scavo (0-255)", "0 = trasparente; 254 = quasi opaco. Non modifica le collisioni: il tunnel resta aperto.");
+        Field("digging.excavatedTint", "Colore velatura tunnel", "La componente alpha del colore non viene usata; regola Alpha post scavo.");
         serializedObject.ApplyModifiedProperties();
     }
 
