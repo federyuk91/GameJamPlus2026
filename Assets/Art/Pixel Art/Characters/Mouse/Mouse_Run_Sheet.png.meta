@@ -136,7 +136,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: mouse-Sheet_0
+      name: Mouse_Run_0
       rect:
         serializedVersion: 2
         x: 0
@@ -158,7 +158,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_1
+      name: Mouse_Run_1
       rect:
         serializedVersion: 2
         x: 40
@@ -180,7 +180,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_2
+      name: Mouse_Run_2
       rect:
         serializedVersion: 2
         x: 80
@@ -202,7 +202,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_3
+      name: Mouse_Run_3
       rect:
         serializedVersion: 2
         x: 120
@@ -224,7 +224,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_4
+      name: Mouse_Run_4
       rect:
         serializedVersion: 2
         x: 160
@@ -246,7 +246,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_5
+      name: Mouse_Run_5
       rect:
         serializedVersion: 2
         x: 200
@@ -268,7 +268,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse-Sheet_6
+      name: Mouse_Run_6
       rect:
         serializedVersion: 2
         x: 240
@@ -303,13 +303,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      mouse-Sheet_0: -1259501248
-      mouse-Sheet_1: -1596331570
-      mouse-Sheet_2: 1352253812
-      mouse-Sheet_3: -1219664762
-      mouse-Sheet_4: -2031638053
-      mouse-Sheet_5: 1836621089
-      mouse-Sheet_6: -1405896542
+      Mouse_Run_0: -1259501248
+      Mouse_Run_1: -1596331570
+      Mouse_Run_2: 1352253812
+      Mouse_Run_3: -1219664762
+      Mouse_Run_4: -2031638053
+      Mouse_Run_5: 1836621089
+      Mouse_Run_6: -1405896542
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

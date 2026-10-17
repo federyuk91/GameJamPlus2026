@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MousePlatformer
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(Animator), typeof(PlayerMovement), typeof(SimulatedBody2D))]
+    [DisallowMultipleComponent, RequireComponent(typeof(PlayerMovement), typeof(SimulatedBody2D))]
     public sealed class PlayerAnimation : MonoBehaviour
     {
         [SerializeField] private Animator animator;

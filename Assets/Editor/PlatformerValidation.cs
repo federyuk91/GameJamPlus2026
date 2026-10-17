@@ -25,7 +25,7 @@ public static class PlatformerValidation
             var pixel = Camera.main.GetComponent<PixelPerfectCamera>();
             Require(pixel != null && pixel.assetsPPU == 32 && pixel.refResolutionX == 640
                 && pixel.refResolutionY == 320, "Pixel camera settings");
-            var sprite = player.GetComponent<SpriteRenderer>().sprite;
+            Sprite sprite = player.GetComponentInChildren<SpriteRenderer>().sprite;
             Require(sprite.rect.size == new Vector2(40, 40) && sprite.pixelsPerUnit == 32, "Sprite scale");
             foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
                 Require(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go) == 0, "Missing script: " + go.name);

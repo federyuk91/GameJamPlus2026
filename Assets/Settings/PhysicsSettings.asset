@@ -18,6 +18,7 @@ MonoBehaviour:
     airAcceleration: 28
     maxStepHeight: 0.15
     maxSlopeAngle: 45
+    slopeSlideAngle: 30
     slideOnSteepSlopes: 1
     slopeSlideAcceleration: 20
     slopeSlideMaxSpeed: 8

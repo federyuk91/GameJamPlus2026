@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MousePlatformer
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer), typeof(PlayerInputReader))]
+    [DisallowMultipleComponent, RequireComponent(typeof(PlayerInputReader))]
     public sealed class MouseFacing : MonoBehaviour
     {
         [SerializeField] private PlayerInputReader input;
@@ -15,7 +15,7 @@ namespace MousePlatformer
         }
         private void LateUpdate()
         {
-            if (Mathf.Abs(input.Horizontal) > 0.01f)
+            if (visual != null && Mathf.Abs(input.Horizontal) > 0.01f)
                 visual.flipX = (input.Horizontal < 0f) == spriteFacesRight;
         }
     }
