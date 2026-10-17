@@ -3,6 +3,7 @@ using MousePlatformer;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [CustomEditor(typeof(RoomDefinition))]
 public sealed class RoomDefinitionEditor : Editor
@@ -13,8 +14,19 @@ public sealed class RoomDefinitionEditor : Editor
     {
         DrawDefaultInspector();
         RoomDefinition room = (RoomDefinition)target;
-        EditorGUILayout.HelpBox("Disegna le Tilemap nel prefab. Sposta le uscite al centro dei punti di aggancio e includi tutta la stanza nell'ingombro.", MessageType.Info);
+        EditorGUILayout.HelpBox("Disegna le Tilemap nel prefab. Le uscite vengono agganciate ai bordi/centri delle celle. Includi tutta la stanza nell'ingombro.", MessageType.Info);
         if (!room.Validate(out string error)) EditorGUILayout.HelpBox(error, MessageType.Error);
+        if (GUILayout.Button("Allinea uscite alla griglia"))
+        {
+            for (int i = 0; i < room.PortCount; i++)
+            {
+                RoomPort port = room.Port(i);
+                if (port == null) continue;
+                Undo.RecordObject(port.transform, "Allinea uscita alla griglia");
+                port.transform.position = room.SnapPortPosition(port.Position, port.Direction);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(port.transform);
+            }
+        }
         EditorGUILayout.LabelField("Aggiungi uscita", EditorStyles.boldLabel);
         using (new EditorGUILayout.HorizontalScope())
         {
@@ -41,6 +53,7 @@ public sealed class RoomDefinitionEditor : Editor
         SerializedObject portData = new SerializedObject(port);
         portData.FindProperty("direction").enumValueIndex = (int)direction;
         portData.ApplyModifiedProperties();
+        socket.transform.position = room.SnapPortPosition(socket.transform.position, direction);
         SerializedObject data = new SerializedObject(room);
         SerializedProperty ports = data.FindProperty("ports");
         ports.arraySize++;
@@ -79,7 +92,7 @@ public sealed class RoomLayoutGeneratorEditor : Editor
     {
         DrawDefaultInspector();
         RoomLayoutGenerator generator = (RoomLayoutGenerator)target;
-        EditorGUILayout.HelpBox("Il totale include partenza e terminali. Ogni uscita deve essere collegata; le stanze mantengono il proprio orientamento.", MessageType.Info);
+        EditorGUILayout.HelpBox("Il totale include partenza e terminali. Le stanze si allineano a una Grid comune; le uscite vengono agganciate a bordi e centri delle celle.", MessageType.Info);
         using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
         {
             if (GUILayout.Button("Genera stanze")) Generate(generator);
@@ -132,6 +145,13 @@ public sealed class RoomLayoutGeneratorEditor : Editor
         GameObject root = new GameObject("Generated Rooms");
         Undo.RegisterCreatedObjectUndo(root, "Crea contenitore stanze");
         root.transform.SetParent(generator.transform, false);
+        Vector2 cellSize = generator.CellSize;
+        Vector3 origin = generator.transform.position;
+        origin.x = Mathf.Round(origin.x / cellSize.x) * cellSize.x;
+        origin.y = Mathf.Round(origin.y / cellSize.y) * cellSize.y;
+        root.transform.position = origin;
+        Grid commonGrid = Undo.AddComponent<Grid>(root);
+        commonGrid.cellSize = new Vector3(cellSize.x, cellSize.y, 1f);
         foreach (RoomPlacement placement in plan)
         {
             GameObject room = (GameObject)PrefabUtility.InstantiatePrefab(placement.Prefab.gameObject, generator.gameObject.scene);
@@ -139,6 +159,21 @@ public sealed class RoomLayoutGeneratorEditor : Editor
             room.transform.SetParent(root.transform, false);
             room.transform.localPosition = placement.Position;
             PrefabUtility.RecordPrefabInstancePropertyModifications(room.transform);
+            RoomDefinition definition = room.GetComponent<RoomDefinition>();
+            for (int i = 0; i < definition.PortCount; i++)
+            {
+                RoomPort port = definition.Port(i);
+                port.transform.position = root.transform.TransformPoint(placement.Position + placement.Prefab.PortOffset(i));
+                PrefabUtility.RecordPrefabInstancePropertyModifications(port.transform);
+            }
+            // Keep authoring grids in the source prefabs; generated instances share this one.
+            foreach (Grid localGrid in room.GetComponentsInChildren<Grid>(true))
+                Undo.DestroyObjectImmediate(localGrid);
+            SerializedObject definitionData = new SerializedObject(definition);
+            definitionData.FindProperty("layoutGrid").objectReferenceValue = commonGrid;
+            definitionData.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.RecordPrefabInstancePropertyModifications(definition);
+            foreach (Tilemap tilemap in room.GetComponentsInChildren<Tilemap>(true)) tilemap.RefreshAllTiles();
         }
         generator.SetResult(root.transform, report);
         EditorUtility.SetDirty(generator);

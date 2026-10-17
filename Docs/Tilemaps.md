@@ -52,3 +52,19 @@ operative la terra scavabile e l'acqua gia presenti nella scena.
 Verifica in Unity: dipingere una superficie nella mappa solida e camminarci,
 provare il climb su un bordo raggiungibile e verificare che una parete oscuri
 la vista del piranha. I tile decorativi devono lasciar passare il topo.
+
+
+## Aggiornare un'immagine senza mescolare i tile
+
+Le coordinate dei ritagli Unity partono dal basso dell'immagine. Aggiungere
+una riga sotto il disegno, mantenendo i pezzi originali in alto, richiede quindi
+lo spostamento verso l'alto dei loro rettangoli nel Sprite Editor. Conservare
+i nomi e soprattutto Sprite ID/internalID: i Tile asset e le stanze li usano
+per ritrovare i pezzi. Evitare una nuova suddivisione che elimini i vecchi sprite.
+Aggiungere nuove celle a destra evita questo specifico spostamento verticale.
+
+Riparazione TilemapTube: i 16 sprite originali ora usano y=32 nell'immagine
+544x64 aggiornata; i sei ritagli della riga inferiore sono TilemapTube_New_0..5.
+I relativi Tile asset si trovano nella cartella TilemapTube e sono presenti
+nella riga aggiuntiva della palette. I due Tile asset creati manualmente durante
+l'aggiornamento sono conservati, con gli stessi GUID.

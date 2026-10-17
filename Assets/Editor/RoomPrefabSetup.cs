@@ -65,6 +65,7 @@ public static class RoomPrefabSetup
             GameObject grid = (GameObject)PrefabUtility.InstantiatePrefab(gridPrefab, preview);
             grid.transform.SetParent(root.transform, false);
             SerializedObject data = new SerializedObject(room);
+            data.FindProperty("layoutGrid").objectReferenceValue = grid.GetComponent<Grid>();
             data.FindProperty("footprint").rectValue = new Rect(-4f, -3f, 8f, 6f);
             SerializedProperty ports = data.FindProperty("ports");
             ports.arraySize = exits.Length;

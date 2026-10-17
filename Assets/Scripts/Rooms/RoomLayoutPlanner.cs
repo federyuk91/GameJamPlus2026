@@ -53,6 +53,7 @@ namespace MousePlatformer
         private int targetCount;
         private int steps;
         private int limit;
+        private Vector2 cellSize;
 
         public bool TryPlan(RoomLayoutGenerator settings, out List<RoomPlacement> result, out string report)
         {
@@ -63,6 +64,12 @@ namespace MousePlatformer
             targetCount = Mathf.Clamp(settings.RoomCount, 1, 100);
             limit = Mathf.Max(1, settings.SearchLimit);
             random = new System.Random(settings.Seed);
+            cellSize = settings.CellSize;
+            if (cellSize.x <= 0f || cellSize.y <= 0f)
+            {
+                report = "Le celle della Grid comune devono avere dimensioni positive.";
+                return false;
+            }
             if (!ValidateRoom(settings.StartRoom, out report)) return false;
             foreach (RoomDefinition room in settings.Rooms ?? Array.Empty<RoomDefinition>())
             {
@@ -79,7 +86,7 @@ namespace MousePlatformer
                 }
                 if (!catalog.Contains(room)) catalog.Add(room);
             }
-            RoomPlacement start = new RoomPlacement(settings.StartRoom, Vector2.zero);
+            RoomPlacement start = new RoomPlacement(settings.StartRoom, -settings.StartRoom.GridOffset);
             plan.Add(start);
             List<OpenPort> ports = PortsFor(start, -1);
             if (!Search(ports))
@@ -93,7 +100,7 @@ namespace MousePlatformer
             return true;
         }
 
-        private static bool ValidateRoom(RoomDefinition room, out string report)
+        private bool ValidateRoom(RoomDefinition room, out string report)
         {
             if (room == null)
             {
@@ -103,6 +110,11 @@ namespace MousePlatformer
             if (!room.Validate(out string error))
             {
                 report = room.name + ": " + error;
+                return false;
+            }
+            if (((Vector2)room.LayoutGrid.cellSize - cellSize).sqrMagnitude > 0.000001f)
+            {
+                report = room.name + ": la dimensione delle celle non coincide con la Grid comune.";
                 return false;
             }
             report = string.Empty;
@@ -129,8 +141,12 @@ namespace MousePlatformer
             foreach (Candidate candidate in candidates)
             {
                 if (++steps > limit) return false;
-                Vector2 offset = candidate.Room.Port(candidate.PortIndex).Position - (Vector2)candidate.Room.transform.position;
-                RoomPlacement placement = new RoomPlacement(candidate.Room, socket.Position - offset);
+                Vector2 offset = candidate.Room.PortOffset(candidate.PortIndex);
+                Vector2 position = socket.Position - offset;
+                Vector2 gridOrigin = position + candidate.Room.GridOffset;
+                gridOrigin.x = Mathf.Round(gridOrigin.x / cellSize.x) * cellSize.x;
+                gridOrigin.y = Mathf.Round(gridOrigin.y / cellSize.y) * cellSize.y;
+                RoomPlacement placement = new RoomPlacement(candidate.Room, gridOrigin - candidate.Room.GridOffset);
                 if (Overlaps(placement.Bounds)) continue;
                 List<OpenPort> next = new List<OpenPort>(ports);
                 next.RemoveAt(portIndex);
@@ -162,7 +178,7 @@ namespace MousePlatformer
             {
                 if (i == connectedPort) continue;
                 RoomPort port = placement.Prefab.Port(i);
-                Vector2 offset = port.Position - (Vector2)placement.Prefab.transform.position;
+                Vector2 offset = placement.Prefab.PortOffset(i);
                 ports.Add(new OpenPort(port.Direction, placement.Position + offset));
             }
             return ports;

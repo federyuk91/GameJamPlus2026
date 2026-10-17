@@ -11,6 +11,7 @@
 4. I pulsanti Up, Down, Left, Right aggiungono uscite figlie e assegnano i
    riferimenti. Spostare i figli Exit esattamente al punto di aggancio del tubo.
    Le frecce verdi indicano il verso e non generano grafica o collider.
+   Il pulsante Allinea uscite alla griglia applica lo snap anche nel prefab.
 5. Salvare il prefab. Le uscite devono essere al massimo una per direzione.
    Per rimuoverne una, eliminare il figlio e il riferimento nell'array Ports.
 
@@ -43,8 +44,8 @@ soluzione lascia intatto il risultato precedente e mostra un rapporto.
 Rigenerare sostituisce solo il contenitore creato da questo generatore.
 Generazione e rimozione supportano Undo. Se il contenitore viene spostato fuori
 dal generatore, viene lasciato intatto e occorre ripristinarlo prima di rigenerare.
-Il generatore richiede rotazione mondo zero e scala mondo 1; la posizione puo
-essere scelta liberamente. Salvare la scena per conservare il layout.
+Il generatore richiede rotazione mondo zero e scala mondo 1. La posizione del
+risultato viene agganciata alle celle della griglia mondiale. Salvare la scena per conservare il layout.
 
 ## Esempi inclusi
 
@@ -59,3 +60,31 @@ Per il primo controllo in Unity: aprire un esempio, verificare uscite e ingombro
 trascinare il generatore in una zona libera e premere Genera stanze. Controllare
 le giunzioni, i collider e il passaggio del topo; cambiare seed e numero di stanze.
 Mantenere player, camera e sistemi globali fuori dai prefab delle stanze.
+
+
+## Griglia comune del layout generato
+
+Generated Rooms contiene una sola Grid, persistente anche in Play Mode.
+Le Grid locali restano nei prefab usati per disegnare, ma vengono rimosse solo
+dalle istanze generate; le loro Tilemap utilizzano la Grid comune.
+Cell Size sul generatore deve coincidere con la dimensione delle celle dei
+prefab (1x1 nel progetto). Sono richieste griglie rettangolari XY, senza Cell Gap,
+rotazione o scala. Le Tilemap devono avere origine su celle intere rispetto
+alla propria Grid; eventuali trasformazioni fuori griglia vengono segnalate.
+
+Ogni punto di uscita viene agganciato al bordo della cella lungo la direzione
+e al centro della cella lungo l'asse trasversale. Up/Down hanno quindi X al
+centro e Y sul bordo; Left/Right hanno X sul bordo e Y al centro. I Gizmos
+mostrano il punto agganciato e una linea gialla quando quello disegnato differisce.
+La generazione applica questi punti alle istanze senza alterare i prefab sorgenti.
+
+Il planner allinea le origini delle Grid, compensando gli spostamenti locali
+fra radice della stanza e Grid. Non basta arrotondare la posizione della radice:
+una Grid spostata nel prefab deve essere compensata per mantenere le celle in fase.
+Il risultato iniziale viene agganciato alla griglia mondiale anche se il
+GameObject generatore si trova a coordinate frazionarie.
+
+Dopo questa modifica premere Genera stanze per sostituire il layout precedente.
+Continuare a modificare i prefab originali in Prefab Mode e rigenerare il risultato.
+Lo snap allinea le celle; resta necessario disegnare tubi con larghezze e profili
+compatibili e impostare ingombri che includano realmente la geometria della stanza.

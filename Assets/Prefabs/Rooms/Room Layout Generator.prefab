@@ -56,5 +56,6 @@ MonoBehaviour:
   roomCount: 10
   seed: 12345
   searchLimit: 50000
+  cellSize: {x: 1, y: 1}
   generatedRoot: {fileID: 0}
   lastReport:
