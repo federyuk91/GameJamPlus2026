@@ -7,19 +7,12 @@ namespace MousePlatformer
     {
         [SerializeField] private Transform target;
         [SerializeField] private PlayerMovement movement;
-        [InspectorName("Offset (units)")]
         [SerializeField] private Vector2 offset = new Vector2(0f, 0.75f);
-        [InspectorName("Dead Zone Half Size (units)")]
         [SerializeField] private Vector2 deadZone = new Vector2(0.75f, 0.5f);
-        [InspectorName("Horizontal Smooth Time (s)")]
         [SerializeField, Min(0.01f)] private float horizontalSmoothTime = 0.12f;
-        [InspectorName("Vertical Smooth Time (s)")]
         [SerializeField, Min(0.01f)] private float verticalSmoothTime = 0.18f;
-        [InspectorName("Falling Smooth Time (s)")]
         [SerializeField, Min(0.01f)] private float fallingSmoothTime = 0.08f;
-        [InspectorName("Look Ahead Distance (units)")]
         [SerializeField, Min(0f)] private float lookAheadDistance = 1.25f;
-        [InspectorName("Falling Look Ahead (units)")]
         [SerializeField, Min(0f)] private float fallingLookAhead = 1f;
         [SerializeField, Min(1)] private int pixelsPerUnit = 32;
 

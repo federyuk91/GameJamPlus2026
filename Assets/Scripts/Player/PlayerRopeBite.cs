@@ -9,11 +9,11 @@ namespace MousePlatformer
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private MouseFacing facing;
         [SerializeField] private Transform visual;
-        [SerializeField] private RopeSimulation[] ropes;
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private Vector2 mouthOffset = new Vector2(0.45f, -0.1f);
-        [SerializeField, Min(0.01f)] private float reach = 0.4f;
+        [SerializeField, Min(0.01f), Tooltip("Distanza massima dalla bocca alla corda. Il gizmo giallo sulle corde mostra questa portata; da appeso viene usato il punto di presa.")]
+        private float reach = 0.4f;
         [SerializeField, Min(0.01f)] private float holdDuration = 0.6f;
         [SerializeField, Tooltip("Diagnostica del comando condiviso durante il gioco.")]
         private string lastAttempt;
@@ -26,6 +26,7 @@ namespace MousePlatformer
         private bool consumedHold;
         private bool biteChosen;
         public float BiteProgress => biteProgress;
+        public float Reach => reach;
         public bool CanStartDiggingWithSharedInput => isActiveAndEnabled && !consumedHold && !biteChosen;
 
         private void Awake()
@@ -96,21 +97,30 @@ namespace MousePlatformer
             float sign = facing == null || facing.FacingRight ? 1f : -1f;
             Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
             Vector2 forward = plane.TransformDirection(Vector2.right * sign);
+            Vector2 facingOrigin = body != null ? body.transform.TransformPoint(body.Shape.offset) : transform.position;
             nearest = null;
             segment = -1;
             float best = reach * reach;
             // A held rope can be brought to the mouth regardless of the facing direction.
+            RopeSimulation heldRope = null;
             if (ropeInteraction != null
-                && ropeInteraction.TryGetGrip(out RopeSimulation heldRope, out int gripSegment, out Vector2 gripPoint)
+                && ropeInteraction.TryGetGrip(out heldRope, out int gripSegment, out Vector2 gripPoint)
                 && heldRope.CanBeCut && HasLineOfSight(mouth, gripPoint - mouth, updateDiagnostics))
             {
-                nearest = heldRope;
-                segment = gripSegment;
+                // Keep the anchor-side segment as a handhold even when biting near the top.
+                int cutSegment = Mathf.Max(1, gripSegment);
+                if (cutSegment < heldRope.Chain.ConnectedSegmentCount)
+                {
+                    nearest = heldRope;
+                    segment = cutSegment;
+                }
             }
             if (nearest == null)
             {
-                foreach (RopeSimulation rope in ropes ?? System.Array.Empty<RopeSimulation>())
+                for (int ropeIndex = 0; ropeIndex < RopeSimulation.ActiveRopes.Count; ropeIndex++)
                 {
+                    RopeSimulation rope = RopeSimulation.ActiveRopes[ropeIndex];
+                    if (rope == heldRope) continue;
                     if (rope == null || !rope.isActiveAndEnabled || !rope.CanBeCut || rope.Chain == null) continue;
                     for (int i = 0; i < rope.Chain.SegmentCount; i++)
                     {
@@ -121,7 +131,9 @@ namespace MousePlatformer
                         Vector2 point = a + delta * t;
                         Vector2 offset = point - mouth;
                         float squared = offset.sqrMagnitude;
-                        if (squared > best || Vector2.Dot(offset, forward) < -0.05f || !HasLineOfSight(mouth, offset, updateDiagnostics)) continue;
+                        // The mouth can pass the rope while the body is still aligned with it.
+                        bool behindPlayer = Vector2.Dot(point - facingOrigin, forward) < -0.05f;
+                        if (squared > best || behindPlayer || !HasLineOfSight(mouth, offset, updateDiagnostics)) continue;
                         best = squared;
                         nearest = rope;
                         segment = i;

@@ -40,7 +40,7 @@
                             </ui:ScrollView>
                             <ui:VisualElement class="scientist-footer" picking-mode="Ignore">
                                 <ui:Label name="scientist-progress" class="scientist-progress" picking-mode="Ignore" />
-                                <ui:Button name="scientist-advance" text="Enter Reveal" class="scientist-advance" focusable="false" />
+                                <ui:Button name="scientist-advance" text="F Reveal" class="scientist-advance" focusable="false" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement name="scientist-portrait-frame" class="scientist-portrait-frame" picking-mode="Ignore">
@@ -56,14 +56,14 @@
                 <ui:Label name="test-elapsed" text="Successo! 0 ore 0 minuti e 0 secondi." class="test-elapsed" />
                 <ui:Label name="test-result-message" text="" enable-rich-text="false" class="test-result-message" />
                 <ui:Label name="test-universe" text="Universo-10" class="test-universe" />
-                <ui:Button name="test-next" text="Enter · Next" class="test-next" focusable="false" />
+                <ui:Button name="test-next" text="F · Next" class="test-next" focusable="false" />
             </ui:VisualElement>
             <ui:VisualElement name="photo-overlay" class="photo-overlay" picking-mode="Position">
                 <ui:VisualElement class="photo-content" picking-mode="Ignore">
                     <ui:Image name="collected-photo" class="collected-photo" picking-mode="Ignore" />
                     <ui:Label name="photo-placeholder" text="Photo unavailable" class="photo-placeholder" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <ui:Button name="photo-close" text="Enter · Next" class="photo-close" focusable="false" />
+                <ui:Button name="photo-close" text="F · Next" class="photo-close" focusable="false" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

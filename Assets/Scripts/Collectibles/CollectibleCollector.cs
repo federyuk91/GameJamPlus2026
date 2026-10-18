@@ -15,6 +15,7 @@ namespace MousePlatformer
 
         public event Action<CollectibleType, int> CountChanged;
         public Collectible InteractionTarget { get; private set; }
+        public void ConsumeInteractionInput() => input?.ConsumeCollectibleInteraction();
 
         public int GetCount(CollectibleType type)
         {

@@ -6,7 +6,6 @@ namespace MousePlatformer
     public sealed class PlayerRopeInteraction : MonoBehaviour
     {
         [SerializeField] private SimulatedBody2D body;
-        [SerializeField] private RopeSimulation[] ropes;
         [SerializeField] private PhysicsSettings physicsSettings;
         [SerializeField] private Vector2 handOffset = new Vector2(0f, 0.2f);
         private PlayerInteractionSettings Settings => physicsSettings != null ? physicsSettings.interactions : PhysicsSettings.DefaultInteractions;
@@ -14,6 +13,8 @@ namespace MousePlatformer
         private float distance;
         private float cooldown;
         public bool Attached => rope != null;
+        public float ClimbSpeed { get; private set; }
+        public float GrabRadius => Settings.ropeGrabRadius;
 
         public bool TryGetGrip(out RopeSimulation heldRope, out int segment, out Vector2 point)
         {
@@ -30,11 +31,32 @@ namespace MousePlatformer
             return true;
         }
 
+        internal void RetainGripAfterCut(RopeSimulation cutRope)
+        {
+            if (rope != cutRope) return;
+            if (rope.Chain.ConnectedSegmentCount == 0)
+            {
+                Detach();
+                return;
+            }
+            if (distance <= rope.ClimbableLength) return;
+
+            distance = rope.ClimbableLength;
+            ClimbSpeed = 0f;
+            Vector2 desired = rope.Chain.Point(distance) - handOffset;
+            body.Move(desired - (Vector2)transform.position);
+            // Regripping must still respect solid walls and ceilings.
+            if (Vector2.Distance(transform.position, desired) > 0.06f)
+            {
+                Detach();
+                return;
+            }
+            rope.SetDrive(this, distance, 0f);
+        }
+
         private void Awake()
         {
             if (body == null) body = GetComponent<SimulatedBody2D>();
-            if (ropes == null || ropes.Length == 0)
-                ropes = FindObjectsByType<RopeSimulation>(FindObjectsSortMode.None);
         }
 
         // True means the rope handled this tick, including a possible release velocity.
@@ -42,6 +64,7 @@ namespace MousePlatformer
             Vector2 incomingVelocity, float dt, out Vector2 velocity, out bool released)
         {
             velocity = incomingVelocity;
+            ClimbSpeed = 0f;
             released = false;
             cooldown = Mathf.Max(0f, cooldown - dt);
             if (rope != null && (!rope.isActiveAndEnabled || distance > rope.ClimbableLength))
@@ -72,8 +95,10 @@ namespace MousePlatformer
 
             // Floor-anchored ropes run upward, so their climbing coordinate has the opposite sign.
             float climbDirection = Mathf.Sign(rope.Chain.Tangent(distance).y);
+            float previousDistance = distance;
             distance = Mathf.Clamp(distance + vertical * climbDirection * Settings.ropeClimbSpeed * dt,
                 Mathf.Min(0.3f, rope.ClimbableLength), rope.ClimbableLength);
+            ClimbSpeed = dt > 0f ? (distance - previousDistance) / dt : 0f;
             rope.SetDrive(this, distance, horizontal * Settings.ropeSwingAcceleration);
             Vector2 desired = rope.Chain.Point(distance) - handOffset;
             Vector2 start = transform.position;
@@ -93,8 +118,9 @@ namespace MousePlatformer
             RopeSimulation nearest = null;
             float best = Settings.ropeGrabRadius;
             float grip = 0f;
-            foreach (var candidate in ropes)
+            for (int ropeIndex = 0; ropeIndex < RopeSimulation.ActiveRopes.Count; ropeIndex++)
             {
+                RopeSimulation candidate = RopeSimulation.ActiveRopes[ropeIndex];
                 if (candidate == null || !candidate.Available) continue;
                 float along = candidate.Chain.ClosestDistance((Vector2)transform.position + handOffset, out float separation, anchoredOnly: true);
                 if (separation > best) continue;
@@ -111,6 +137,7 @@ namespace MousePlatformer
 
         private void Detach()
         {
+            ClimbSpeed = 0f;
             if (rope != null) rope.Release(this);
             rope = null;
             cooldown = Settings.ropeRegrabDelay;

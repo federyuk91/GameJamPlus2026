@@ -65,9 +65,8 @@ namespace GameJamPlus.UI
         private void Awake()
         {
             advanceScientistComment = new InputAction("Advance Scientist Comment", InputActionType.Button);
-            advanceScientistComment.AddBinding("<Keyboard>/enter");
-            advanceScientistComment.AddBinding("<Keyboard>/numpadEnter");
-            advanceScientistComment.AddBinding("<Gamepad>/buttonNorth");
+            advanceScientistComment.AddBinding("<Keyboard>/f");
+            advanceScientistComment.AddBinding("<Gamepad>/buttonWest");
             advanceScientistComment.performed += OnAdvanceScientistComment;
             scrollScientistComment = new InputAction("Scroll Scientist Comment", InputActionType.Value,
                 expectedControlType: "Axis");
@@ -303,6 +302,9 @@ namespace GameJamPlus.UI
 
         private void OnAdvanceScientistComment(InputAction.CallbackContext context)
         {
+            if ((photoView != null && photoView.IsVisible) || (testResultView != null && testResultView.IsVisible)
+                || (scientistView != null && scientistView.IsVisible))
+                collectibleCollector?.ConsumeInteractionInput();
             if (photoView != null && photoView.IsVisible) ContinuePhoto();
             else if (testResultView != null && testResultView.IsVisible) testResultView.Continue();
             else scientistView?.Advance();

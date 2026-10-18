@@ -8,7 +8,7 @@ public sealed class PhysicsSettingsEditor : Editor
     [MenuItem("Tools/Mouse Platformer/Impostazioni fisica")]
     private static void SelectSettings()
     {
-        var settings = AssetDatabase.LoadAssetAtPath<PhysicsSettings>("Assets/Settings/PhysicsSettings.asset");
+        PhysicsSettings settings = AssetDatabase.LoadAssetAtPath<PhysicsSettings>("Assets/Settings/PhysicsSettings.asset");
         if (settings == null)
         {
             Debug.LogError("PhysicsSettings.asset non trovato in Assets/Settings.");
@@ -25,77 +25,80 @@ public sealed class PhysicsSettingsEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
         EditorGUILayout.HelpBox("1 unità = 32 pixel. Velocità in unità/s; accelerazioni in unità/s².", MessageType.Info);
 
-        Section("Player — movimento");
-        Field("player.speed", "Velocità orizzontale (unità/s)");
-        Field("player.groundAcceleration", "Accelerazione e frenata a terra (unità/s²)");
-        Field("player.airAcceleration", "Accelerazione in aria (unità/s²)");
-        Field("player.maxStepHeight", "Altezza massima gradini (unità)", "Supera automaticamente piccoli dislivelli a terra. 0 disabilita; 0.15 unità corrispondono a 4.8 pixel.");
-        Field("player.coyoteTime", "Coyote time (s)");
-        Field("player.jumpBuffer", "Buffer del salto (s)");
-        Field("player.launchControlTime", "Controllo ridotto dopo il distacco (s)");
-        Field("player.launchControlMultiplier", "Moltiplicatore controllo dopo il distacco");
-        Section("Player — audio passi");
-        Field("player.runFootstepsPerSecond", "Frequenza passi Run (passi/s)", "0 disabilita i passi durante la corsa.");
-        Field("player.walkFootstepsPerSecond", "Frequenza passi Walk (passi/s)", "Predisposta per la futura camminata. 0 disabilita i passi.");
-        Section("Player — pendenze e scivolata");
-        Field("player.slopeSlideAngle", "Soglia di scivolata (°)", "Sotto questa soglia il topo resta stabile. Il valore effettivo non supera il limite di salita.");
-        Field("player.maxSlopeAngle", "Limite di salita (°)", "Oltre questo angolo la salita è bloccata. Fra le due soglie puoi contrastare la scivolata con il movimento.");
-        Field("player.slideOnSteepSlopes", "Abilita scivolata");
-        Field("player.slopeSlideAcceleration", "Accelerazione scivolata (unità/s²)", "Applicata lungo la superficie in proporzione alla pendenza.");
-        Field("player.slopeSlideMaxSpeed", "Velocità massima scivolata (unità/s)");
-        Section("Player — aggancio e risalita dei bordi");
-        Field("ledgeClimb.enabled", "Abilitata");
-        Field("ledgeClimb.maxHeight", "Altezza massima risalita (unità)", "Dislivello massimo fra i piedi e il bordo. A terra gli ostacoli sopra l'altezza dei gradini standard vengono risaliti con la direzione.");
-        Field("ledgeClimb.forwardReach", "Distanza sonda oltre il bordo (unità)");
-        Field("ledgeClimb.hangHeightFraction", "Altezza presa rispetto al collider", "Frazione dell'altezza del collider misurata dai piedi: 0.85 posiziona la presa vicino alla parte superiore del corpo.");
-        Field("ledgeClimb.grabVerticalReach", "Tolleranza verticale aggancio (unità)", "Distanza massima fra il bordo e l'altezza della presa durante un salto.");
-        Field("ledgeClimb.climbSpeed", "Velocità risalita (unità/s)");
-        Field("ledgeClimb.retryDelay", "Pausa tra tentativi (s)");
+        Section("Interaction Areas");
+        Field("interactions.crateGrabReach", "Distanza laterale massima fra il collider del topo e la cassa per spingere o tirare. Nei gizmo sono le fasce azzurre ai lati della cassa.");
+        Field("interactions.ropeGrabRadius", "Distanza massima fra la mano del topo e la corda per agganciarsi. Nei gizmo è il contorno azzurro lungo la corda.");
+        EditorGUILayout.HelpBox("Morso: seleziona Player → Player Rope Bite → Reach.\nCollezionabili: seleziona l'oggetto → Collectible → Pickup Area, poi modifica Size/Radius e Offset di quel collider.\nShow Gizmos sui singoli oggetti controlla solo la visualizzazione delle aree.", MessageType.Info);
 
-        Section("Acqua — movimento orizzontale");
-        Field("water.speed", "Velocità orizzontale (unità/s)", "Velocità massima a destra e sinistra nell'acqua.");
-        Field("water.bottomWalkSpeedMultiplier", "Moltiplicatore velocità sul fondo", "Rispetto alla velocità normale del Player: 0.5 = metà velocità. Usato quando è immerso e appoggiato su una superficie percorribile.");
-        Field("water.acceleration", "Accelerazione (unità/s²)", "Quanto rapidamente raggiunge la velocità richiesta.");
-        Field("water.strokeAcceleration", "Accelerazione dopo Jump (unità/s²)", "Risposta laterale dopo la bracciata, anche appena fuori dall'acqua.");
-        Field("water.strokeControlTime", "Durata controllo dopo Jump (s)");
-        Field("water.braking", "Frenata (unità/s²)", "Quanto rapidamente si ferma quando rilasci la direzione.");
-        Section("Acqua — affondamento e risalita");
-        Field("water.gravity", "Gravità in acqua (unità/s²)");
-        Field("water.maxSinkSpeed", "Caduta massima (unità/s)");
-        Field("water.strokeSpeed", "Spinta con Jump (unità/s)");
-        Field("water.verticalDrag", "Resistenza verticale (1/s)");
+        Section("Player — Movement");
+        Field("player.speed");
+        Field("player.groundAcceleration");
+        Field("player.airAcceleration");
+        Field("player.maxStepHeight", "Supera automaticamente piccoli dislivelli a terra. 0 disabilita; 0.15 unità corrispondono a 4.8 pixel.");
+        Field("player.coyoteTime");
+        Field("player.jumpBuffer");
+        Field("player.launchControlTime");
+        Field("player.launchControlMultiplier");
+        Section("Player — Footsteps");
+        Field("player.runFootstepsPerSecond", "0 disabilita i passi durante la corsa.");
+        Field("player.walkFootstepsPerSecond", "Predisposta per la futura camminata. 0 disabilita i passi.");
+        Section("Player — Slopes and Sliding");
+        Field("player.slopeSlideAngle", "Sotto questa soglia il topo resta stabile. Il valore effettivo non supera il limite di salita.");
+        Field("player.maxSlopeAngle", "Oltre questo angolo la salita è bloccata. Fra le due soglie puoi contrastare la scivolata con il movimento.");
+        Field("player.slideOnSteepSlopes");
+        Field("player.slopeSlideAcceleration", "Applicata lungo la superficie in proporzione alla pendenza.");
+        Field("player.slopeSlideMaxSpeed");
+        Section("Ledge Climb");
+        Field("ledgeClimb.enabled");
+        Field("ledgeClimb.maxHeight", "Dislivello massimo fra i piedi e il bordo. A terra gli ostacoli sopra l'altezza dei gradini standard vengono risaliti con la direzione.");
+        Field("ledgeClimb.forwardReach");
+        Field("ledgeClimb.hangHeightFraction", "Frazione dell'altezza del collider misurata dai piedi: 0.85 posiziona la presa vicino alla parte superiore del corpo.");
+        Field("ledgeClimb.grabVerticalReach", "Distanza massima fra il bordo e l'altezza della presa durante un salto.");
+        Field("ledgeClimb.climbSpeed");
+        Field("ledgeClimb.retryDelay");
 
-        Section("Player — gravità e salto");
-        Field("gravity.playerGravity", "Gravità (unità/s²)");
-        Field("gravity.fallGravityMultiplier", "Moltiplicatore in discesa");
-        Field("gravity.playerTerminalSpeed", "Caduta massima (unità/s)");
-        Field("gravity.jumpHeight", "Jump Height (unità)", "Altezza del salto completo sopra il punto di partenza. Il rilascio anticipato di Jump riduce l'altezza.");
-        Field("gravity.jumpReleaseMultiplier", "Moltiplicatore al rilascio di Jump");
-        Section("Casse e corda");
-        Field("gravity.crateGravity", "Gravità casse (unità/s²)");
-        Field("gravity.crateTerminalSpeed", "Caduta massima casse (unità/s)");
-        Field("gravity.ropeGravity", "Gravità corda (unità/s²)");
-        Field("gravity.ropeJumpUpSpeed", "Salto dalla corda: verticale (unità/s)");
-        Field("gravity.ropeJumpSwingBoost", "Salto dalla corda: slancio (unità/s)");
-        Field("interactions.crateMoveSpeed", "Velocità spinta/tiro casse (unità/s)");
-        Field("interactions.crateGrabReach", "Portata presa casse (unità)");
-        Field("interactions.ropeClimbSpeed", "Arrampicata sulla corda (unità/s)");
-        Field("interactions.ropeSwingAcceleration", "Accelerazione oscillazione (unità/s²)");
-        Field("interactions.ropeGrabRadius", "Portata presa corda (unità)");
-        Field("interactions.ropeRegrabDelay", "Ritardo riaggancio corda (s)");
-        Section("Scala");
-        Field("ladder.climbSpeed", "Arrampicata (unità/s)");
-        Field("ladder.jumpHorizontalSpeed", "Salto laterale (unità/s)");
-        Field("ladder.jumpUpSpeed", "Salto verticale (unità/s)");
-        Field("ladder.grabReach", "Portata aggancio (unità)");
-        Field("ladder.regrabDelay", "Ritardo riaggancio (s)");
-        Section("Scavo - F / Est condiviso con morso");
-        Field("digging.enabled", "Abilitato");
-        Field("digging.speed", "Velocita scavo (unita/s)");
-        Field("digging.radius", "Raggio tunnel (unita)", "Il raggio effettivo non scende sotto quello necessario a contenere il collider del topo.");
-        Field("digging.reach", "Anticipo scavo (unita)");
-        Field("digging.excavatedAlpha", "Alpha post scavo (0-255)", "0 = trasparente; 254 = quasi opaco. Non modifica le collisioni: il tunnel resta aperto.");
-        Field("digging.excavatedTint", "Colore velatura tunnel", "La componente alpha del colore non viene usata; regola Alpha post scavo.");
+        Section("Water — Horizontal Movement");
+        Field("water.speed", "Velocità massima a destra e sinistra nell'acqua.");
+        Field("water.bottomWalkSpeedMultiplier", "Rispetto alla velocità normale del Player: 0.5 = metà velocità. Usato quando è immerso e appoggiato su una superficie percorribile.");
+        Field("water.acceleration", "Quanto rapidamente raggiunge la velocità richiesta.");
+        Field("water.strokeAcceleration", "Risposta laterale dopo la bracciata, anche appena fuori dall'acqua.");
+        Field("water.strokeControlTime");
+        Field("water.braking", "Quanto rapidamente si ferma quando rilasci la direzione.");
+        Section("Water — Vertical Movement");
+        Field("water.gravity");
+        Field("water.maxSinkSpeed");
+        Field("water.strokeSpeed");
+        Field("water.verticalDrag");
+
+        Section("Gravity — Player and Jump");
+        Field("gravity.playerGravity");
+        Field("gravity.fallGravityMultiplier");
+        Field("gravity.playerTerminalSpeed");
+        Field("gravity.jumpHeight", "Altezza del salto completo sopra il punto di partenza. Il rilascio anticipato di Jump riduce l'altezza.");
+        Field("gravity.jumpReleaseMultiplier");
+        Section("Crates and Ropes");
+        Field("gravity.crateGravity");
+        Field("gravity.crateTerminalSpeed");
+        Field("gravity.ropeGravity");
+        Field("gravity.ropeJumpUpSpeed");
+        Field("gravity.ropeJumpSwingBoost");
+        Field("interactions.crateMoveSpeed");
+        Field("interactions.ropeClimbSpeed");
+        Field("interactions.ropeSwingAcceleration");
+        Field("interactions.ropeRegrabDelay");
+        Section("Ladder");
+        Field("ladder.climbSpeed");
+        Field("ladder.jumpHorizontalSpeed");
+        Field("ladder.jumpUpSpeed");
+        Field("ladder.grabReach");
+        Field("ladder.regrabDelay");
+        Section("Digging — Shared Bite Input");
+        Field("digging.enabled");
+        Field("digging.speed");
+        Field("digging.radius", "Il raggio effettivo non scende sotto quello necessario a contenere il collider del topo.");
+        Field("digging.reach");
+        Field("digging.excavatedAlpha", "0 = trasparente; 254 = quasi opaco. Non modifica le collisioni: il tunnel resta aperto.");
+        Field("digging.excavatedTint", "La componente alpha del colore non viene usata; regola Alpha post scavo.");
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -105,10 +108,10 @@ public sealed class PhysicsSettingsEditor : Editor
         EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
     }
 
-    private void Field(string path, string label, string tooltip = "")
+    private void Field(string path, string tooltip = "")
     {
         SerializedProperty property = serializedObject.FindProperty(path);
-        if (property != null) EditorGUILayout.PropertyField(property, new GUIContent(label, tooltip));
+        if (property != null) EditorGUILayout.PropertyField(property, new GUIContent(ObjectNames.NicifyVariableName(property.name), string.IsNullOrEmpty(tooltip) ? path : path + "\n" + tooltip));
         else EditorGUILayout.HelpBox($"Parametro mancante: {path}", MessageType.Error);
     }
 }

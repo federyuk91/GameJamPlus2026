@@ -37,3 +37,7 @@ Non sono stati eseguiti test automatici o Play Mode.
 5. Controllare che drift leggero e semplice movimento del mouse non cambino i suggerimenti. Provare scollegamento, pausa e ripresa.
 
 Il suggerimento per le casse riusa la portata e le verifiche di PlayerCrateInteraction. Richiede che il topo sia a terra, fuori dall'acqua, senza scivolare o arrampicarsi. Le casse ancora legate hanno PushableCrate disattivato e non mostrano il suggerimento. Il riquadro segue lo stesso ancoraggio inferiore del dialogo anche cambiando risoluzione.
+
+Le comunicazioni ora usano F al posto di Invio sulla tastiera, mantenendo il pulsante nord sul gamepad. Anche Next delle foto e dei risultati usa F. Durante una comunicazione, la pressione viene consumata dalla UI e non raccoglie contemporaneamente oggetti o avvia morso/scavo; serve rilasciare F prima di una nuova interazione.
+
+Aggiornamento gamepad: anche le comunicazioni, le foto e i risultati usano ora il pulsante ovest, equivalente al comando dei collezionabili: X su Xbox, Square su PlayStation e Y su Switch. Le icone sono aggiornate. La pressione della UI viene consumata anche sul gamepad, impedendo la raccolta contemporanea.

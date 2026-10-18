@@ -16,11 +16,13 @@ namespace MousePlatformer
         private float cooldown;
         private float facing = 1f;
         public bool Attached => ladder != null;
+        public float ClimbSpeed { get; private set; }
         private LadderSettings Settings => physicsSettings != null ? physicsSettings.ladder : PhysicsSettings.DefaultLadder;
 
         public bool Tick(float horizontal, float vertical, bool jump, Vector2 incomingVelocity, float dt,
             out Vector2 velocity, out bool released)
         {
+            ClimbSpeed = 0f;
             if (body == null) body = GetComponent<SimulatedBody2D>();
             velocity = incomingVelocity;
             released = false;
@@ -51,7 +53,9 @@ namespace MousePlatformer
             float bottom = ladder.Bottom;
             // Allow the feet to clear the top before returning to normal movement.
             float top = ladder.Top + (body.Shape.bounds.extents.y + handOffset.y + body.Skin) / ladder.AxisScale;
+            float previousHeight = height;
             height = Settings.Climb(height, vertical, ladder.AxisScale, dt, bottom, top);
+            ClimbSpeed = (height - previousHeight) * ladder.AxisScale / dt;
             Vector2 desired = ladder.Point(height) - handOffset;
             Vector2 start = transform.position;
             body.Move(desired - start);
@@ -90,7 +94,7 @@ namespace MousePlatformer
             previousGrip = ladder.Point(height);
         }
 
-        private void Detach() { ladder = null; cooldown = Settings.regrabDelay; }
+        private void Detach() { ladder = null; ClimbSpeed = 0f; cooldown = Settings.regrabDelay; }
         private void OnDisable() => Detach();
     }
 }

@@ -6,7 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class RoomDefinition : MonoBehaviour
     {
-        [SerializeField, InspectorName("Ingombro della stanza"),
+        [SerializeField, 
          Tooltip("Rettangolo locale usato per evitare sovrapposizioni: X/Y indicano l’angolo inferiore sinistro; Width/Height devono essere maggiori di zero.")]
         private Rect footprint = new Rect(-8f, -6f, 16f, 12f);
         [SerializeField] private RoomPort[] ports = new RoomPort[0];

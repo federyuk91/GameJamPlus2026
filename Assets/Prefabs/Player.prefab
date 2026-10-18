@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -843647147, guid: 109e9c90217ab0446b0fbb181546d7dc, type: 3}
+  m_Sprite: {fileID: 5971361692417818110, guid: 961d35910ad5f1040956c6831e5015cd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -275,6 +275,7 @@ MonoBehaviour:
   input: {fileID: 7712171590627343095}
   visual: {fileID: 8503429192877497323}
   ledgeClimb: {fileID: 922162904946277516}
+  crateInteraction: {fileID: 7645364035520464402}
   spriteFacesRight: 1
 --- !u!114 &7645364035520464402
 MonoBehaviour:
@@ -303,10 +304,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
-  ropes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   handOffset: {x: 0, y: 0.2}
 --- !u!114 &7210179708085743803
@@ -370,6 +367,15 @@ MonoBehaviour:
   movement: {fileID: 3818418520059698947}
   body: {fileID: 4027669037393712695}
   ledgeClimb: {fileID: 922162904946277516}
+  ladderInteraction: {fileID: 4717284519982122627}
+  ladderAnimationSpeed: 1
+  swimming: {fileID: 7210179708085743803}
+  swimmingAnimationSpeed: 1
+  digging: {fileID: 7072776503502995229}
+  crateInteraction: {fileID: 7645364035520464402}
+  ropeInteraction: {fileID: 4776370160298788677}
+  diggingAnimationSpeed: 1
+  pushingAnimationSpeed: 1
   runThreshold: 0.05
 --- !u!114 &7516488488136169197
 MonoBehaviour:
@@ -414,10 +420,6 @@ MonoBehaviour:
   body: {fileID: 4027669037393712695}
   facing: {fileID: 6712765668103962099}
   visual: {fileID: 6152871682746685960}
-  ropes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   digging: {fileID: 7072776503502995229}
   ropeInteraction: {fileID: 4776370160298788677}
   mouthOffset: {x: 0.45, y: -0.1}

@@ -35,16 +35,16 @@ namespace MousePlatformer
     [Serializable]
     public sealed class GravitySettings
     {
-        [InspectorName("Player Gravity (units/s²)"), Min(0.001f)] public float playerGravity = 30f;
+        [Min(0.001f)] public float playerGravity = 30f;
         [Min(1f)] public float fallGravityMultiplier = 2.2f;
-        [InspectorName("Player Terminal Fall Speed (units/s)"), Min(0f)] public float playerTerminalSpeed = 26f;
+        [Min(0f)] public float playerTerminalSpeed = 26f;
         [Tooltip("Height above takeoff for a full held jump, without overhead obstacles.")]
-        [InspectorName("Jump Height (units)"), Min(0f)] public float jumpHeight = 2f;
+        [Min(0f)] public float jumpHeight = 2f;
         [Range(0f, 1f)] public float jumpReleaseMultiplier = 0.45f;
-        [InspectorName("Crate Gravity (units/s²)"), Min(0f)] public float crateGravity = 66f;
-        [InspectorName("Crate Terminal Fall Speed (units/s)"), Min(0f)] public float crateTerminalSpeed = 26f;
-        [InspectorName("Rope Gravity (units/s²)"), Min(0f)] public float ropeGravity = 30f;
-        [InspectorName("Rope Jump Up Speed (units/s)"), Min(0f)] public float ropeJumpUpSpeed = 7f;
-        [InspectorName("Rope Jump Swing Boost (units/s)"), Min(0f)] public float ropeJumpSwingBoost = 4f;
+        [Min(0f)] public float crateGravity = 66f;
+        [Min(0f)] public float crateTerminalSpeed = 26f;
+        [Min(0f)] public float ropeGravity = 30f;
+        [Min(0f)] public float ropeJumpUpSpeed = 7f;
+        [Min(0f)] public float ropeJumpSwingBoost = 4f;
     }
 }

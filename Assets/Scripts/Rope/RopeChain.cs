@@ -126,6 +126,8 @@ namespace MousePlatformer
         public Vector2 Tangent(float distance)
         {
             int index = Mathf.Clamp(Mathf.FloorToInt(distance / SegmentLength), 0, SegmentCount - 1);
+            int connected = ConnectedSegmentCount;
+            if (connected > 0 && distance >= ConnectedLength) index = Mathf.Min(index, connected - 1);
             return (points[index + 1] - points[index]).normalized;
         }
 

@@ -6,10 +6,10 @@ namespace MousePlatformer
     [Serializable]
     public sealed class RopeSwingConstraint
     {
-        [InspectorName("Min Inner Angle (deg)"), Range(-175f, 0f)] public float minInnerAngle = -45f;
-        [InspectorName("Min Outer Angle (deg)"), Range(-175f, 0f)] public float minOuterAngle = -60f;
-        [InspectorName("Max Inner Angle (deg)"), Range(0f, 175f)] public float maxInnerAngle = 45f;
-        [InspectorName("Max Outer Angle (deg)"), Range(0f, 175f)] public float maxOuterAngle = 60f;
+        [Range(-175f, 0f)] public float minInnerAngle = -45f;
+        [Range(-175f, 0f)] public float minOuterAngle = -60f;
+        [Range(0f, 175f)] public float maxInnerAngle = 45f;
+        [Range(0f, 175f)] public float maxOuterAngle = 60f;
         [NonSerialized] private float brakingDirection;
         [NonSerialized] private float brakingAcceleration;
         [NonSerialized] private float reversingDirection;

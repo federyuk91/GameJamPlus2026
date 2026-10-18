@@ -17,7 +17,7 @@ namespace MousePlatformer
         public float Vertical => move == null ? 0f : move.ReadValue<Vector2>().y;
         public bool JumpHeld => jump != null && jump.IsPressed();
         public bool GrabHeld => grab != null && grab.IsPressed();
-        public bool InteractionPressed => collect != null && collect.WasPressedThisFrame();
+        public bool InteractionPressed => collect != null && collect.WasPressedThisFrame() && !collectionConsumed;
         public bool BiteHeld => bite != null && bite.IsPressed() && !collectionConsumed;
 
         private void Awake()
@@ -47,11 +47,11 @@ namespace MousePlatformer
         private void QueueJump(InputAction.CallbackContext context) => jumpQueued = true;
         public void ConsumeCollectibleInteraction()
         {
-            if (Keyboard.current != null && Keyboard.current.fKey.isPressed) collectionConsumed = true;
+            collectionConsumed = true;
         }
         private void Update()
         {
-            if (Keyboard.current == null || !Keyboard.current.fKey.isPressed) collectionConsumed = false;
+            if (collect == null || !collect.IsPressed()) collectionConsumed = false;
         }
         public bool ConsumeJump()
         {

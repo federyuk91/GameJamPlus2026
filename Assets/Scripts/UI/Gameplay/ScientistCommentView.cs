@@ -30,7 +30,7 @@ namespace GameJamPlus.UI
         private bool completeTypingRequested;
         private bool nextMessageRequested;
         private bool followTyping;
-        private string advanceKey = "Enter";
+        private string advanceKey = "F";
         private bool hasFollowingMessage;
 
         public void SetAdvanceKey(string key, Sprite sprite = null)

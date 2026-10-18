@@ -15,19 +15,19 @@ MonoBehaviour:
   keyboard:
     interact: {fileID: 1622727937493990531, guid: 481e01d7e03bc164686d0a15ef7a530c, type: 3}
     cutOrDig: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
-    advance: {fileID: -4761915745340555039, guid: 84eebba2256a5ba46a3636fd9bc60176, type: 3}
+    advance: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
 
   xbox:
     interact: {fileID: 7183707057315010591, guid: 317d2474d21a5fa43a91bf1721c5b3ad, type: 3}
     cutOrDig: {fileID: 643402748272714948, guid: 30b9d6bcf39bbe841880000237ae34fd, type: 3}
-    advance: {fileID: -1236389414660901761, guid: 44ba8d6f2e8000f49a102f9c0d358331, type: 3}
+    advance: {fileID: 7183707057315010591, guid: 317d2474d21a5fa43a91bf1721c5b3ad, type: 3}
 
   playStation:
     interact: {fileID: 265468883692527984, guid: b5204d2fbfd0d274fabf08cfe95251e6, type: 3}
     cutOrDig: {fileID: -5433958992158819592, guid: c2416f49c143ce2499ed2334e512c585, type: 3}
-    advance: {fileID: -6428336804260667672, guid: 55e3d29227063bd42b333e0245238a41, type: 3}
+    advance: {fileID: 265468883692527984, guid: b5204d2fbfd0d274fabf08cfe95251e6, type: 3}
 
   nintendoSwitch:
     interact: {fileID: 6336310393044179604, guid: dd9d3dc3a08248a4eaea29d2559a8d2f, type: 3}
     cutOrDig: {fileID: -679083064054180673, guid: e2f5ff3c4ae0fe84a88f76bc4be87749, type: 3}
-    advance: {fileID: -1042983111052659530, guid: 370cd8a9aeea7a04ab1f57106d1bc603, type: 3}
+    advance: {fileID: 6336310393044179604, guid: dd9d3dc3a08248a4eaea29d2559a8d2f, type: 3}

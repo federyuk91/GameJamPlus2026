@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -6,17 +7,27 @@ namespace MousePlatformer
     [DefaultExecutionOrder(-50), DisallowMultipleComponent]
     public sealed class RopeSimulation : MonoBehaviour
     {
+        private static readonly List<RopeSimulation> activeRopes = new List<RopeSimulation>();
+        internal static IReadOnlyList<RopeSimulation> ActiveRopes => activeRopes;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRegistry() => activeRopes.Clear();
+
+        private void OnEnable()
+        {
+            if (!activeRopes.Contains(this)) activeRopes.Add(this);
+        }
+
         [SerializeField, Min(1), Tooltip("Numero di pezzi. La lunghezza totale e Length x Segment Length.")]
         private int length = 1;
         [SerializeField, HideInInspector] private Transform[] pieces;
         [SerializeField, HideInInspector] private Vector2 restDirection = Vector2.down;
-        [InspectorName("Segment Length (units)")]
         [SerializeField, Min(0.01f)] private float segmentLength = 0.5f;
         [SerializeField] private PhysicsSettings physicsSettings;
-        [InspectorName("Damping (1/s)")]
         [SerializeField, Min(0f)] private float damping = 0.35f;
         [SerializeField] private RopeSwingConstraint swingLimits = new RopeSwingConstraint();
         [SerializeField] private bool canBeCut = true;
+        [SerializeField] private bool showGizmos = true;
         private CrateRopeAttachment load;
         private RopeChain chain;
         private PlayerRopeInteraction rider;
@@ -30,6 +41,7 @@ namespace MousePlatformer
         public float Length => chain != null ? chain.Length : (pieces != null ? pieces.Length * segmentLength : 0f);
         public bool Available => isActiveAndEnabled && chain != null && rider == null && chain.ConnectedSegmentCount > 0;
         public bool CanBeCut => canBeCut;
+        public bool ShowGizmos => showGizmos;
         public bool HasBeenCut { get; private set; }
         public float ClimbableLength => chain != null ? chain.ConnectedLength : 0f;
         public event Action<RopeSimulation> Cut;
@@ -94,6 +106,7 @@ namespace MousePlatformer
         {
             if (!isActiveAndEnabled || !canBeCut || chain == null || !chain.CutSegment(segment)) return false;
             HasBeenCut = true;
+            rider?.RetainGripAfterCut(this);
             Cut?.Invoke(this);
             UpdatePieces();
             return true;
@@ -139,6 +152,7 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            activeRopes.Remove(this);
             if (load != null) load.Detach();
             rider = null;
             drive = 0f;
