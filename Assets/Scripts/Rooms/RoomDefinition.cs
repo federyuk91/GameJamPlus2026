@@ -7,7 +7,7 @@ namespace MousePlatformer
     public sealed class RoomDefinition : MonoBehaviour
     {
         [SerializeField, 
-         Tooltip("Rettangolo locale usato per evitare sovrapposizioni: X/Y indicano l’angolo inferiore sinistro; Width/Height devono essere maggiori di zero.")]
+         Tooltip("Local rectangle used to prevent overlaps: X/Y specify the lower-left corner; Width/Height must be greater than zero.")]
         private Rect footprint = new Rect(-8f, -6f, 16f, 12f);
         [SerializeField] private RoomPort[] ports = new RoomPort[0];
         [SerializeField] private Grid layoutGrid;
@@ -29,21 +29,21 @@ namespace MousePlatformer
         {
             if (footprint.width <= 0f || footprint.height <= 0f)
             {
-                error = "L'ingombro deve avere dimensioni positive.";
+                error = "The footprint must have positive dimensions.";
                 return false;
             }
             Grid grid = LayoutGrid;
             if (grid == null || grid.cellLayout != GridLayout.CellLayout.Rectangle
                 || grid.cellSwizzle != GridLayout.CellSwizzle.XYZ || grid.cellGap.sqrMagnitude > 0.000001f)
             {
-                error = "Assegnare una Grid rettangolare XY, senza Cell Gap.";
+                error = "Assign a rectangular XY Grid without Cell Gap.";
                 return false;
             }
             if (grid.cellSize.x <= 0f || grid.cellSize.y <= 0f
                 || Quaternion.Angle(grid.transform.rotation, Quaternion.identity) > 0.01f
                 || (grid.transform.lossyScale - Vector3.one).sqrMagnitude > 0.000001f)
             {
-                error = "La Grid deve avere celle positive, rotazione zero e scala mondo 1.";
+                error = "The Grid must have positive cell dimensions, zero rotation and a world scale of 1.";
                 return false;
             }
             foreach (Tilemap map in GetComponentsInChildren<Tilemap>(true))
@@ -55,7 +55,7 @@ namespace MousePlatformer
                     || Quaternion.Angle(map.transform.rotation, Quaternion.identity) > 0.01f
                     || (map.transform.lossyScale - Vector3.one).sqrMagnitude > 0.000001f)
                 {
-                    error = map.name + ": allineare origine, rotazione e scala della Tilemap alla Grid della stanza.";
+                    error = map.name + ": align the Tilemap origin, rotation and scale with the room Grid.";
                     return false;
                 }
             }
@@ -65,13 +65,13 @@ namespace MousePlatformer
                 RoomPort port = ports[i];
                 if (port == null || !port.transform.IsChildOf(transform))
                 {
-                    error = "Ogni uscita deve essere assegnata e appartenere alla stanza.";
+                    error = "Each exit must be assigned and belong to the room.";
                     return false;
                 }
                 int bit = 1 << (int)port.Direction;
                 if ((directions & bit) != 0)
                 {
-                    error = "Una stanza puo avere al massimo un'uscita per direzione.";
+                    error = "A room can have at most one exit per direction.";
                     return false;
                 }
                 directions |= bit;

@@ -1,187 +1,157 @@
 # Player platformer
 
-## Aggancio e risalita dei bordi
+## Ledge grabbing and climbing
 
-`PlayerLedgeClimb` distingue gli stati None, Hanging e Climbing:
+`PlayerLedgeClimb` distinguishes None, Hanging and Climbing:
 
-- A terra, il sistema dei gradini gestisce gli ostacoli fino a `player.maxStepHeight` (0.15 unità). Un ostacolo più alto, entro `ledgeClimb.maxHeight` (0.75 unità), avvia direttamente la risalita quando il topo cammina verso di esso.
-- In aria, il bordo viene agganciato quando è vicino all'altezza della presa. Il topo resta appeso finché non viene mantenuta o premuta la direzione verso l'ostacolo; non occorre rilasciare la direzione dopo il salto.
-- Da appeso, Salto stacca il topo con uno slancio verso il lato opposto. Giù lo lascia cadere; mantenere Giù impedisce un riaggancio immediato.
+- On the ground, steps up to `player.maxStepHeight` (0.15 units) use the step system. Taller obstacles up to `ledgeClimb.maxHeight` (0.75 units) start a climb when the mouse walks toward them.
+- In the air, a ledge near grip height can be grabbed. The mouse hangs until input is held or pressed toward the obstacle; releasing direction after jumping is unnecessary.
+- While hanging, Jump launches away from the ledge. Down drops; holding Down prevents immediate reattachment.
 
-La risalita da terra e quella da appeso condividono lo stato Animator `ClimbUp`. `LedgeState` vale 0 nel movimento normale, 1 da appeso e 2 durante la risalita. In attesa delle clip dedicate, `Hanging` mostra un frame fermo di Idle e `ClimbUp` usa Idle come grafica provvisoria. Quando arriva l'animazione di salita, assegnarla al Motion dello stato `ClimbUp` in `Assets/Animations/Mouse/Mouse.controller`; regolare la velocità di risalita per allineare movimento e durata della clip.
+Ground and hanging climbs share Animator state `ClimbUp`. `LedgeState` is 0 for normal movement, 1 while hanging and 2 while climbing. Until dedicated clips are available, `Hanging` displays a stationary Idle frame and `ClimbUp` uses Idle as a placeholder. Assign the climbing clip to the `ClimbUp` state's Motion in `Assets/Animations/Mouse/Mouse.controller`; match climb speed to clip duration.
 
-In PhysicsSettings, la sezione **Player — aggancio e risalita dei bordi** contiene altezza massima, distanza della sonda, altezza della presa rispetto al collider (0.85) e tolleranza verticale di aggancio (0.15 unità). L'altezza relativa della presa segue eventuali modifiche del BoxCollider2D. Il percorso viene verificato contro soffitti e ingombri, e l'aggancio segue la posizione del collider di supporto quando si muove.
+PhysicsSettings' player ledge section exposes maximum height, probe distance, collider-relative grip height (0.85) and vertical tolerance (0.15 units). Grip height follows BoxCollider2D resizing. The path checks ceilings and body clearance, and the grip follows moving support colliders.
 
-Da verificare in Play Mode: l'oggetto `Climbable` aggiunto alla LoopScene, approccio da entrambi i lati, aggancio con e senza direzione mantenuta, distacco con Salto/Giù e risalita su casse mobili. Le sezioni storiche sotto descrivono le prime versioni del controller; per casse, acqua e corde fare riferimento anche a `Docs/CratesWaterAndRopes.md`.
+Manually check LoopScene's `Climbable` object from both sides, grabbing with/without held direction, Jump/Down release and moving crates. The historical sections below describe earlier controller versions. Also see `Docs/CratesWaterAndRopes.md` for current crate, water and rope behavior.
 
-Scena principale: Assets/Scenes/LoopScene.unity (gia abilitata nel build).
+Main scene: `Assets/Scenes/LoopScene.unity`, enabled in the build.
 
-## Composizione
+## Composition
 
-- PlayerInputReader: Input System, stick analogico/D-pad; A/D o frecce. Salto: pulsante sud del gamepad (A Xbox / croce PlayStation) oppure spazio. Conserva la pressione fino al tick fisico.
-- SimulatedBody2D: BoxCast lungo X e Y, collisioni con layer solidLayers (Default nella scena), esclusione trigger e collider del player, skin di 0.005 unita. Sposta il Transform senza Rigidbody2D. Progettato per geometria statica, pavimenti e pareti; non implementa piattaforme mobili, one-way, spinte o risalita delle pendenze.
-- PlayerMovement: velocita, accelerazione a terra/in aria, gravita, salto variabile al rilascio, coyote time e jump buffer. Parametri modificabili nell'Inspector. Simulazione in FixedUpdate.
-- MouseFacing: orienta lo SpriteRenderer senza ribaltare collider o Transform.
+- `PlayerInputReader`: Input System analog stick / D-pad, A/D or arrows. Jump uses the gamepad south button (Xbox A / PlayStation Cross) or Space. Presses remain queued until the physics tick.
+- `SimulatedBody2D`: X/Y BoxCasts against `solidLayers` (originally Default), excluding triggers and the player's collider, with a 0.005-unit skin. Moves the Transform without Rigidbody2D. The initial implementation targeted static floors/walls and did not implement moving platforms, one-way surfaces, pushes or slope climbing.
+- `PlayerMovement`: speed, ground/air acceleration, gravity, variable jump release, coyote time and jump buffer, simulated in FixedUpdate. Parameters originally lived on the component; later sections describe their migration to settings.
+- `MouseFacing`: flips the SpriteRenderer without flipping the collider or Transform.
 
-## Scala
+## Scale
 
-32 pixel = 1 unita. Sprite del topo: canvas 32x32, PPU 32, point filtering, niente mipmap/compressione. Collider 24x22 pixel per evitare che orecchie e coda blocchino il movimento. Pixel Perfect Camera: 640x320, 32 PPU, render texture con ingrandimento intero e filtro Point, bordi per mantenere le proporzioni. Area di riferimento 20x10 unita. Disegnare le risorse mantenendo 32 PPU e dimensioni in multipli di 1/32 di unita.
+32 pixels = 1 unit. The mouse sprite has a 32×32 canvas, PPU 32, point filtering and no mipmaps/compression. Its original 24×22-pixel collider avoids ears and tail blocking movement. The original Pixel Perfect Camera used 640×320, a 20×10-unit reference area, integer enlargement, Point filtering and aspect-preserving bars. Draw assets at 32 PPU with dimensions in multiples of 1/32 unit. The current 640×360 display configuration is documented in `Docs/PixelArtDisplay.md`.
 
-La geometria esistente di StartRoom e mantenuta. Il muro destro e parziale: si puo uscire dalla stanza e cadere; checkpoint e respawn non sono implementati.
+The original StartRoom geometry was retained, including its partial right wall and an exit leading to a fall. Checkpoints/respawn were not part of that initial implementation; see `Docs/RecoveryZones.md` for later additions.
 
-## Verifica
+## Validation
 
-Assets/Editor/PlatformerValidation.cs espone PlatformerValidation.Run per esecuzione batch Unity. Controlla componenti, assenza Rigidbody2D, riferimenti script, sprite/camera e sweep contro pavimento, pareti e soffitto. Usare in batch: termina l'Editor al termine e non salva la scena modificata dai controlli.
+`Assets/Editor/PlatformerValidation.cs` exposes `PlatformerValidation.Run` for Unity batch execution. It checks components, absence of Rigidbody2D, references, sprite/camera setup and floor/wall/ceiling sweeps. Run only in batch: it exits the Editor and does not save the temporary scene changes.
 
-Da verificare in Play Mode con controller: movimento analogico, rilascio del salto, salto al bordo e salto premuto poco prima dell'atterraggio.
+Manually check analog movement, early jump release, edge jumping and buffered jumps just before landing.
 
-## Caduta e camera
+## Falling and camera
 
-La gravita in discesa e 66 unita/s^2 (30 x 2.2), con velocita massima di 26 unita/s. La gravita in salita resta 30 per mantenere l'altezza del salto. fallGravityMultiplier e terminalSpeed sono assegnati sul componente PlayerMovement nella scena.
+Downward gravity is 66 units/s² (30 × 2.2), capped at 26 units/s. Upward gravity remains 30. `fallGravityMultiplier` and `terminalSpeed` were originally assigned on PlayerMovement; they now belong to settings.
 
-PlatformCameraController e assegnato alla Main Camera e segue il Transform del Player in LateUpdate. Zona morta, smorzamento per asse, anticipo orizzontale e anticipo verso il basso durante la caduta sono regolabili nell'Inspector. La caduta usa un inseguimento verticale piu rapido. Il movimento della camera e arrotondato a 1/32 di unita, mantenendo lo stato dello smorzamento a precisione completa. La profondita Z resta costante. SnapToTarget() permette di riallineare la camera dopo un teletrasporto/respawn. Non sono imposti limiti di stanza.
+`PlatformCameraController` on Main Camera follows the Player Transform in LateUpdate. Inspector controls include dead zone, axis damping, horizontal look-ahead and downward fall look-ahead. Falling uses faster vertical tracking. Final camera position snaps to 1/32 unit while damping state retains full precision. Z stays constant. `SnapToTarget()` realigns after teleports/respawns. The initial implementation imposed no room bounds.
 
-## Unita dei parametri
+## Parameter units
 
-Tutte le distanze fisiche sono in unita Unity (1 unita = 32 pixel). Velocita orizzontale, salto e caduta massima sono in unita/s; accelerazione e gravita sono in unita/s^2. I tempi sono in secondi e i moltiplicatori sono adimensionali. L'Inspector esplicita queste unita. Esempio: speed = 5 significa 5 unita/s, ossia 160 pixel/s. La simulazione integra accelerazione x deltaTime in velocita e velocita x deltaTime in spostamento; i PPU riguardano la rappresentazione grafica.
+Physical distances use Unity units (1 unit = 32 pixels), speeds use units/s, acceleration/gravity use units/s², times use seconds and multipliers are dimensionless. For example, speed 5 means 160 pixels/s. Acceleration × deltaTime changes velocity; velocity × deltaTime changes position. PPU affects rendering, not physical units.
 
-## Cassa: spinta e trascinamento
+## Crates: pushing and pulling
 
-Cassa spostabile nella LoopScene usa SimulatedBody2D + PushableCrate, senza Rigidbody2D. PushableCrate applica la gravita prima del tick del player; non conserva inerzia orizzontale. PlayerCrateInteraction sul player gestisce la spinta camminando contro il fianco della cassa e il trascinamento con E (tastiera) o pulsante ovest (X Xbox / quadrato PlayStation) + direzione. Funziona da entrambi i lati. Il player e la cassa devono essere a terra; saltare o lasciare il tasto interrompe la presa.
+The movable crate in LoopScene uses `SimulatedBody2D` and `PushableCrate`, without Rigidbody2D. PushableCrate applies gravity before the player tick and retains no horizontal inertia. `PlayerCrateInteraction` pushes on contact and pulls with E / gamepad west (Xbox X / PlayStation Square) plus direction, from either side. Initially both bodies had to be grounded; jumping or releasing the button ended the grip.
 
-La velocita di interazione e 2.5 unita/s (80 pixel/s), portata della presa 0.12 unita. Entrambi i parametri sono nell'Inspector di PlayerCrateInteraction. Le query limitano il movimento della coppia contro gli ostacoli sia davanti alla cassa sia dietro il player; durante il trascinamento lo spostamento orizzontale pianificato ignora soltanto il collider della cassa afferrata. La cassa resta solida per i movimenti verticali: il topo puo salirci con un salto. Non sono implementate spinte a catena, rotazioni o trasporto del player sopra casse in movimento.
+Original interaction speed is 2.5 units/s (80 pixels/s), reach 0.12 units. Queries constrain both crate and player against obstacles. Planned horizontal dragging ignores only the held crate collider; it remains solid vertically so the mouse can jump onto it. Chain pushing, rotation and carrying the player on moving crates were outside the initial implementation. Consult `Docs/CratesWaterAndRopes.md` for later changes.
 
-PlatformerValidation.Run include una scena temporanea per controllare spinta, tiro, rilascio, separazione dei collider e blocco da muri sui due lati. La scena temporanea non viene salvata.
+`PlatformerValidation.Run` includes a temporary scene for pushing, pulling, release, collider separation and walls on either side. It does not save that scene.
 
-## Corda: arrampicata, oscillazione e salto
+## Ropes: climbing, swinging and jumping
 
-Rope nella LoopScene contiene cinque Rope Piece collegati da vincoli di distanza simulati, senza Rigidbody2D o Joint2D Unity. Il Transform di Rope e l'ancoraggio superiore; i pezzi sono ordinati dall'alto verso il basso nel campo pieces. Ogni segmento misura 0.5 unita (16 pixel), per una lunghezza totale di 2.5 unita. Gli oggetti inizialmente sovrapposti sono disposti in catena anche nella scena salvata.
+LoopScene's Rope originally contained five Rope Piece objects joined through simulated distance constraints without Rigidbody2D or Unity Joint2D. The Rope Transform is the top anchor; `pieces` is ordered top to bottom. Each segment is 0.5 units (16 pixels), totaling 2.5 units. Initially overlapping pieces were arranged into a chain in the saved scene.
 
-- Agganciarsi: E / pulsante ovest (X Xbox, quadrato PlayStation), oppure Su/W vicino alla corda. Una volta agganciato non occorre tenere il tasto.
-- Arrampicarsi: Su/Giu, W/S, stick verticale o D-pad. Velocita: 2 unita/s. La presa e limitata agli estremi della corda.
-- Oscillare: Destra/Sinistra, A/D, stick orizzontale o D-pad. Accelerazione sulla corda: 70 unita/s^2; alternare la direzione assecondando l'oscillazione.
-- Mollare e saltare: Jump (spazio / pulsante sud). Conserva la velocita della corda al punto di presa e aggiunge 4 unita/s tangenziali nella direzione dell'oscillazione e 7 unita/s verso l'alto. A corda ferma la direzione orizzontale sceglie il lato del salto. Per 0.25 secondi il controllo aereo e ridotto per preservare lo slancio.
+- Attach with E / gamepad west, or Up/W near the rope. Holding the button is unnecessary after attachment.
+- Climb with Up/Down, W/S, vertical stick or D-pad, at 2 units/s, clamped to the rope endpoints.
+- Swing with Left/Right, A/D, horizontal stick or D-pad. Rope acceleration is 70 units/s²; alternate input with the swing.
+- Release with Jump. The launch inherits velocity at the grip and adds 4 units/s tangentially in the swing direction plus 7 units/s upward. On a stationary rope, horizontal input chooses the jump side. Air control is reduced for 0.25 s to preserve momentum.
 
-RopeChain gestisce la simulazione numerica con integrazione Verlet, quattro sottopassi e 24 iterazioni dei vincoli. RopeSimulation collega il solver ai pezzi della scena. PlayerRopeInteraction gestisce presa, arrampicata e rilascio; PlayerMovement coordina il singolo tick e disattiva la presa della cassa quando si passa alla corda. Portata, velocita, accelerazione, smorzamento e tempi sono modificabili nell'Inspector con unita esplicite. La ri-presa e bloccata per 0.3 s dopo il rilascio.
+`RopeChain` uses Verlet integration, four substeps and 24 constraint iterations. `RopeSimulation` connects the solver to scene pieces. `PlayerRopeInteraction` handles attachment, climbing and release; PlayerMovement coordinates each tick and releases crates when attaching to a rope. Reach, speed, acceleration, damping and timing are adjustable with explicit units. Reattachment is blocked for 0.3 s after release.
 
-Il player continua a usare i suoi sweep contro pareti, pavimenti e casse; un ostacolo che impedisce di seguire la corda interrompe la presa. I segmenti sono visivi: non hanno collisioni proprie con lo scenario e non supportano avvolgimento attorno agli ostacoli. Non muovere o ridimensionare l'ancoraggio durante la simulazione.
+Player sweeps still collide with walls, floors and crates; blocked rope-following releases the grip. Segments are visual, without world collision or obstacle wrapping. The initial solver assumes the anchor is not moved or resized during simulation.
 
-RopeValidation.RunChainChecks verifica stabilita dell'ancoraggio, lunghezze, oscillazione, velocita in unita/s e limiti della presa a 30, 50 e 100 Hz. La verifica numerica e stata eseguita con gli assembly Unity reali fuori dall'Editor; per controllare input e interazioni con i collider resta necessaria una prova in Play Mode.
+Historical `RopeValidation.RunChainChecks` numerical checks passed at 30/50/100 Hz using Unity assemblies outside the Editor: anchor stability, lengths, swing, units/s velocity and grip limits. Input/collider interactions still require Play Mode checks.
 
-## Limiti reali di oscillazione e gizmo inner/outer
+## Enforced swing limits and inner/outer gizmos
 
-RopeSimulation > Swing Limits definisce ora vincoli reali, in gradi rispetto alla verticale verso il basso (0). Min indica il lato sinistro, Max il destro. Valori della scena: Min Inner -45, Min Outer -60, Max Inner 45, Max Outer 60. I lati sono regolabili indipendentemente; ogni inner rimane fra il centro e il relativo outer.
+`RopeSimulation > Swing Limits` sets actual limits in degrees from downward vertical (0). Min is left, Max right. Scene values: Min Inner -45, Min Outer -60, Max Inner 45, Max Outer 60. Each side is independent; inner stays between center and its outer limit.
 
-Nell'area centrale il movimento e libero. Fra inner e outer una velocita angolare massima basata sulla distanza di arresto riduce progressivamente lo spostamento verso l'esterno. Anche la forza di oscillazione verso l'esterno diminuisce nella fascia; l'input verso il centro resta disponibile. All'outer il solver ferma tutti i segmenti per il resto del tick e azzera la loro velocita, senza rimbalzo istantaneo. Nel tick seguente la gravita avvia il ritorno verso il centro. La correzione ruota la catena attorno all'ancoraggio, conservando le lunghezze dei collegamenti. Il vincolo misura l'angolo globale fra ancoraggio e punta della corda, non l'angolo locale di ciascun pezzo. La velocita trasferita al salto proviene dallo stato del solver dopo la frenata.
+Movement is unrestricted in the center. Between inner and outer, a stopping-distance angular speed cap progressively slows outward movement. Outward input also fades; inward input remains available. At outer, all segments stop for the rest of the tick, with zero velocity and no instant bounce. Gravity starts the return next tick. Corrections rotate the chain around its anchor, preserving segment lengths. The measured angle runs from anchor to rope tip, not between individual segments. Jump velocity uses the solver's post-braking state.
 
-Selezionando Rope con Gizmos attivi: raggi e arco azzurri mostrano gli inner, rossi gli outer, settori arancioni trasparenti mostrano le fasce di decelerazione; in Play il raggio giallo mostra l'angolo corrente. I gizmo leggono direttamente i limiti della simulazione: i vecchi angoli di anteprima sono rimossi.
+With Rope selected and Gizmos enabled, cyan rays/arcs show inner limits, red shows outer limits, translucent orange sectors show deceleration bands, and a yellow Play Mode ray shows the current angle. Gizmos read simulation limits directly; the former preview angles were removed.
 
-Verifiche numeriche superate a 30/50/100 Hz: frenata prima dell'outer, rispetto dei limiti asimmetrici, velocita zero di tutti i nodi al limite, inversione anche mantenendo input verso l'esterno, conservazione dei collegamenti e regressioni del solver. Compilazione C# verificata anche con UNITY_EDITOR per i gizmo.
+Historical numerical checks passed at 30/50/100 Hz for braking, asymmetric bounds, zero node velocity at outer, reversal under held outward input, segment lengths and solver regressions. C# compilation also included UNITY_EDITOR gizmos.
 
-## Nuoto
+## Swimming
 
-Water della LoopScene ha WaterVolume e un BoxCollider2D trigger, allineato al suo sprite e alla sua scala. Il player ha PlayerSwimming; il modello numerico SwimMotion contiene i parametri. Nessun Rigidbody2D viene aggiunto. La presenza in acqua e rilevata ogni tick con una query sul centro del collider del topo, quindi non dipende da OnTriggerEnter/Exit o dalla simulazione Rigidbody. Volumi sovrapposti funzionano senza conteggi di ingresso/uscita. Per aggiungere altra acqua, aggiungere WaterVolume a un GameObject e dimensionare il suo BoxCollider2D.
+LoopScene's Water has `WaterVolume` and a BoxCollider2D trigger matching its sprite/scale. The player has `PlayerSwimming`; `SwimMotion` holds numerical logic. No Rigidbody2D is added. Each tick queries the mouse collider center, without depending on trigger callbacks. Overlapping volumes work without entry/exit counters. Add WaterVolume and size its BoxCollider2D to create more water.
 
-In acqua: direzione orizzontale da tastiera/stick/D-pad, velocita 3 unita/s, accelerazione 10 unita/s^2 e frenata 6 unita/s^2. Il topo affonda spontaneamente con gravita 6 unita/s^2 fino a 2.2 unita/s; la resistenza verticale e 0.8 al secondo. Ogni nuova pressione di Jump (spazio / pulsante sud) rinnova una spinta verticale di 4.8 unita/s. Tenere Jump premuto non ripete la spinta e rilasciarlo non taglia la bracciata. Premere ripetutamente permette di risalire. Gli impulsi non si sommano senza limite.
+Original swimming values were speed 3 units/s, acceleration 10 units/s², braking 6 units/s², sinking gravity 6 units/s², max sinking speed 2.2 units/s and vertical drag 0.8/s. Each new Jump press renews an upward 4.8-units/s stroke. Holding Jump does not repeat it; releasing does not shorten it. Repeated presses allow ascent without unbounded impulse accumulation. Later settings migration updated these values as listed below.
 
-Quando il centro del collider esce dall'acqua riprende il movimento normale, conservando lo slancio della bracciata per emergere dalla superficie. Il nuoto mantiene le collisioni contro i solidi, azzera coyote time e buffer del salto terrestre, e interrompe la presa delle casse. Una corda afferrata ha priorita sul nuoto: si puo usare per uscire dall'acqua e rilasciarla con Jump. Le casse conservano la loro fisica: questa modifica non introduce galleggiamento degli oggetti.
+Leaving water with the collider center restores normal movement while preserving stroke momentum. Swimming retains solid collisions, resets ground coyote time/jump buffer and originally released crates. An attached rope takes priority and can lift the mouse out. The initial swim implementation did not add crate buoyancy; see `Docs/CratesWaterAndRopes.md` for later behavior.
 
-Compilazione C# e test numerici del nuoto superati a 30/50/100 Hz. PlatformerValidation include anche controlli dei volumi (query senza Rigidbody, volumi disabilitati/sovrapposti, uscita dalla superficie e dai lati), da eseguire nell'Editor; il comportamento completo con collider e input resta da verificare in Play Mode.
+Historical C# compilation and swimming numerical checks passed at 30/50/100 Hz. PlatformerValidation also includes Editor checks for Rigidbody-free volume queries, disabled/overlapping volumes and surface/side exits. Full input and collider behavior requires Play Mode verification.
 
-## Settings condivisi: gravita e acqua
+## Shared gravity and water settings
 
-Selezionare Assets/Settings/PhysicsSettings.asset nel Project di Unity. Nell'Inspector espandere Gravity per gravita e salto del player, gravita/caduta delle casse, gravita della corda e velocita del salto dalla corda. Espandere Water per tutti i valori del nuoto: velocita orizzontale, accelerazione, frenata, gravita di affondamento, velocita massima di caduta, velocita della bracciata e resistenza verticale.
+Select `Assets/Settings/PhysicsSettings.asset`. Gravity contains player gravity/jump, crate gravity/fall limits, rope gravity and rope launch speed. Water contains horizontal speed, acceleration/braking, sinking gravity, maximum sink speed, stroke speed and vertical drag.
 
-L'asset e condiviso da PlayerMovement, PlayerSwimming, PlayerRopeInteraction, RopeSimulation e dalle due PushableCrate della scena. I valori vengono letti direttamente dall'asset a ogni tick, quindi possono essere regolati in Play Mode. Gli asset modificati in Play Mode possono conservare le modifiche dopo l'uscita dal Play. Le vecchie copie dei parametri sui componenti sono state rimosse.
+PlayerMovement, PlayerSwimming, PlayerRopeInteraction, RopeSimulation and the two scene PushableCrates share the asset. Values are read each tick and can be adjusted in Play Mode. Asset edits may persist after leaving Play Mode. Former component copies were removed.
 
-Per l'acqua sono stati trasferiti i valori modificati nello script SwimMotion (speed 5, acceleration 10, braking 6, gravity 7, maxSinkSpeed 3.5, strokeSpeed 4.8, verticalDrag 1.5), sostituendo i precedenti valori inline della scena. Le altre impostazioni fisiche mantengono i valori della scena. I default nel codice servono alla creazione di nuovi asset e come fallback per componenti senza asset; nella LoopScene tutti i sei componenti interessati hanno il riferimento assegnato.
+Migration transferred SwimMotion values: speed 5, acceleration 10, braking 6, gravity 7, maxSinkSpeed 3.5, strokeSpeed 4.8 and verticalDrag 1.5, replacing the scene's older inline values. Other physics settings retained scene values. Code defaults initialize new assets and provide fallback when no asset is assigned; all six affected LoopScene components had references assigned.
 
-Nuovi profili si creano con Create > Mouse Platformer > Physics Settings. Assegnare il profilo al campo Physics Settings dei componenti interessati. La scala resta 32 pixel per unita; velocita in unita/s, accelerazioni in unita/s^2, resistenza in 1/s e moltiplicatori adimensionali.
+Create profiles with Create > Mouse Platformer > Physics Settings and assign each component's Physics Settings field. Scale remains 32 pixels/unit; speeds use units/s, acceleration uses units/s², drag uses 1/s and multipliers are dimensionless.
 
-## Scala: Stair
+## Ladder: Stair
 
-Stair e composto con cinque StairPiece usati come pioli e due montanti figli. Il volume Ladder e un BoxCollider2D trigger di 1x5 unita. Il player usa PlayerLadderInteraction, coordinato da PlayerMovement: Su/W/stick verticale aggancia e sale, Giu/S scende. Senza direzione verticale mantiene la presa senza applicare gravita. Jump + Destra/Sinistra salta dal lato scelto; senza direzione usa l'ultimo lato indicato.
+Stair contains five StairPiece rungs and two child rails. Its Ladder trigger is 1×5 units. `PlayerLadderInteraction`, coordinated by PlayerMovement, attaches/climbs with Up/W/vertical input and descends with Down/S. Without vertical input it holds position without gravity. Jump plus Left/Right chooses the launch side; without direction it uses the last facing side.
 
-La posizione di presa e memorizzata nello spazio locale della scala. Spostando Stair o il suo genitore, il player segue lo stesso punto; la velocita del supporto viene aggiunta al salto. PlayerMovement esegue il tick dopo gli script con ordine predefinito, cosi un mover della scala in FixedUpdate puo aggiornare prima il supporto. Non riparentare il player e non aggiungere Rigidbody2D. Le collisioni continuano a usare SimulatedBody2D; se un ostacolo impedisce di raggiungere il punto della scala la presa si interrompe. Arrivare agli estremi salendo/scendendo interrompe la presa; in cima si cerca di portare i piedi sopra il bordo. Le piattaforme solide soprastanti non vengono attraversate.
+Grip position is stored in ladder-local space. Moving Stair or its parent carries the player at that point; support velocity is added to jumps. PlayerMovement ticks after default-order scripts, allowing FixedUpdate ladder movers to update first. Do not reparent the player or add Rigidbody2D. SimulatedBody2D sweeps remain active; blocked following releases the grip. Reaching either end detaches; at the top it attempts to place the feet above the edge without passing through solid platforms.
 
-PhysicsSettings.asset > Ladder raccoglie velocita di arrampicata (3 unita/s), salto orizzontale (6 unita/s), verticale (9 unita/s), portata (0.65 unita) e ritardo di riaggancio dopo il salto (0.3 s). Scala e corde sono alternative; una corda gia afferrata mantiene la priorita. La scala puo essere usata dall'acqua e interrompe la presa delle casse.
+PhysicsSettings > Ladder contains climb speed 3 units/s, horizontal jump 6 units/s, upward jump 9 units/s, reach 0.65 units and reattachment delay 0.3 s. An already-held rope takes priority. Ladders can be used from water and release crate grips.
 
-Compilazione C# e test numerici superati a 30/50/100 Hz, anche con scale diverse e salto che eredita la velocita del supporto. PlatformerValidation include un controllo con scala mobile, salita/discesa, mantenimento della coordinata locale, salto e cooldown; questo controllo con oggetti Unity e da eseguire nell'Editor/Play Mode.
+Historical compilation and numerical checks passed at 30/50/100 Hz, including scaled ladders and inherited support velocity. PlatformerValidation includes a moving-ladder check for climbing, descending, local-coordinate following, launch and cooldown; Unity object checks require Editor/Play Mode execution.
 
-## Movimento completo del player nei settings
+## Complete player movement settings
 
-PhysicsSettings.asset raccoglie anche Player (velocita orizzontale, accelerazione/frenata a terra, accelerazione in aria, coyote time, jump buffer, durata e moltiplicatore del controllo ridotto dopo un salto da scala/corda) e Interactions (velocita e portata spinta/tiro casse, arrampicata e accelerazione di oscillazione sulla corda, portata e ritardo di riaggancio). Le vecchie copie sui componenti sono rimosse; i valori della scena sono trasferiti all'asset. Gravita/salti, Water e Ladder restano nelle rispettive sezioni.
+PhysicsSettings also contains Player (horizontal speed, ground acceleration/braking, air acceleration, coyote time, jump buffer, reduced-control duration/multiplier after rope/ladder launch) and Interactions (crate push/pull speed/reach, rope climb/swing acceleration, reach and reattachment delay). Former component copies were removed and scene values migrated. Gravity, Water and Ladder retain their own sections.
 
-L'Inspector dedicato mostra Player — movimento in cima. Nell'Inspector predefinito espandere Player. Tutti i parametri sono letti dall'asset durante la simulazione; non occorre modificare gli script per regolarli.
+The custom Inspector shows player movement first. In the default Inspector, expand Player. All values are read during simulation; no script edits are needed.
 
 ## Jump Height
 
-PhysicsSettings > Gravity > Jump Height (unità) sostituisce Jump Speed per il salto terrestre. Il valore e la salita massima rispetto al punto da cui parte il salto completo, tenendo Jump premuto e senza ostacoli sopra il topo. Per esempio 2 unita = 64 pixel. La velocita iniziale viene ricavata con sqrt(2 * gravita * altezza). L'integrazione della salita usa lo spostamento analitico e termina il tick esattamente all'apice con velocita zero, evitando l'errore del passo Euler e la perdita dell'apice fra due tick. La discesa mantiene gravita maggiorata e limite di caduta esistenti.
+PhysicsSettings > Gravity > Jump Height replaces ground Jump Speed. It specifies maximum ascent above the launch position for a full held jump without overhead obstacles. Two units equals 64 pixels. Initial speed is `sqrt(2 * gravity * height)`. Ascent uses analytical displacement and ends exactly at the apex with zero velocity, avoiding Euler error or missing the apex between ticks. Descent retains increased gravity and terminal speed.
 
-Il rilascio anticipato di Jump conserva il salto corto: Jump Height indica l'altezza del salto completo. Soffitti/collisioni possono interrompere prima la salita. Durante un salto mantenere costante la gravita per ottenere l'altezza impostata. Gravita del player positiva (minimo 0.001). La velocita precedente di 11 con gravita 30 e stata migrata a circa 2.016667 unita; nuovi asset partono da 2 unita. Nuoto e salti da corda/scala mantengono i loro parametri dedicati.
+Early release still produces a short jump; Jump Height describes the full jump. Collisions can stop ascent early. Keep gravity constant during a jump to obtain the configured height. Player gravity must be positive (minimum 0.001). Previous speed 11 with gravity 30 migrated to approximately 2.016667 units; new assets default to 2 units. Swimming and rope/ladder launches keep their own parameters.
 
-JumpValidation verifica 5 altezze, 3 gravita e tick a 10/30/50/100 Hz: apice entro 0.0001 unita dall'altezza richiesta, velocita zero all'apice, successiva discesa, rilascio anticipato e altezza zero. Verifica numerica e compilazione C# superate.
+Historical JumpValidation covered five heights, three gravities and 10/30/50/100 Hz ticks: apex error below 0.0001 units, zero apex velocity, subsequent descent, early release and zero height. Numerical checks and compilation passed.
 
-## Climb-up automatico sui bordi
+## Automatic ledge climb
 
-PlayerLedgeClimb e assegnato al player e legge PhysicsSettings > Ledge Climb. Spingendo verso la parete, il componente cerca la superficie superiore appena oltre l'angolo con una raycast verso il basso. La superficie deve appartenere al collider incontrato e il dislivello dai piedi deve essere entro Max Height (default 0.75 unita, 24 pixel). Non si aggancia a trigger o semplici pareti troppo alte.
+PlayerLedgeClimb reads PhysicsSettings > Ledge Climb. When pushing toward a wall, it probes downward just beyond the corner for the contacted collider's upper surface. Height above the feet must be within Max Height (default 0.75 units / 24 pixels). Triggers and excessively tall walls are excluded.
 
-Prima di iniziare verifica spazio sopra il corpo, corridoio orizzontale in alto e ingombro finale. La risalita muove il corpo prima verso l'alto e poi oltre il bordo, con sweep a ogni tick, senza teletrasporti. Ostacoli nuovi interrompono il movimento. Il punto finale e locale al collider di appoggio per seguire piccoli spostamenti del supporto durante la manovra. Al termine effettua una breve sonda di atterraggio e torna al movimento normale. La manovra automatica blocca il movimento ordinario fino al completamento; non aggiunge un salto durante la risalita.
+Before starting, it checks overhead clearance, the upper horizontal corridor and destination body space. It sweeps upward then across each tick without teleporting. New obstacles interrupt movement. The destination is support-local to follow small support movements. A final ground probe returns control to normal movement. The maneuver temporarily locks ordinary movement and adds no extra jump.
 
-Parametri nell'Inspector dedicato: abilitazione, altezza massima, portata oltre il bordo (0.12 unita), velocita (5 unita/s), pausa tra tentativi (0.15 s). L'aggancio a corde/scale ha priorita finche gia attivo; la risalita funziona anche contro un bordo dall'acqua. Le prese delle casse vengono rilasciate durante la manovra.
+Settings include enabled, maximum height, reach beyond the edge (0.12 units), speed (5 units/s) and retry delay (0.15 s). Active rope/ladder attachments take priority. Water ledges can be climbed; crate grips are released.
 
-Compilazione C# e riferimenti della scena verificati. Tools > Mouse Platformer > Verifica risalita bordi esegue controlli con collider reali su entrambi i lati, a 30/50/100 Hz, inclusi soffitto basso, parete troppo alta, trigger e atterraggio senza sovrapposizioni. Questi controlli richiedono Unity e non sono stati eseguiti qui; comportamento da verificare in Play Mode.
+Compilation and scene references were checked during implementation. Tools > Mouse Platformer > Validate Ledge Climb runs real-collider checks from both sides at 30/50/100 Hz, covering low ceilings, tall walls, triggers and non-overlapping landing. These Unity checks were not run at that stage; verify behavior in Play Mode.
 
-## Controllo orizzontale dopo la bracciata
+## Horizontal control after a swim stroke
 
-Dopo Jump in acqua, PlayerSwimming mantiene per 0.35 s una finestra di controllo orizzontale piu rapido: accelerazione 45 unita/s^2 invece della normale accelerazione di nuoto 10. La velocita massima e invariata e la bracciata conserva la velocita laterale acquisita. La finestra continua appena fuori dall'acqua: in aria conserva velocita e risposta del nuoto fino alla scadenza, evitando un cambio immediato ai parametri del movimento terrestre. L'aggancio a corda/scala e il climb-up interrompono la finestra.
+After Jump in water, PlayerSwimming keeps a 0.35 s faster-control window: acceleration 45 units/s² instead of normal swimming acceleration 10. Maximum speed is unchanged; the stroke preserves lateral velocity. Just above the surface, swimming velocity/response remain until the window expires, avoiding an immediate switch to ground movement parameters. Rope/ladder attachment and ledge climbing cancel the window.
 
-PhysicsSettings > Water espone strokeAcceleration (Accelerazione dopo Jump) e strokeControlTime (Durata controllo dopo Jump). Lo stato temporale e del singolo player, non dell'asset condiviso. La velocita verticale della bracciata e l'affondamento restano separati dal controllo orizzontale.
+PhysicsSettings > Water exposes `strokeAcceleration` (acceleration after Jump) and `strokeControlTime` (control duration after Jump). Timing state belongs to each player, not the shared asset. Vertical stroke speed and sinking remain separate from horizontal control.
 
-Test numerici a 30/50/100 Hz superati, inclusi mantenimento della velocita durante Jump, raggiungimento rapido della velocita massima da fermo, conservazione del controllo in superficie e inversione di direzione. Compilazione C# verificata; prova completa con input/collider in Play Mode ancora necessaria.
+Historical numerical checks passed at 30/50/100 Hz for retained velocity, acceleration from rest, surface control and direction reversal. Compilation passed; full input/collider checks remain manual.
 
+## Digging and biting with F / East
 
-## Scavo e morso con F / Est
+F / gamepad east is shared by rope cutting and digging. A cuttable rope within mouth reach takes priority and requires a 0.6-second hold. Steel ropes cannot be cut. Otherwise, holding F plus direction digs reachable soil. A reachable cuttable rope interrupts digging. Once biting starts, the same press cannot switch to digging; release after cutting.
 
-F / pulsante Est del gamepad viene condiviso tra taglio delle corde e scavo.
-Una corda tagliabile raggiungibile dalla bocca ha precedenza e conserva il morso
-prolungato di 0.6 secondi. Una corda di acciaio non viene tagliata.
-In assenza di una corda tagliabile raggiungibile, F tenuto insieme a una direzione
-avvia lo scavo nella terra a portata. Una corda tagliabile raggiungibile ha precedenza anche durante lo scavo e lo
-interrompe. Dopo l'avvio del morso non si passa allo scavo durante la stessa
-pressione; dopo il taglio occorre rilasciare il pulsante.
+Digging uses both movement axes, including diagonals. Releasing direction stops the mouse; releasing F restores normal movement/gravity. Digging cannot start while attached to ropes, ladders or ledges. Crates retain E / west; ladder, climb and jump controls remain unchanged.
 
-Durante lo scavo si usano entrambe le componenti del movimento, anche diagonali.
-Lasciare la direzione ferma il topo; rilasciare F ripristina movimento e gravita.
-Non si avvia lo scavo mentre il topo e appeso a corde, scale o bordi.
-Le casse mantengono E / Ovest; scale, climb e salto conservano i propri comandi.
+PhysicsSettings > Digging exposes enabled, speed, radius, reach, excavated alpha (0–255) and tint. Effective radius automatically expands to contain the player collider. Alpha 254 reveals only 1/255 of the background; lower it for visibility without closing tunnels.
 
-PhysicsSettings > Scavo espone abilitazione, velocita, raggio, anticipo, alpha
-post scavo (0-255) e colore della velatura. Il raggio effettivo deve contenere
-il collider del topo e viene aumentato automaticamente se necessario.
-Alpha 254 mantiene il valore richiesto ma lascia passare solo 1/255 dello sfondo:
-per una migliore leggibilita si puo abbassare l'alpha senza richiudere i tunnel.
+`DiggableTerrain` on LoopScene's Diggable ground stores removed cells in a separate runtime mask. A URP 2D unlit shader displays the selected tint above the player (order 10), preserving the original texture. The original BoxCollider2D trigger defines the area and is replaced at runtime by merged rectangular solid colliders. Player and crate collision masks include Diggable.
 
-DiggableTerrain e collegato a Diggable ground in LoopScene. A runtime una maschera
-separata memorizza le celle rimosse; lo shader URP 2D unlit le mostra con la
-velatura scelta, sopra il player (ordine 10), lasciando la texture originale intatta.
-Il BoxCollider2D trigger originale definisce l'area e viene sostituito durante
-il gioco da collider solidi accorpati per rettangoli. Le collisioni del player e
-delle casse includono ora anche il layer Diggable.
-La risoluzione e configurata sul terreno: 16 celle/unita (2 pixel artistici),
-con massimo 512 celle per asse. Solo le celle modificate richiedono un aggiornamento
-della maschera e dei collider. I tunnel durano per la sessione e si ripristinano
-ricaricando la scena; non e previsto un salvataggio su disco.
-Per aggiungere altre aree assegnare riferimenti e materiale sul componente del
-terreno e aggiungerle all'elenco Terrains di PlayerDigging.
+Terrain resolution is 16 cells/unit (two art pixels), up to 512 cells per axis. Only changed cells update masks/colliders. Tunnels last for the session and reset on scene reload; no disk save is implemented. For new areas, assign terrain references/material and add them to PlayerDigging's Terrains list.
 
-La diagnostica PlayerRopeBite mostra Last Attempt, Bite Progress e Blocking Collider.
-Selezionando il player in Scene view, i Gizmos gialli mostrano posizione, raggio
-e direzione della bocca usati per cercare le corde.
+PlayerRopeBite diagnostics show Last Attempt, Bite Progress and Blocking Collider. Selected-player yellow gizmos show the mouth position, radius and direction used to search for ropes.
 
-Da appeso, il morso seleziona prima la corda impugnata, anche se si trova dietro
-la bocca o fuori dal normale raggio frontale. Il segmento da tagliare e quello
-alla presa, sul lato dell'ancoraggio. Restano validi il flag CanBeCut, la verifica
-degli ostacoli tra bocca e presa e la pressione prolungata. Dopo il taglio il
-normale controllo della corda rilascia il topo se la presa non e piu collegata.
-Le corde non impugnate conservano raggio e ricerca davanti alla bocca.
+While hanging, biting first selects the held rope even behind the mouth or outside the normal frontal radius. The cut segment is at the grip toward the anchor. CanBeCut, obstacle checks between mouth/grip and the hold duration still apply. Originally normal rope control released the mouse if the grip lost its anchor connection after cutting; see `Docs/RopeInteraction.md` for current behavior. Unheld ropes retain frontal search and reach limits.

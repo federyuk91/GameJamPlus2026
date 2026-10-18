@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class LedgeClimbValidation
 {
-    [MenuItem("Tools/Mouse Platformer/Verifica risalita bordi")]
+    [MenuItem("Tools/Mouse Platformer/Validate Ledge Climb")]
     public static void RunChecks()
     {
         foreach (float direction in new[] { -1f, 1f })

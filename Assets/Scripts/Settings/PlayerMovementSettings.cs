@@ -20,9 +20,9 @@ namespace MousePlatformer
         [Min(0f)] public float jumpBuffer = 0.12f;
         [Min(0f)] public float launchControlTime = 0.25f;
         [Range(0f, 1f)] public float launchControlMultiplier = 0.15f;
-        [Tooltip("Passi al secondo durante la corsa. 0 disabilita i passi.")]
+        [Tooltip("Footsteps per second while running. 0 disables footsteps.")]
         [Min(0f)] public float runFootstepsPerSecond = 6f;
-        [Tooltip("Passi al secondo durante la camminata. 0 disabilita i passi.")]
+        [Tooltip("Footsteps per second while walking. 0 disables footsteps.")]
         [Min(0f)] public float walkFootstepsPerSecond = 3f;
     }
 

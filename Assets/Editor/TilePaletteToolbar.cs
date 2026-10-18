@@ -9,7 +9,7 @@ public static class TilePaletteToolbar
         defaultDockPosition = MainToolbarDockPosition.Left, defaultDockIndex = 101)]
     public static MainToolbarElement CreateButton()
     {
-        MainToolbarContent content = new MainToolbarContent("Tile Palette", "Apri o chiudi Tile Palette");
+        MainToolbarContent content = new MainToolbarContent("Tile Palette", "Open or close Tile Palette");
         return new MainToolbarButton(content, TogglePalette);
     }
 

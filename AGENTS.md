@@ -1,38 +1,38 @@
-# Regole del progetto
+# Project rules
 
-Questo file contiene le regole generiche del progetto. Quando l'utente dice "aggiungi regola", aggiorna questo file con la regola indicata, mantenendo le altre istruzioni.
+This file contains the project's general rules. When the user says “aggiungi regola” (“add rule”), update this file with the specified rule while preserving the other instructions.
 
-## Unity e C#
+## Unity and C#
 
-L'utente è uno sviluppatore Unity. Quando lavori su codice C# per Unity, comportati come un esperto di dominio Unity/C#.
+The user is a Unity developer. When working on Unity C# code, act as a Unity/C# domain expert.
 
-### Stile
+### Style
 
-- Usa sempre tipi espliciti; evita `var`, salvo casi banali e altamente leggibili.
-- Scrivi codice chiaro, modulare e mantenibile.
-- Inserisci commenti brevi solo quando aggiungono valore: logica complessa, condizioni con più booleani, workaround, assunzioni o vincoli di Unity.
-- Non commentare variabili, metodi o proprietà con nomi già autoesplicativi.
+- Always use explicit types; avoid `var` except in trivial, highly readable cases.
+- Write clear, modular and maintainable code.
+- Add brief comments only when they provide value: complex logic, multiple boolean conditions, workarounds, assumptions or Unity constraints.
+- Do not comment on variables, methods or properties whose names are already self-explanatory.
 
-### Regole Unity
+### Unity rules
 
-- Preferisci reference assegnate da Inspector tramite `[SerializeField]` o public rispetto a `GetComponent`, `Find`, `FindObjectOfType` o ricerche runtime.
-- Usa `GetComponent` solo quando è locale, necessario e non ripetuto inutilmente.
-- Quando è possibile usa eventi, callback o state machine.
-- Mantieni separata la logica di dominio dalla UI e dai componenti MonoBehaviour quando possibile.
+- Prefer references assigned through the Inspector with `[SerializeField]` or public fields over `GetComponent`, `Find`, `FindObjectOfType` or runtime searches.
+- Use `GetComponent` only when local, necessary and not needlessly repeated.
+- Use events, callbacks or state machines where appropriate.
+- Separate domain logic from UI and MonoBehaviour components when possible.
 
-### Architettura
+### Architecture
 
-- Preferisci composizione rispetto a ereditarietà rigida.
-- Usa interfacce quando aiutano a disaccoppiare sistemi.
-- Applica SOLID con pragmatismo, senza creare astrazioni inutili.
-- Usa pattern noti quando adatti al problema: State, Strategy, Observer/Event Bus, Command, Factory.
-- Prima di refactor ampi, proponi un piano sintetico e segnala i rischi.
+- Prefer composition over rigid inheritance.
+- Use interfaces where they help decouple systems.
+- Apply SOLID pragmatically, without unnecessary abstractions.
+- Use established patterns when suited to the problem: State, Strategy, Observer/Event Bus, Command, Factory.
+- Before broad refactoring, propose a concise plan and highlight risks.
 
-## Test
+## Tests
 
-- Non testare quello che puoi far testare a me.
+- Do not test what the user can test.
 
 ## Output
 
-- Quando modifichi codice, spiega brevemente cosa hai cambiato e perché.
-- Evidenzia eventuali breaking change, assunzioni o punti da testare in Unity.
+- When modifying code, briefly explain what changed and why.
+- Highlight breaking changes, assumptions or points to check in Unity.

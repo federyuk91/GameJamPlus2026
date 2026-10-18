@@ -1,34 +1,34 @@
 # Audio
 
-Tutti i file audio sono in Assets/Sounds. Gli spostamenti conservano GUID, contenuto WAV e impostazioni di importazione: scene e prefab continuano a usare gli stessi clip.
+All audio files are in Assets/Sounds. Moves preserve GUIDs, WAV contents and import settings; scenes and prefabs continue using the same clips.
 
-| Cartella | File | Provenienza |
+| Folder | Files | Original names |
 | --- | --- | --- |
 | Music | Music_Menu, Music_Gameplay, Music_Ending | SUPERMICE_music_menu_idea_1, SUPERMICE_music_gameplay, SUPERMICE_music_ending |
 | SFX/Mouse/Footsteps | Mouse_Footstep_01–06 | SFX_Movement_MouseFS_01–06 |
 | SFX/Mouse/Voices | Mouse_Voice_* | SFX_Mouse_Voice-001–009 |
 | SFX/Environment/ElectricArcs | ElectricArc_01–04 | SFX_ElectricArc_01–04 |
 
-## Vocalizzi assegnati
+## Assigned voices
 
-Le associazioni e i nomi seguenti seguono le indicazioni dell'utente. Il prefab Player contiene PlayerVoices, con una AudioSource dedicata separata dai passi.
+Names and bindings follow the user's instructions. Player contains PlayerVoices with a dedicated AudioSource separate from footsteps.
 
-| Numero originale | Nome attuale | Evento |
+| Original number | Current name | Event |
 | --- | --- | --- |
-| 006 | Mouse_Voice_Cheese_01 | Primo vocalizzo dopo aver mangiato formaggio normale |
-| 007 | Mouse_Voice_Cheese_02 | Secondo vocalizzo, dopo il completamento del primo e Cheese Sequence Gap |
-| 005 | Mouse_Voice_RopeCut | Taglio riuscito di una corda tramite PlayerRopeBite |
-| 002 | Mouse_Voice_Suffering | Perdita di una tacca di sazietà, compresa l'ultima; nessun collegamento agli altri eventi di morte |
-| 004 | Mouse_Voice_Digging | Durante lo scavo, con intervallo casuale di 5–9 secondi di scavo attivo |
-| 008 | Mouse_Voice_ClimbUp | Una volta all'inizio della risalita di un bordo, sia da terra sia da appeso |
-| 003 | Mouse_Voice_Photo | Una volta all'apertura effettiva della foto nella UI, anche a gioco in pausa |
-| 001 | Mouse_Voice_RopeJump | Una volta al salto volontario di distacco dalla corda |
-| 009 | Mouse_Voice_CrateStart | Primo tentativo di spinta o tiro dopo la presa della cassa |
+| 006 | Mouse_Voice_Cheese_01 | First voice after eating normal cheese |
+| 007 | Mouse_Voice_Cheese_02 | Second voice after the first finishes and Cheese Sequence Gap elapses |
+| 005 | Mouse_Voice_RopeCut | Successful PlayerRopeBite cut |
+| 002 | Mouse_Voice_Suffering | Every lost satiety notch, including the last; unrelated to other death events |
+| 004 | Mouse_Voice_Digging | Random intervals of 5–9 seconds of active digging |
+| 008 | Mouse_Voice_ClimbUp | Once when ledge climbing starts, from ground or hanging |
+| 003 | Mouse_Voice_Photo | Once when the photo actually opens in UI, even while paused |
+| 001 | Mouse_Voice_RopeJump | Once on a voluntary jump off a rope |
+| 009 | Mouse_Voice_CrateStart | First push/pull attempt after grabbing a crate |
 
-Cheese Sequence Gap è inizialmente 0.04 secondi. La sequenza usa il tempo reale e rispetta la durata del primo clip; non sceglie casualmente fra 6 e 7. Formaggio verde e foto non attivano la sequenza.
+Cheese Sequence Gap initially equals 0.04 seconds. The sequence uses real time, waits for the first clip's actual duration, and does not randomly choose between 6 and 7. Green cheese and photos do not trigger it.
 
-Il vocalizzo della cassa non si ripete mentre il topo mantiene la stessa presa, anche quando cambia direzione o si ferma. Dopo il rilascio o il cambio di cassa, una nuova interazione lo riattiva. La spinta automatica per contatto sott'acqua non è un'interazione di presa e non lo attiva.
+The crate voice does not repeat while the same grab is maintained, including direction changes and stops. Releasing or switching crates enables a new voice. Automatic underwater contact pushing is not a grab interaction and does not trigger it.
 
-Volume e Cheese Sequence Gap sono regolabili in Player Voices. Tutti i vocalizzi rispettano Effects e Master delle opzioni audio. Tutti i nove vocalizzi sono ora assegnati.
+Volume and Cheese Sequence Gap are adjustable in Player Voices. Every voice respects Effects and Master audio settings. All nine are assigned.
 
-Digging Voice Min Interval e Digging Voice Max Interval sono regolabili in Player Voices; il minimo effettivo è sempre almeno 5 secondi. Il timer si ferma quando non si scava o il gioco è in pausa, senza azzerarsi quando si riprende. Il vocalizzo attende che gli altri vocalizzi abbiano finito.
+Digging Voice Min Interval and Max Interval are adjustable; the effective minimum is always at least 5 seconds. The timer pauses outside digging and during game pause, retaining progress when resumed. Digging voices wait for other voices to finish.

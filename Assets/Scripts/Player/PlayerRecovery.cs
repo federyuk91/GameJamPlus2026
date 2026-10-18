@@ -88,7 +88,7 @@ namespace MousePlatformer
             }
             if (!found)
             {
-                Debug.LogWarning("Recovery Zone: nessun piano libero nel raggio di ricerca e nessuno Spawn Point valido disponibile.", this);
+                Debug.LogWarning("Recovery Zone: no clear surface within the search radius and no valid Spawn Point available.", this);
                 return false;
             }
             if (ropeBite != null) ropeBite.Cancel();

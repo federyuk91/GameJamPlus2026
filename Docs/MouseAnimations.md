@@ -1,24 +1,24 @@
-# Animazioni del topo
+# Mouse animations
 
-Il prefab Player usa `Assets/Animations/Mouse/Mouse.controller`. `PlayerAnimation` legge gli stati dei componenti del gameplay e imposta `MotionState`; le transizioni Any State sono immediate e non riavviano lo stato già attivo.
+The Player prefab uses `Assets/Animations/Mouse/Mouse.controller`. `PlayerAnimation` reads gameplay component states and sets `MotionState`; Any State transitions are immediate and do not restart the active state.
 
-| MotionState | Stato | Sprite sheet | Riproduzione |
+| MotionState | State | Sprite sheet | Playback |
 | --- | --- | --- | --- |
-| 0 | Idle | Mouse_Idle_Sheet 1 | Loop esistente |
-| 1 | Run | Mouse_Run_Sheet 1 | Loop esistente |
-| 2 | Hanging | Mouse_Hanging_Sheet | 4 frame, 6 FPS, loop; bordo o corda ferma |
-| 3 | ClimbUp | Mouse_Climbing_Sheet | 4 frame, 8 FPS, loop durante la risalita del bordo |
-| 4 | LadderClimb | Mouse_Climbing_Sheet | 4 frame, 8 FPS, fermo quando il topo non sale/scende |
-| 5 | Swimming | Mouse_Swimming | 6 frame, 8 FPS, loop in acqua |
-| 6 | Jump | Mouse_Jump_Sheet | 5 frame, 10 FPS, una volta; mantiene l'ultimo frame in aria |
-| 7 | Dig | Mouse_Dig_Sheet | 4 frame, 8 FPS, loop durante lo scavo |
-| 8 | Push | Mouse_Push_Sheet | 6 frame, 10 FPS, spinta/tiro; fermo se la cassa non si sposta |
-| 9 | RopeClimb | Mouse_Climbing_Sheet | 4 frame, 8 FPS, loop durante lo spostamento lungo la corda |
+| 0 | Idle | Mouse_Idle_Sheet 1 | Existing loop |
+| 1 | Run | Mouse_Run_Sheet 1 | Existing loop |
+| 2 | Hanging | Mouse_Hanging_Sheet | 4 frames, 6 FPS, loop; ledge or stationary rope |
+| 3 | ClimbUp | Mouse_Climbing_Sheet | 4 frames, 8 FPS, loop during ledge climbing |
+| 4 | LadderClimb | Mouse_Climbing_Sheet | 4 frames, 8 FPS, paused while stationary |
+| 5 | Swimming | Mouse_Swimming | 6 frames, 8 FPS, loop in water |
+| 6 | Jump | Mouse_Jump_Sheet | 5 frames, 10 FPS, once; last frame held in air |
+| 7 | Dig | Mouse_Dig_Sheet | 4 frames, 8 FPS, loop while digging |
+| 8 | Push | Mouse_Push_Sheet | 6 frames, 10 FPS, pushing/pulling; paused if crate is stationary |
+| 9 | RopeClimb | Mouse_Climbing_Sheet | 4 frames, 8 FPS, loop while moving along a rope |
 
-La risalita del bordo riusa il foglio di arrampicata: non è presente un foglio specifico per questo movimento. `Mouse_Climb_Stairs.anim` conserva il proprio GUID ma ora usa i frame di Mouse_Climbing_Sheet, sostituendo il vecchio foglio non più presente.
+Ledge climbing reuses the climbing sheet; there is no dedicated sheet. `Mouse_Climb_Stairs.anim` retains its GUID but now uses Mouse_Climbing_Sheet, replacing the removed sheet.
 
-Precedenza: bordo, scala, corda, scavo, acqua, salto/caduta, casse, corsa, riposo. La velocità del loop di scala/corda, nuoto, scavo e spinta è regolabile in Player Animation. Durante il tiro MouseFacing mantiene lo sguardo rivolto verso la cassa.
+Priority: ledge, ladder, rope, digging, water, jumping/falling, crates, running, idle. Ladder/rope, swim, dig and push playback speeds are adjustable in Player Animation. When pulling, MouseFacing keeps the mouse looking at the crate.
 
-I parametri preesistenti IsRunning, LedgeState, IsOnLadder, LadderSpeed, IsSwimming e SwimmingSpeed restano disponibili. Le transizioni usano ora MotionState: controller alternativi devono includere questo parametro e DiggingSpeed/PushingSpeed se usano PlayerAnimation.
+Existing IsRunning, LedgeState, IsOnLadder, LadderSpeed, IsSwimming and SwimmingSpeed parameters remain available. Transitions now use MotionState: alternative controllers must include it, plus DiggingSpeed/PushingSpeed when using PlayerAnimation.
 
-Da controllare in Play Mode: allineamento visivo ai bordi, fermata su scala/corda, salto e atterraggio, scavo, spinta e tiro nelle due direzioni.
+Check ledge alignment, stationary ladder/rope poses, jumping/landing, digging and pushing/pulling in both directions in Play Mode.

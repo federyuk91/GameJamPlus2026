@@ -11,7 +11,7 @@ public static class RoomPrefabSetup
     private const string Folder = "Assets/Prefabs/Rooms";
     private const string GeneratorPath = Folder + "/Room Layout Generator.prefab";
 
-    [MenuItem("Tools/Mouse Platformer/Stanze/Prepara prefab modello ed esempi")]
+    [MenuItem("Tools/Mouse Platformer/Rooms/Prepare Template and Example Prefabs")]
     public static void CreateDefaults()
     {
         if (!AssetDatabase.IsValidFolder(Folder)) AssetDatabase.CreateFolder("Assets/Prefabs", "Rooms");
@@ -45,8 +45,8 @@ public static class RoomPrefabSetup
             finally { EditorSceneManager.ClosePreviewScene(preview); }
         }
         AssetDatabase.SaveAssets();
-        File.WriteAllText("Temp/CodexRoomSetup.done", "Prefab stanze e generatore creati.");
-        Debug.Log("Stanze: modello, esempi con terminali e generatore pronti in " + Folder);
+        File.WriteAllText("Temp/CodexRoomSetup.done", "Room prefabs and generator created.");
+        Debug.Log("Rooms: template, terminal examples and generator ready in " + Folder);
     }
 
     private static RoomDefinition CreateRoom(string name, bool paint, params RoomDirection[] exits)
@@ -61,7 +61,7 @@ public static class RoomPrefabSetup
             SceneManager.MoveGameObjectToScene(root, preview);
             RoomDefinition room = root.AddComponent<RoomDefinition>();
             GameObject gridPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Tilemaps/GameplayGrid.prefab");
-            if (gridPrefab == null) throw new System.InvalidOperationException("GameplayGrid.prefab non trovato.");
+            if (gridPrefab == null) throw new System.InvalidOperationException("GameplayGrid.prefab not found.");
             GameObject grid = (GameObject)PrefabUtility.InstantiatePrefab(gridPrefab, preview);
             grid.transform.SetParent(root.transform, false);
             SerializedObject data = new SerializedObject(room);
@@ -92,7 +92,7 @@ public static class RoomPrefabSetup
             {
                 Tilemap map = grid.transform.Find("Terrain - Solid").GetComponent<Tilemap>();
                 Tile tile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Tilemaps/Tiles/TilemapFloor/TilemapFloor_2.asset");
-                if (tile == null) throw new System.InvalidOperationException("Tile di esempio non trovato.");
+                if (tile == null) throw new System.InvalidOperationException("Example tile not found.");
                 for (int y = -3; y < 3; y++)
                 for (int x = -4; x < 4; x++)
                 {

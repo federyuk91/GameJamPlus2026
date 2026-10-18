@@ -40,7 +40,7 @@ namespace MousePlatformer
         {
             if (area == null || visual == null || maskedMaterial == null)
             {
-                Debug.LogError("DiggableTerrain: assegnare Area, Visual e Masked Material.", this);
+                Debug.LogError("DiggableTerrain: assign Area, Visual and Masked Material.", this);
                 enabled = false;
                 return;
             }

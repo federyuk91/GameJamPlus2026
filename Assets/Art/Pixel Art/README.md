@@ -1,10 +1,10 @@
 # Pixel Art
 
-Le texture in questa cartella e nelle sue sottocartelle vengono importate automaticamente come sprite con filtro Point (no filter), 32 pixel per unità, mipmap disabilitate e dimensioni originali non ridimensionate a potenze di due.
+Textures in this folder and its subfolders are automatically imported as sprites with Point filtering, 32 pixels per unit, no mipmaps and original dimensions without power-of-two resizing.
 
-- Immagini quadrate fino a 64 × 64 pixel inclusi: Sprite Mode Single.
-- Immagini non quadrate oppure con larghezza o altezza superiore a 64 pixel: Sprite Mode Multiple.
+- Square images up to and including 64×64 pixels: Sprite Mode Single.
+- Non-square images or images wider/taller than 64 pixels: Sprite Mode Multiple.
 
-Le regole vengono applicate a ogni importazione, reimportazione e spostamento di immagini o cartelle in questa gerarchia. Gli sprite sheet vengono impostati su Multiple; il ritaglio dei frame rimane gestibile nello Sprite Editor, senza imporre una griglia o sostituire i ritagli esistenti.
+Rules apply on import, reimport and image/folder moves within this hierarchy. Sprite sheets use Multiple; frame slicing remains editable in Sprite Editor without imposing a grid or replacing existing slices.
 
-L'importatore si trova in `Assets/Editor/PixelArtTexturePostprocessor.cs`.
+Importer: `Assets/Editor/PixelArtTexturePostprocessor.cs`.

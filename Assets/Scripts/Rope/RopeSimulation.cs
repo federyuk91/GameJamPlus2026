@@ -18,7 +18,7 @@ namespace MousePlatformer
             if (!activeRopes.Contains(this)) activeRopes.Add(this);
         }
 
-        [SerializeField, Min(1), Tooltip("Numero di pezzi. La lunghezza totale e Length x Segment Length.")]
+        [SerializeField, Min(1), Tooltip("Piece count. Total length is Length x Segment Length.")]
         private int length = 1;
         [SerializeField, HideInInspector] private Transform[] pieces;
         [SerializeField, HideInInspector] private Vector2 restDirection = Vector2.down;

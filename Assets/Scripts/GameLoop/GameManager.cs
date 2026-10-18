@@ -25,14 +25,14 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private MousePlatformer.PlayerRecovery playerRecovery;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
-        [SerializeField, Tooltip("Istanze della scena. Selezione casuale fra i punti assegnati e attivi. La posizione indica il pivot del player.")]
+        [SerializeField, Tooltip("Scene instances. Random selection among assigned active points. Position denotes the player pivot.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
         [Header("Game loop")]
         [SerializeField, Min(1)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
         [SerializeField, Min(0f)] private float flashDuration = 0.18f;
-        [SerializeField, TextArea] private string fallbackComment = "Ottimo. Possiamo considerare conclusa questa prova.";
+        [SerializeField, TextArea] private string fallbackComment = "Excellent. We can consider this test complete.";
         private double completedTime;
         private string completedResult;
         private float previousTimeScale;
@@ -57,7 +57,7 @@ namespace GameJamPlus.Gameplay
         {
             if (Instance != null && Instance != this)
             {
-                Debug.LogError("La scena deve contenere un solo Game Manager.", this);
+                Debug.LogError("The scene must contain exactly one Game Manager.", this);
                 enabled = false;
                 return;
             }
@@ -65,7 +65,7 @@ namespace GameJamPlus.Gameplay
             GameSession.EnsureStarted(startingUniverse);
             if (hud == null)
             {
-                Debug.LogError("Assegna il Gameplay HUD al Game Manager.", this);
+                Debug.LogError("Assign the Gameplay HUD to the Game Manager.", this);
                 enabled = false;
                 return;
             }
@@ -89,7 +89,7 @@ namespace GameJamPlus.Gameplay
         {
             if (player == null)
             {
-                Debug.LogWarning("Assegna il Player al Game Manager per usare gli Spawn Point.", this);
+                Debug.LogWarning("Assign the Player to the Game Manager to use Spawn Points.", this);
                 return;
             }
             int validCount = 0;
@@ -97,7 +97,7 @@ namespace GameJamPlus.Gameplay
                 if (point != null && point.CanSpawn) validCount++;
             if (validCount == 0)
             {
-                Debug.LogWarning("Nessuno Spawn Point attivo assegnato: il player mantiene la posizione della scena.", this);
+                Debug.LogWarning("No active Spawn Point assigned: the player keeps the scene position.", this);
                 return;
             }
 
@@ -178,7 +178,7 @@ namespace GameJamPlus.Gameplay
             string scene = Universe <= 1 ? endGameSceneName : gameplaySceneName;
             if (string.IsNullOrWhiteSpace(scene) || !Application.CanStreamedLevelBeLoaded(scene))
             {
-                Debug.LogError("La scena del prossimo test o di fine gioco non e inclusa nei Build Profiles: " + scene, this);
+                Debug.LogError("The next test or ending scene is not included in Build Profiles: " + scene, this);
                 return;
             }
             State = LoopState.Loading;

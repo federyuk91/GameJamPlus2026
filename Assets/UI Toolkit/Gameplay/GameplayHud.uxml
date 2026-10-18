@@ -9,13 +9,13 @@
             <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area">
                 <ui:VisualElement picking-mode="Ignore" class="timer-anchor">
                     <ui:VisualElement picking-mode="Ignore" class="timer-panel">
-                        <ui:Label text="PERMANENZA" picking-mode="Ignore" class="timer-caption" style="-unity-text-align: lower-center; padding-top: 0; margin-top: 2px;"/>
+                        <ui:Label text="TIME ELAPSED" picking-mode="Ignore" class="timer-caption" style="-unity-text-align: lower-center; padding-top: 0; margin-top: 2px;"/>
                         <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-center; height: 7px; bottom: 1px;"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard">
                     <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
-                        <ui:Label name="satiety-caption" text="SAZIETÀ" picking-mode="Ignore" class="satiety-caption" style="padding-left: 3px; padding-top: 3px;"/>
+                        <ui:Label name="satiety-caption" text="SATIETY" picking-mode="Ignore" class="satiety-caption" style="padding-left: 3px; padding-top: 3px;"/>
                         <ui:VisualElement name="satiety-notches" picking-mode="Ignore" class="satiety-notches"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="resource-counters" picking-mode="Ignore" class="resource-counters">
@@ -27,7 +27,7 @@
                             <ui:Image name="counter-secondary-icon" picking-mode="Ignore" class="counter-icon"/>
                             <ui:Label name="counter-secondary-value" text="0×" picking-mode="Ignore" class="counter-value"/>
                         </ui:VisualElement>
-                        <ui:VisualElement name="counter-tertiary" tooltip="Ricerca / Conoscenza" picking-mode="Ignore" class="counter" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+                        <ui:VisualElement name="counter-tertiary" tooltip="Research / Knowledge" picking-mode="Ignore" class="counter" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
                             <ui:Image name="counter-tertiary-icon" picking-mode="Ignore" class="counter-icon"/>
                             <ui:Label name="counter-tertiary-value" text="0×" picking-mode="Ignore" class="counter-value" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
                         </ui:VisualElement>
@@ -58,10 +58,10 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="test-result" picking-mode="Ignore" class="test-result">
-                <ui:Label text="TEST COMPLETATO!" class="test-title"/>
-                <ui:Label name="test-elapsed" text="Successo! 0 ore 0 minuti e 0 secondi." class="test-elapsed"/>
+                <ui:Label text="TEST COMPLETE!" class="test-title"/>
+                <ui:Label name="test-elapsed" text="Success! 0 hours 0 minutes and 0 seconds." class="test-elapsed"/>
                 <ui:Label name="test-result-message" text="" enable-rich-text="false" class="test-result-message"/>
-                <ui:Label name="test-universe" text="Universo-10" class="test-universe"/>
+                <ui:Label name="test-universe" text="Universe-10" class="test-universe"/>
                 <ui:Button name="test-next" text="F · Next" focusable="false" class="test-next"/>
             </ui:VisualElement>
             <ui:VisualElement name="photo-overlay" picking-mode="Position" class="photo-overlay">

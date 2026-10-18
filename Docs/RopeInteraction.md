@@ -1,17 +1,17 @@
 # Rope interaction
 
-Player Rope Bite e Player Rope Interaction selezionano automaticamente le corde più vicine tramite il registro delle RopeSimulation abilitate. Non occorre assegnare una lista Ropes sul Player. Le precedenti liste non limitano più le interazioni.
+Player Rope Bite and Player Rope Interaction automatically choose nearby ropes from the registry of enabled RopeSimulation instances. No Player Ropes list is required; old lists no longer restrict interactions.
 
-- Presa: il segmento collegato all'ancoraggio più vicino alla mano, entro Physics Settings → Interaction Areas → Rope Grab Radius. La corda deve essere Available.
-- Morso: il segmento integro tagliabile più vicino alla bocca, entro Player Rope Bite → Reach, davanti al centro del collider del topo o allineato ad esso (tolleranza 0.05 unità), senza ostacoli. Il filtro direzionale usa il centro del collider: la bocca può aver già oltrepassato la corda. Rope Simulation → Can Be Cut deve essere attivo.
-- Da appeso: il morso dà priorità alla corda impugnata, senza applicare Reach o la direzione della bocca; resta il controllo degli ostacoli.
+- Grab: nearest anchor-connected segment to the hand within Physics Settings → Interaction Areas → Rope Grab Radius. The rope must be Available.
+- Bite: nearest intact cuttable segment within Player Rope Bite → Reach of the mouth, in front of or aligned with the mouse collider center (0.05-unit tolerance), without obstacles. Direction uses the collider center; the mouth may already be past the rope. Can Be Cut must be enabled.
+- While hanging: biting prioritizes the held rope, ignores Reach and mouth direction, but still checks obstacles.
 
-Su una corda sospesa dall'alto, quando taglia da appeso il topo si riposiziona sull'estremità della parte ancora collegata all'ancoraggio; la parte sottostante cade. Il morso da appeso non taglia il segmento 0: vicino all'ancoraggio taglia il successivo, mantenendo almeno un pezzo su cui restare. Se rimane solo quel pezzo, non è più mordibile da appeso; da terra resta possibile tagliarlo.
+When biting a rope hanging from above, the mouse moves to the end of the still-anchored section and the lower section falls. A hanging bite never cuts segment 0: near the anchor it cuts the next segment, retaining at least one piece to hold. If only that piece remains, hanging bites are unavailable; it can still be cut from the ground.
 
-Se al primo taglio la cassa è in acqua e il suo punto di attacco è sopra l'ancoraggio, viene conservato il lato cassa. La cassa perde il vincolo al fondo (Attached = false), riabilita PushableCrate, ma mantiene il collegamento al tratto superiore (HasRopeConnection = true). Il topo si riaggancia al primo punto integro verso la cassa e risale con essa; può continuare a scalare o saltare. Il tratto inferiore resta sul fondo. La scelta del lato viene mantenuta anche quando la cassa raggiunge la superficie. I morsi successivi preservano almeno un segmento sul lato cassa.
+If the crate is in water and its attachment point is above the anchor at the first cut, the crate side is retained. The crate loses its seabed constraint (Attached = false), reenables PushableCrate, but remains connected to the upper section (HasRopeConnection = true). The mouse reattaches to the first intact point toward the crate and rises with it, remaining able to climb or jump. The lower section stays on the seabed. This side selection persists at the surface. Later bites retain at least one segment on the crate side.
 
-In entrambi i casi il riposizionamento rispetta i collider solidi: se il nuovo appiglio non è raggiungibile senza attraversarli, il topo si stacca.
+In both cases repositioning respects solid colliders; an unreachable new grip causes detachment.
 
-Le corde vengono registrate in OnEnable e rimosse in OnDisable, includendo oggetti istanziati, riattivati o rimossi durante il gioco. Le ricerche di presa e morso non usano FindObjects a ogni frame. Il progresso del morso riparte quando cambia la corda bersaglio, come prima.
+Ropes register in OnEnable and unregister in OnDisable, including objects created/reactivated/removed during play. Grab/bite searches do not run FindObjects every frame. Bite progress resets when the target rope changes.
 
-Da verificare in Play Mode: più corde vicine, corda non tagliabile, muro fra bocca e corda, corda creata dopo l'avvio, disattivazione della corda durante il morso.
+Check multiple nearby ropes, uncuttable ropes, obstructions, ropes created after startup and disabling a rope during a bite in Play Mode.

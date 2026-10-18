@@ -1,56 +1,44 @@
 # EndGame
 
-La scena `Assets/Scenes/EndGame.unity` contiene `EndGame UI`, con UIDocument ed EndGameController già collegati. Il PanelSettings e lo stile sono separati dal main menu e dal gameplay, con base 640 × 360 e le due fasce nere da 20 pixel.
+Assets/Scenes/EndGame.unity contains EndGame UI with connected UIDocument and EndGameController. PanelSettings/styles are separate from menu/gameplay, based on 640×360 with two 20-pixel black bands.
 
-## Report finale
+## Final report
 
-Il monitor è centrato, largo e alto due terzi del frame: circa 427 × 240 unità alla risoluzione base. Usa lo stile nero/verde delle comunicazioni e l'accensione CRT da punto a linea fino allo schermo completo. I dati sono organizzati come nel riferimento:
+The centered monitor spans two-thirds of frame width/height (about 427×240 at base resolution), uses black/green communication styling and CRT startup from point to line to full screen. It reports tests completed/planned, subjects used/deceased/recovered and experiment success percentage.
 
-- Test completati / test previsti.
-- Cavie impiegate.
-- Cavie decedute.
-- Cavie recuperate.
-- Esito percentuale dell'esperimento.
+Success measures completed tests rather than survival: ten completed tests are 100% success even with ten deaths, preserving the concept's reveal.
 
-L'esito usa i test completati, non il tasso di sopravvivenza: dieci test completati risultano 100% successo anche con dieci morti. Questa scelta mantiene la rivelazione del concetto di gioco.
+Continue supports click, Enter and controller South (A/Cross) through the scene EventSystem. It receives focus after startup. Confirmation collapses the CRT report and displays the ending image; repeated requests during transitions are ignored.
 
-`Continue` si può cliccare o confermare con Invio / pulsante sud del controller (A / Croce), usando l'EventSystem già presente nella scena. Il pulsante riceve il focus dopo l'accensione. La conferma spegne il report con il collasso CRT e mostra l'immagine del finale; richieste ripetute durante la transizione sono ignorate.
+## Three endings
 
-## Tre finali
+EndGameOutcomeSelector.Select(int deceasedSubjects):
 
-`EndGameOutcomeSelector.Select(int deceasedSubjects)` seleziona:
-
-| Deceduti | Finale | Campo Inspector |
+| Deaths | Ending | Inspector field |
 | --- | --- | --- |
 | 0 | NoDeaths | No Deaths Ending Image |
-| 1–9 | PartialLoss | Partial Loss Ending Image |
-| 10 o più | AllSubjectsLost | All Subjects Lost Ending Image |
+| 1 | SingleDeath | Single Death Ending Image |
+| 2+ | MultipleDeaths | Multiple Deaths Ending Image |
 
-La soglia di dieci segue il numero dei soggetti previsto dal concept. `Starting Universe` diverso da dieci resta utile per prove rapide: il report mostra il numero effettivo dei test, ma la classificazione del finale continua a usare le soglie 0 / 1–9 / 10.
+Ending classification uses the death count: zero, exactly one, or two and above, independently of the total number of tests.
 
-I tre PNG provvisori sono in `Assets/Art/UI/EndGame/Endings`:
+EndGame assigns the supplied artwork: `Assets/Art/End Game 0 Morti.JPG` for no deaths, `Assets/Art/EndGame 1 morto.JPG` for one death, and `Assets/Art/End Game Molte Morti.JPG` for two or more deaths. The former placeholder images remain available but are no longer assigned. Former serialized field names migrate through FormerlySerializedAs. Each ending has a distinct title and subject summary. Main Menu returns without automatically starting a new game.
 
-- `Ending_NoDeaths_Placeholder.png`
-- `Ending_PartialLoss_Placeholder.png`
-- `Ending_AllSubjectsLost_Placeholder.png`
+## Session data
 
-Sono copie ridimensionate dell'immagine placeholder già fornita, non illustrazioni finali. Quando saranno disponibili le immagini definitive, assegnarle ai tre campi del controller oppure sostituire i PNG mantenendo i file .meta. Il finale mostra anche un titolo distinto e il riepilogo dei soggetti. `Menu principale` permette di tornare al menu senza avviare automaticamente una nuova partita.
+GameSession retains TotalTests, CompletedTests, SubjectsUsed, DeceasedSubjects and RecoveredSubjects across loads. GameManager records once when accepting EndTest, before intermediate screens; state gating prevents duplicates. New Game resets the session.
 
-## Dati della partita
+TestEndEvent.Subject Died defaults to true to preserve existing death causes, including green cheese. Disable it for a surviving-subject outcome. Every completed test counts one used subject; a non-deceased subject counts as recovered. Random result text does not determine deaths.
 
-GameSession ora conserva TotalTests, CompletedTests, SubjectsUsed, DeceasedSubjects e RecoveredSubjects durante i caricamenti. Il GameManager registra una sola volta l'esito quando accetta EndTest, prima delle schermate intermedie; il suo controllo di stato esistente evita il doppio conteggio. Nuovo Gioco azzera la sessione.
+Opening EndGame directly without results previews ten tests using Preview Deceased Subjects (0–10, initially 5). Continue therefore shows the multiple-deaths artwork. Real session data overrides the preview. The selector needs no external images/services.
 
-`TestEndEvent` espone `Subject Died`, attivo per default per mantenere il significato delle cause di morte già esistenti, incluso il formaggio verde. Per un evento che conclude la prova con il soggetto vivo, disattivare questa opzione nell'Inspector. Ogni prova conclusa registra un soggetto impiegato; un soggetto non deceduto è conteggiato come recuperato. Non si deducono morti dal testo casuale del risultato.
+## Manual review
 
-Aprendo direttamente EndGame senza risultati registrati, il report usa dieci test e il valore `Preview Deceased Subjects` (0–10) dell'Inspector, inizialmente impostato a 5. Dopo Continue viene quindi mostrato il caso 1–9, collegato a `Assets/Art/EndGame1.png`. Una partita con dati reali ha precedenza su questa anteprima. Il selettore non richiede immagini o servizi esterni.
+No automated tests or Play Mode were run.
 
-## Verifica manuale
+1. Open EndGame directly and try preview values 0, 1, 2 and 10; confirm Continue and check selection.
+2. Review 640×360 and larger displays: centered/legible report, proportional image and black bands.
+3. Check click, Enter, A/Cross, CRT startup/shutdown, repeated-input rejection and menu return.
+4. Start a new game, complete tests with Subject Died enabled/disabled, inspect the real report, then confirm New Game resets counts.
 
-Non sono stati eseguiti test automatici o Play Mode.
-
-1. Aprire EndGame direttamente, provando Preview Deceased Subjects 0, 5 e 10: confermare Continue e controllare il finale selezionato.
-2. Provare a 640 × 360 e su monitor più grandi: report centrale, dati leggibili, immagine correttamente proporzionata e fasce nere.
-3. Controllare click, Invio e A / Croce, apertura/spegnimento CRT, assenza di doppi avanzamenti e ritorno al menu.
-4. Iniziare una nuova partita: completare test con Subject Died attivo/disattivo, poi controllare il report reale. Riavviare Nuovo Gioco per verificare l'azzeramento dei conteggi.
-
-Non è stata aggiunta persistenza su disco dei risultati: i conteggi valgono per la sessione corrente, come il numero dell'universo già esistente.
+Results are not persisted to disk; they belong to the current session, like the universe number.

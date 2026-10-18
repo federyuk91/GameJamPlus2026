@@ -14,20 +14,20 @@ public sealed class RoomDefinitionEditor : Editor
     {
         DrawDefaultInspector();
         RoomDefinition room = (RoomDefinition)target;
-        EditorGUILayout.HelpBox("Disegna le Tilemap nel prefab. Le uscite vengono agganciate ai bordi/centri delle celle. Includi tutta la stanza nell'ingombro.", MessageType.Info);
+        EditorGUILayout.HelpBox("Paint Tilemaps inside the prefab. Exits snap to cell edges/centers. Include the entire room in its footprint.", MessageType.Info);
         if (!room.Validate(out string error)) EditorGUILayout.HelpBox(error, MessageType.Error);
-        if (GUILayout.Button("Allinea uscite alla griglia"))
+        if (GUILayout.Button("Align exits to grid"))
         {
             for (int i = 0; i < room.PortCount; i++)
             {
                 RoomPort port = room.Port(i);
                 if (port == null) continue;
-                Undo.RecordObject(port.transform, "Allinea uscita alla griglia");
+                Undo.RecordObject(port.transform, "Align exit to grid");
                 port.transform.position = room.SnapPortPosition(port.Position, port.Direction);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(port.transform);
             }
         }
-        EditorGUILayout.LabelField("Aggiungi uscita", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Add exit", EditorStyles.boldLabel);
         using (new EditorGUILayout.HorizontalScope())
         {
             foreach (RoomDirection direction in System.Enum.GetValues(typeof(RoomDirection)))
@@ -44,7 +44,7 @@ public sealed class RoomDefinitionEditor : Editor
     private static void AddPort(RoomDefinition room, RoomDirection direction)
     {
         GameObject socket = new GameObject("Exit " + direction);
-        Undo.RegisterCreatedObjectUndo(socket, "Aggiungi uscita stanza");
+        Undo.RegisterCreatedObjectUndo(socket, "Add room exit");
         socket.transform.SetParent(room.transform, false);
         Rect rect = room.Footprint;
         Vector2 axis = RoomPort.Axis(direction);
@@ -92,12 +92,12 @@ public sealed class RoomLayoutGeneratorEditor : Editor
     {
         DrawDefaultInspector();
         RoomLayoutGenerator generator = (RoomLayoutGenerator)target;
-        EditorGUILayout.HelpBox("Il totale include partenza e terminali. Le stanze si allineano a una Grid comune; le uscite vengono agganciate a bordi e centri delle celle.", MessageType.Info);
+        EditorGUILayout.HelpBox("The total includes the starting room and terminals. Rooms align to a shared Grid; exits snap to cell edges and centers.", MessageType.Info);
         using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
         {
-            if (GUILayout.Button("Genera stanze")) Generate(generator);
+            if (GUILayout.Button("Generate rooms")) Generate(generator);
             using (new EditorGUI.DisabledScope(generator.GeneratedRoot == null))
-                if (GUILayout.Button("Rimuovi stanze generate")) Clear(generator);
+                if (GUILayout.Button("Remove generated rooms")) Clear(generator);
         }
         if (!string.IsNullOrEmpty(generator.LastReport)) EditorGUILayout.HelpBox(generator.LastReport, MessageType.Info);
     }
@@ -106,19 +106,19 @@ public sealed class RoomLayoutGeneratorEditor : Editor
     {
         if (EditorUtility.IsPersistent(generator))
         {
-            Debug.LogWarning("Trascina il generatore in una scena prima di generare.", generator);
+            Debug.LogWarning("Drag the generator into a scene before generating.", generator);
             return;
         }
         if (Quaternion.Angle(generator.transform.rotation, Quaternion.identity) > 0.01f
             || (generator.transform.lossyScale - Vector3.one).sqrMagnitude > 0.000001f)
         {
-            Debug.LogError("Il generatore deve avere rotazione zero e scala mondo 1.", generator);
+            Debug.LogError("The generator must have zero rotation and a world scale of 1.", generator);
             return;
         }
         RoomLayoutPlanner planner = new RoomLayoutPlanner();
         if (!planner.TryPlan(generator, out List<RoomPlacement> plan, out string report))
         {
-            Undo.RecordObject(generator, "Aggiorna rapporto generazione");
+            Undo.RecordObject(generator, "Update generation report");
             generator.SetResult(generator.GeneratedRoot, report);
             EditorUtility.SetDirty(generator);
             Debug.LogWarning(report, generator);
@@ -128,22 +128,22 @@ public sealed class RoomLayoutGeneratorEditor : Editor
         {
             if (!PrefabUtility.IsPartOfPrefabAsset(placement.Prefab) || placement.Prefab.transform.parent != null)
             {
-                Debug.LogError("Assegnare RoomDefinition sulla radice di prefab salvati, non oggetti della scena.", generator);
+                Debug.LogError("Assign RoomDefinition on the root of saved prefabs, rather than scene objects.", generator);
                 return;
             }
         }
         if (generator.GeneratedRoot != null && generator.GeneratedRoot.parent != generator.transform)
         {
-            Debug.LogError("Il risultato precedente e stato spostato fuori dal generatore. Ripristinalo prima di rigenerare.", generator);
+            Debug.LogError("The previous result was moved outside the generator. Restore it before regenerating.", generator);
             return;
         }
         Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Genera stanze procedurali");
-        Undo.RecordObject(generator, "Aggiorna generatore");
+        Undo.SetCurrentGroupName("Generate procedural rooms");
+        Undo.RecordObject(generator, "Update generator");
         if (generator.GeneratedRoot != null) Undo.DestroyObjectImmediate(generator.GeneratedRoot.gameObject);
         GameObject root = new GameObject("Generated Rooms");
-        Undo.RegisterCreatedObjectUndo(root, "Crea contenitore stanze");
+        Undo.RegisterCreatedObjectUndo(root, "Create room container");
         root.transform.SetParent(generator.transform, false);
         Vector2 cellSize = generator.CellSize;
         Vector3 origin = generator.transform.position;
@@ -155,7 +155,7 @@ public sealed class RoomLayoutGeneratorEditor : Editor
         foreach (RoomPlacement placement in plan)
         {
             GameObject room = (GameObject)PrefabUtility.InstantiatePrefab(placement.Prefab.gameObject, generator.gameObject.scene);
-            Undo.RegisterCreatedObjectUndo(room, "Crea stanza");
+            Undo.RegisterCreatedObjectUndo(room, "Create room");
             room.transform.SetParent(root.transform, false);
             room.transform.localPosition = placement.Position;
             PrefabUtility.RecordPrefabInstancePropertyModifications(room.transform);
@@ -187,10 +187,10 @@ public sealed class RoomLayoutGeneratorEditor : Editor
         if (generator.GeneratedRoot == null || generator.GeneratedRoot.parent != generator.transform) return;
         Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Rimuovi stanze generate");
-        Undo.RecordObject(generator, "Aggiorna generatore");
+        Undo.SetCurrentGroupName("Remove generated rooms");
+        Undo.RecordObject(generator, "Update generator");
         Undo.DestroyObjectImmediate(generator.GeneratedRoot.gameObject);
-        generator.SetResult(null, "Stanze generate rimosse.");
+        generator.SetResult(null, "Generated rooms removed.");
         EditorUtility.SetDirty(generator);
         PrefabUtility.RecordPrefabInstancePropertyModifications(generator);
         Undo.CollapseUndoOperations(group);

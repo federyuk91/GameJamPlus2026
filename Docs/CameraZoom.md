@@ -1,24 +1,24 @@
 # Camera zoom
 
-La camera di LoopScene ha Pixel Perfect Zoom, collegato a Pixel Perfect Viewport.
+LoopScene's camera has Pixel Perfect Zoom linked to Pixel Perfect Viewport.
 
-- Rotella verso l’alto / R1 (RB Xbox): un livello più vicino.
-- Rotella verso il basso / L1 (LB Xbox): un livello più lontano.
-- Tre livelli: Zoom Out, Normal, Zoom In. Parte sempre da Normal e si ferma agli estremi.
-- I comandi sono sospesi durante pausa, foto e fine del test.
+- Wheel up / R1 (Xbox RB): one level closer.
+- Wheel down / L1 (Xbox LB): one level farther away.
+- Three levels: Zoom Out, Normal and Zoom In. Starts at Normal and stops at either end.
+- Controls are suspended during pauses, photos and test endings.
 
-Il livello Normal mantiene risoluzione di riferimento e inquadratura originali (640×360, 32 PPU). Gli altri livelli usano la scala intera immediatamente inferiore o superiore alla scala normale, calcolata sulla finestra. A 1920×1080 le scale sono rispettivamente 2×, 3× e 4×. Non ci sono interpolazioni di zoom. PPU, filtro Point e grid snapping della Pixel Perfect Camera rimangono invariati.
+Normal preserves the original framing and reference resolution (640×360, 32 PPU). Other levels use the integer scale immediately below or above the normal window scale. At 1920×1080 these are 2×, 3× and 4×. Zoom is not interpolated. PPU, Point filtering and pixel grid snapping remain unchanged.
 
-La risoluzione originale viene conservata da Pixel Perfect Viewport per UI, bande e cornice, che non cambiano dimensione durante lo zoom. Solo la risoluzione di rendering della scena e il crop della Pixel Perfect Camera cambiano. Il ridimensionamento della finestra ricalcola i livelli; la disabilitazione del viewport ripristina i valori originali della camera. Non modificare la risoluzione della Pixel Perfect Camera da altri script mentre questo sistema è attivo.
+Pixel Perfect Viewport retains the original resolution for UI, bands and frame, whose dimensions do not change when zooming. Only scene rendering resolution and camera cropping change. Window resizing recalculates levels; disabling the viewport restores the original camera values. Other scripts must not modify the Pixel Perfect Camera resolution while this system is active.
 
-Se la scala normale è già 1×, Zoom Out è bloccato: una scala inferiore non può conservare tutti i pixel. Sotto 640×360 resta il comportamento preesistente del livello normale, che adatta l’immagine alla finestra.
+If Normal is already 1×, Zoom Out is blocked because a smaller scale cannot preserve every pixel. Below 640×360 the existing Normal behavior fits the image to the window.
 
-Da verificare in Unity: i tre livelli con rotella e shoulder buttons; dimensioni della UI; limiti di zoom; cambio risoluzione; pausa/foto; movimento Su/Giù della camera al 50% della nuova vista; arresto del Play Mode senza alterazioni alla camera salvata.
+Check in Unity: wheel/shoulder controls, UI dimensions, zoom limits, resolution changes, pause/photos, vertical camera movement over 50% of the new view, and restoration of saved camera settings after Play Mode.
 
-## Sguardo verticale e blocco altezza
+## Vertical look and height lock
 
-Tenendo Su/Giù mentre il topo è fermo su una superficie, la camera si sposta fino al 50% della propria altezza. Vertical Look Fraction e Vertical Look Smooth Time sono regolabili sul Platform Camera Controller.
+Hold Up/Down while the mouse stands still on a surface to move the camera by up to 50% of its height. Adjust Vertical Look Fraction and Vertical Look Smooth Time on Platform Camera Controller.
 
-C sulla tastiera o la pressione dello stick destro sul gamepad blocca/sblocca la quota corrente della camera. Il movimento orizzontale continua a seguire il topo. Finché la quota è bloccata, Su/Giù e i movimenti verticali del topo non la modificano. Sbloccandola, la camera torna gradualmente all’inseguimento. Il recupero/respawn con SnapToTarget rimuove il blocco.
+C or right-stick press locks/unlocks the current camera height. Horizontal following continues. While locked, Up/Down and player vertical movement do not change the height. Unlocking smoothly restores following. Recovery/respawn through SnapToTarget clears the lock.
 
-In alto a destra appare CAMERA HEIGHT LOCKED con il comando per sbloccare, aggiornato al dispositivo attivo. Il comando di blocco è sospeso durante pausa e conclusione del test. Lo shake resta attivo anche a quota bloccata.
+CAMERA HEIGHT LOCKED and the current device's unlock command appear at the top right. Lock input is suspended during pauses and test endings. Shake remains active while height is locked.

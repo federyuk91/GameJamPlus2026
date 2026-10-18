@@ -12,10 +12,10 @@ public sealed class LadderEditor : Editor
         DrawDefaultInspector();
         bool changed = EditorGUI.EndChangeCheck();
         Ladder ladder = (Ladder)target;
-        EditorGUILayout.HelpBox("Length conta i pezzi da una unita. Il primo resta a Y=0, gli altri a -1, -2...; il collider segue la lunghezza.", MessageType.Info);
+        EditorGUILayout.HelpBox("Length counts one-unit pieces. The first stays at Y=0, the others at -1, -2...; the collider follows the length.", MessageType.Info);
         using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
         {
-            bool rebuildClicked = GUILayout.Button("Ricostruisci e allinea pezzi");
+            bool rebuildClicked = GUILayout.Button("Rebuild and align pieces");
             if (!EditorApplication.isPlaying && (changed || rebuildClicked)) Rebuild(ladder, changed);
         }
     }
@@ -41,7 +41,7 @@ public sealed class LadderEditor : Editor
         }
         if (!propertyChanged) Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Modifica lunghezza scala");
+        Undo.SetCurrentGroupName("Change ladder length");
         Synchronize(ladder, true);
         Undo.CollapseUndoOperations(group);
     }
@@ -63,20 +63,20 @@ public sealed class LadderEditor : Editor
         if (template == null && pieces.Count > 0) template = pieces[0];
         if (template == null)
         {
-            Debug.LogWarning("Assegna un Piece Template per costruire la scala.", ladder);
+            Debug.LogWarning("Assign a Piece Template to build the ladder.", ladder);
             return;
         }
         if (undo)
         {
-            Undo.RecordObject(ladder, "Aggiorna pezzi scala");
-            Undo.RecordObject(ladder.Shape, "Aggiorna collider scala");
+            Undo.RecordObject(ladder, "Update ladder pieces");
+            Undo.RecordObject(ladder.Shape, "Update ladder collider");
         }
         if (pieces.Count == 0) pieces.Add(template);
         while (pieces.Count < ladder.Length)
         {
             GameObject piece = Object.Instantiate(template.gameObject, ladder.transform);
             piece.SetActive(true);
-            if (undo) Undo.RegisterCreatedObjectUndo(piece, "Aggiungi pezzo scala");
+            if (undo) Undo.RegisterCreatedObjectUndo(piece, "Add ladder piece");
             pieces.Add(piece.GetComponent<SpriteRenderer>());
         }
         while (pieces.Count > ladder.Length)
@@ -91,8 +91,8 @@ public sealed class LadderEditor : Editor
         {
             foreach (SpriteRenderer piece in pieces)
             {
-                Undo.RecordObject(piece.transform, "Allinea pezzo scala");
-                Undo.RecordObject(piece.gameObject, "Rinomina pezzo scala");
+                Undo.RecordObject(piece.transform, "Align ladder piece");
+                Undo.RecordObject(piece.gameObject, "Rename ladder piece");
             }
         }
         ladder.SetPieces(pieces.ToArray());

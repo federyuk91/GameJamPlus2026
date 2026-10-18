@@ -15,9 +15,9 @@ namespace MousePlatformer
 
         [SerializeField] private BoxCollider2D shape;
         [SerializeField] private SimulatedBody2D player;
-        [SerializeField, Min(0f), Tooltip("Secondi dal primo appoggio del topo alla caduta.")]
+        [SerializeField, Min(0f), Tooltip("Seconds from the mouse first stepping on the platform until it falls.")]
         private float fallDelay = 0.4f;
-        [SerializeField, Min(0f), Tooltip("Secondi di caduta prima della scomparsa.")]
+        [SerializeField, Min(0f), Tooltip("Seconds of falling before disappearing.")]
         private float disappearDelay = 2f;
         [SerializeField, Min(0f)] private float fallAcceleration = 20f;
         [SerializeField, Min(0f)] private float maxFallSpeed = 15f;

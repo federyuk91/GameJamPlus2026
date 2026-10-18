@@ -17,11 +17,11 @@ public sealed class PiranhaPatrolEditor : Editor
             Vector3 moved = Handles.FreeMoveHandle(point, size, Vector3.zero, Handles.DotHandleCap);
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(patrol, "Sposta punto ronda piranha");
+                Undo.RecordObject(patrol, "Move piranha patrol point");
                 patrol.SetWaypointPosition(i, moved);
                 EditorUtility.SetDirty(patrol);
             }
-            Handles.Label(point + Vector2.up * size * 2f, "Ronda " + (i + 1));
+            Handles.Label(point + Vector2.up * size * 2f, "Patrol " + (i + 1));
         }
     }
 }
@@ -41,22 +41,22 @@ public sealed class PiranhaChaseEditor : Editor
         Vector3 movedRange = Handles.FreeMoveHandle(rangePoint, size, Vector3.zero, Handles.RectangleHandleCap);
         if (EditorGUI.EndChangeCheck())
         {
-            Undo.RecordObject(chase, "Modifica distanza visiva piranha");
+            Undo.RecordObject(chase, "Change piranha view distance");
             chase.SetVision(Vector2.Distance(eye, movedRange), chase.ViewAngle);
             EditorUtility.SetDirty(chase);
         }
-        Handles.Label(rangePoint, "Distanza visiva");
+        Handles.Label(rangePoint, "View distance");
         float angle = (Mathf.Atan2(forward.y, forward.x) * Mathf.Rad2Deg + chase.ViewAngle * 0.5f) * Mathf.Deg2Rad;
         Vector2 conePoint = eye + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * chase.ViewDistance;
         EditorGUI.BeginChangeCheck();
         Vector3 movedCone = Handles.FreeMoveHandle(conePoint, size, Vector3.zero, Handles.DotHandleCap);
         if (EditorGUI.EndChangeCheck())
         {
-            Undo.RecordObject(chase, "Modifica cono visivo piranha");
+            Undo.RecordObject(chase, "Change piranha view cone");
             float opening = Mathf.Abs(Vector2.SignedAngle(forward, (Vector2)movedCone - eye)) * 2f;
             chase.SetVision(chase.ViewDistance, opening);
             EditorUtility.SetDirty(chase);
         }
-        Handles.Label(conePoint, "Apertura cono");
+        Handles.Label(conePoint, "Cone angle");
     }
 }

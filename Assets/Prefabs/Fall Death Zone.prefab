@@ -112,9 +112,9 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Interessante. Il soggetto ha deciso di verificare personalmente la gravità."
-  - "Una discesa davvero convincente. Direi che possiamo concederci una pausa."
-  - "Ottimo, anche la prova di caduta è conclusa. Ora riposiamo un momento."
+  - "Interesting. The subject has decided to test gravity personally."
+  - "A very convincing descent. I would say we have earned a break."
+  - "Excellent, the falling test is complete too. Let us rest for a moment."
   duration: 30
 --- !u!114 &1005
 MonoBehaviour:
@@ -132,5 +132,5 @@ MonoBehaviour:
   scientistComment: {fileID: 1004}
   subjectDied: 1
   resultMessages:
-  - "Il soggetto ha approfondito il funzionamento della gravità."
-  - "Il soggetto ha completato la discesa con notevole determinazione."
+  - "The subject has investigated how gravity works."
+  - "The subject has completed the descent with remarkable determination."

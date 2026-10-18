@@ -60,7 +60,7 @@ namespace GameJamPlus.UI
         {
             if (document == null)
             {
-                Debug.LogError("Assegna il UIDocument al MainMenuController.", this);
+                Debug.LogError("Assign the UIDocument to MainMenuController.", this);
                 return;
             }
 

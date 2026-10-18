@@ -12,7 +12,7 @@ namespace MousePlatformer
         [SerializeField] private TestEndEvent drowningOutcome;
         [SerializeField, Min(1)] private int maximumNotches = 5;
         [SerializeField, Min(0.1f)] private float drainInterval = 5f;
-        [SerializeField, Min(0.1f)] private float recoveryInterval = 5f;
+        [SerializeField, Min(0.1f)] private float recoveryInterval = 1f;
         [SerializeField, Range(0f, 1f)] private float breathingPointHeight = 0.85f;
         [SerializeField, Min(0f)] private float warningSeconds = 10f;
         [SerializeField] private UnityEvent onLowOxygen = new UnityEvent();

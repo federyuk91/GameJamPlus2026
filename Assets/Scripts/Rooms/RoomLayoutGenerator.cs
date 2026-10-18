@@ -11,7 +11,7 @@ namespace MousePlatformer
         [SerializeField, Range(1, 100)] private int roomCount = 10;
         [SerializeField] private int seed = 12345;
         [SerializeField, Min(1)] private int searchLimit = 50000;
-        [SerializeField, Tooltip("Dimensione delle celle della Grid comune. Deve coincidere con quella dei prefab.")]
+        [SerializeField, Tooltip("Shared Grid cell size. Must match the prefabs.")]
         private Vector2 cellSize = Vector2.one;
         public Vector2 CellSize => cellSize;
         [SerializeField, HideInInspector] private Transform generatedRoot;

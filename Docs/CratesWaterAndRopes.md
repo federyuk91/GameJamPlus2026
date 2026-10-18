@@ -1,61 +1,44 @@
-# Casse, acqua e corde
+# Crates, water and ropes
 
-## Esempi nella LoopScene
+## LoopScene examples
 
-Il gruppo `Crate Water Rope Examples` contiene tre casi, utilizzando il volume `Water` già presente nella scena:
+Crate Water Rope Examples contains three cases using the existing Water volume:
 
-| Oggetto | Posizione iniziale | Comportamento |
+| Object | Initial position | Behavior |
 | --- | --- | --- |
-| `01 Free Floating Crate` | `(15.5, 5.235)` | Parte immersa e risale fino a un equilibrio sulla superficie. |
-| `02 Horizontal Swinging Crate` | `(-3.78, -0.871)` | Sospesa circa tre unità a sinistra della posizione iniziale del Player. Oscilla mantenendo il collider e la grafica orizzontali. |
-| `03 Seabed Tethered Crate` | `(17.5, -11.695)` | Legata al fondo del bacino esistente. La spinta idrostatica tende la corda verso l'alto. Tagliandola, la cassa risale. |
+| 01 Free Floating Crate | (15.5, 5.235) | Starts submerged and rises to surface equilibrium. |
+| 02 Horizontal Swinging Crate | (-3.78, -0.871) | Suspended about three units left of the initial Player position; swings with collider/art kept horizontal. |
+| 03 Seabed Tethered Crate | (17.5, -11.695) | Tethered to the existing basin floor; buoyancy tensions the rope upward, and cutting releases the crate to rise. |
 
-Le corde dei due esempi sono tagliabili. I riferimenti del Player includono anche la corda già presente nella scena.
+Both example ropes are cuttable. Player references also include the original scene rope.
 
-## Componenti delle casse
+## Crate components
 
-- `CrateMotion`: integra velocità, gravità, collisioni e vincoli. Rimane attivo anche quando la cassa è legata. Tutte le casse della LoopScene, comprese le due preesistenti, hanno questo componente.
-- `CrateBuoyancy`: spinta a immersione completa e resistenza nell'acqua, configurabili sulla singola cassa. La percentuale immersa deriva dai bounds del collider e dai volumi d'acqua attivi. La spinta completa deve superare la gravità per permettere il galleggiamento; con i valori iniziali di 100 e 66 l'equilibrio è circa al 66% di immersione.
-- `PushableCrate`: abilita la presa con E / pulsante ovest e contiene `Weight`, divisore della velocità di spinta e tiro. Non governa più la caduta della cassa.
-- `CrateRopeAttachment`: reference alla corda e punto locale di attacco. Il vincolo limita la distanza dall'ancora senza applicare rotazioni alla cassa; una corda può quindi allentarsi. La cassa sospesa usa l'attacco superiore, quella ancorata al fondo quello inferiore.
+- CrateMotion integrates velocity, gravity, collisions and constraints, including while tethered. All LoopScene crates, including the original two, use it.
+- CrateBuoyancy configures full-submersion lift and drag per crate. Submersion uses collider bounds and active water volumes. Lift must exceed gravity to float: initial values 100 and 66 yield roughly 66% equilibrium submersion.
+- PushableCrate enables grabbing with E / gamepad West and exposes Weight as a push/pull speed divisor. It no longer handles falling.
+- CrateRopeAttachment references a rope and local attachment point. Its distance constraint does not rotate the crate and allows slack. Hanging crates attach at the top; seabed-tethered crates at the bottom.
 
-`CrateRopeAttachment` disabilita `PushableCrate` quando si collega alla corda e lo riattiva al taglio. La velocità della cassa rimane conservata al distacco. Il peso usato per spinta e tiro è indipendente dai parametri di galleggiamento.
+Attachment disables PushableCrate and cutting reenables it. Detachment preserves velocity. Push/pull weight is independent of buoyancy. Existing crates outside LoopScene need CrateMotion and physics settings, plus CrateBuoyancy to float. Adding PushableCrate to a new crate automatically adds movement.
 
-Per altre casse già create in scene o prefab esterni alla LoopScene, aggiungere `CrateMotion` e assegnare i settings della fisica; per farle galleggiare aggiungere anche `CrateBuoyancy`. Le nuove casse create aggiungendo `PushableCrate` ricevono automaticamente il componente di movimento.
+## Mouse contact
 
-## Contatto con il topo
+Underwater contact pushes crates without E, including tethered crates; rope constraints and Weight still limit movement. Slow downward swimmer motion on a crate does not become a downward force that cancels flotation.
 
-In acqua il movimento del topo sposta le casse al contatto senza richiedere E, comprese quelle ancora legate; il vincolo della corda continua a limitarle. Il peso limita anche questa velocità di spostamento. La caduta lenta del nuotatore appoggiato sopra una cassa non viene convertita in una spinta verso il basso che annulli il galleggiamento.
+PlayerPlatformRide carries a standing mouse and transfers support velocity on jumping. A rising crate can lift a submerged mouse. Overhead obstacles limit carrying to prevent passage through ceilings; crushing damage is not implemented.
 
-`PlayerPlatformRide` trasporta il topo appoggiato sulla cassa mentre questa si sposta e trasferisce la velocità della piattaforma al salto. Una cassa che risale da sotto può sollevare il topo mentre è in acqua. Il movimento viene limitato dagli ostacoli sopra il topo per evitare di trascinarlo attraverso un soffitto; non è introdotta una meccanica di danno da schiacciamento.
+## Biting
 
-## Morso
+Hold F / gamepad East to bite a rope in front of the mouth. PlayerRopeBite exposes Hold Duration (initially 0.6 seconds), Reach and Mouth Offset. Original Inspector Ropes lists were superseded by the enabled-rope registry; see RopeInteraction.md.
 
-Tenere premuto **F** oppure il **pulsante est del gamepad** per mordere una corda davanti alla bocca. `PlayerRopeBite` espone:
+Releasing input or losing the target cancels biting. Repeated cuts require a new press. Solids obstruct biting; there is no dedicated bite animation yet. Disable RopeSimulation.Can Be Cut for steel cable; climbing availability is independent.
 
-- `Hold Duration`: durata iniziale 0.6 secondi.
-- `Reach`: portata del morso.
-- `Mouth Offset`: posizione locale della bocca rispetto alla parte visiva.
-- `Ropes`: corde raggiungibili dal sistema, assegnate da Inspector.
+Cutting removes one link, releases the crate and keeps remaining segments visible. The anchored section stays attached and separated pieces fall. A disconnected grip originally detached the player; current reattachment behavior is detailed in RopeInteraction.md. Segments remain simulated points without solid colliders. Seabed ropes reverse climb coordinates so vertical input stays consistent in world space.
 
-Rilasciare il pulsante o perdere la corda interrompe il morso. Un taglio richiede una nuova pressione per essere ripetuto. Gli ostacoli solidi bloccano il morso. L'azione non include ancora una clip grafica dedicata al morso.
+Check surface equilibrium, contact pushing before/after cuts, riding rising crates, jumping from hanging crates, wall/ceiling constraints, interrupted biting and uncuttable ropes. Submersion assumes horizontal water surfaces using volume bounds; rotated/irregular water requires different sampling.
 
-Su `RopeSimulation`, disattivare **Can Be Cut** per un cavo d'acciaio. Il flag è indipendente dalla possibilità di arrampicarsi: il topo può usare anche una corda non tagliabile.
+## Editor rope length
 
-Il taglio elimina un collegamento della catena, libera la cassa e mantiene i segmenti restanti visibili. La parte superiore resta ancorata, quella separata cade; il topo perde la presa se il suo punto di aggancio non è più collegato all'ancora. Le parti della corda restano simulate come punti, senza collider solidi sui segmenti. Le corde ancorate sul fondo invertono correttamente la coordinata di arrampicata per mantenere il comando verticale nello spazio.
+Rope Simulation.Length is a piece count (minimum 1); editing it adds/removes pieces. Segment Length controls each piece's world length. Rope.prefab uses one-unit pieces, so Length 5 means five units. Crate prefabs retain 0.25-unit segments and original total lengths.
 
-## Verifica in Unity
-
-Provare equilibrio sulla superficie, spinta per contatto prima e dopo il taglio, risalita con il topo sopra, salto dalla cassa sospesa, vincoli vicino a pareti/soffitti e morso interrotto. Verificare anche `Can Be Cut` disattivato. Il modello di immersione usa i bounds dei volumi con superficie d'acqua orizzontale; volumi ruotati o forme d'acqua irregolari richiedono un campionamento diverso.
-
-## Lunghezza delle corde in Editor
-
-Nel componente `Rope Simulation`, `Length` indica il numero di pezzi (minimo 1).
-Cambiarlo aggiunge o rimuove automaticamente i pezzi; `Segment Length (units)` stabilisce la lunghezza di ciascuno.
-Nel prefab `Rope` ogni pezzo misura 1 unità, quindi `Length = 5` corrisponde a 5 unità.
-I prefab delle casse mantengono i segmenti da 0.25 unità e le rispettive lunghezze iniziali.
-
-L'ancoraggio resta fisso. I pezzi vengono allineati senza spazi, nella direzione iniziale della corda (verso l'alto per quella sul fondo).
-Il pulsante `Ricostruisci e allinea pezzi` ripristina l'allineamento dopo modifiche manuali.
-La geometria si modifica fuori dal Play Mode; la simulazione usa poi il nuovo numero di segmenti anche per arrampicata, morso e vincolo delle casse.
-Le corde non usano un Box Collider unico: le interazioni seguono i segmenti simulati.
+The anchor stays fixed. Pieces align without gaps in the initial direction, upward for seabed ropes. Rebuild and align pieces restores alignment after manual edits. Edit geometry outside Play Mode; simulation, climbing, bites and crate constraints then use the new count. Ropes do not use one large BoxCollider; interaction follows simulated segments.

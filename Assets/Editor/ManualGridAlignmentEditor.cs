@@ -20,9 +20,9 @@ public sealed class ManualGridAlignmentEditor : Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        EditorGUILayout.HelpBox("Posiziona stanze o Grid sotto questo contenitore, poi allineale. Le stanze vengono spostate intere; i tile non vengono modificati.", MessageType.Info);
+        EditorGUILayout.HelpBox("Place rooms or Grids under this container, then align them. Entire rooms are moved; tiles are not modified.", MessageType.Info);
         using (new EditorGUI.DisabledScope(EditorApplication.isPlaying || EditorUtility.IsPersistent(target)))
-            if (GUILayout.Button("Allinea griglie figlie")) Align((ManualGridAlignment)target);
+            if (GUILayout.Button("Align child grids")) Align((ManualGridAlignment)target);
     }
 
     private static void Align(ManualGridAlignment container)
@@ -33,7 +33,7 @@ public sealed class ManualGridAlignmentEditor : Editor
             if (grid == container.ReferenceGrid || grid.transform == container.transform) continue;
             if (!container.TryGetDisplacement(grid, out Vector3 displacement, out string error))
             {
-                Debug.LogWarning(error + " Nessun oggetto spostato.", grid);
+                Debug.LogWarning(error + " No objects moved.", grid);
                 return;
             }
             RoomDefinition room = grid.GetComponentInParent<RoomDefinition>();
@@ -42,7 +42,7 @@ public sealed class ManualGridAlignmentEditor : Editor
             if (displacements.TryGetValue(mover, out Vector3 existing)
                 && (existing - displacement).sqrMagnitude > 0.000001f)
             {
-                Debug.LogWarning(mover.name + ": le griglie interne richiedono spostamenti diversi. Nessun oggetto spostato.", mover);
+                Debug.LogWarning(mover.name + ": internal grids require different offsets. No objects moved.", mover);
                 return;
             }
             displacements[mover] = displacement;
@@ -54,19 +54,19 @@ public sealed class ManualGridAlignmentEditor : Editor
         placements.Sort((Placement a, Placement b) => Depth(a.Transform).CompareTo(Depth(b.Transform)));
         Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Allinea griglie figlie");
+        Undo.SetCurrentGroupName("Align child grids");
         int moved = 0;
         foreach (Placement placement in placements)
         {
             if ((placement.Transform.position - placement.Position).sqrMagnitude <= 0.00000001f) continue;
-            Undo.RecordObject(placement.Transform, "Allinea alla griglia");
+            Undo.RecordObject(placement.Transform, "Align to grid");
             placement.Transform.position = placement.Position;
             PrefabUtility.RecordPrefabInstancePropertyModifications(placement.Transform);
             moved++;
         }
         Undo.CollapseUndoOperations(group);
         Physics2D.SyncTransforms();
-        Debug.Log("Allineamento completato: " + moved + " stanze/griglie spostate.", container);
+        Debug.Log("Alignment complete: " + moved + " rooms/grids moved.", container);
     }
 
     private static int Depth(Transform transform)
@@ -76,11 +76,11 @@ public sealed class ManualGridAlignmentEditor : Editor
         return depth;
     }
 
-    [MenuItem("Tools/Mouse Platformer/Stanze/Crea contenitore griglia manuale")]
+    [MenuItem("Tools/Mouse Platformer/Rooms/Create Manual Grid Container")]
     private static void CreateContainer()
     {
         GameObject container = new GameObject("Manual Room Grid", typeof(Grid), typeof(ManualGridAlignment));
-        Undo.RegisterCreatedObjectUndo(container, "Crea contenitore griglia manuale");
+        Undo.RegisterCreatedObjectUndo(container, "Create manual grid container");
         Selection.activeGameObject = container;
     }
 }

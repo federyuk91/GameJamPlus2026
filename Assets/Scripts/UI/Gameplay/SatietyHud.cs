@@ -112,7 +112,7 @@ namespace GameJamPlus.UI
         private void RefreshResources()
         {
             bool showOxygen = oxygen != null && oxygen.IsUnderwater;
-            if (caption != null) caption.text = showOxygen ? "APNEA" : "SAZIETÀ";
+            if (caption != null) caption.text = showOxygen ? "OXYGEN" : "SATIETY";
             if (showOxygen) RefreshNotches(oxygen.Current, oxygen.Maximum);
             else if (satiety != null) RefreshNotches(satiety.Current, satiety.Maximum);
             notches?.EnableInClassList("oxygen-notches", showOxygen);

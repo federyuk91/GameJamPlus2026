@@ -1,70 +1,33 @@
-# Tilemap e Tile Palette
+# Tilemaps and Tile Palette
 
-LoopScene contiene il prefab Gameplay Tilemaps, con griglia rettangolare
-1x1 unita. I fogli Art/Tiles sono gia suddivisi in celle 32x32 a 32 PPU;
-le importazioni usano Point e non generano mipmap.
+LoopScene contains Gameplay Tilemaps with a rectangular 1×1-unit grid. Art/Tiles sheets are sliced into 32×32 cells at 32 PPU with Point filtering and no mipmaps.
 
-In Window > 2D > Tile Palette si trovano tre palette:
-TilemapFloor, TilemapTube e TilePipes. I 39 Tile asset sono salvati in
-Assets/Tilemaps/Tiles. La disposizione nelle palette conserva quella dei fogli.
-Il menu Tools > Mouse Platformer > Tilemaps offre un comando per aprire
-Tile Palette e uno per creare asset eventualmente mancanti.
+Window → 2D → Tile Palette contains TilemapFloor, TilemapTube and TilePipes. The 39 Tile assets are in Assets/Tilemaps/Tiles and preserve sheet layout. Tools → Mouse Platformer → Tilemaps can open Tile Palette or prepare missing assets.
 
-Scegliere la palette e la Tilemap di destinazione tramite Active Target:
+Choose a palette and Active Target:
 
-- Terrain - Solid: pavimenti, pareti, piattaforme e profili del livello.
-- Pipes - Solid: tubi che devono bloccare movimento e vista.
-- Background - Decorative: sfondo, senza collider, ordine -20.
-- Foreground - Decorative: elementi davanti al topo, senza collider, ordine 5.
+- Terrain - Solid: floors, walls, platforms and level profiles.
+- Pipes - Solid: pipes blocking movement and sight.
+- Background - Decorative: no colliders, order -20.
+- Foreground - Decorative: in front of the mouse, no colliders, order 5.
 
-Tutte le palette possono essere usate su tutte le Tilemap. I collider dei Tile
-sono di tipo Sprite, quindi seguono la Physics Shape della sprite invece di
-riempire automaticamente l'intera cella. Per cambiare un profilo usare Sprite
-Editor > Custom Physics Shape, oppure scegliere Grid sul singolo Tile asset
-se deve occupare un quadrato intero. I decori non collidono anche quando il
-Tile asset contiene un profilo, perche la Tilemap non ha TilemapCollider2D.
+All palettes work on every Tilemap. Sprite-type Tile colliders follow sprite Physics Shapes rather than filling cells. Edit Sprite Editor → Custom Physics Shape or choose Grid on a Tile asset for a full square. Decorative Tilemaps have no TilemapCollider2D and remain non-solid even if their Tile assets define shapes.
 
-Le due mappe solide usano Rigidbody2D Static, TilemapCollider2D e
-CompositeCollider2D Polygons, con una piccola tolleranza di accorpamento.
-Il layer Default e incluso nelle collisioni del player e delle casse e negli
-Occluder Layers del piranha. Movimento, gradini, climb, appoggio sulle
-piattaforme e occultamento visivo utilizzano cosi i collider esistenti.
-Per superfici continue preferire la stessa Tilemap per accorpare le giunzioni.
+Solid maps use Static Rigidbody2D, TilemapCollider2D and CompositeCollider2D Polygons with a small merge tolerance. Default is included in player/crate collisions and piranha Occluder Layers. Movement, stepping, climbing, support and visibility use these colliders. Use the same Tilemap for continuous surfaces to merge seams.
 
-La griglia in scena parte vuota: la geometria gia presente rimane il riferimento
-per le prove. Le celle dipinte nell'istanza di LoopScene si salvano insieme alla
-scena come override; il prefab rimane riutilizzabile per altre scene.
+The scene grid starts empty, retaining existing geometry for reference. Painting LoopScene's instance saves scene overrides; the prefab remains reusable.
 
-## Proposta futura per terra scavabile e acqua
+## Future diggable terrain and water
 
-Quando saranno disponibili i relativi tile, usare due mappe dedicate:
+When suitable tiles exist, use dedicated maps:
 
-- Terra scavabile: le celle dipinte definiscono la terra iniziale; suddividere
-  l'area in porzioni con maschera di scavo fine, shader e collider aggiornabili.
-  I tunnel mantengono il raggio attuale, senza essere limitati a celle da 1 unita.
-- Acqua: le celle contigue definiscono volumi trigger accorpati; un componente
-  acqua per Tilemap li espone al nuoto e al galleggiamento, mantenendo coerente
-  la rilevazione usata dal piranha. La parte visiva puo usare un materiale acqua.
+- Diggable terrain: painted cells define initial soil; partition into fine excavation masks, shaders and updatable colliders. Tunnels retain the current radius, unrestricted by one-unit cells.
+- Water: contiguous cells form merged trigger volumes exposed to swimming/flotation and consistent piranha detection; visuals may use a water material.
 
-Queste due mappe non sono state create: in questa configurazione restano
-operative la terra scavabile e l'acqua gia presenti nella scena.
+These maps were not created in this setup; existing scene terrain/water remain active. Check painted solid surfaces, reachable ledges, piranha sight occlusion and passable decoration in Unity.
 
-Verifica in Unity: dipingere una superficie nella mappa solida e camminarci,
-provare il climb su un bordo raggiungibile e verificare che una parete oscuri
-la vista del piranha. I tile decorativi devono lasciar passare il topo.
+## Updating sheets without mixing tiles
 
+Unity slice coordinates start at the image bottom. Adding a row below existing upper artwork requires shifting old Sprite Editor rectangles upward. Preserve names and especially Sprite ID/internalID used by Tile assets/rooms; do not reslice away old sprites. Adding cells on the right avoids this vertical shift.
 
-## Aggiornare un'immagine senza mescolare i tile
-
-Le coordinate dei ritagli Unity partono dal basso dell'immagine. Aggiungere
-una riga sotto il disegno, mantenendo i pezzi originali in alto, richiede quindi
-lo spostamento verso l'alto dei loro rettangoli nel Sprite Editor. Conservare
-i nomi e soprattutto Sprite ID/internalID: i Tile asset e le stanze li usano
-per ritrovare i pezzi. Evitare una nuova suddivisione che elimini i vecchi sprite.
-Aggiungere nuove celle a destra evita questo specifico spostamento verticale.
-
-Riparazione TilemapTube: i 16 sprite originali ora usano y=32 nell'immagine
-544x64 aggiornata; i sei ritagli della riga inferiore sono TilemapTube_New_0..5.
-I relativi Tile asset si trovano nella cartella TilemapTube e sono presenti
-nella riga aggiuntiva della palette. I due Tile asset creati manualmente durante
-l'aggiornamento sono conservati, con gli stessi GUID.
+TilemapTube repair: 16 original sprites now use y=32 in the updated 544×64 image. Six lower-row slices are TilemapTube_New_0..5. Their Tile assets are in TilemapTube and the added palette row. Two manually created Tile assets retain their GUIDs.

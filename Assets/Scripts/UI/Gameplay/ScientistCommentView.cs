@@ -80,7 +80,7 @@ namespace GameJamPlus.UI
             transcript = root.Q<ScrollView>("scientist-transcript");
             transcript.pickingMode = PickingMode.Position;
             transcript.contentViewport.pickingMode = PickingMode.Position;
-            transcript.tooltip = "Scorri: rotella, PagSu/PagGiù o stick destro";
+            transcript.tooltip = "Scroll: mouse wheel, Page Up/Page Down or right stick";
             transcript.RegisterCallback<WheelEvent>(OnManualScroll, TrickleDown.TrickleDown);
             advanceButton = root.Q<Button>("scientist-advance");
             advanceButton.text = string.Empty;

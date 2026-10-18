@@ -24,7 +24,7 @@ namespace GameJamPlus.UI
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
         [SerializeField] private bool showWelcomeOnStart = true;
         [SerializeField, TextArea] private string welcomeText =
-            "Benvenuto nell'universo-10, rilassati e goditi il soggiorno";
+            "Welcome to Universe-10. Relax and enjoy your stay.";
         [SerializeField] private Sprite welcomePortrait;
         [SerializeField, Range(1f, 30f)] private float welcomeDuration = 30f;
         [SerializeField] private bool pauseWhilePhotoOpen = true;
@@ -85,7 +85,7 @@ namespace GameJamPlus.UI
         {
             if (document == null || document.panelSettings == null || viewport == null)
             {
-                Debug.LogError("Assegna UIDocument, PanelSettings e PixelPerfectViewport al GameplayHudController.", this);
+                Debug.LogError("Assign UIDocument, PanelSettings and PixelPerfectViewport to GameplayHudController.", this);
                 return;
             }
 
@@ -254,7 +254,7 @@ namespace GameJamPlus.UI
         public void SetCounter(int index, int value)
         {
             if (index < 0 || index >= counterValues.Length)
-                throw new ArgumentOutOfRangeException(nameof(index), "Gli indici dei contatori sono 0, 1, 2 e 3.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Counter indices are 0, 1, 2 and 3.");
 
             counterValues[index] = Mathf.Max(0, value);
             if (ready) RefreshCounter(index);

@@ -19,7 +19,7 @@ namespace GameJamPlus.UI
             GameplayHudController target = hud != null ? hud : manager != null ? manager.Hud : null;
             if (target == null)
             {
-                Debug.LogWarning("Assegna il Gameplay HUD al componente messaggi.", this);
+                Debug.LogWarning("Assign the Gameplay HUD to the message component.", this);
                 return;
             }
             string message = ChooseMessage();

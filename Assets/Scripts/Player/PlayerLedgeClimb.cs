@@ -10,7 +10,7 @@ namespace MousePlatformer
         public enum LedgeState { None, Hanging, Climbing }
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private PhysicsSettings physicsSettings;
-        [SerializeField, Tooltip("Diagnostica dell'ultimo tentativo di aggancio o salita, aggiornata in Play Mode.")]
+        [SerializeField, Tooltip("Diagnostics for the latest attachment or climb attempt, updated in Play Mode.")]
         private string lastAttempt;
         [SerializeField] private Collider2D blockingCollider;
         private readonly List<RaycastHit2D> hits = new List<RaycastHit2D>(8);
@@ -44,9 +44,9 @@ namespace MousePlatformer
             {
                 wall = body.Probe(Vector2.right * direction, Settings.forwardReach + body.Skin,
                     out _, out Vector2 wallNormal);
-                if (Mathf.Abs(wallNormal.x) < 0.1f) return Reject("Nessun fianco raggiungibile", wall);
+                if (Mathf.Abs(wallNormal.x) < 0.1f) return Reject("No reachable side", wall);
             }
-            if (wall == null) return Reject("Nessun fianco raggiungibile");
+            if (wall == null) return Reject("No reachable side");
             float probeX = bounds.center.x + direction * (bounds.extents.x + Settings.forwardReach);
             Vector2 origin = new Vector2(probeX, bounds.min.y + Settings.maxHeight + body.Skin * 2f);
             Physics2D.Raycast(origin, Vector2.down, body.SolidFilter, hits, Settings.maxHeight + body.Skin * 4f);
@@ -60,15 +60,15 @@ namespace MousePlatformer
             }
             if (top.collider != wall || top.normal.y < 0.9f
                 || Vector2.Angle(top.normal, Vector2.up) > Mathf.Clamp(Movement.maxSlopeAngle, 0f, 89f) + 0.01f)
-                return Reject("Nessun piano di appoggio valido sopra il fianco", top.collider);
+                return Reject("No valid supporting surface above the side", top.collider);
             float surfaceRise = top.point.y - bounds.min.y;
             // Keep the landing box outside the contact tolerance, then settle onto the support.
             float landingGap = Mathf.Max(body.Skin, Physics2D.defaultContactOffset * 2f);
             float rise = surfaceRise + landingGap;
-            if (surfaceRise <= 0f || surfaceRise > Settings.maxHeight) return Reject("Altezza fuori dal limite", wall);
-            if (fromGround && surfaceRise + body.Skin <= Movement.maxStepHeight) return Reject("Altezza gestita dal gradino standard", wall);
+            if (surfaceRise <= 0f || surfaceRise > Settings.maxHeight) return Reject("Height exceeds the limit", wall);
+            if (fromGround && surfaceRise + body.Skin <= Movement.maxStepHeight) return Reject("Height handled by standard stepping", wall);
             float hangShift = rise - bounds.size.y * Settings.hangHeightFraction;
-            if (!fromGround && Mathf.Abs(hangShift) > Settings.grabVerticalReach) return Reject("Bordo fuori dalla portata verticale delle zampe", wall);
+            if (!fromGround && Mathf.Abs(hangShift) > Settings.grabVerticalReach) return Reject("Ledge is beyond the paws' vertical reach", wall);
 
             Vector2 shift = new Vector2(probeX - bounds.center.x, rise);
             // Inset clearance queries avoid counting the adjacent floor or wall as initial overlaps.
@@ -82,15 +82,15 @@ namespace MousePlatformer
             Physics2D.OverlapBox((Vector2)bounds.center + shift, clearanceSize, 0f, body.SolidFilter, overlaps);
             foreach (Collider2D collider in overlaps)
                 if (collider != body.Shape && !collider.transform.IsChildOf(transform))
-                    return Reject($"Spazio di arrivo occupato: piedi {bounds.min.y + rise:F4}, "
-                        + $"sommità collider {collider.bounds.max.y:F4}", collider);
+                    return Reject($"Landing space occupied: feet {bounds.min.y + rise:F4}, "
+                        + $"collider top {collider.bounds.max.y:F4}", collider);
 
             Vector2 originalPosition = transform.position;
             if (!fromGround)
             {
                 Vector2 adjustment = Vector2.up * hangShift;
                 if ((body.AllowedDisplacement(adjustment) - adjustment).sqrMagnitude > 0.000001f)
-                    return Reject("Allineamento al bordo ostruito", wall);
+                    return Reject("Ledge alignment obstructed", wall);
                 body.Move(adjustment);
             }
             support = top.collider;
@@ -102,7 +102,7 @@ namespace MousePlatformer
             elapsed = 0f;
             State = fromGround ? LedgeState.Climbing : LedgeState.Hanging;
             if (fromGround) ClimbStarted?.Invoke();
-            lastAttempt = fromGround ? "Salita avviata" : "Aggancio riuscito";
+            lastAttempt = fromGround ? "Climb started" : "Attachment successful";
             return true;
         }
 
@@ -123,7 +123,7 @@ namespace MousePlatformer
             {
                 if (hit.collider == body.Shape || hit.collider.transform.IsChildOf(transform)) continue;
                 if (Vector2.Dot(hit.normal, direction) >= -0.01f) continue;
-                if (hit.distance < distance) return Reject("Percorso di salita ostruito", hit.collider);
+                if (hit.distance < distance) return Reject("Climb path obstructed", hit.collider);
             }
             return true;
         }
@@ -203,13 +203,13 @@ namespace MousePlatformer
             if (!raised)
             {
                 body.Move(Vector2.up * Mathf.Clamp(delta.y, -step, step));
-                if (body.HitCeiling) { Reject("Salita interrotta: collisione verso l’alto"); Stop(); released = true; return true; }
+                if (body.HitCeiling) { Reject("Climb interrupted: overhead collision"); Stop(); released = true; return true; }
                 raised = Mathf.Abs(transform.position.y - target.y) <= 0.001f;
             }
             else
             {
                 body.Move(Vector2.right * Mathf.Clamp(delta.x, -step, step));
-                if (body.HitWall) { Reject("Salita interrotta: collisione laterale"); Stop(); released = true; return true; }
+                if (body.HitWall) { Reject("Climb interrupted: side collision"); Stop(); released = true; return true; }
                 if (Mathf.Abs(transform.position.x - target.x) <= 0.001f)
                 {
                     body.Move(Vector2.up * Mathf.Clamp(target.y - transform.position.y, -step, step));

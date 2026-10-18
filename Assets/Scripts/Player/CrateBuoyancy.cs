@@ -5,7 +5,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class CrateBuoyancy : MonoBehaviour
     {
-        [SerializeField, Min(0f), Tooltip("Spinta a immersione completa in unità/s². Deve superare la gravità della cassa per galleggiare.")]
+        [SerializeField, Min(0f), Tooltip("Acceleration at full submersion in units/s². Must exceed crate gravity for flotation.")]
         private float buoyancyAcceleration = 100f;
         [SerializeField, Min(0f)] private float waterDrag = 5f;
 

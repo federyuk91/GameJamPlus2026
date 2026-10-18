@@ -7,7 +7,7 @@ namespace MousePlatformer
     {
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private bool showGizmos = true;
-        [SerializeField, Min(0.01f), Tooltip("Divisore della velocità di spinta e tiro. 1 = velocità base, 2 = metà velocità.")]
+        [SerializeField, Min(0.01f), Tooltip("Push/pull speed divisor. 1 = base speed, 2 = half speed.")]
         private float weight = 1f;
         public SimulatedBody2D Body => body != null ? body : body = GetComponent<SimulatedBody2D>();
         public float Weight => Mathf.Max(0.01f, weight);

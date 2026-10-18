@@ -1,115 +1,45 @@
-# Stanze prefab e assemblaggio procedurale
+# Prefab rooms and procedural assembly
 
-## Disegnare una stanza
+## Drawing a room
 
-1. Duplicare Assets/Prefabs/Rooms/Room Template.prefab e rinominare la copia.
-2. Aprire la copia in Prefab Mode. Il figlio Gameplay Tilemaps contiene le mappe
-   solide e decorative gia configurate: dipingere con le Tile Palette esistenti.
-3. Sulla radice, RoomDefinition espone Footprint: l'ingombro rettangolare deve
-   contenere la stanza completa. Si modifica dall'Inspector o con le maniglie
-   ciano nella Scene view. Mantenere rotazione zero e scala 1 sulla radice.
-4. I pulsanti Up, Down, Left, Right aggiungono uscite figlie e assegnano i
-   riferimenti. Spostare i figli Exit esattamente al punto di aggancio del tubo.
-   Le frecce verdi indicano il verso e non generano grafica o collider.
-   Il pulsante Allinea uscite alla griglia applica lo snap anche nel prefab.
-5. Salvare il prefab. Le uscite devono essere al massimo una per direzione.
-   Per rimuoverne una, eliminare il figlio e il riferimento nell'array Ports.
+1. Duplicate Assets/Prefabs/Rooms/Room Template.prefab and rename it.
+2. Open Prefab Mode. Gameplay Tilemaps contains configured solid/decorative maps for existing Tile Palettes.
+3. RoomDefinition.Footprint must contain the complete room. Edit it in Inspector or with cyan Scene View handles. Keep root rotation zero and scale 1.
+4. Up/Down/Left/Right buttons create assigned Exit children. Position exits at pipe connection points. Green arrows show direction without creating art/colliders. Align exits to grid also snaps inside prefabs.
+5. Save. Allow at most one exit per direction; remove both child and Ports reference to delete an exit.
 
-I punti compatibili sono Up-Down e Left-Right. Quando si collegano, le loro
-posizioni coincidono. Non si ruotano o specchiano le stanze per adattarle.
-Le dimensioni dei tubi devono essere coerenti fra prefab; il verso verifica
-solo la compatibilita, non la larghezza del passaggio.
+Compatible connections are Up–Down and Left–Right with coincident positions. Rooms are not rotated/mirrored to fit. Pipe dimensions must match; direction checks compatibility, not passage width. A terminal must have exactly one exit, occupied by its connection. Draw closed remaining walls and colliders; the generator does not create caps.
 
-Una stanza terminale deve avere esattamente un'uscita, che verra occupata dal
-collegamento. Le altre pareti devono essere chiuse anche nella grafica e nei
-collider: il generatore non disegna tappi automaticamente.
+## Generating layouts
 
-## Generare il layout
+Place Assets/Prefabs/Rooms/Room Layout Generator.prefab in a scene. Assign Start Room, intermediate Rooms and Terminal Rooms. Room Count includes start and terminals. Seed reproduces choices with the same catalog/configuration.
 
-Trascinare Assets/Prefabs/Rooms/Room Layout Generator.prefab nella scena.
-Assegnare Start Room, Rooms (stanze intermedie) e Terminal Rooms.
-Room Count e il totale, compresa partenza e terminali. Seed rende riproducibile
-la scelta con lo stesso catalogo e la stessa configurazione dei prefab.
-Premere Genera stanze nell'Inspector: il risultato appare sotto Generated Rooms,
-conservando i collegamenti ai prefab originali. Il generatore funziona solo dal
-pulsante in Editor, senza generazione automatica all'avvio della partita.
+Generate rooms creates Generated Rooms with source prefab links. Generation is Editor-button-only, not automatic on game startup. Search aligns opposing ports, uses each exit once and rejects positive-area footprint intersections; rectangle edges may touch. Connections form a tree without cycles. A solution must have the exact requested count and no unused exits. Search tries alternatives up to Search Limit; failure preserves the old result and reports the problem.
 
-La ricerca allinea punti opposti, usa ogni uscita una volta e rifiuta gli
-incroci degli ingombri con area positiva. I bordi dei rettangoli possono toccarsi.
-Le connessioni formano un albero: l'implementazione non crea cicli fra stanze
-gia collocate. Il layout deve avere il numero esatto richiesto e nessuna uscita
-libera. La ricerca prova alternative fino a Search Limit; se non trova una
-soluzione lascia intatto il risultato precedente e mostra un rapporto.
+Regeneration replaces only this generator's container. Generation/removal support Undo. If the container was moved outside the generator, restore it before regenerating. Require zero world rotation and world scale 1. Snap the result to world-grid cells and save the scene to retain it.
 
-Rigenerare sostituisce solo il contenitore creato da questo generatore.
-Generazione e rimozione supportano Undo. Se il contenitore viene spostato fuori
-dal generatore, viene lasciato intatto e occorre ripristinarlo prima di rigenerare.
-Il generatore richiede rotazione mondo zero e scala mondo 1. La posizione del
-risultato viene agganciata alle celle della griglia mondiale. Salvare la scena per conservare il layout.
+## Included examples
 
-## Esempi inclusi
+Example Up Left is the agreed two-exit starting example. Example Left Right / Up Down are catalog corridors. Terminal Up/Down/Left/Right close corresponding directions. These editable 8×6 examples contain painted walls/openings. The generator is assigned to them with Room Count 10 and Seed 12345; the empty template is not in the catalog.
 
-Example Up Left: stanza iniziale con le due uscite dell'esempio concordato.
-Example Left Right e Example Up Down: corridoi utilizzabili nel catalogo.
-Terminal Up, Down, Left e Right: terminali per chiudere le rispettive direzioni.
-Gli esempi sono semplici stanze 8x6 con pareti e aperture dipinte; servono come
-base modificabile. Il generatore prefab e gia collegato a questi esempi,
-con totale iniziale 10 e seed 12345. Il modello vuoto non e nel catalogo.
+Check an example's footprint/ports, generate in free space, inspect seams/colliders/passages, and change seed/count. Keep Player, camera and global systems outside room prefabs.
 
-Per il primo controllo in Unity: aprire un esempio, verificare uscite e ingombro,
-trascinare il generatore in una zona libera e premere Genera stanze. Controllare
-le giunzioni, i collider e il passaggio del topo; cambiare seed e numero di stanze.
-Mantenere player, camera e sistemi globali fuori dai prefab delle stanze.
+## Shared generated Grid
 
+Generated Rooms contains one Grid, retained during Play Mode. Drawing prefabs retain local Grids; only generated instances lose them and use the shared Grid. Generator Cell Size must match prefab cells (1×1 here). Require rectangular XY grids, no Cell Gap, rotation or scale. Tilemap origins must lie on whole local cells; off-grid transforms are reported.
 
-## Griglia comune del layout generato
+Exit snapping uses the cell edge along travel direction and cell center transversely: Up/Down have centered X and edge Y; Left/Right have edge X and centered Y. Gizmos show snapped points and a yellow line where authored points differ. Generation updates instances without altering source prefabs.
 
-Generated Rooms contiene una sola Grid, persistente anche in Play Mode.
-Le Grid locali restano nei prefab usati per disegnare, ma vengono rimosse solo
-dalle istanze generate; le loro Tilemap utilizzano la Grid comune.
-Cell Size sul generatore deve coincidere con la dimensione delle celle dei
-prefab (1x1 nel progetto). Sono richieste griglie rettangolari XY, senza Cell Gap,
-rotazione o scala. Le Tilemap devono avere origine su celle intere rispetto
-alla propria Grid; eventuali trasformazioni fuori griglia vengono segnalate.
+The planner aligns Grid origins while compensating room-root/Grid local offsets. Rounding only the root is insufficient. The initial result snaps to the world grid even for fractional generator positions.
 
-Ogni punto di uscita viene agganciato al bordo della cella lungo la direzione
-e al centro della cella lungo l'asse trasversale. Up/Down hanno quindi X al
-centro e Y sul bordo; Left/Right hanno X sul bordo e Y al centro. I Gizmos
-mostrano il punto agganciato e una linea gialla quando quello disegnato differisce.
-La generazione applica questi punti alle istanze senza alterare i prefab sorgenti.
+Regenerate after this change. Continue editing source prefabs in Prefab Mode. Snapping aligns cells; designers must still provide matching pipe widths/profiles and footprints containing real geometry.
 
-Il planner allinea le origini delle Grid, compensando gli spostamenti locali
-fra radice della stanza e Grid. Non basta arrotondare la posizione della radice:
-una Grid spostata nel prefab deve essere compensata per mantenere le celle in fase.
-Il risultato iniziale viene agganciato alla griglia mondiale anche se il
-GameObject generatore si trova a coordinate frazionarie.
+## Manual assembly with snapping
 
-Dopo questa modifica premere Genera stanze per sostituire il layout precedente.
-Continuare a modificare i prefab originali in Prefab Mode e rigenerare il risultato.
-Lo snap allinea le celle; resta necessario disegnare tubi con larghezze e profili
-compatibili e impostare ingombri che includano realmente la geometria della stanza.
+LoopScene contains empty Manual Room Grid with a 1×1 reference Grid and ManualGridAlignment. Its prefab is in Assets/Prefabs/Rooms. Create others through Tools → Mouse Platformer → Rooms → Create manual grid container.
 
+Parent room roots or Grids under it, place them approximately and select the container. Align child grids snaps origins to reference-grid intersections. Keep the container at zero for world-grid alignment or assign another Reference Grid.
 
-## Composizione manuale con snap
+Whole RoomDefinition roots move, compensating internal Grid offsets, including nested/inactive children. Alignment only translates: cell dimensions, rotations and Cell Gap must match. If a room's grids require different offsets, cancel before mutating objects. Edit Mode supports Undo and prefab overrides.
 
-LoopScene contiene Manual Room Grid, un contenitore vuoto con una Grid di
-riferimento (celle 1x1) e il componente ManualGridAlignment. Il prefab omonimo
-si trova in Assets/Prefabs/Rooms. Per crearne altri usare Tools > Mouse Platformer
-> Stanze > Crea contenitore griglia manuale.
-
-Trascinare sotto il contenitore le radici dei prefab stanza o direttamente
-le Grid, posizionarle liberamente e selezionare il contenitore. Il pulsante
-Allinea griglie figlie aggancia le loro origini alle intersezioni della Grid
-di riferimento. Il contenitore definisce l'origine comune; lasciarlo a zero
-per allinearsi alla griglia mondiale, oppure assegnare un'altra Reference Grid.
-
-Per una stanza viene spostata tutta la radice RoomDefinition, compensando la
-posizione della Grid interna. Sono inclusi i figli annidati e inattivi.
-L'allineamento esegue solo traslazioni: celle, rotazioni e Cell Gap devono essere
-compatibili con il riferimento. Se una stanza contiene griglie che richiedono
-spostamenti diversi, l'operazione viene annullata prima di modificare gli oggetti.
-Il pulsante e disponibile in Edit Mode e supporta Undo e gli override dei prefab.
-
-Questo flusso mantiene le Grid locali delle stanze: allinea le celle senza
-fonderle e senza scegliere automaticamente le connessioni dei tubi. Posizionare
-le stanze vicine al punto desiderato prima di applicare lo snap.
+Manual snapping retains separate room Grids without merging them or selecting pipe connections. Place rooms near the desired connection before snapping.

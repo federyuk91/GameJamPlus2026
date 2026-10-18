@@ -18,7 +18,7 @@ namespace MousePlatformer
                 || reference.cellSwizzle != GridLayout.CellSwizzle.XYZ
                 || child.cellLayout != reference.cellLayout || child.cellSwizzle != reference.cellSwizzle)
             {
-                error = "Usare griglie rettangolari XY.";
+                error = "Use rectangular XY grids.";
                 return false;
             }
             Vector3 referenceSize = Vector3.Scale(reference.cellSize, reference.transform.lossyScale);
@@ -29,13 +29,13 @@ namespace MousePlatformer
                 || ((Vector2)(referenceGap - childGap)).sqrMagnitude > 0.000001f
                 || Quaternion.Angle(reference.transform.rotation, child.transform.rotation) > 0.01f)
             {
-                error = child.name + ": dimensione delle celle, Cell Gap o rotazione diversi dalla griglia di riferimento.";
+                error = child.name + ": cell size, Cell Gap or rotation differs from the reference grid.";
                 return false;
             }
             Vector3 step = reference.cellSize + reference.cellGap;
             if (step.x <= 0f || step.y <= 0f)
             {
-                error = "Le celle della griglia di riferimento devono avere dimensioni positive.";
+                error = "Reference grid cells must have positive dimensions.";
                 return false;
             }
             Vector3 local = reference.transform.InverseTransformPoint(child.transform.position);

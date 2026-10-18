@@ -2,6 +2,7 @@ using System.Collections;
 using GameJamPlus.Gameplay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace GameJamPlus.UI
@@ -13,8 +14,8 @@ namespace GameJamPlus.UI
 
         [SerializeField] private UIDocument document;
         [SerializeField] private Texture2D noDeathsEndingImage;
-        [SerializeField] private Texture2D partialLossEndingImage;
-        [SerializeField] private Texture2D allSubjectsLostEndingImage;
+        [SerializeField, FormerlySerializedAs("partialLossEndingImage")] private Texture2D singleDeathEndingImage;
+        [SerializeField, FormerlySerializedAs("allSubjectsLostEndingImage")] private Texture2D multipleDeathsEndingImage;
         [SerializeField] private string mainMenuSceneName = "MainMenu";
         [SerializeField, Range(0, 10)] private int previewDeceasedSubjects = 5;
 
@@ -33,7 +34,7 @@ namespace GameJamPlus.UI
         {
             if (document == null)
             {
-                Debug.LogError("Assegna UIDocument a EndGameController.", this);
+                Debug.LogError("Assign UIDocument to EndGameController.", this);
                 return;
             }
             root = document.rootVisualElement;
@@ -64,7 +65,7 @@ namespace GameJamPlus.UI
             root.Q<Label>("subjects-deceased").text = deceasedSubjects.ToString();
             root.Q<Label>("subjects-recovered").text = recoveredSubjects.ToString();
             int successPercent = total > 0 ? Mathf.RoundToInt(100f * completed / total) : 0;
-            root.Q<Label>("experiment-outcome").text = $"ESITO: {successPercent}% SUCCESSO";
+            root.Q<Label>("experiment-outcome").text = $"OUTCOME: {successPercent}% SUCCESS";
         }
 
         private IEnumerator OpenReport()
@@ -118,15 +119,15 @@ namespace GameJamPlus.UI
             {
                 case EndGameOutcome.NoDeaths:
                     image = noDeathsEndingImage;
-                    title = "NESSUN SOGGETTO PERDUTO";
+                    title = "NO SUBJECTS LOST";
                     break;
-                case EndGameOutcome.PartialLoss:
-                    image = partialLossEndingImage;
-                    title = "IL COSTO DELL'ESPERIMENTO";
+                case EndGameOutcome.SingleDeath:
+                    image = singleDeathEndingImage;
+                    title = "ONE SUBJECT LOST";
                     break;
                 default:
-                    image = allSubjectsLostEndingImage;
-                    title = "NESSUN SOPRAVVISSUTO";
+                    image = multipleDeathsEndingImage;
+                    title = "THE COST OF THE EXPERIMENT";
                     break;
             }
             Image endingImage = root.Q<Image>("ending-image");
@@ -134,7 +135,7 @@ namespace GameJamPlus.UI
             endingImage.scaleMode = ScaleMode.ScaleToFit;
             root.Q<Label>("ending-title").text = title;
             root.Q<Label>("ending-description").text =
-                $"Soggetti deceduti: {deceasedSubjects} · Soggetti recuperati: {recoveredSubjects}";
+                $"Subjects deceased: {deceasedSubjects} · Subjects recovered: {recoveredSubjects}";
             endingView.RemoveFromClassList("hidden");
             state = ScreenState.Ending;
             menuButton.Focus();
@@ -145,7 +146,7 @@ namespace GameJamPlus.UI
             if (state != ScreenState.Ending) return;
             if (!Application.CanStreamedLevelBeLoaded(mainMenuSceneName))
             {
-                Debug.LogError("Includi la scena del menu nei Build Profiles: " + mainMenuSceneName, this);
+                Debug.LogError("Include the menu scene in Build Profiles: " + mainMenuSceneName, this);
                 return;
             }
             state = ScreenState.Inactive;

@@ -8,7 +8,7 @@ namespace GameJamPlus.UI
         public KnowledgeCounterIcon()
         {
             pickingMode = PickingMode.Ignore;
-            tooltip = "Ricerca / Conoscenza";
+            tooltip = "Research / Knowledge";
             style.position = Position.Absolute;
             style.left = style.right = style.top = style.bottom = 0f;
             generateVisualContent += DrawBulb;

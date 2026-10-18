@@ -121,7 +121,7 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Quella non sarebbe dovuta stare lì! Pulire stanza sette."
+  - "That should not have been there! Clean room seven."
   duration: 30
 --- !u!114 &1005
 MonoBehaviour:
@@ -139,7 +139,7 @@ MonoBehaviour:
   scientistComment: {fileID: 1004}
   subjectDied: 1
   resultMessages:
-  - "Il soggetto ha segnalato un oggetto fuori posto nella stanza sette."
+  - "The subject has reported a misplaced object in room seven."
 --- !u!1 &1100
 GameObject:
   m_ObjectHideFlags: 0

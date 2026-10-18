@@ -1,20 +1,20 @@
 # Recovery Zone
 
-Trascina Assets/Prefabs/Recovery Zone.prefab sotto o attorno alla mappa, separandola dalle normali aree giocabili. È invisibile in gioco e mostra un leggero gizmo rosso nell'Editor. Modifica Box Collider 2D → Size/Offset per definirne il volume.
+Place Assets/Prefabs/Recovery Zone.prefab below or around the map, separate from playable areas. It is invisible in gameplay with a faint red Editor gizmo. Box Collider 2D → Size/Offset defines its volume.
 
-Recovery Zone cerca un piano quasi orizzontale con spazio libero per il collider del topo e appoggio a sinistra, centro e destra. Le superfici vengono cercate usando il Solid Filter del SimulatedBody2D del Player. La ricerca usa raggi verticali corti anche per trovare pavimenti sotto soffitti dello stesso CompositeCollider2D, e sceglie la destinazione valida più vicina fra quelle campionate.
+Recovery Zone seeks a nearly horizontal surface with full mouse-collider clearance and support at left, center and right. It uses the Player SimulatedBody2D's Solid Filter. Short vertical rays also find floors beneath ceilings in the same CompositeCollider2D. The nearest valid sampled destination wins.
 
-- Search Radius: raggio massimo, inizialmente 24 unità, misurato dal centro del collider del Player.
-- Sample Spacing: passo orizzontale, inizialmente 0.25 unità. Valori minori rendono la ricerca più precisa ma più costosa. La ricerca avviene solo all'ingresso nella zona.
-- Flat Surface Angle: inclinazione massima accettata, inizialmente 1 grado.
-- Show Gizmos: visibilità del volume nell'Editor.
+- Search Radius: maximum distance from Player collider center; initially 24 units.
+- Sample Spacing: horizontal step; initially 0.25 units. Smaller values are more accurate but more expensive. Search occurs only on zone entry.
+- Flat Surface Angle: maximum accepted slope; initially 1 degree.
+- Show Gizmos: Editor volume visibility.
 
-Sono esclusi punti che occupano solidi o zone attive di recupero, morte o starvation. Se non viene trovato un piano nel raggio, viene scelto lo Spawn Point attivo più vicino assegnato al GameManager con spazio libero e fuori da queste zone. Gli Spawn Point devono essere posizionati dal designer in luoghi sicuri.
+Destinations inside solids or active recovery, death or starvation zones are excluded. If no surface exists within range, choose the nearest active GameManager Spawn Point with clear space outside those zones. Designers must place Spawn Points safely.
 
-Il Player conserva sazietà, raccolte, cronometro e universo. Il recupero azzera velocità, buffer del salto e scivolata, annulla scavo/morso e sgancia corde, scale, bordi e piattaforme mobili. La camera si riallinea immediatamente.
+Recovery preserves satiety, pickups, timer and universe. It clears velocity, jump buffer and sliding, cancels digging/biting, and detaches ropes, ladders, ledges and moving platforms. The camera snaps to the player.
 
-Il prefab Player contiene PlayerRecovery; il GameManager in LoopScene ha il riferimento assegnato. Altre scene devono assegnare il proprio PlayerRecovery al GameManager. Non occorrono tag o Rigidbody2D.
+PlayerRecovery is included in the Player prefab and assigned on LoopScene's GameManager. Other scenes must assign their own PlayerRecovery. No tags or Rigidbody2D are required.
 
-Se non ci sono destinazioni valide, il Player non viene spostato e viene emesso un warning, una volta per ingresso nella zona. Aumenta Search Radius o assegna uno Spawn Point valido. Il recupero è una protezione: non corregge i collider che hanno causato l'uscita dalla mappa.
+With no valid destination the player stays put and a warning is logged once per entry. Increase Search Radius or assign a valid Spawn Point. Recovery is a safeguard; it does not repair the colliders that let the player leave the map.
 
-Da verificare in Play Mode: caduta fuori mappa, piano sotto un soffitto, bordo stretto da rifiutare, sovrapposizione con zone letali, fallback a Spawn Point e recupero durante una presa.
+Check falls out of bounds, floors under ceilings, rejected narrow ledges, lethal-zone overlaps, Spawn Point fallback and recovery while attached.

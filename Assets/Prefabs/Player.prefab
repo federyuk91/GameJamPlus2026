@@ -661,8 +661,8 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Una dieta sana ed equilibrata è alla base di una lunga vita."
-  - "I pasti sono molto importanti. Ricordiamocelo per il prossimo test."
+  - "A healthy, balanced diet is the foundation of a long life."
+  - "Meals are very important. Let us remember that for the next test."
   duration: 30
 --- !u!114 &5709383898159029302
 MonoBehaviour:
@@ -680,8 +680,8 @@ MonoBehaviour:
   scientistComment: {fileID: 5709383898159029301}
   subjectDied: 1
   resultMessages:
-  - "Il soggetto ha dimostrato l'importanza di una dieta sana ed equilibrata."
-  - "Il soggetto ha approfondito gli effetti del digiuno prolungato."
+  - "The subject has demonstrated the importance of a healthy, balanced diet."
+  - "The subject has investigated the effects of prolonged fasting."
 --- !u!82 &5709383898159029401
 AudioSource:
   m_ObjectHideFlags: 0
@@ -858,7 +858,7 @@ MonoBehaviour:
   drowningOutcome: {fileID: 5709383898159029802}
   maximumNotches: 5
   drainInterval: 5
-  recoveryInterval: 5
+  recoveryInterval: 1
   breathingPointHeight: 0.85
   warningSeconds: 10
   onLowOxygen:
@@ -891,8 +891,8 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Una pausa per riprendere fiato è sempre una buona idea."
-  - "Ricordiamo al soggetto l’importanza di respirare tra un esercizio e l’altro."
+  - "A break to catch your breath is always a good idea."
+  - "Let us remind the subject to breathe between exercises."
   duration: 30
 --- !u!114 &5709383898159029802
 MonoBehaviour:
@@ -910,8 +910,8 @@ MonoBehaviour:
   scientistComment: {fileID: 5709383898159029801}
   subjectDied: 1
   resultMessages:
-  - "Il soggetto ha approfondito i propri limiti di apnea."
-  - "Il soggetto ha dimostrato che anche sott’acqua respirare è importante."
+  - "The subject has explored its breath-holding limits."
+  - "The subject has demonstrated that breathing matters even underwater."
 --- !u!114 &5709383898159029803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,8 +927,8 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Ottima concentrazione! Ricordiamoci anche di respirare, però."
-  - "Una breve risalita aiuta a mantenere la mente lucida."
+  - "Excellent concentration! Let us remember to breathe, though."
+  - "A quick trip to the surface helps keep the mind clear."
   duration: 6
 --- !u!114 &5709383898159029804
 MonoBehaviour:

@@ -65,9 +65,9 @@ namespace GameJamPlus.UI
         public void Show(int universeNumber, double elapsedSeconds, string resultMessage)
         {
             long seconds = Math.Max(0L, (long)elapsedSeconds);
-            elapsed.text = $"Successo! {seconds / 3600} ore {seconds / 60 % 60} minuti e {seconds % 60} secondi.";
+            elapsed.text = $"Success! {seconds / 3600} hours {seconds / 60 % 60} minutes and {seconds % 60} seconds.";
             result.text = resultMessage;
-            universe.text = "Universo-" + universeNumber;
+            universe.text = "Universe-" + universeNumber;
             resultScreen.style.display = DisplayStyle.Flex;
         }
 

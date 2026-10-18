@@ -67,7 +67,7 @@ namespace MousePlatformer
             cellSize = settings.CellSize;
             if (cellSize.x <= 0f || cellSize.y <= 0f)
             {
-                report = "Le celle della Grid comune devono avere dimensioni positive.";
+                report = "Shared Grid cells must have positive dimensions.";
                 return false;
             }
             if (!ValidateRoom(settings.StartRoom, out report)) return false;
@@ -81,7 +81,7 @@ namespace MousePlatformer
                 if (!ValidateRoom(room, out report)) return false;
                 if (room.PortCount != 1)
                 {
-                    report = room.name + ": una stanza terminale deve avere esattamente un'uscita.";
+                    report = room.name + ": a terminal room must have exactly one exit.";
                     return false;
                 }
                 if (!catalog.Contains(room)) catalog.Add(room);
@@ -91,12 +91,12 @@ namespace MousePlatformer
             List<OpenPort> ports = PortsFor(start, -1);
             if (!Search(ports))
             {
-                report = steps >= limit ? "Limite di ricerca raggiunto. Cambia seed, catalogo o Search Limit."
-                    : "Nessun layout completo: controlla numero stanze, ingombri e terminali per tutte le direzioni necessarie.";
+                report = steps >= limit ? "Search limit reached. Change the seed, catalog or Search Limit."
+                    : "No complete layout found: check room count, footprints and terminals for all required directions.";
                 return false;
             }
             result = new List<RoomPlacement>(plan);
-            report = "Generate " + plan.Count + " stanze, terminali incluse; tutte le uscite collegate. Seed " + settings.Seed + ".";
+            report = "Generate " + plan.Count + " rooms, including terminals; all exits connected. Seed " + settings.Seed + ".";
             return true;
         }
 
@@ -104,7 +104,7 @@ namespace MousePlatformer
         {
             if (room == null)
             {
-                report = "Assegnare tutti i prefab delle stanze.";
+                report = "Assign all room prefabs.";
                 return false;
             }
             if (!room.Validate(out string error))
@@ -114,7 +114,7 @@ namespace MousePlatformer
             }
             if (((Vector2)room.LayoutGrid.cellSize - cellSize).sqrMagnitude > 0.000001f)
             {
-                report = room.name + ": la dimensione delle celle non coincide con la Grid comune.";
+                report = room.name + ": cell size does not match the shared Grid.";
                 return false;
             }
             report = string.Empty;

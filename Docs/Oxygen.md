@@ -1,32 +1,32 @@
-# Apnea e ossigeno
+# Breath-holding and oxygen
 
-Player.prefab include Player Oxygen con una riserva indipendente di 5 tacche. Quando il punto di respirazione è immerso in un Water Volume, la barra della sazietà mostra APNEA e tacche azzurre.
+Player.prefab includes Player Oxygen with an independent five-notch reserve. When the breathing point is submerged in a Water Volume, the satiety bar displays OXYGEN with cyan notches.
 
 - Maximum Notches: 5.
-- Drain Interval: 5 secondi per tacca sott’acqua.
-- Recovery Interval: 5 secondi per tacca fuori dall’acqua.
-- Breathing Point Height: 0.85, altezza relativa nel collider (0 = piedi, 1 = sommità). Il punto usa il centro orizzontale del collider. Il topo può respirare a pelo d’acqua se questo punto è emerso.
+- Drain Interval: 5 seconds per submerged notch.
+- Recovery Interval: 1 second per notch outside water.
+- Breathing Point Height: 0.85 within the collider (0 = feet, 1 = top), horizontally centered. The mouse can breathe at the surface when this point is above water.
 
-A zero ossigeno, Drowning Outcome conclude il test con il sistema consueto: flash bianco, commento dello scienziato, risultati e universo successivo. Il Player contiene un Dialogue Message Player e un Test End Event dedicati all’apnea, con messaggi editabili.
+At zero oxygen, Drowning Outcome ends the test through the usual white flash, scientist comment, results and next universe. Player has dedicated Dialogue Message Player and Test End Event components with editable messages.
 
-Fuori dall’acqua la barra torna subito a SAZIETÀ. L’ossigeno si ripristina in background, una tacca ogni 5 secondi. La sazietà mantiene il proprio ritmo anche durante l’immersione; mangiare formaggio ripristina la sazietà e non modifica l’ossigeno. Ogni tacca di ossigeno persa produce un leggero flash celeste a tutto schermo, senza vocalizzi o shake aggiuntivi. Satiety Hud espone Oxygen Flash Color e Oxygen Flash Duration (0.25 secondi, alpha 0.16).
+Outside water the bar immediately returns to SATIETY. Oxygen recovers in the background, one notch every second. Satiety continues draining while submerged; cheese restores satiety but does not affect oxygen. Each lost oxygen notch causes a faint full-screen cyan flash without extra voices or shake. Satiety Hud exposes Oxygen Flash Color and Duration (0.25 seconds, alpha 0.16).
 
-La pausa e la conclusione del test fermano consumo e recupero. Il nuovo universo riparte con l’ossigeno pieno. Le riemersioni brevi conservano il consumo parziale: un intervallo completo di recupero ripristina una tacca e azzera il consumo parziale della successiva. Rientrare in acqua prima del completamento interrompe l’intervallo di recupero.
+Pauses and test endings stop drain/recovery. A new universe starts at full oxygen. Brief resurfacing preserves partial drain: a complete recovery interval restores one notch and clears partial consumption of the next. Reentering water before completion interrupts recovery.
 
-LoopScene collega Satiety Hud al Player Oxygen del prefab. La UI si aggiorna a ogni cambio di stato o di tacca, con eventi. Altri HUD devono assegnare la reference Oxygen nel componente Satiety Hud.
+LoopScene links Satiety Hud to the prefab's Player Oxygen. Events update UI on state/notch changes. Other HUDs must assign Oxygen in Satiety Hud.
 
-Da verificare in Play Mode: perdita di una tacca ogni 5 secondi; ritorno alla barra sazietà; recupero prima di immergersi nuovamente; respirazione in superficie; pausa; morte per apnea e nuovo universo; nessun ripristino dell’ossigeno mangiando formaggio.
+Check five-second drain, return to satiety display, recovery/reentry, surface breathing, pause, drowning/new universe, and no oxygen restoration from cheese.
 
-## Avviso a 10 secondi
+## Ten-second warning
 
-Player Oxygen espone Warning Seconds (10) e lo Unity Event On Low Oxygen. Il prefab collega l’evento a Play di un Dialogue Message Player separato, con frasi di avvertimento editabili e durata di 6 secondi. Il commento normale non ferma gameplay e consumo di ossigeno; il commento di morte rimane distinto.
+Player Oxygen exposes Warning Seconds (10) and On Low Oxygen. The prefab invokes Play on a separate Dialogue Message Player with editable warnings lasting 6 seconds. This normal comment does not pause gameplay or oxygen drain; the death comment is separate.
 
-La soglia usa il tempo residuo effettivo, incluso il consumo parziale della tacca: con 5 tacche e intervallo 5 secondi l’avviso arriva a 2 tacche rimaste. Viene mostrato una sola volta e si riabilita dopo il recupero completo dell’ossigeno. Riemergere brevemente non ripete l’avviso.
+The threshold uses actual remaining time, including partial-notch consumption: with five notches at five seconds each it triggers at two remaining notches. It appears once and rearms only after full recovery. Brief resurfacing does not repeat it.
 
-## Bolle dopo il flash
+## Bubbles after the flash
 
-Terminato il flash celeste, Satiety Hud chiama PlayBurst sul Player Oxygen Bubbles del topo. Il componente emette esattamente tre bolle in sequenza usando bubble1, bubble2 e bubble3, importate con Point, 32 PPU e senza compressione.
+After the cyan flash, Satiety Hud calls PlayBurst on Player Oxygen Bubbles. Exactly three bubbles are emitted sequentially using bubble1, bubble2 and bubble3, imported with Point, 32 PPU and no compression.
 
-Emission Interval (0.12 secondi) regola la distanza temporale tra le bolle; Rise Speed (1.5 unità/s) la risalita; Wobble Width (0.04) l’oscillazione orizzontale; Mouth Height (0.75) l’altezza di emissione nel collider. Il lato segue Mouse Facing. Le bolle si muovono indipendentemente dal topo, sulla griglia dei pixel, e spariscono appena raggiungono la superficie/uscita dal volume d’acqua. Se il topo è già emerso, non vengono emesse bolle in aria.
+Emission Interval (0.12 seconds), Rise Speed (1.5 units/s), Wobble Width (0.04) and Mouth Height (0.75 within the collider) control the effect. Mouse Facing determines the side. Bubbles move independently of the mouse on the pixel grid and disappear on reaching the surface/leaving the water volume. If the mouse has surfaced, no bubbles are emitted into the air.
 
-Le sprite renderer vengono riutilizzate. Pausa e fine del test fermano la risalita con il resto del gameplay. Per altri HUD, assegnare Oxygen Bubbles in Satiety Hud; LoopScene è già collegata.
+SpriteRenderers are reused. Pause/test ending stops bubble motion. Assign Oxygen Bubbles in Satiety Hud for other HUDs; LoopScene is already connected.

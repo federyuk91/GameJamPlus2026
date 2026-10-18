@@ -15,10 +15,10 @@ public sealed class PlayerRopeBiteEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("reach"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("holdDuration"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("mouthOffset"));
-        EditorGUILayout.HelpBox("Reach misura la distanza dalla bocca alla corda quando il topo è libero. Da appeso viene usata direttamente la corda impugnata, senza il limite di Reach; eventuali ostacoli possono comunque impedire il morso.", MessageType.Info);
+        EditorGUILayout.HelpBox("Reach measures mouth-to-rope distance while the mouse is unattached. While hanging, the held rope is used directly without the Reach limit; obstacles can still prevent biting.", MessageType.Info);
 
         EditorGUILayout.Space();
-        EditorGUILayout.HelpBox("Il morso seleziona automaticamente la corda tagliabile più vicina entro Reach dalla bocca, davanti al centro del collider del topo o allineata ad esso. La bocca può aver già oltrepassato la corda. Restano necessari l'assenza di ostacoli e Can Be Cut. Da appeso ha priorità la corda impugnata.", MessageType.Info);
+        EditorGUILayout.HelpBox("Biting automatically selects the nearest cuttable rope within Reach of the mouth, in front of or aligned with the mouse collider center. The mouth may already be past the rope. A clear path and Can Be Cut are still required. While hanging, the held rope takes priority.", MessageType.Info);
         DrawPropertiesExcluding(serializedObject, "m_Script", "reach", "holdDuration", "mouthOffset");
         serializedObject.ApplyModifiedProperties();
     }

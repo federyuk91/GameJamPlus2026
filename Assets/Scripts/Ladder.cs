@@ -6,7 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D))]
     public sealed class Ladder : MonoBehaviour
     {
-        [SerializeField, Min(1), Tooltip("Numero di pezzi da una unita. La scala cresce verso il basso.")]
+        [SerializeField, Min(1), Tooltip("Number of one-unit pieces. The ladder extends downward.")]
         private int length = 5;
         [SerializeField] private BoxCollider2D shape;
         [SerializeField] private SpriteRenderer pieceTemplate;

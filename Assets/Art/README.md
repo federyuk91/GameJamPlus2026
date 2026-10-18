@@ -1,23 +1,21 @@
-# Organizzazione grafica
+# Art organization
 
 ## Pixel Art
 
-Le immagini di gameplay si trovano in `Assets/Art/Pixel Art`, dove l'importatore applica filtro Point, 32 pixel per unità, mipmap disabilitate e nessun ridimensionamento a potenze di due.
+Gameplay images are in `Assets/Art/Pixel Art`. The importer applies Point filtering, 32 pixels per unit, no mipmaps and no power-of-two resizing.
 
-| Cartella | Contenuto |
+| Folder | Contents |
 | --- | --- |
-| `Pixel Art/Characters/Mouse` | `Mouse_Idle_Sheet.png` e `Mouse_Run_Sheet.png`, con i ritagli e i riferimenti alle animazioni conservati. |
-| `Pixel Art/Props` | `Crate.png`, `PressureButton_Sheet.png` e `WinchDrum_Sheet.png`. |
-| `Pixel Art/Prototypes` | `Mouse_Prototype.png`, il precedente sprite provvisorio del player. |
+| `Pixel Art/Characters/Mouse` | `Mouse_Idle_Sheet.png` and `Mouse_Run_Sheet.png`, preserving slices and animation references. |
+| `Pixel Art/Props` | `Crate.png`, `PressureButton_Sheet.png` and `WinchDrum_Sheet.png`. |
+| `Pixel Art/Prototypes` | `Mouse_Prototype.png`, the previous placeholder player sprite. |
 
-I fogli di animazione terminano con `_Sheet`; i singoli frame hanno nomi come `Mouse_Run_0`, `PressureButton_0` e `WinchDrum_0`. Le immagini quadrate fino a 64×64 inclusi usano Sprite Mode Single; le altre usano Multiple. I ritagli dei fogli si modificano nello Sprite Editor.
+Animation sheets end in `_Sheet`; frame names include `Mouse_Run_0`, `PressureButton_0` and `WinchDrum_0`. Square images up to 64×64 use Sprite Mode Single; others use Multiple. Edit sheet slices in Sprite Editor.
 
-## Palette e interfaccia
+## Palette and UI
 
-- `Palettes/GamePalette.png`: palette cromatica condivisa, usata come riferimento per il menu.
-- `UI/Branding/GameJamPlus_Icon.png`: icona dell'applicazione, collegata ai Player Settings.
-- `UI/MainMenu`: sfondi, branding, icone e illustrazioni del menu, già suddivisi per funzione.
+- `Palettes/GamePalette.png`: shared palette used as a menu reference.
+- `UI/Branding/GameJamPlus_Icon.png`: application icon assigned in Player Settings.
+- `UI/MainMenu`: backgrounds, branding, icons and menu illustrations organized by function.
 
-Palette e grafica dell'interfaccia conservano le proprie impostazioni di importazione e rimangono fuori dalla cartella Pixel Art.
-
-Le animazioni del topo restano in `Assets/Animations/Mouse`. Script, scene e settings mantengono i propri percorsi.
+Palette and UI artwork retain their import settings outside Pixel Art. Mouse animations remain in `Assets/Animations/Mouse`; scripts, scenes and settings retain their paths.

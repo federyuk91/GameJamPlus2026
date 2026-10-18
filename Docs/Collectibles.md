@@ -1,59 +1,47 @@
-# Raccoglibili e messaggi
+# Collectibles and messages
 
-In LoopScene, Cheese si mangia premendo F / pulsante ovest mentre il suo trigger interseca il collider del player. Non servono tag, layer specifici o Rigidbody2D.
+In LoopScene, eat Cheese by pressing F / gamepad West while its trigger intersects the player collider. No tags, special layers or Rigidbody2D are needed.
 
-## Componenti
+## Components
 
-- `CollectibleCollector`, sul player, controlla le sovrapposizioni del collider assegnato a `Collection Area`. Con `Requires Interaction` attivo, serve una nuova pressione di F / pulsante ovest; tenere premuto entrando nel trigger non consuma l'oggetto. Una pressione consuma un solo oggetto, quello piu vicino al centro del collider del player. Disattivando il flag si ripristina la raccolta al contatto.
-- `Collectible`, sull'oggetto da raccogliere, espone `Type`, `Requires Interaction`, `Pickup Area` e l'evento `On Collected`. Il collider trigger e il componente devono stare sullo stesso GameObject. La raccolta invoca l'evento una sola volta, poi disattiva l'intero GameObject. Riattivarlo non azzera lo stato di raccolta.
-- `DialogueMessagePlayer` invia un messaggio alla UI ed è indipendente dalla raccolta. `Play()` sceglie casualmente una stringa non vuota da `Messages`, usando `Avatar` e `Duration`. Assegnare il riferimento `Hud` dalla scena; la durata segue il limite di 1–30 secondi della UI.
+- `CollectibleCollector` on the player checks overlaps with `Collection Area`. With `Requires Interaction`, a fresh F/West press is required; holding before entering does not consume the item. One press consumes only the item nearest the player collider center. Disabling the flag restores contact collection.
+- `Collectible` exposes `Type`, `Requires Interaction`, `Pickup Area` and `On Collected`. Its trigger must be on the same GameObject. Collection invokes the event once, then deactivates the object unless CollectibleRemains is assigned. With remains, it disables pickup and replaces the sprite while keeping the object visible. Reactivation does not reset collected state.
+- `DialogueMessagePlayer` is independent of collection. `Play()` randomly selects a nonempty `Messages` entry with `Avatar` and `Duration`. Assign scene `Hud`; UI duration is constrained to 1–30 seconds.
 
-## Configurare altri oggetti
+## Setup
 
-1. Aggiungere un Collider2D trigger e `Collectible`, quindi assegnare il collider a `Pickup Area`.
-2. Aggiungere `DialogueMessagePlayer` se l'oggetto deve mostrare un messaggio. Assegnare Gameplay HUD, avatar opzionale e lista di frasi.
-3. Nell'evento `On Collected`, trascinare l'oggetto con `DialogueMessagePlayer` e selezionare `DialogueMessagePlayer → Play()`.
+1. Add a trigger Collider2D and Collectible; assign Pickup Area.
+2. Optionally add DialogueMessagePlayer with Gameplay HUD, optional avatar and messages.
+3. Wire On Collected to DialogueMessagePlayer → Play().
 
-Cheese ha già questo collegamento e tre frasi di esempio sostituibili. Non è stato assegnato un avatar. Gli altri listener dell'evento possono gestire effetti aggiuntivi. Il conteggio avviene separatamente dal dialogo, tramite il collector del player.
+Cheese already has this binding and three replaceable examples, without an avatar. Other listeners can add effects. The collector handles counts separately. Gameplay HUD owns display, so it survives collectible deactivation; a new communication replaces the current one.
 
-La visualizzazione viene eseguita dal Gameplay HUD, quindi continua dopo la disattivazione del raccoglibile. Come per gli altri messaggi della UI, una nuova comunicazione sostituisce quella in corso.
+Check one pickup/one message, alternative texts/avatar, another event listener and duplicated Cheese. Assign scene HUD references on instances.
 
-## Verifica manuale
+## Types and counters
 
-In Play Mode raggiungere Cheese e premere F / pulsante ovest: deve scomparire e mostrare una sola frase dalla lista. Provare altri testi, un avatar e un secondo listener nell'evento. Duplicare Cheese per creare altri raccoglibili; il riferimento al Gameplay HUD va assegnato sulle istanze della scena.
+`CollectibleType` distinguishes Cheese and GreenCheese. Every pickup increments its type; GetCount(type) reads totals and CountChanged signals updates. No Unity tags are required. GameplayHudController receives the collector through Inspector: Cheese appears first, GreenCheese second, using the green icon. The original implementation initialized per-player counts and resynchronized on HUD enable; current session persistence is documented in `CollectibleProgress.md`.
 
-## Tipi e contatori
+For green cheese choose Type = Green Cheese and its sprite; dialogue remains independently configurable through On Collected.
 
-`Type` usa l'enum `CollectibleType`: `Cheese` per il formaggio normale e `GreenCheese` per quello verde. Ogni raccolta aggiunge un elemento del tipo indicato al `CollectibleCollector` del player; `GetCount(type)` legge il totale e `CountChanged` notifica gli aggiornamenti. Non servono tag Unity.
+## Green cheese and test ending
 
-Il `GameplayHudController` riceve il riferimento al collector da Inspector e mostra `Cheese` nel primo contatore, `GreenCheese` nel secondo. I due totali partono da zero a ogni nuova istanza del player e vengono riallineati quando l'HUD viene riattivato. In LoopScene il secondo contatore usa l'icona verde gia disponibile; il terzo contatore conserva la configurazione precedente.
+CheeseGreen requires interaction. On Collected calls TestEndEvent.EndTest(), using the prefab's DialogueMessagePlayer for scientist comments and a separate Result Messages list. GameManager sends the comment; do not also wire DialogueMessagePlayer.Play() to the same death event. Prefabs without Hud use GameManager's HUD for ordinary messages; an explicit Hud takes precedence.
 
-Per un nuovo formaggio verde, impostare `Type = Green Cheese` e scegliere lo sprite appropriato. Il dialogo resta configurabile tramite `On Collected`, indipendentemente dal tipo.
+## Photos
 
-## Formaggio verde e fine test
+Photo Collectible.prefab uses the supplied PNG unchanged at Assets/Art/Pixel Art/Props/PhotoCollectible.png (Point, 32 PPU). An instance is near the player in LoopScene. Type Photo increments the fourth/rightmost counter and displays the Collect photo hint; F/West collects it.
 
-Il prefab `CheeseGreen` ha `Requires Interaction` attivo. Il suo evento `On Collected` chiama `TestEndEvent.EndTest()`, con le frasi dello scienziato configurate nel `DialogueMessagePlayer` dello stesso prefab e una lista separata `Result Messages` per la schermata finale. L'invio del commento e gestito dal Game Manager; non aggiungere anche `DialogueMessagePlayer.Play()` allo stesso evento di morte.
+Assign a Texture2D to CollectiblePhoto.Photo; Sprite import is unnecessary. Empty Hud falls back to GameManager. An empty photo opens a placeholder. On Collected calls CollectiblePhoto.Play(). The HUD displays the photo nearly full-screen, preserving aspect ratio, and pauses game/timer according to Pause While Photo Open.
 
-I prefab con `Hud` non assegnato usano l'HUD del Game Manager della scena per i messaggi ordinari. Un riferimento `Hud` esplicito ha la precedenza.
+Enter, Y/Triangle or the photo's Next button closes the preview and invokes CollectiblePhoto.On Continue. The first two photos resume gameplay. Closing the third photo collected by the current subject calls the assigned Curiosity Ending (TestEndEvent): white flash, scientist comment about excessive curiosity, TEST COMPLETE, then the next universe or EndGame at zero. Photos To End Test defaults to 3 and is editable on CollectiblePhoto. Do not bind EndTest directly to On Continue, since that bypasses the threshold.
 
-## Foto collezionabili
+Customize Photo, DialogueMessagePlayer.Messages/Avatar and TestEndEvent.Result Messages. One comment is “Three photographs already? Such curiosity! We had better take a break now.” Display and confirmation survive collectible deactivation; technical HUD closure or scene changes do not invoke On Continue.
 
-`Photo Collectible.prefab` usa l'icona PNG fornita, copiata senza modifiche in `Assets/Art/Pixel Art/Props/PhotoCollectible.png` (Point, 32 PPU). Una sua istanza e gia presente vicino al player in LoopScene.
+Portrait, square and panoramic textures are centered and enlarged to fit without cropping/distortion. Layout updates on resolution changes, reserving space for Next.
 
-Il tipo `Photo` incrementa il quarto contatore, all'estrema destra del gruppo, che parte da zero e usa la nuova icona. La raccolta richiede F / pulsante ovest e mostra il suggerimento Collect photo.
+## Five-cheese completion
 
-Nel componente `CollectiblePhoto`, assegnare la texture della fotografia al campo `Photo`. Il campo accetta Texture2D, anche senza importarla come Sprite. Il riferimento `Hud` puo rimanere vuoto nei prefab: viene usato quello del Game Manager. Senza una foto assegnata si apre il pannello segnaposto.
+LoopScene's Game Manager has a CollectibleTestGoal wired to the player collector and a dedicated TestEndEvent. Collecting five normal Cheese items during the current test completes it with an enthusiastic scientist comment. Subject Died is disabled: the mouse is counted as recovered. GreenCheese is a separate type and keeps its existing outcome. Required Count defaults to 5 and can be edited on the scene component.
 
-L'evento `Collectible.On Collected` chiama `CollectiblePhoto.Play()`. La UI mostra la foto quasi a schermo intero, mantenendo le proporzioni, e mette in pausa gioco e cronometro. `Pause While Photo Open`, sul Gameplay HUD, regola questa pausa.
-
-Invio, Y/Triangolo o il pulsante Next della foto attivano l'evento `CollectiblePhoto.On Continue`. Nel prefab e gia collegato a `TestEndEvent.EndTest()`: dopo la foto parte il flash bianco, seguito da una frase casuale dello scienziato e dalla schermata Test completato. L'avanzamento successivo diminuisce l'universo e ricarica LoopScene, oppure porta a EndGame a zero.
-
-Per ogni foto si possono modificare:
-
-- `CollectiblePhoto.Photo`: immagine da mostrare.
-- `DialogueMessagePlayer.Messages` e `Avatar`: frasi di circostanza dello scienziato e suo ritratto. La lista include Che curioso! Sara meglio fare una pausa ora.
-- `TestEndEvent.Result Messages`: frasi per il risultato del test.
-
-Il GameObject raccolto puo disattivarsi: la visualizzazione resta sull'HUD e il suo evento viene eseguito alla conferma della foto. La chiusura tecnica dell'HUD o il cambio di scena non invocano On Continue.
-
-La finestra delle foto conserva il rapporto larghezza/altezza di ogni texture: verticale, quadrato o panoramico. L'immagine viene centrata e ingrandita fino al massimo spazio disponibile senza ritagli o deformazioni. Il calcolo si aggiorna anche cambiando risoluzione; il pulsante Next mantiene il proprio spazio.
+GameSession tracks per-test counts separately from cumulative HUD totals. Advancing to the next subject resets per-test progress. The existing HUD blocks ordinary pickup dialogue during test ending, so the fifth cheese does not replace the completion comment. Check in Unity that cheeses one through four keep gameplay active, the fifth ends exactly once, and a new subject starts at zero progress.

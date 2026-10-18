@@ -128,7 +128,7 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Una piccola scarica per mantenere alta l’attenzione. Ora facciamo una pausa."
+  - "A little shock to keep you alert. Let us take a break now."
   duration: 30
 --- !u!114 &1005
 MonoBehaviour:
@@ -146,7 +146,7 @@ MonoBehaviour:
   scientistComment: {fileID: 1004}
   subjectDied: 1
   resultMessages:
-  - "Il soggetto ha dimostrato una spiccata conduttività."
+  - "The subject has demonstrated outstanding conductivity."
 --- !u!1 &1100
 GameObject:
   m_ObjectHideFlags: 0

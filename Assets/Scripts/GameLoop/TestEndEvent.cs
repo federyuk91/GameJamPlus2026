@@ -8,11 +8,11 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private GameManager gameManager;
         [SerializeField] private DialogueMessagePlayer scientistComment;
-        [SerializeField, Tooltip("Disattiva per una prova conclusa con il soggetto ancora vivo.")]
+        [SerializeField, Tooltip("Disable for a test that ends with the subject still alive.")]
         private bool subjectDied = true;
         [SerializeField, TextArea(2, 6)] private string[] resultMessages =
         {
-            "Il soggetto ha completato la prova."
+            "The subject has completed the test."
         };
 
         public DialogueMessagePlayer ScientistComment => scientistComment;
@@ -24,7 +24,7 @@ namespace GameJamPlus.Gameplay
             GameManager manager = gameManager != null ? gameManager : GameManager.Instance;
             if (manager == null)
             {
-                Debug.LogWarning("Nessun Game Manager disponibile per terminare il test.", this);
+                Debug.LogWarning("No Game Manager is available to end the test.", this);
                 return;
             }
             manager.EndTest(this);

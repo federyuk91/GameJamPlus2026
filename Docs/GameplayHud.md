@@ -1,21 +1,16 @@
-# HUD di gameplay
+# Gameplay HUD
 
-La scena chiamata LoopGame nella richiesta corrisponde a `Assets/Scenes/LoopScene.unity` nel progetto. Il nuovo GameObject `Gameplay HUD` contiene UIDocument e GameplayHudController, con riferimenti già assegnati al viewport della Main Camera, al documento UXML e allo sprite Cheese_0.
+The requested LoopGame scene is Assets/Scenes/LoopScene.unity. Gameplay HUD contains UIDocument and GameplayHudController, assigned to Main Camera's viewport, UXML and Cheese_0.
 
-## Layout
+## Initial layout
 
-Il documento è `Assets/UI Toolkit/Gameplay/GameplayHud.uxml`, lo stile è `GameplayHud.uss`. Il relativo `GameplayHudPanelSettings.asset` è separato dal pannello del main menu. Lo stile è un overlay strumentale, trasparente sul mondo, con riquadri scuri squadrati e accenti azzurri.
+Assets/UI Toolkit/Gameplay/GameplayHud.uxml and GameplayHud.uss use separate GameplayHudPanelSettings.asset. The initial overlay had transparent world space, dark squared panels and cyan accents, two 20-pixel bands in 640×360, a centered hh:mm:ss timer, three bottom-left counters and a bottom-right scientist display welcoming the player. Timer text changes only each second and uses Time.deltaTime, pausing at timeScale zero. Later layout revisions below supersede initial dimensions/counter placement.
 
-- Le due fasce nere restano alte 20 pixel logici, nel frame complessivo 640 × 360.
-- Il cronometro è in alto al centro, dentro l'area utile di 640 × 320. Parte da 00:00:00, usa hh:mm:ss e aggiorna il testo solo al cambio del secondo. Il tempo usa Time.deltaTime: si ferma se Time.timeScale è zero.
-- In basso a sinistra ci sono tre contatori. I primi due seguono le raccolte del player: formaggio normale e formaggio verde, inizialmente 0×. Il secondo usa lo sprite verde. Il terzo conserva il valore iniziale configurato ed e disponibile per dati di gameplay futuri.
-- In basso a destra appare lo schermo dello scienziato. All'avvio mostra: "Benvenuto nell'universo-10, rilassati e goditi il soggiorno".
+The controller clones PanelSettings at runtime and matches PixelPerfectViewport's integer scale/centered frame, including non-multiple screens. Original settings stay unchanged. Only dialogue buttons and text scrolling capture pointer input; other HUD elements ignore input/focus. No additional EventSystem is required.
 
-Il controller clona il PanelSettings a runtime e ne adatta la scala al PixelPerfectViewport: HUD e camera hanno lo stesso ingrandimento intero e lo stesso frame centrato, anche su risoluzioni non multiple. Il pannello originale non viene modificato. Solo il pulsante del dialogo e l'area di scorrimento del testo acquisiscono input del puntatore; il resto dell'HUD non acquisisce input o focus. Non serve un EventSystem aggiuntivo.
+## Component API
 
-## Uso da altri componenti
-
-Assegnare GameplayHudController tramite Inspector, senza ricerche nella scena.
+Assign references through Inspector. Namespace: GameJamPlus.UI.
 
 ```csharp
 [SerializeField] private GameplayHudController gameplayHud;
@@ -24,114 +19,86 @@ Assegnare GameplayHudController tramite Inspector, senza ricerche nella scena.
 private void OnGameplayEvent()
 {
     gameplayHud.SetCounter(0, 4);
-    gameplayHud.ShowScientistComment("Ottimo lavoro. Continua pure.", scientistPortrait);
+    gameplayHud.ShowScientistComment("Excellent work. Keep going.", scientistPortrait);
 }
 ```
 
-Il namespace è `GameJamPlus.UI`. Gli indici dei contatori sono 0, 1, 2, 3; i valori negativi diventano zero. `Counter Icons` permette di sostituire le singole immagini; gli slot vuoti usano `Default Counter Icon`, già collegato al formaggio.
+Counter indices are 0–3; negative values become zero. Counter Icons overrides per-slot images; empty slots use Default Counter Icon, assigned to cheese.
 
-`ShowScientistComment(string text, Sprite portrait, float duration = 30f)` mostra una nuova battuta sostituendo quella eventualmente in corso. L'overload `ShowScientistComment(string[] texts, Sprite portrait, float duration = 30f)` mostra le frasi in ordine, con lo stesso ritratto, e chiude dopo l'ultima. L'array viene copiato e le stringhe vuote vengono ignorate. Una nuova chiamata sostituisce l'intera sequenza corrente.
+ShowScientistComment(string text, Sprite portrait, float duration = 30f) replaces current dialogue. The string[] overload shows nonempty messages in order with one portrait and closes after the last. It copies the array; a new call replaces the entire sequence.
 
 ```csharp
 gameplayHud.ShowScientistComment(new string[]
 {
-    "Benvenuto nell'universo-10, rilassati e goditi il soggiorno",
-    "Esplora la stanza con calma."
+    "Welcome to Universe-10. Relax and enjoy your stay.",
+    "Take your time exploring the room."
 }, scientistPortrait);
 ```
 
-Il pannello conserva l'apertura da linea sottile e la chiusura inversa. Il testo appare a macchina da scrivere, a 30 caratteri al secondo, in verde da terminale. L'avatar ha una cornice verde con indicatore VIDEO, visibile anche se il ritratto non è ancora assegnato. I testi lunghi vanno a capo e scorrono per seguire l'ultima riga digitata. Nel layout a 60 pixel, avatar, testo e colonna comandi sono affiancati; le intestazioni decorative sono nascoste per preservare spazio al testo. Si può rileggere con rotella sul testo, PagSu/PagGiù o stick destro. Lo scorrimento manuale sospende il seguito automatico fino alla frase successiva e non azzera il timeout di 30 secondi.
+The CRT opens from a central point to horizontal line to vertical expansion, with a panel-confined glow; closing reverses this. Content stays hidden until startup, then typing runs at 30 characters/s in terminal green. Per-message timeout starts after startup and includes typing. duration is constrained to 1–30 seconds; manual reveal does not reset it. Expiry advances/closes even unfinished typing. Animations, typing and timeout use unscaled time and work while paused.
 
-Le altezze sono ridotte di un terzo, arrotondate al pixel logico: i contatori passano da 34 a 23 pixel, lo schermo dello scienziato è ora alto 60 pixel, inclusi i bordi. Icone, cornice, avatar e spaziature sono adattati; la larghezza dello schermo resta 300 pixel. Accensione e spegnimento simulano un CRT: punto luminoso centrale, linea orizzontale, espansione verticale e breve bagliore che lascia apparire il contenuto; in chiusura lo schermo collassa verso il centro fino al punto, che si spegne. Il bagliore è limitato al pannello. Il timeout per frase parte dopo l'accensione.
+Long text wraps and scrolls to the latest typed line. Mouse wheel over text, Page Up/Down and right stick allow review. Manual scrolling suspends automatic following until the next message without resetting timeout. Button actions reveal unfinished text, advance completed text or close the final message, labeled Reveal / Next / Close for the active device. Historical Enter/North bindings were later replaced by F/West; see InteractionHints.md.
 
-Il pulsante visibile, il tasto Invio e Y/Triangolo del controller hanno lo stesso comportamento: durante la digitazione completano subito la frase; a frase completa passano alla successiva oppure chiudono sull'ultima. Il pulsante cambia etichetta fra Reveal, Next e Close e mostra solo il tasto del dispositivo attualmente in uso (Enter oppure Y/Triangle, secondo il layout del controller). Il footer mostra posizione nella sequenza e secondi rimasti. Y/Triangolo è distinto dai comandi correnti del topo per salto, presa e morso.
+HideScientistComment() immediately interrupts/hides communication. No voice audio is attached to dialogue. Welcome Text, Portrait, Duration and Show Welcome On Start are Inspector settings; scene welcome duration is 30 seconds and portrait assignment is ready for final artwork.
 
-Ogni frase ha un timeout di 30 secondi dall'inizio della sua visualizzazione, inclusa la digitazione. Alla scadenza si passa automaticamente alla frase successiva oppure si chiude sull'ultima, anche se il testo è ancora in digitazione. Completare manualmente la digitazione non azzera il timeout. Il parametro duration può accorciarlo, ma è limitato a 1–30 secondi. Apertura e chiusura richiedono in più le loro brevi animazioni. Animazioni, digitazione e timeout usano tempo non scalato e funzionano anche in pausa.
+ResetTimer() clears time; SetTimerRunning(bool) pauses/resumes it; ElapsedSeconds reads it. A new scene instance restarts at zero.
 
-`HideScientistComment()` interrompe e nasconde subito la comunicazione. Non viene riprodotta una voce audio: testo e sprite sono i dati previsti per ora.
+## Manual Unity review
 
-Nell'Inspector si possono configurare `Welcome Text`, `Welcome Portrait`, `Welcome Duration` e `Show Welcome On Start`. Il benvenuto nella scena è impostato a 30 secondi. Non è ancora disponibile un ritratto dello scienziato: la cornice rimane pronta per lo sprite futuro.
+No automated tests/Play Mode were run for the HUD revisions. Check 640×360 plus 1280×720, 1920×1080 and 1366×768; band/frame alignment, portrait proportions, message arrays, reveal/advance/close, timeout behavior including pause, counters and timer pause/reset. Historical UI Builder previews hid dialogue; current preview behavior is described below.
 
-`ResetTimer()` riporta il cronometro a zero; `SetTimerRunning(bool)` lo mette in pausa o lo fa ripartire. `ElapsedSeconds` restituisce il tempo accumulato. Il caricamento di una nuova istanza della scena riparte da zero.
+## Collectible wiring and lower-band layout
 
-## Prove manuali in Unity
+HUD Collectible Collector references the player. CountChanged drives Cheese slot 0 and GreenCheese slot 1; manual SetCounter changes are resynchronized on pickup/HUD reenable. See Collectibles.md and CollectibleProgress.md for later four-counter persistence.
 
-Non sono stati eseguiti test automatici o Play Mode.
+Four counters share a 280×60 resource/satiety panel with 20-pixel icons, 11-pixel text and cyan borders. The original fourth slot used default cheese imagery and SetCounter(3, value); later photo wiring replaces it.
 
-1. Aprire LoopScene in Play a 640 × 360: cronometro centrale, tre formaggi in basso a sinistra, bande nere e benvenuto animato in basso a destra.
-2. Provare 1280 × 720, 1920 × 1080 e 1366 × 768: HUD e bande devono seguire il frame del gameplay senza sovrapporre i contatori allo schermo dello scienziato.
-3. Assegnare un ritratto a Welcome Portrait e controllarne proporzioni e apertura dello schermo.
-4. Inviare un array di frasi; provare click, Invio e Y/Triangolo durante e dopo la digitazione. Controllare avanzamento in sequenza e chiusura sull'ultima frase.
-5. Non premere nulla per 30 secondi per frase: verificare passaggio automatico o chiusura. Completare la digitazione poco prima della scadenza non deve riavviare il conto. Provare anche in pausa.
-6. Controllare incremento dei contatori tramite SetCounter e pausa/reset del cronometro.
+Resource/communication panels sit 10 logical pixels above the bottom within an 80-pixel reserved band. The timer moved to the top-left 20-pixel band, originally 70×18. Communications originally occupied 300×60, with a right portrait frame 60×52, image 54×39 and SCIENTIST caption; later split terminals supersede this structure. Sequence position/remaining seconds are no longer displayed, while internal timeouts and Reveal/Next/Close remain.
 
-L'anteprima UI Builder mostra i contatori e il cronometro a zero; lo schermo dello scienziato è nascosto finché non arriva una battuta in Play Mode.
+## Terminal restyling — 18 October 2026
 
-## Collegamento dei raccoglibili
+Reference: codex-clipboard-d16df1c8-8e60-4a3a-809f-1af39e2362f5.png. Dark navy, cream/gold/cyan borders, green status/text. Satiety and four counters share a frame. Collectible sprites, procedural bulb and input icons were retained.
 
-`Collectible Collector` nell'Inspector del controller HUD e assegnato al componente del player in LoopScene. Il controller ascolta `CountChanged` e mostra i totali di `Cheese` nello slot 0 e `GreenCheese` nello slot 1. Questi due slot seguono i dati del collector; eventuali chiamate manuali a `SetCounter` vengono riallineate alla successiva raccolta o riattivazione dell'HUD. Vedere `Docs/Collectibles.md` per il tipo e l'evento configurabile sui raccoglibili.
+Only LoopScene sets PixelPerfectViewport.Bottom Border Pixels to 80, retaining 20 above. Visible world area is 640×260 in the 640×360 base. Existing masking reserves 60 extra lower rows without changing rendering grid/framing; HUD does not overlap visible gameplay. -1 on other instances matches bottom to top.
 
+ScientistCommentView API/coroutines remain compatible: game-provided portrait, individual/array messages, typing, timeout, device-aware controls, scrolling and CRT transitions. Background artwork contains no fixed portrait/message. Asset provenance/prompts: GameplayHudVisualAssets.md. Check legibility, CRT frame behavior, long text, varied portrait ratios, timer, pickups, satiety, device switching and player framing near the lower edge.
 
-Il quarto contatore usa il formaggio come immagine di default ed è aggiornabile con SetCounter(3, valore). I quattro contatori condividono il pannello da 280 × 60 pixel con la sazietà: icone esistenti da 20 pixel, testo da 11 e bordi ciano. I collegamenti dei primi due slot al collector rimangono invariati.
+### Borders and backgrounds
 
-Comunicazioni e pannello risorse sono a 10 pixel logici dal bordo inferiore, interamente nella fascia riservata da 80 pixel. Il timer è in alto a sinistra, nella banda superiore da 20 pixel, con cornice 70 × 18. Le posizioni tengono conto del letterboxing e della scala intera. L'altezza della comunicazione resta 60 pixel.
+Counters have transparent backgrounds and no USS borders. .scientist-portrait-frame, .scientist-message-panel and .scientist-advance also have no USS borders and remain editable even when scientist-screen is hidden. CommunicationTerminal_Background contains the outer frame art.
 
-I suggerimenti di gameplay sono contestuali, in inglese e possono mostrare più azioni contemporaneamente. La tastiera usa E per Eat cheese e F tenuto premuto per Cut rope / Dig; il controller usa i pulsanti ovest ed est con i nomi del suo layout. Dettagli e condizioni di disponibilità in Docs/InteractionHints.md.
+### Persistent terminal and status light
 
-La comunicazione mantiene lo sprite a destra: cornice 60 × 52, immagine 54 × 39 e didascalia SCIENZIATO. A sinistra: spia di stato, testo scorrevole e pulsante nell'angolo inferiore destro; nessuna intestazione CANALE INTERNO. Sfondo CRT vuoto separato dai dati del gioco; il pannello rimane 300 × 60.
+The outer frame remains visible without dialogue. The light is red at rest and green from communication startup through closing, then red again. The internal-channel heading was removed. CRT animation affects the centered scientist-display clip window; content dimensions remain constant, glow stays internal and the light remains outside animation.
 
-Le comunicazioni non mostrano il numero di frase (ad esempio 1/1) né i secondi rimanenti. Il timeout interno e il passaggio automatico restano invariati; il pulsante Reveal / Next / Close rimane visibile.
+ScientistCommentView.IsVisible means active communication, including transitions, rather than persistent-frame visibility. Hide() clears text/portrait and restores red. Hint/input priorities, arrays, typing and timeouts remain unchanged.
 
-## Restyling del terminale — 18 ottobre 2026
+### Separate terminals and nine-slicing
 
-Riferimento: allegato `codex-clipboard-d16df1c8-8e60-4a3a-809f-1af39e2362f5.png`. Palette blu scuro, bordi crema/oro e ciano, spia e testo verde. Sazietà e quattro contatori hanno una cornice comune. Non sono stati sostituiti sprite di raccoglibili, lampadina procedurale o icone dei comandi.
+Two unique panels replace duplicates: scientist-screen for text (176×60, right 77), scientist-avatar-screen for portrait (60×60, right 4), retaining manual-layout positions. One LED under the portrait is green for communication/SYSTEM hints, red at rest. No duplicate text/buttons/labels appear in the avatar panel.
 
-`PixelPerfectViewport.Bottom Border Pixels` è impostato a 80 solo in LoopScene, con banda superiore ancora da 20. L'area visibile del mondo è quindi 640 × 260 nella base 640 × 360: il rendering mantiene la griglia e l'inquadratura, la maschera esistente riserva ulteriori 60 righe inferiori alla HUD. La HUD non si sovrappone all'area visibile di gameplay. Il valore -1 nelle altre istanze conserva il bordo inferiore uguale a quello superiore.
+GeometryChangedEvent sizes animation/content from scientist-display-viewport. The old 290-pixel fixed content and manual 20-pixel left offset were removed. Text fills viewport width and scrolls vertically. Buttons reserve a row only for scientist dialogue; ordinary communications reserve no heading row.
 
-API, coroutine e sequenza di `ScientistCommentView` non cambiano in questo restyling: avatar ricevuto dal gioco, messaggi singoli/array, scrittura progressiva, timeout, pulsante coerente col device, scorrimento e accensione/spegnimento CRT. Il nuovo sfondo non contiene un ritratto o testi fissi del messaggio.
+USS uses -unity-slice-left/right/top/bottom, -unity-slice-scale and -unity-slice-type: sliced. Resources/text/avatar borders use 6 px; timer uses 6 on sides and 3 vertically. Original textures/icons are unchanged. Edit UI Builder → Background → Slice. [Unity background styling reference](https://docs.unity.com/en-us/engine/6000.3/manual/uitoolkits/uielements/uie-uss/properties/uib-styling-ui-backgrounds).
 
-Asset e prompt: `Docs/GameplayHudVisualAssets.md`. Nessun test automatico, compilazione o Play Mode eseguito. Da verificare manualmente: leggibilità a 640 × 360, cornici durante l'animazione CRT, messaggi lunghi e avatar di proporzioni diverse, timer, raccolte, sazietà e cambio dispositivo. La fascia riservata riduce l'area visibile inferiore della camera: controllare l'inquadratura del topo vicino al bordo.
-### Bordi e sfondi degli elementi
+Public message APIs remain compatible, but custom UXML copies must adopt distinct panel names/new containers. Check long text, resizing, sliced frames, isolated portrait and action priority manually.
 
-I contatori hanno sfondo trasparente e nessun bordo USS. Gli elementi interni della comunicazione (`.scientist-portrait-frame`, `.scientist-message-panel`, `.scientist-advance`) non hanno bordi USS. Questi selettori sono modificabili direttamente in GameplayHud.uss anche quando `scientist-screen` è nascosto nell'anteprima. La grafica della cornice esterna è contenuta nel PNG CommunicationTerminal_Background.
+### Preview before Play
 
-### Terminale persistente e spia di stato
+UXML previews “Welcome to Universe-10. Relax and enjoy your stay.”, F Close and a green LED. Select scientist-text or .scientist-text in UI Builder to edit typography, spacing and color. Display/content fill the preview interior. Play initialization calls Hide() to clear the placeholder; gameplay then owns messages/LED/animation. The placeholder is not queued dialogue.
 
-La cornice esterna resta visibile anche senza comunicazioni. Il pallino è rosso a riposo e verde dall'inizio di una comunicazione fino al termine della chiusura, poi torna rosso. CANALE INTERNO è stato rimosso.
+### Manual layout without footer
 
-L'apertura e la chiusura CRT agiscono su `scientist-display`, una finestra di ritaglio centrata all'interno della cornice. Testo, avatar e comando mantengono dimensioni costanti mentre la finestra si espande o si comprime; il bagliore è confinato al display interno. La spia è fuori dal contenuto animato e rimane sempre visibile.
+scientist-footer was intentionally removed; the view directly controls scientist-advance. scientist-dialogue reserves button space only for dialogue/preview; SYSTEM hints use full height. Text is in the scrolling transcript with manually configured font 10, middle-left alignment and padding. Fixed dimensions became min-height and width 100% to allow expansion/scrolling. Button anchors remain bottom 4/right 2, minimum height 12 and adaptive width.
 
-`ScientistCommentView.IsVisible` continua a indicare una comunicazione attiva (comprese le transizioni), non la visibilità della cornice persistente: suggerimenti contestuali e priorità degli input mantengono il comportamento precedente. `Hide()` svuota testo e ritratto e torna allo stato rosso. Array, timeout, digitazione e comandi sono invariati. Nessun test o Play Mode eseguito; verificare manualmente accensione/spegnimento e ritorno dei suggerimenti dopo una comunicazione.
-### Due terminali distinti e 9-slicing
+CRT glow is a sibling of content rather than a ScrollView child, so it neither scrolls nor gets clipped there. Portrait sits directly in its own terminal with frame/LED margins. Manual avatar right 6 and LED left 7/bottom 7 positions were retained at this revision; later alignment below centers the LED. Placeholder, slicing and priorities remain.
 
-La struttura duplicata è sostituita da due pannelli univoci: `scientist-screen` per il testo (176 × 60, right 77) e `scientist-avatar-screen` per il solo avatar (60 × 60, right 4), conservando le posizioni del layout manuale. Un solo LED resta sotto il ritratto: verde se c'è una comunicazione o un suggerimento SYSTEM, rosso a riposo. Niente messaggi, pulsanti o etichette duplicati nel terminale dell'avatar.
+### Internal alignment
 
-La finestra animata e il contenuto si dimensionano tramite GeometryChangedEvent sulle dimensioni effettive di scientist-display-viewport. Il vecchio contenuto fisso da 290 pixel e l'offset sinistro manuale da 20 pixel sono eliminati. Il testo usa la larghezza del viewport e scorre in verticale; il pulsante ha una riga propria soltanto nei dialoghi dello scienziato. Durante le comunicazioni normali non viene riservata una riga per l'intestazione.
+Display margins: 8 px horizontally, 7 vertically. SYSTEM and first icon share the left edge; header is 7 px with a 3-pixel hint gap. Commands use a 12-pixel icon column and 5-pixel text gap, aligned to the first wrapped line. Ordinary messages do not add another inner padding. LED is centered below portrait (left 27, bottom 7 in a 60-pixel terminal). Frames, icons, terminal positions and logic stay unchanged.
 
-Cornici configurate direttamente in USS con `-unity-slice-left/right/top/bottom`, `-unity-slice-scale` e `-unity-slice-type: sliced`. Bordi 6 px per risorse, terminale del testo e terminale avatar; timer 6 px ai lati e 3 sopra/sotto. Le texture originali e le icone non cambiano. I valori si possono modificare in UI Builder > Background > Slice. Riferimento: [documentazione Unity](https://docs.unity.com/en-us/engine/6000.3/manual/uitoolkits/uielements/uie-uss/properties/uib-styling-ui-backgrounds).
+### Satiety, counters and timer alignment
 
-Le API pubbliche dei messaggi restano compatibili; la UXML richiede ora i due nomi distinti del pannello e i nuovi contenitori. Eventuali copie personalizzate del documento HUD devono essere aggiornate con la stessa struttura. Da controllare manualmente in Unity: testo lungo, ridimensionamento dei pannelli, cornici sliced, ritratto isolato e priorità delle azioni. Nessuna compilazione, test o Play Mode eseguito.
+Resources use 8-pixel horizontal/7-pixel vertical margins, a 12-pixel heading and 6-pixel counter gap. Satiety caption is 8 px; notches 14×7 centered. Four equal columns retain 20-pixel icons, a 6-pixel value gap, 10-pixel numbers vertically centered in a 20-pixel region, without backgrounds.
 
-### Anteprima prima del Play
-
-La UXML mostra di default una comunicazione di esempio: “Welcome to Universe-10. Relax and enjoy your stay.”, pulsante F Close e LED verde. In UI Builder selezionare `scientist-text` o il selettore `.scientist-text` per regolare font, dimensioni, spaziature e colore. Display e contenuto usano il 100% dello spazio interno per l'anteprima. All'inizializzazione in Play, `ScientistCommentView.Hide()` svuota il placeholder e ripristina lo stato a riposo; messaggi, stato LED e animazioni sono quindi gestiti dal gioco. Il placeholder non è un messaggio accodato.
-
-### Compatibilità con il layout manuale senza footer
-
-`scientist-footer` è stato eliminato intenzionalmente: la view ora mostra/nasconde direttamente `scientist-advance` e non richiede quel contenitore. La classe `scientist-dialogue` riserva lo spazio del pulsante solo durante i dialoghi e nell'anteprima; i suggerimenti SYSTEM usano tutta l'altezza disponibile.
-
-Il testo è nuovamente nel transcript scorrevole, mantenendo font 10, allineamento middle-left e padding impostati manualmente. Altezza e larghezza fisse sono sostituite da min-height e larghezza 100%, per consentire al testo lungo di espandersi e scorrere. Il pulsante conserva l'ancoraggio bottom 4/right 2, con altezza minima 12 e larghezza adattiva per icona e parola del comando.
-
-Il bagliore CRT è fratello del contenuto nel display animato, anziché figlio dello ScrollView: non scorre con il testo e non è tagliato dal relativo viewport. L'avatar è direttamente nel proprio terminale (nessun contenitore reinserito), con margini interni per la cornice e il LED. Le posizioni manuali del terminale avatar (right 6) e del LED (left 7/bottom 7) restano conservate. Anche placeholder, slicing e priorità dei messaggi sono mantenuti.
-
-Analisi statica dei riferimenti UXML/C#; nessuna compilazione, test automatico o Play Mode. Verificare manualmente testo lungo e scorrimento, pulsante con icone dei diversi dispositivi, transizioni CRT e comunicazioni SYSTEM.
-
-### Allineamenti interni
-
-Margini comuni del display: 8 px laterali e 7 px verticali. SYSTEM e prima icona condividono il bordo sinistro; intestazione da 7 px con 3 px di separazione dai suggerimenti. I comandi hanno una colonna icona da 12 px e distanza testo di 5 px; l'icona resta allineata alla prima riga anche quando la descrizione va a capo. Il messaggio normale non aggiunge più un secondo padding interno. LED centrato sotto il ritratto (left 27, bottom 7 sul terminale da 60 px). Cornici, icone, posizioni dei terminali e logica delle comunicazioni sono invariati. Verifica visiva manuale in Unity.
-
-### Allineamenti sazietà, contatori e timer
-
-Pannello risorse con margini interni di 8 px laterali e 7 px verticali, intestazione da 12 px e separazione di 6 px dai contatori. Didascalia sazietà da 8 px, tacche da 14 × 7 allineate al centro. Quattro colonne uguali con icone invariate da 20 px, distanza icona/valore di 6 px e numeri da 10 px centrati verticalmente in un'area da 20 px; nessuno sfondo dei contatori.
-
-Timer largo 80 px, ancora alto 18 nella banda superiore: titolo da 5 px su riga di 6, cifre da 7 su riga di 9, padding superiore 1 e inferiore 2. Le righe non si comprimono e i testi sono centrati; ridotta la dimensione delle cifre per evitarne il taglio inferiore. Nessuna logica o icona modificata. Verifica visiva manuale in Unity.
+Timer is now 80×18 in the upper band: 5-pixel title on a 6-pixel row, 7-pixel digits on a 9-pixel row, padding top 1/bottom 2. Rows do not shrink; text is centered and digits reduced to avoid bottom clipping. No logic/icons changed. Visual review remains manual.

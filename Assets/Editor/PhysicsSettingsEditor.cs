@@ -5,13 +5,13 @@ using UnityEngine;
 [CustomEditor(typeof(PhysicsSettings)), CanEditMultipleObjects]
 public sealed class PhysicsSettingsEditor : Editor
 {
-    [MenuItem("Tools/Mouse Platformer/Impostazioni fisica")]
+    [MenuItem("Tools/Mouse Platformer/Physics Settings")]
     private static void SelectSettings()
     {
         PhysicsSettings settings = AssetDatabase.LoadAssetAtPath<PhysicsSettings>("Assets/Settings/PhysicsSettings.asset");
         if (settings == null)
         {
-            Debug.LogError("PhysicsSettings.asset non trovato in Assets/Settings.");
+            Debug.LogError("PhysicsSettings.asset not found in Assets/Settings.");
             return;
         }
         Selection.activeObject = settings;
@@ -23,47 +23,47 @@ public sealed class PhysicsSettingsEditor : Editor
         serializedObject.Update();
         using (new EditorGUI.DisabledScope(true))
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
-        EditorGUILayout.HelpBox("1 unità = 32 pixel. Velocità in unità/s; accelerazioni in unità/s².", MessageType.Info);
+        EditorGUILayout.HelpBox("1 unit = 32 pixels. Speeds in units/s; accelerations in units/s².", MessageType.Info);
 
         Section("Interaction Areas");
-        Field("interactions.crateGrabReach", "Distanza laterale massima fra il collider del topo e la cassa per spingere o tirare. Nei gizmo sono le fasce azzurre ai lati della cassa.");
-        Field("interactions.ropeGrabRadius", "Distanza massima fra la mano del topo e la corda per agganciarsi. Nei gizmo è il contorno azzurro lungo la corda.");
-        EditorGUILayout.HelpBox("Morso: seleziona Player → Player Rope Bite → Reach.\nCollezionabili: seleziona l'oggetto → Collectible → Pickup Area, poi modifica Size/Radius e Offset di quel collider.\nShow Gizmos sui singoli oggetti controlla solo la visualizzazione delle aree.", MessageType.Info);
+        Field("interactions.crateGrabReach", "Maximum lateral distance between the mouse collider and a crate for pushing or pulling. Shown as cyan bands beside the crate in gizmos.");
+        Field("interactions.ropeGrabRadius", "Maximum hand-to-rope attachment distance. Shown as the cyan outline along the rope in gizmos.");
+        EditorGUILayout.HelpBox("Bite: select Player → Player Rope Bite → Reach.\nCollectibles: select the object → Collectible → Pickup Area, then edit that collider's Size/Radius and Offset.\nShow Gizmos on each object only controls area visibility.", MessageType.Info);
 
         Section("Player — Movement");
         Field("player.speed");
         Field("player.groundAcceleration");
         Field("player.airAcceleration");
-        Field("player.maxStepHeight", "Supera automaticamente piccoli dislivelli a terra. 0 disabilita; 0.15 unità corrispondono a 4.8 pixel.");
+        Field("player.maxStepHeight", "Automatically steps over small ground height differences. 0 disables stepping; 0.15 units equals 4.8 pixels.");
         Field("player.coyoteTime");
         Field("player.jumpBuffer");
         Field("player.launchControlTime");
         Field("player.launchControlMultiplier");
         Section("Player — Footsteps");
-        Field("player.runFootstepsPerSecond", "0 disabilita i passi durante la corsa.");
-        Field("player.walkFootstepsPerSecond", "Predisposta per la futura camminata. 0 disabilita i passi.");
+        Field("player.runFootstepsPerSecond", "0 disables running footsteps.");
+        Field("player.walkFootstepsPerSecond", "Reserved for future walking support. 0 disables footsteps.");
         Section("Player — Slopes and Sliding");
-        Field("player.slopeSlideAngle", "Sotto questa soglia il topo resta stabile. Il valore effettivo non supera il limite di salita.");
-        Field("player.maxSlopeAngle", "Oltre questo angolo la salita è bloccata. Fra le due soglie puoi contrastare la scivolata con il movimento.");
+        Field("player.slopeSlideAngle", "The mouse remains stable below this threshold. The effective value cannot exceed the climb limit.");
+        Field("player.maxSlopeAngle", "Climbing is blocked beyond this angle. Between the two thresholds, movement can counteract sliding.");
         Field("player.slideOnSteepSlopes");
-        Field("player.slopeSlideAcceleration", "Applicata lungo la superficie in proporzione alla pendenza.");
+        Field("player.slopeSlideAcceleration", "Applied along the surface in proportion to its slope.");
         Field("player.slopeSlideMaxSpeed");
         Section("Ledge Climb");
         Field("ledgeClimb.enabled");
-        Field("ledgeClimb.maxHeight", "Dislivello massimo fra i piedi e il bordo. A terra gli ostacoli sopra l'altezza dei gradini standard vengono risaliti con la direzione.");
+        Field("ledgeClimb.maxHeight", "Maximum height difference between the feet and the ledge. While grounded, directional input climbs obstacles above standard step height.");
         Field("ledgeClimb.forwardReach");
-        Field("ledgeClimb.hangHeightFraction", "Frazione dell'altezza del collider misurata dai piedi: 0.85 posiziona la presa vicino alla parte superiore del corpo.");
-        Field("ledgeClimb.grabVerticalReach", "Distanza massima fra il bordo e l'altezza della presa durante un salto.");
+        Field("ledgeClimb.hangHeightFraction", "Fraction of collider height measured from the feet: 0.85 places the grip near the top of the body.");
+        Field("ledgeClimb.grabVerticalReach", "Maximum distance between the ledge and grip height during a jump.");
         Field("ledgeClimb.climbSpeed");
         Field("ledgeClimb.retryDelay");
 
         Section("Water — Horizontal Movement");
-        Field("water.speed", "Velocità massima a destra e sinistra nell'acqua.");
-        Field("water.bottomWalkSpeedMultiplier", "Rispetto alla velocità normale del Player: 0.5 = metà velocità. Usato quando è immerso e appoggiato su una superficie percorribile.");
-        Field("water.acceleration", "Quanto rapidamente raggiunge la velocità richiesta.");
-        Field("water.strokeAcceleration", "Risposta laterale dopo la bracciata, anche appena fuori dall'acqua.");
+        Field("water.speed", "Maximum left/right speed in water.");
+        Field("water.bottomWalkSpeedMultiplier", "Relative to normal player speed: 0.5 = half speed. Used while submerged and standing on a walkable surface.");
+        Field("water.acceleration", "How quickly the requested speed is reached.");
+        Field("water.strokeAcceleration", "Lateral response after a swim stroke, including just outside the water.");
         Field("water.strokeControlTime");
-        Field("water.braking", "Quanto rapidamente si ferma quando rilasci la direzione.");
+        Field("water.braking", "How quickly movement stops after releasing directional input.");
         Section("Water — Vertical Movement");
         Field("water.gravity");
         Field("water.maxSinkSpeed");
@@ -74,7 +74,7 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("gravity.playerGravity");
         Field("gravity.fallGravityMultiplier");
         Field("gravity.playerTerminalSpeed");
-        Field("gravity.jumpHeight", "Altezza del salto completo sopra il punto di partenza. Il rilascio anticipato di Jump riduce l'altezza.");
+        Field("gravity.jumpHeight", "Full jump height above the takeoff point. Releasing Jump early reduces the height.");
         Field("gravity.jumpReleaseMultiplier");
         Section("Crates and Ropes");
         Field("gravity.crateGravity");
@@ -95,10 +95,10 @@ public sealed class PhysicsSettingsEditor : Editor
         Section("Digging — Shared Bite Input");
         Field("digging.enabled");
         Field("digging.speed");
-        Field("digging.radius", "Il raggio effettivo non scende sotto quello necessario a contenere il collider del topo.");
+        Field("digging.radius", "The effective radius cannot be smaller than the radius needed to contain the mouse collider.");
         Field("digging.reach");
-        Field("digging.excavatedAlpha", "0 = trasparente; 254 = quasi opaco. Non modifica le collisioni: il tunnel resta aperto.");
-        Field("digging.excavatedTint", "La componente alpha del colore non viene usata; regola Alpha post scavo.");
+        Field("digging.excavatedAlpha", "0 = transparent; 254 = almost opaque. Does not change collisions: the tunnel stays open.");
+        Field("digging.excavatedTint", "The color alpha channel is ignored; adjust Excavated Alpha instead.");
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -112,6 +112,6 @@ public sealed class PhysicsSettingsEditor : Editor
     {
         SerializedProperty property = serializedObject.FindProperty(path);
         if (property != null) EditorGUILayout.PropertyField(property, new GUIContent(ObjectNames.NicifyVariableName(property.name), string.IsNullOrEmpty(tooltip) ? path : path + "\n" + tooltip));
-        else EditorGUILayout.HelpBox($"Parametro mancante: {path}", MessageType.Error);
+        else EditorGUILayout.HelpBox($"Missing parameter: {path}", MessageType.Error);
     }
 }

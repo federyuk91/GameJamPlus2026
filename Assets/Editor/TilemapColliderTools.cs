@@ -41,23 +41,23 @@ public static class TilemapColliderTools
                 // Do not save an old in-memory copy over the transferred tiles on disk.
                 if (tileCount != 449)
                 {
-                    Debug.LogWarning("Ricarica LoopScene per rigenerare i collider delle 449 tile trasferite.", map);
+                    Debug.LogWarning("Reload LoopScene to rebuild colliders for the 449 transferred tiles.", map);
                     return;
                 }
                 Rebuild(map);
                 EditorSceneManager.MarkSceneDirty(scene);
                 if (!EditorSceneManager.SaveScene(scene)) return;
                 CompositeCollider2D composite = map.GetComponent<CompositeCollider2D>();
-                string result = "Tile: " + tileCount + "; percorsi collider: " + composite.pathCount + "; punti: " + composite.pointCount;
+                string result = "Tile: " + tileCount + "; collider paths: " + composite.pathCount + "; points: " + composite.pointCount;
                 File.WriteAllText(ResultPath, result);
                 File.Delete(RequestPath);
-                Debug.Log("Collider Terrain rigenerati e scena salvata. " + result, map);
+                Debug.Log("Terrain colliders rebuilt and scene saved. " + result, map);
                 return;
             }
         }
     }
 
-    [MenuItem("Tools/Mouse Platformer/Tilemaps/Ricalcola collider selezionati")]
+    [MenuItem("Tools/Mouse Platformer/Tilemaps/Rebuild Selected Colliders")]
     private static void RebuildSelected()
     {
         foreach (GameObject selected in Selection.gameObjects)
@@ -76,8 +76,8 @@ public static class TilemapColliderTools
         TilemapCollider2D collider = map.GetComponent<TilemapCollider2D>();
         CompositeCollider2D composite = map.GetComponent<CompositeCollider2D>();
         if (collider == null) return;
-        Undo.RecordObject(collider, "Rigenera collider tilemap");
-        if (composite != null) Undo.RecordObject(composite, "Rigenera collider composito");
+        Undo.RecordObject(collider, "Rebuild Tilemap collider");
+        if (composite != null) Undo.RecordObject(composite, "Rebuild composite collider");
         bool wasEnabled = collider.enabled;
         CompositeCollider2D.GenerationType generation = composite != null
             ? composite.generationType : CompositeCollider2D.GenerationType.Synchronous;

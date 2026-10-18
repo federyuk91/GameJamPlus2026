@@ -1,39 +1,22 @@
-# Piranha: ronda e inseguimento
+# Piranha: patrol and chase
 
-Il Piranha gia presente in LoopScene usa due componenti indipendenti:
+LoopScene's Piranha uses two independent components:
 
-- PiranhaPatrol muove il pesce lungo un circuito chiuso di waypoint, a velocita
-  configurabile. Gestisce anche il verso della sprite.
-- PiranhaChase controlla il player assegnato e sostituisce temporaneamente la
-  destinazione di ronda con la posizione del collider del topo.
+- PiranhaPatrol moves along a closed waypoint circuit at a configurable speed and controls sprite facing.
+- PiranhaChase monitors the assigned player and temporarily replaces the patrol destination with the mouse collider position.
 
-Selezionare Piranha nella Scene view e abilitare Gizmos:
+Select Piranha in Scene View with Gizmos enabled:
 
-- I punti ciano etichettati Ronda si trascinano con le maniglie. Il circuito
-  mostra i collegamenti; i punti si aggiungono o rimuovono nell'array Waypoints.
-- La maniglia Distanza visiva regola la portata. Apertura cono regola l'angolo.
-  Entrambi i valori sono anche nell'Inspector di PiranhaChase.
-- Il cono giallo diventa rosso durante l'inseguimento.
+- Drag cyan Patrol points using the handles. The circuit displays links; add/remove points in Waypoints.
+- View distance controls range; Cone angle controls the field of view. Both are also available in PiranhaChase's Inspector.
+- The yellow cone turns red while chasing.
 
-I waypoint sono offset in unita mondo rispetto alla posizione iniziale del
-piranha, indipendenti dalla scala della sprite. Durante il gioco il percorso
-rimane fermo anche quando il pesce si allontana per inseguire il topo.
+Waypoints are world-unit offsets from the piranha's initial position, independent of sprite scale. During play the route stays fixed even while the fish leaves it to chase the mouse.
 
-Il player e visibile quando il centro del suo collider e in acqua, nel cono,
-entro la portata e senza collider solidi sulla linea di vista. Il controllo
-usa PlayerSwimming.CheckWater, coerente con il sistema di nuoto. Water trigger,
-collider del piranha e collider del player non oscurano la vista. Default e
-Diggable sono inclusi negli Occluder Layers; aggiungere eventuali altri layer
-solidi usati nella scena.
+The player is visible when its collider center is in water, inside the cone and range, with no solid collider blocking the line of sight. Detection uses PlayerSwimming.CheckWater. Water triggers and the player/piranha colliders do not obstruct visibility. Default and Diggable are included in Occluder Layers; add other solid layers used by the scene.
 
-Quando una condizione manca, il piranha torna al punto piu vicino del circuito
-e riprende dal waypoint successivo. Le velocita iniziali sono 1.5 unita/s in
-ronda e 3 in inseguimento; portata 5 unita e cono 100 gradi. I riferimenti al
-player, alla sprite e alla ronda sono assegnati in LoopScene.
+When any condition fails, the piranha returns to the nearest point on the circuit and resumes at the next waypoint. Initial speeds: patrol 1.5 units/s, chase 3; range 5 units, cone 100 degrees. Player, sprite and patrol references are assigned in LoopScene.
 
-Gli spostamenti seguono tratti rettilinei: il percorso e il rientro devono
-avere spazio libero. Questa implementazione non calcola deviazioni intorno
-agli ostacoli. Disabilitando PiranhaChase rimane attiva la sola ronda.
+Movement follows straight segments; the route and return path require clear space. Obstacle avoidance is not implemented. Disabling PiranhaChase leaves patrol active.
 
-Verifica in Play Mode: entrare nel cono sott'acqua, uscire dal cono o dall'acqua,
-e frapporre una cassa o terreno solido; controllare inseguimento e rientro.
+Check entering/leaving the cone underwater, leaving water and blocking sight with a crate or solid terrain; verify chase and return in Play Mode.

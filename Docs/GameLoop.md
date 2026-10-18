@@ -1,53 +1,59 @@
-# Loop dei test
+# Test loop
 
-`Game Manager` e gia presente in LoopScene, con riferimento al Gameplay HUD. La sessione parte da Universo-10. `GameSession` conserva il numero dell'universo fra i caricamenti della scena, per la durata della partita; Nuovo Gioco dal menu lo azzera prima di iniziare una nuova sessione.
+LoopScene contains Game Manager assigned to Gameplay HUD. Sessions start at Universe-10. GameSession keeps the universe across scene loads for the run; New Game resets it before starting again.
 
-## Fine di un test
+## Ending a test
 
-1. Un evento chiama `TestEndEvent.EndTest()`.
-2. Il Game Manager acquisisce il tempo del test e sceglie una frase da `Result Messages`. Eventuali ulteriori richieste di fine test vengono ignorate.
-3. Gioco e cronometro si fermano. Un flash bianco di durata configurabile copre la scena e resta visibile.
-4. Lo scienziato mostra una frase casuale dal `DialogueMessagePlayer` assegnato al TestEndEvent. Il dialogo usa lo stesso avatar. Per questi commenti non vale il timeout automatico: occorre confermare.
-5. Click sul pulsante del dialogo, Invio o Y/Triangolo completano prima la digitazione, poi confermano Avanti. Appare la schermata `TEST COMPLETATO!`, con `Successo! ... ore ... minuti e ... secondi.`, la frase risultato e `Universo-N`.
-6. Il pulsante Avanti, Invio o Y/Triangolo nella schermata risultato decrementano l'universo e ricaricano LoopScene. Dopo Universo-1 il valore diventa 0 e si carica EndGame.
+1. An event calls TestEndEvent.EndTest().
+2. GameManager captures test time and randomly selects Result Messages. Further ending requests are ignored.
+3. Gameplay/timer stop; a configurable white flash covers the scene and remains visible.
+4. The assigned DialogueMessagePlayer provides a random scientist comment and avatar. These comments require confirmation rather than timing out.
+5. Dialogue-button click, Enter or Y/Triangle first completes typing, then confirms Next. TEST COMPLETE displays “Success! ... hours ... minutes and ... seconds.”, the result and Universe-N.
+6. Next / Enter / Y/Triangle decrements the universe and reloads LoopScene. After Universe-1, zero loads EndGame.
 
-Le scene MainMenu, LoopScene ed EndGame sono incluse nei Build Profiles. EndGame mostra il report finale della sessione e, dopo Continue, uno dei tre finali in base ai deceduti; vedere `Docs/EndGame.md`. Ogni ricaricamento ricomincia il cronometro e i conteggi dei raccoglibili del test. Il benvenuto usa `{universe}` nel testo per mostrare il numero attuale.
+MainMenu, LoopScene and EndGame are in Build Profiles. EndGame reports session results and selects one of three death-count endings after Continue; see EndGame.md. Reloading restarts the test timer and recreates scene collectibles; session collectible totals are described in CollectibleProgress.md. Welcome text uses {universe} for the current number.
 
-La pausa usa `Time.timeScale = 0`; flash, digitazione e transizioni della UI usano tempo non scalato. Il caricamento ripristina la scala temporale precedente. La musica continua durante il commento e la schermata risultato.
+Pause uses Time.timeScale = 0; flashes, typing and UI transitions use unscaled time. Loading restores the previous scale. Music continues during comments/results.
 
-## Configurare una causa di morte
+## Death-cause setup
 
-Aggiungere `TestEndEvent` all'oggetto che determina la fine del test:
+Add TestEndEvent to the source object:
 
-- `Scientist Comment`: riferimento a un `DialogueMessagePlayer` con avatar e lista dei commenti. Il componente viene usato come contenitore dei messaggi; il Game Manager li mostra sul suo HUD.
-- `Result Messages`: lista delle possibili frasi per la schermata risultato. Le stringhe vuote vengono ignorate. Con una sola frase il risultato e fisso.
-- `Subject Died`: attivo per le cause di morte; disattivare per test conclusi con il soggetto vivo. Alimenta i conteggi del report finale e la selezione del finale.
-- `Game Manager`: riferimento esplicito opzionale per gli oggetti della scena; nei prefab vuoto usa l'istanza del manager attivo.
+- Scientist Comment: DialogueMessagePlayer containing avatar/comments, displayed by GameManager on its HUD.
+- Result Messages: nonempty candidate results; one entry gives a fixed result.
+- Subject Died: enabled for death causes, disabled for surviving outcomes; feeds report totals and ending selection.
+- Game Manager: optional explicit scene reference; empty prefab fields use the active manager.
 
-Nell'evento della trappola, del nemico o del raccoglibile, selezionare `TestEndEvent → EndTest()`. Il prefab CheeseGreen e gia configurato tramite `Collectible.On Collected`. Le sue frasi dello scienziato precedenti sono state mantenute. Le altre cause di morte vanno collegate ai rispettivi eventi quando vengono implementate.
+Wire trap/enemy/collectible events to TestEndEvent → EndTest(). CheeseGreen already uses Collectible.On Collected with its existing scientist comments. Connect other death events as implemented.
 
-## Verifica in Unity
+## Unity review
 
-Mangiare un formaggio normale con E / pulsante ovest: incrementa il contatore e mostra il messaggio ordinario. Mangiare CheeseGreen: incrementa il secondo contatore, ferma il gioco, mostra bianco e commento; confermare per vedere tempo e risultato, quindi confermare per ripartire da Universo-9. Per verificare rapidamente il passaggio a EndGame, avviare una nuova sessione con `Starting Universe = 1` sul Game Manager, poi ripristinarlo a 10. Controllare anche mouse e gamepad, testi lunghi e assenza di doppi avanzamenti.
+Normal cheese increments its counter and displays an ordinary message. Green cheese increments the second counter, pauses, shows white/comment, then time/result; the next confirmation starts Universe-9. For quick EndGame review start a new run with Starting Universe = 1, then restore 10. Check mouse/gamepad, long messages and duplicate-advance prevention. Current collection input is F / West.
 
-## Foto degli esperimenti
+## Experiment photos
 
-Photo Collectible apre prima la fotografia e attende Next (Invio / Y / pulsante). Il suo evento On Continue chiama TestEndEvent.EndTest, avviando lo stesso ciclo del formaggio verde. Le frasi dello scienziato sono configurabili sul prefab e invitano il soggetto a fare una pausa; le frasi del risultato sono separate. La pausa della fotografia viene ceduta al Game Manager senza un frame di ripresa del gameplay. La fotografia e il suo tipo sono descritti in Docs/Collectibles.md.
+Photo Collectible opens a photo first and waits for Next (Enter / Y / button). The first two photos collected by the current subject resume gameplay after Next. Closing the third invokes the assigned curiosity TestEndEvent, using the same loop as green cheese. Scientist comments and results explain excessive curiosity; the per-subject count resets on advancing, independently of cumulative HUD totals. Photo pause ownership transfers to GameManager without one gameplay-resume frame. See Collectibles.md.
 
-## Piranha letale
+## Lethal piranha
 
-Il Piranha in LoopScene ha un BoxCollider2D trigger e `LethalContact`, collegato direttamente al collider del player e al suo `TestEndEvent`. Il controllo viene eseguito dopo il movimento del piranha; usa le distanze fra collider e funziona senza Rigidbody2D. Basta il contatto, anche durante la ronda. La richiesta di fine test viene inviata una sola volta.
+LoopScene's Piranha has a trigger BoxCollider2D and LethalContact assigned to Player Collider and TestEndEvent. Post-movement collider-distance checks work without Rigidbody2D. Contact is lethal even during patrol and requests the ending once.
 
-Il `DialogueMessagePlayer` sul Piranha contiene i commenti dello scienziato, modificabili nell'Inspector. `TestEndEvent.Result Messages` contiene: Il soggetto ha socializzato con i pesci con notevole entusiasmo. `Subject Died` e attivo. Il contatto avvia il normale ciclo con flash, commento, risultato e avanzamento dell'universo.
+Edit comments on DialogueMessagePlayer and results on TestEndEvent. Subject Died is enabled. LethalContact is reusable with assigned Contact Area, Player Collider and Test End; keep the area a trigger so it does not block movement.
 
-`LethalContact` puo essere riutilizzato su altre trappole assegnando Contact Area, Player Collider e Test End. Il collider di contatto va mantenuto trigger per non bloccare il movimento del topo.
+## Spawn Points
 
-## Spawn Point
+Assets/Prefabs/Spawn Point.prefab is an empty point with a green Scene View gizmo. Position it by the player pivot, not feet. Point rotation does not rotate the mouse.
 
-`Assets/Prefabs/Spawn Point.prefab` e un punto vuoto con gizmo verde nella Scene View. Posizionarlo usando il pivot del player, non i piedi. La rotazione del punto non modifica il topo.
+Assign Player, Gameplay Camera and scene instances in GameManager.Spawn Points. Each LoopScene instance randomly chooses an assigned active point with an enabled component; nulls are ignored. Awake places the player before component initialization. Startup snaps the camera to avoid the old position; player Z is preserved.
 
-Nel Game Manager assegnare `Player`, `Gameplay Camera` e le istanze della scena all'array `Spawn Points`. All'avvio di ogni istanza di LoopScene viene scelto casualmente un punto assegnato, attivo e con componente abilitato. I riferimenti nulli vengono ignorati. Il player viene posizionato in Awake, prima dell'inizializzazione dei suoi componenti; la camera viene riallineata all'avvio per evitare un'inquadratura dalla posizione precedente. La profondita Z del player resta invariata.
+LoopScene includes one assigned point at the original player position. Duplicate and assign additional instances; unassigned scene points do not participate. Place points in free space: initial spawning does not automatically validate geometry. Without valid points, a warning is logged and the saved player position is retained.
 
-LoopScene contiene gia un'istanza assegnata nella posizione iniziale attuale del player. Duplicare il prefab nella scena e aggiungere ciascuna istanza alla lista del manager. I punti presenti nella scena ma non assegnati non partecipano alla scelta. Posizionare i punti in spazi liberi: non e previsto un controllo automatico della geometria. Senza punti validi, viene emesso un avviso e resta la posizione del player salvata nella scena.
+Availability uses enabled, activeInHierarchy and a valid scene rather than isActiveAndEnabled, which may still be false during GameManager's early Awake for child points. Disabled points/inactive parents are excluded; Project prefab assets are not valid instances.
 
-Il controllo di disponibilita degli Spawn Point usa `enabled`, `activeInHierarchy` e una scena valida. Non usa `isActiveAndEnabled`, che puo essere ancora falso nell'Awake anticipato del Game Manager se il punto e un suo figlio. I punti disabilitati o con parent inattivi restano esclusi; i prefab del Project non sono istanze valide.
+## Goal exit
+
+LoopScene's Goal is a level escape. Its 1×1-unit BoxCollider2D is a trigger; TestEndContact compares it with the assigned player collider after simulated movement, without Rigidbody2D callbacks. Contact invokes the assigned TestEndEvent once and follows the existing comment/results/next-test sequence. Subject Died is disabled, so the mouse is recovered alive and does not increase ending death counts. Comments and result messages are editable on Goal. Selecting Goal shows the contact area in green; adjust collider Size/Offset in the Inspector as needed.
+
+Check in Unity: enter Goal from both sides, verify one completion and one recovery, then confirm progression to the next test (or EndGame after the last test).
+
+Goal is now the reusable prefab at Assets/Prefabs/Goal.prefab. LoopScene contains an instance at its original position. Sprite, trigger, contact detection, survival outcome and scientist dialogue are stored in the prefab. Player, GameManager and HUD references are assigned as scene overrides; newly placed instances can fall back to the scene GameManager for those references.

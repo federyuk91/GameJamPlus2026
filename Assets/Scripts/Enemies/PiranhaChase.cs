@@ -35,7 +35,7 @@ namespace MousePlatformer
             if (patrol == null) patrol = GetComponent<PiranhaPatrol>();
             if (targetSwimming == null || targetCollider == null)
             {
-                Debug.LogError("PiranhaChase: assegnare Target Swimming e Target Collider del player.", this);
+                Debug.LogError("PiranhaChase: assign the player's Target Swimming and Target Collider.", this);
                 enabled = false;
             }
         }

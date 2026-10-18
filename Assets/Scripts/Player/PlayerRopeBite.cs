@@ -13,10 +13,10 @@ namespace MousePlatformer
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private Vector2 mouthOffset = new Vector2(0.45f, -0.1f);
-        [SerializeField, Min(0.01f), Tooltip("Distanza massima dalla bocca alla corda. Il gizmo giallo sulle corde mostra questa portata; da appeso viene usato il punto di presa.")]
+        [SerializeField, Min(0.01f), Tooltip("Maximum mouth-to-rope distance. Yellow rope gizmos show this reach; while hanging, the grip point is used.")]
         private float reach = 0.4f;
         [SerializeField, Min(0.01f)] private float holdDuration = 0.6f;
-        [SerializeField, Tooltip("Diagnostica del comando condiviso durante il gioco.")]
+        [SerializeField, Tooltip("Shared input diagnostics during gameplay.")]
         private string lastAttempt;
         [SerializeField, Range(0f, 1f)] private float biteProgress;
         [SerializeField] private Collider2D blockingCollider;
@@ -49,7 +49,7 @@ namespace MousePlatformer
                 if (digging != null) digging.ReleaseInput();
                 ResetTarget();
                 blockingCollider = null;
-                lastAttempt = "In attesa di F / Est";
+                lastAttempt = "Waiting for F / East";
                 return;
             }
             if (consumedHold) return;
@@ -71,13 +71,13 @@ namespace MousePlatformer
                 ResetTarget();
                 if (digging != null && digging.InputClaimed)
                 {
-                    lastAttempt = "Scavo attivo: nessuna corda raggiungibile";
+                    lastAttempt = "Digging active: no reachable rope";
                     return;
                 }
                 if (!biteChosen && input.IsInteractionSelected(AvailableGameplayActions.Dig)
                     && digging != null && digging.TryClaimInput())
-                    lastAttempt = "Scavo avviato";
-                else lastAttempt = blockingCollider != null ? "Corda coperta da un collider" : "Nessuna corda tagliabile davanti alla bocca";
+                    lastAttempt = "Digging started";
+                else lastAttempt = blockingCollider != null ? "Rope obstructed by a collider" : "No cuttable rope in front of the mouth";
                 return;
             }
             if (digging != null) digging.ReleaseInput();
@@ -91,12 +91,12 @@ namespace MousePlatformer
             targetSegment = segment;
             heldTime += Time.fixedDeltaTime;
             biteProgress = Mathf.Clamp01(heldTime / Mathf.Max(0.01f, holdDuration));
-            lastAttempt = "Morso in corso";
+            lastAttempt = "Biting in progress";
             if (heldTime >= holdDuration && target.TryCutSegment(targetSegment))
             {
                 consumedHold = true;
                 ResetTarget();
-                lastAttempt = "Corda tagliata: rilasciare F / Est";
+                lastAttempt = "Rope cut: release F / East";
                 RopeCut?.Invoke();
             }
         }

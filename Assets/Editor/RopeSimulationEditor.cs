@@ -22,11 +22,11 @@ public sealed class RopeSimulationEditor : Editor
         serializedObject.ApplyModifiedProperties();
 
         RopeSimulation rope = (RopeSimulation)target;
-        EditorGUILayout.HelpBox("Length conta i pezzi; la lunghezza totale dipende da Segment Length. L'ancoraggio resta fisso. Modifica la geometria fuori dal Play Mode.", MessageType.Info);
-        EditorGUILayout.LabelField("Lunghezza totale", (rope.ConfiguredPieceCount * segmentLength.floatValue).ToString("0.##") + " unita");
+        EditorGUILayout.HelpBox("Length counts pieces; total length depends on Segment Length. The anchor stays fixed. Edit geometry outside Play Mode.", MessageType.Info);
+        EditorGUILayout.LabelField("Total length", (rope.ConfiguredPieceCount * segmentLength.floatValue).ToString("0.##") + " units");
         using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
         {
-            bool rebuild = GUILayout.Button("Ricostruisci e allinea pezzi");
+            bool rebuild = GUILayout.Button("Rebuild and align pieces");
             if (!EditorApplication.isPlaying && (geometryChanged || rebuild)) Rebuild(rope, geometryChanged);
         }
     }
@@ -60,7 +60,7 @@ public sealed class RopeSimulationEditor : Editor
 
         if (!propertyChanged) Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Modifica lunghezza corda");
+        Undo.SetCurrentGroupName("Change rope length");
         Synchronize(rope, true);
         Undo.CollapseUndoOperations(group);
     }
@@ -72,17 +72,17 @@ public sealed class RopeSimulationEditor : Editor
             if (rope.Piece(i) != null) pieces.Add(rope.Piece(i));
         if (pieces.Count == 0)
         {
-            Debug.LogWarning("La corda deve avere almeno un pezzo di riferimento.", rope);
+            Debug.LogWarning("The rope must have at least one reference piece.", rope);
             return;
         }
 
-        if (undo) Undo.RecordObject(rope, "Aggiorna pezzi corda");
+        if (undo) Undo.RecordObject(rope, "Update rope pieces");
         Transform template = pieces[0];
         while (pieces.Count < rope.ConfiguredPieceCount)
         {
             GameObject piece = Object.Instantiate(template.gameObject, rope.transform);
             piece.SetActive(true);
-            if (undo) Undo.RegisterCreatedObjectUndo(piece, "Aggiungi pezzo corda");
+            if (undo) Undo.RegisterCreatedObjectUndo(piece, "Add rope piece");
             pieces.Add(piece.transform);
         }
         while (pieces.Count > rope.ConfiguredPieceCount)
@@ -97,8 +97,8 @@ public sealed class RopeSimulationEditor : Editor
         {
             foreach (Transform piece in pieces)
             {
-                Undo.RecordObject(piece, "Allinea pezzo corda");
-                Undo.RecordObject(piece.gameObject, "Rinomina pezzo corda");
+                Undo.RecordObject(piece, "Align rope piece");
+                Undo.RecordObject(piece.gameObject, "Rename rope piece");
             }
         }
         rope.SetPieces(pieces.ToArray());

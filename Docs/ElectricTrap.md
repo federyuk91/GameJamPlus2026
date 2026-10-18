@@ -1,38 +1,38 @@
 # Electric Trap
 
-Trascina `Assets/Prefabs/Electric Trap.prefab` in scena. Il pivot è in alto, così la grafica può essere appesa al soffitto. Ridimensiona e sposta il Box Collider 2D (Is Trigger) per definire l’area letale.
+Drag `Assets/Prefabs/Electric Trap.prefab` into the scene. Its top pivot supports ceiling placement. Resize/move Box Collider 2D (Is Trigger) to define the lethal area.
 
-- `Automatic Activation`: se attivo, avvia il periodo elettrificato all’abilitazione della trappola. Se disattivo, aspetta un comando esterno. Alla scadenza viene disattivato: serve una nuova attivazione.
-- `Activate()`: elettrifica l’area per `Activation Duration` secondi (3 di default), colpendo anche chi entra durante il periodo attivo. Richiamarlo fa ripartire la durata. Uccide i piranha presenti e termina il test se il topo si trova nel trigger.
-- `EnableAutomaticActivation()`: attiva l’area per la durata configurata, colpendo anche chi è già presente.
-- `DisableAutomaticActivation()` / `Deactivate()`: spegne subito l’area e la luce.
-- `SetAutomaticActivation(bool)`: permette di configurare lo stesso comportamento con un parametro booleano nello Unity Event.
-- `Show Gizmos`: mostra il contorno rosso dell’area nella Scene View.
+- `Automatic Activation`: starts an electrified period when enabled. If off, waits for external input. The period expires and requires reactivation.
+- `Activate()`: electrifies the area for `Activation Duration` (default 3 seconds), including later entrants. Calling it again restarts the duration. Kills overlapping piranhas and ends the test if the mouse is inside.
+- `EnableAutomaticActivation()`: activates for the configured duration, including existing occupants.
+- `DisableAutomaticActivation()` / `Deactivate()`: immediately switches off the area and light.
+- `SetAutomaticActivation(bool)`: boolean UnityEvent configuration.
+- `Show Gizmos`: red Scene View area outline.
 
-Nel componente Interactable Button, aggiungi la trappola a `On Pressed` e scegli uno dei metodi pubblici di ElectricTrap. Per usarla solo attraverso il pulsante, disattiva `Automatic Activation`.
+Add the trap to Interactable Button → On Pressed and choose a public ElectricTrap method. Disable Automatic Activation for button-only use.
 
-Il prefab include Dialogue Message Player e Test End Event: modifica qui il commento dello scienziato e i risultati. La scarica usa il ciclo standard (flash bianco, commento, risultati e universo successivo). Non richiede tag o layer aggiuntivi: riconosce il Player Collider del Game Manager. Il trigger resta abilitato anche quando la modalità automatica è spenta, per consentire le scariche manuali.
+The prefab includes Dialogue Message Player and Test End Event for scientist comments/results. Discharge uses the standard white flash, comment, results and next-universe sequence. No additional tags/layers are required; it recognizes GameManager's Player Collider. The trigger stays enabled when automatic mode is off to support manual activation.
 
-Il recupero del player evita l’area quando la modalità automatica è attiva.
+Player recovery avoids the area when automatic activation is enabled.
 
-## Piranha folgorati
+## Electrocuted piranhas
 
-Il piranha di LoopScene include Piranha Death, Simulated Body 2D, Crate Motion (inizialmente disabilitato) e Crate Buoyancy. Le copie dell’oggetto mantengono queste impostazioni; altri piranha devono avere lo stesso componente Piranha Death, che richiede i componenti di galleggiamento. Le trappole individuano automaticamente i piranha attivi, senza liste nell’Inspector.
+LoopScene's piranha includes Piranha Death, Simulated Body 2D, initially disabled Crate Motion, and Crate Buoyancy. Duplicates retain this setup; other piranhas need Piranha Death and its required flotation components. Traps automatically find active piranhas without Inspector lists.
 
-La scarica, manuale o automatica, colpisce tutti i piranha sovrapposti al trigger. Piranha Death disattiva ronda, inseguimento e contatto letale, capovolge la sprite su Y e rende solido il collider. Il corpo galleggia usando lo stesso sistema delle casse e trasporta il topo quando ci sale sopra.
+Manual/automatic discharge hits all piranhas overlapping the trigger. Piranha Death disables patrol, chase and lethal contact, flips the sprite on Y and makes the collider solid. The body floats using the crate system and carries the mouse standing on it.
 
-`Piranha Death → Passenger Downward Acceleration` (45 di default) aggiunge accelerazione verso il basso finché il topo è in piedi sul corpo. Aumentala per farlo affondare più rapidamente. In `Crate Buoyancy`, Buoyancy Acceleration e Water Drag regolano risalita e galleggiamento. Quando il topo lascia il corpo, la spinta di galleggiamento lo fa risalire. Le casse esistenti mantengono il loro comportamento.
+`Passenger Downward Acceleration` (default 45) adds downward acceleration while the mouse stands on the body. Increase it for faster sinking. Crate Buoyancy → Buoyancy Acceleration and Water Drag control rise/flotation. When the mouse leaves, buoyancy raises the body again. Existing crates are unchanged.
 
-Da provare in Play Mode: scarica manuale e automatica con più piranha, sola presenza di pesci senza topo nell’area, salto sul corpo, affondamento sotto il peso e risalita dopo averlo lasciato.
+Check activation with multiple fish, fish without the mouse present, jumping on bodies, sinking under weight and resurfacing afterward.
 
-## Luce e durata
+## Light and duration
 
-Il figlio `Electric Light 2D` è una Point Light 2D azzurra. Puoi posizionarlo liberamente e modificare colore e raggio nel componente Light 2D. Electric Trap gestisce accensione e spegnimento e varia l’intensità durante l’attivazione: `Flicker Frequency`, `Minimum Light Intensity` e `Maximum Light Intensity` regolano il lampeggio. Alla scadenza di `Activation Duration` l’area e la luce si spengono insieme. Il timer usa il tempo di gameplay e si ferma durante pausa, foto e conclusione del test.
+`Electric Light 2D` is a cyan Point Light 2D. Position it freely and edit Light 2D color/radius. Electric Trap switches it on/off and varies intensity using Flicker Frequency, Minimum Light Intensity and Maximum Light Intensity. At Activation Duration expiry, area and light switch off together. The gameplay-time timer pauses during game pauses, photos and test endings.
 
-`Activate()` ora crea un periodo di elettrificazione, anziché una scarica istantanea. I collegamenti Unity Event esistenti restano validi. Per riaccendere la trappola usa Activate o EnableAutomaticActivation.
+`Activate()` now starts an electrified period instead of an instantaneous discharge. Existing UnityEvents remain valid. Use Activate or EnableAutomaticActivation to switch it on again.
 
-## Suono della scarica
+## Discharge sound
 
-Ogni Activate / EnableAutomaticActivation / attivazione iniziale avvia una delle quattro varianti ElectricArc_01–04, scelta casualmente. Il prefab ha un Audio Source dedicato, 2D e senza Play On Awake. Discharge Volume (0.65) regola il volume locale, moltiplicato per il volume Effects nelle opzioni; Master continua a usare AudioListener. Le variazioni delle opzioni si applicano anche a un suono in corso.
+Every Activate / EnableAutomaticActivation / initial activation chooses one ElectricArc_01–04 variant randomly. The prefab has a dedicated 2D AudioSource with Play On Awake disabled. Discharge Volume (0.65) is multiplied by Effects volume; Master still uses AudioListener. Option changes affect sounds already playing.
 
-Il suono viene riprodotto una volta per attivazione (circa 1.4 secondi), senza ripartire a ogni controllo del trigger. Deactivate e disabilitare la trappola lo interrompono. Una nuova Activate fa ripartire la scarica senza sovrapporre più suoni.
+The approximately 1.4-second sound plays once per activation, not on every trigger check. Deactivate or disabling the trap stops it. Reactivation restarts discharge without overlapping sounds.

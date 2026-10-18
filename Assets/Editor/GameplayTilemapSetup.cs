@@ -14,7 +14,7 @@ public static class GameplayTilemapSetup
     private const string GridPath = Root + "/GameplayGrid.prefab";
     private static readonly string[] Sheets = { "TilemapFloor", "TilemapTube", "TilePipes" };
 
-    [MenuItem("Tools/Mouse Platformer/Tilemaps/Prepara tile e palette")]
+    [MenuItem("Tools/Mouse Platformer/Tilemaps/Prepare Tiles and Palettes")]
     public static void CreateAssets()
     {
         EnsureFolder(Root);
@@ -23,8 +23,8 @@ public static class GameplayTilemapSetup
         foreach (string sheet in Sheets) CreateSheetAssets(sheet);
         CreateGridPrefab();
         AssetDatabase.SaveAssets();
-        File.WriteAllText("Temp/CodexTilemapSetup.done", "Tile e palette creati; GameplayGrid pronto.");
-        Debug.Log("Tilemaps: tile, tre palette e GameplayGrid pronti in Assets/Tilemaps.");
+        File.WriteAllText("Temp/CodexTilemapSetup.done", "Tiles and palettes created; GameplayGrid ready.");
+        Debug.Log("Tilemaps: tiles, three palettes and GameplayGrid ready in Assets/Tilemaps.");
     }
 
     private static void EnsureFolder(string path)
@@ -38,7 +38,7 @@ public static class GameplayTilemapSetup
     {
         string texturePath = "Assets/Art/Tiles/" + sheet + ".png";
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
-        if (importer == null) throw new InvalidOperationException("Texture non trovata: " + texturePath);
+        if (importer == null) throw new InvalidOperationException("Texture not found: " + texturePath);
         bool changed = importer.filterMode != FilterMode.Point || importer.spritePixelsPerUnit != 32f
             || importer.mipmapEnabled || importer.textureCompression != TextureImporterCompression.Uncompressed;
         if (changed)
@@ -59,7 +59,7 @@ public static class GameplayTilemapSetup
             int row = b.rect.y.CompareTo(a.rect.y);
             return row != 0 ? row : a.rect.x.CompareTo(b.rect.x);
         });
-        if (sprites.Count == 0) throw new InvalidOperationException("Nessuno sprite suddiviso in " + texturePath);
+        if (sprites.Count == 0) throw new InvalidOperationException("No sliced sprites in " + texturePath);
         Dictionary<Sprite, Tile> tiles = new Dictionary<Sprite, Tile>();
         foreach (Sprite sprite in sprites)
         {
@@ -140,6 +140,6 @@ public static class GameplayTilemapSetup
         finally { EditorSceneManager.ClosePreviewScene(preview); }
     }
 
-    [MenuItem("Tools/Mouse Platformer/Tilemaps/Apri Tile Palette")]
+    [MenuItem("Tools/Mouse Platformer/Tilemaps/Open Tile Palette")]
     private static void OpenPalette() => EditorApplication.ExecuteMenuItem("Window/2D/Tile Palette");
 }

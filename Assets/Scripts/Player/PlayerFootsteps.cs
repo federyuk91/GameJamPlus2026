@@ -18,7 +18,7 @@ namespace MousePlatformer
         [SerializeField] private PhysicsSettings physicsSettings;
         [SerializeField] private AudioClip[] clips;
         [SerializeField, Range(0f, 1f)] private float volume = 0.8f;
-        [SerializeField, Tooltip("Seleziona la cadenza audio; non modifica la velocita di movimento.")]
+        [SerializeField, Tooltip("Select the audio cadence; does not change movement speed.")]
         private FootstepGait gait = FootstepGait.Run;
 
         private float remaining;

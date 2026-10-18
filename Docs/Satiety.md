@@ -1,15 +1,15 @@
 # Satiety
 
-Il prefab Player contiene PlayerSatiety: inizia con Maximum Notches = 5 e perde una tacca ogni Drain Interval = 60 secondi di gioco. Il timer si ferma in pausa e quando il GameManager non è Playing. Ogni nuova LoopScene riparte a sazietà piena.
+The Player prefab contains PlayerSatiety: Maximum Notches starts at 5 and one notch drains every Drain Interval = 60 game seconds. The timer pauses with the game and whenever GameManager is not Playing. Each new LoopScene starts at full satiety.
 
-Il formaggio normale (CollectibleType.Cheese) ripristina tutte le tacche e azzera il progresso del timer. Formaggio verde e foto conservano il proprio ciclo di fine test.
+Normal cheese (CollectibleType.Cheese) restores every notch and resets timer progress. Green cheese and photos retain their test-ending behavior.
 
-L'HUD mostra le tacche sopra i contatori in basso a sinistra. Gameplay HUD → Satiety Hud regola Flash Color, Flash Duration, Shake Duration e Shake Amplitude. Il flash copre l'intero schermo senza intercettare gli input; lo shake mantiene l'allineamento della camera alla griglia dei pixel e non altera la sua posizione di inseguimento. Entrambi terminano anche quando l'ultima perdita mette il gioco in pausa per il fine test.
+The HUD displays notches above the bottom-left counters. Gameplay HUD → Satiety Hud exposes Flash Color, Flash Duration, Shake Duration and Shake Amplitude. The full-screen flash does not intercept input. Shake preserves pixel-grid camera alignment and does not alter its following position. Both finish even when the final loss pauses gameplay for the test ending.
 
-A zero, PlayerSatiety chiama Starvation Outcome: sul Player, Dialogue Message Player contiene i commenti sulla dieta e Test End Event contiene i risultati casuali e Subject Died = true. Viene usato il normale ciclo flash bianco → commento → risultato → prossimo universo.
+At zero, PlayerSatiety calls Starvation Outcome: on the Player, Dialogue Message Player contains diet comments and Test End Event contains random results with Subject Died = true. The normal sequence is white flash → comment → result → next universe.
 
-Trascina Assets/Prefabs/Starvation Death Zone.prefab nelle aree desiderate. Box Collider 2D → Size/Offset definisce il volume. Starvation Death Zone → Drain Interval è inizialmente 5 secondi; Show Gizmos controlla il leggero contorno rosso, invisibile in gioco. Non occorrono riferimenti al Player, tag o Rigidbody2D: la zona viene registrata automaticamente e verificata contro il collider del topo.
+Drag Assets/Prefabs/Starvation Death Zone.prefab into desired areas. Box Collider 2D → Size/Offset defines the volume. Its Drain Interval initially equals 5 seconds. Show Gizmos controls the faint red outline, invisible in gameplay. No Player references, tags or Rigidbody2D are needed: zones register automatically and are checked against the mouse collider.
 
-Le zone accelerano il timer esistente: il progresso parziale viene conservato quando si entra/esce. In caso di sovrapposizione si applica l'intervallo più breve, senza sommare le perdite.
+Zones accelerate the existing timer, preserving partial progress on entry/exit. Overlapping zones use the shortest interval without stacking losses.
 
-Da verificare in Play Mode: perdita normale, permanenza nella zona, pausa, ripristino con formaggio normale e fine test all'ultima tacca. Per una verifica rapida puoi ridurre temporaneamente Drain Interval sul Player.
+Check normal drain, zone residence, pause, normal cheese restoration and the last-notch test ending. Temporarily lower Player Drain Interval for a quick check.

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5718437077508530872}
   - component: {fileID: 4546305336044527665}
   - component: {fileID: 3706214367928598243}
+  - component: {fileID: 8300000001}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Untagged
@@ -155,6 +156,7 @@ MonoBehaviour:
   type: 0
   requiresInteraction: 1
   pickupArea: {fileID: 5718437077508530872}
+  remains: {fileID: 8300000001}
   onCollected:
     m_PersistentCalls:
       m_Calls:
@@ -185,8 +187,23 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 21300000, guid: 240692197788a4d4685a1288a7cb2bd6, type: 3}
   messages:
-  - Ottima scelta. Un po' di formaggio per continuare l'esplorazione.
-  - Formaggio raccolto. Vediamo cosa trovi nella prossima stanza.
-  - Una piccola ricompensa per la tua curiosita.
-  - "Vedo che ti sei messo a tuo agio, continua cos\xEC!"
+  - "Excellent choice. Some cheese to keep exploring."
+  - "Cheese collected. Let us see what you find in the next room."
+  - "A small reward for your curiosity."
+  - "I see you have made yourself comfortable. Keep it up!"
   duration: 30
+--- !u!114 &8300000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539735911339432288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d267de9a5e114f7a94528437a1cfad30, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  collectionId: ""
+  visual: {fileID: 628417424879978943}
+  consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}

@@ -1,13 +1,13 @@
 # Dropping Platform
 
-Le quattro DroppingPlatform di LoopScene hanno un BoxCollider2D solido e il componente DroppingPlatform, con riferimento al SimulatedBody2D del player gia assegnato.
+LoopScene's four DroppingPlatforms have solid BoxCollider2D shapes and DroppingPlatform components assigned to the player's SimulatedBody2D.
 
-- Fall Delay: secondi prima del cedimento, inizialmente 0.4.
-- Disappear Delay: secondi dalla caduta alla scomparsa, inizialmente 2.
-- Fall Acceleration e Max Fall Speed: accelerazione e velocita massima della caduta.
+- Fall Delay: time before collapse, initially 0.4 seconds.
+- Disappear Delay: falling time before disappearance, initially 2 seconds.
+- Fall Acceleration and Max Fall Speed: falling acceleration and speed cap.
 
-Il conto alla rovescia parte solo quando il topo e appoggiato sopra e il Ground Collider e la piattaforma. Il contatto laterale o dal basso non lo attiva. Una volta iniziato, il countdown continua anche se il topo si allontana. Al cedimento il collider viene disabilitato, la piattaforma cade liberamente verso il basso e infine il GameObject viene disattivato. Le piattaforme tornano caricando nuovamente la scena; non ricompaiono automaticamente durante il test.
+The countdown starts only when the mouse stands on top and Ground Collider is the platform. Side/bottom contact does not trigger it. Once started it continues even if the mouse leaves. On collapse, the collider is disabled, the platform falls freely and its GameObject is eventually deactivated. Platforms return when the scene reloads, not automatically during the test.
 
-Per duplicarle, copiare una piattaforma configurata. Per crearne una nuova, aggiungere DroppingPlatform (richiede BoxCollider2D), assegnare Shape e Player e scegliere Fall Delay. La scala attuale delle quattro piattaforme e conservata. Caduta e timer rispettano la pausa del Game Manager e delle foto.
+Duplicate configured platforms, or add DroppingPlatform (requires BoxCollider2D), assign Shape and Player, and set Fall Delay. Existing platform scales are preserved. Falling and timers respect GameManager/photo pauses.
 
-Verificare in Unity il primo appoggio, l'allontanamento durante il countdown e il salto verso la piattaforma successiva. Regolare Fall Delay nell'Inspector di ciascuna piattaforma.
+Check first contact, leaving during countdown and jumping to the next platform in Unity. Adjust each platform's Fall Delay in its Inspector.

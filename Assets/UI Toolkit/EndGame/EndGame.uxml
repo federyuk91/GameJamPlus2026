@@ -8,18 +8,18 @@
                     <ui:Label name="ending-title" class="ending-title" />
                     <ui:Label name="ending-description" class="ending-description" />
                 </ui:VisualElement>
-                <ui:Button name="return-to-menu" text="Menu principale" class="terminal-button return-to-menu" />
+                <ui:Button name="return-to-menu" text="Main Menu" class="terminal-button return-to-menu" />
             </ui:VisualElement>
             <ui:VisualElement name="final-report-monitor" class="final-report-monitor">
                 <ui:VisualElement name="final-report-content" class="final-report-content">
-                    <ui:Label text="UNIVERSE-10 — REPORT FINALE" class="report-title" />
+                    <ui:Label text="UNIVERSE-10 — FINAL REPORT" class="report-title" />
                     <ui:VisualElement class="separator" />
-                    <ui:VisualElement class="report-row"><ui:Label text="Test completati" /><ui:Label name="completed-tests" text="10/10" class="report-value" /></ui:VisualElement>
-                    <ui:VisualElement class="report-row"><ui:Label text="Cavie impiegate" /><ui:Label name="subjects-used" text="10" class="report-value" /></ui:VisualElement>
-                    <ui:VisualElement class="report-row"><ui:Label text="Cavie decedute" /><ui:Label name="subjects-deceased" text="0" class="report-value deceased-value" /></ui:VisualElement>
-                    <ui:VisualElement class="report-row"><ui:Label text="Cavie recuperate" /><ui:Label name="subjects-recovered" text="10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Tests completed" /><ui:Label name="completed-tests" text="10/10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Subjects used" /><ui:Label name="subjects-used" text="10" class="report-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Subjects deceased" /><ui:Label name="subjects-deceased" text="0" class="report-value deceased-value" /></ui:VisualElement>
+                    <ui:VisualElement class="report-row"><ui:Label text="Subjects recovered" /><ui:Label name="subjects-recovered" text="10" class="report-value" /></ui:VisualElement>
                     <ui:VisualElement class="separator" />
-                    <ui:Label name="experiment-outcome" text="ESITO: 100% SUCCESSO" class="experiment-outcome" />
+                    <ui:Label name="experiment-outcome" text="OUTCOME: 100% SUCCESS" class="experiment-outcome" />
                     <ui:Button name="report-continue" text="Continue" class="terminal-button report-continue" />
                 </ui:VisualElement>
                 <ui:VisualElement name="report-power-glow" class="report-power-glow" picking-mode="Ignore" />
