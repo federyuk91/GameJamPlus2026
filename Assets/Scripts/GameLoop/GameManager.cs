@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using GameJamPlus.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,6 +21,8 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private GameplayHudController hud;
         [Header("Player spawn")]
         [SerializeField] private Transform player;
+        [SerializeField] private Collider2D playerCollider;
+        [SerializeField] private MousePlatformer.PlayerRecovery playerRecovery;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Istanze della scena. Selezione casuale fra i punti assegnati e attivi. La posizione indica il pivot del player.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
@@ -38,6 +41,10 @@ namespace GameJamPlus.Gameplay
         public LoopState State { get; private set; } = LoopState.Playing;
         public int Universe => GameSession.Universe;
         public GameplayHudController Hud => hud;
+        public Collider2D PlayerCollider => playerCollider;
+        public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
+        public IReadOnlyList<SpawnPoint> SpawnPoints => spawnPoints;
+        public void SnapCameraToPlayer() => gameplayCamera?.SnapToTarget();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetInstance() => Instance = null;

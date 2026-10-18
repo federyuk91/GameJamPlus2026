@@ -7,13 +7,18 @@ namespace MousePlatformer
     {
         [SerializeField] private RopeSimulation rope;
         [SerializeField] private PushableCrate pushable;
+        [SerializeField] private CrateMotion motion;
         [SerializeField] private Vector2 attachmentOffset;
+        private bool tailAttached;
         public bool Attached { get; private set; }
+        public bool HasRopeConnection => Attached || tailAttached;
+        public bool InWater => motion != null && motion.InWater;
         public Vector2 AttachmentPoint => transform.TransformPoint(attachmentOffset);
 
         private void Awake()
         {
             if (pushable == null) pushable = GetComponent<PushableCrate>();
+            if (motion == null) motion = GetComponent<CrateMotion>();
         }
 
         private void OnEnable()
@@ -41,12 +46,24 @@ namespace MousePlatformer
             return velocity - normal * Mathf.Max(0f, Vector2.Dot(velocity, normal));
         }
 
-        private void HandleCut(RopeSimulation source) => Detach();
+        private void HandleCut(RopeSimulation source)
+        {
+            if (source.KeepCrateSideAfterCut && source.Chain.EndpointConnectedSegmentCount > 0)
+            {
+                // Release the floor constraint while keeping the remaining rope tied to the crate.
+                Attached = false;
+                tailAttached = true;
+                pushable.enabled = true;
+                return;
+            }
+            Detach();
+        }
 
         public void Detach()
         {
-            if (!Attached) return;
+            if (!HasRopeConnection) return;
             Attached = false;
+            tailAttached = false;
             rope.Cut -= HandleCut;
             rope.ReleaseLoad(this);
             pushable.enabled = true;

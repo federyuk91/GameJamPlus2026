@@ -4,6 +4,7 @@ namespace MousePlatformer
     {
         Cheese = 0,
         GreenCheese = 1,
-        Photo = 2
+        Photo = 2,
+        Knowledge = 3
     }
 }

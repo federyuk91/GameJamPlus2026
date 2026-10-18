@@ -44,7 +44,7 @@ namespace MousePlatformer
             if (support != null) previousPosition = support.transform.position;
         }
 
-        private void Release()
+        public void Release()
         {
             if (support != null) support.RemovePassenger(body);
             support = null;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -9,12 +10,18 @@ namespace MousePlatformer
         [SerializeField] private PhysicsSettings physicsSettings;
         private PlayerInteractionSettings Settings => physicsSettings != null ? physicsSettings.interactions : PhysicsSettings.DefaultInteractions;
         private PushableCrate held;
+        private bool interactionStarted;
+        public event Action InteractionStarted;
         public PushableCrate HeldCrate => held;
         public float GrabReach => Settings.crateGrabReach;
         public bool HasReachableCrate => isActiveAndEnabled && body != null
             && (NearbyCrate(1f, Settings.crateGrabReach, out _) != null
                 || NearbyCrate(-1f, Settings.crateGrabReach, out _) != null);
-        public void Release() => held = null;
+        public void Release()
+        {
+            held = null;
+            interactionStarted = false;
+        }
 
         private void Awake()
         {
@@ -31,13 +38,20 @@ namespace MousePlatformer
                 return requested;
             }
 
+            PushableCrate previousHeld = held;
             if (held != null && (!held.isActiveAndEnabled || !CanReach(held))) held = null;
             if (held == null)
                 held = NearbyCrate(Mathf.Sign(requested), Settings.crateGrabReach, out _)
                     ?? NearbyCrate(-Mathf.Sign(requested), Settings.crateGrabReach, out _);
+            if (held != previousHeld) interactionStarted = false;
 
             if (held != null)
             {
+                if (!interactionStarted && Mathf.Abs(requested) > 0.0001f)
+                {
+                    interactionStarted = true;
+                    InteractionStarted?.Invoke();
+                }
                 float maxDisplacement = Settings.crateMoveSpeed / held.Weight * Time.fixedDeltaTime;
                 float limited = Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
                 float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape);
@@ -84,6 +98,6 @@ namespace MousePlatformer
             return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), gap + Mathf.Max(0f, Vector2.Dot(moved, direction)));
         }
 
-        private void OnDisable() => held = null;
+        private void OnDisable() => Release();
     }
 }

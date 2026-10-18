@@ -29,6 +29,7 @@ namespace MousePlatformer
         [SerializeField] private bool canBeCut = true;
         [SerializeField] private bool showGizmos = true;
         private CrateRopeAttachment load;
+        private bool retainCrateSide;
         private RopeChain chain;
         private PlayerRopeInteraction rider;
         private float gripDistance = -1f;
@@ -39,11 +40,18 @@ namespace MousePlatformer
         public RopeChain Chain => chain;
         public RopeSwingConstraint SwingLimits => swingLimits;
         public float Length => chain != null ? chain.Length : (pieces != null ? pieces.Length * segmentLength : 0f);
-        public bool Available => isActiveAndEnabled && chain != null && rider == null && chain.ConnectedSegmentCount > 0;
+        public bool Available => isActiveAndEnabled && chain != null && rider == null && ClimbableEndSegment > ClimbableFirstSegment;
         public bool CanBeCut => canBeCut;
         public bool ShowGizmos => showGizmos;
         public bool HasBeenCut { get; private set; }
-        public float ClimbableLength => chain != null ? chain.ConnectedLength : 0f;
+        public bool KeepCrateSideAfterCut => retainCrateSide || (!HasBeenCut && load != null && load.InWater
+            && load.AttachmentPoint.y > transform.position.y + 0.01f);
+        public int ClimbableFirstSegment => chain != null && retainCrateSide
+            ? chain.SegmentCount - chain.EndpointConnectedSegmentCount : 0;
+        public int ClimbableEndSegment => chain == null ? 0 : retainCrateSide ? chain.SegmentCount : chain.ConnectedSegmentCount;
+        public float ClimbableStart => chain != null ? ClimbableFirstSegment * chain.SegmentLength : 0f;
+        public float ClimbableLength => chain != null ? ClimbableEndSegment * chain.SegmentLength : 0f;
+        public float MinimumGripDistance => retainCrateSide ? ClimbableStart : Mathf.Min(0.3f, ClimbableLength);
         public event Action<RopeSimulation> Cut;
 
         public void SetPieces(Transform[] value)
@@ -83,7 +91,7 @@ namespace MousePlatformer
         {
             float gravity = (physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity).ropeGravity;
             chain.Step(transform.position, Time.fixedDeltaTime, gravity, damping, gripDistance, drive,
-                swingLimits: swingLimits, endpoint: load != null && load.Attached ? load.AttachmentPoint : (Vector2?)null);
+                swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null);
             UpdatePieces();
         }
 
@@ -104,7 +112,10 @@ namespace MousePlatformer
 
         public bool TryCutSegment(int segment)
         {
-            if (!isActiveAndEnabled || !canBeCut || chain == null || !chain.CutSegment(segment)) return false;
+            if (!isActiveAndEnabled || !canBeCut || chain == null || !chain.IsSegmentIntact(segment)) return false;
+            bool keepCrate = KeepCrateSideAfterCut;
+            if (!chain.CutSegment(segment)) return false;
+            retainCrateSide = keepCrate;
             HasBeenCut = true;
             rider?.RetainGripAfterCut(this);
             Cut?.Invoke(this);

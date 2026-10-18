@@ -62,7 +62,7 @@ public static class InteractionAreaGizmos
                 a = rope.Chain[index];
                 b = rope.Chain[index + 1];
                 a.z = b.z = rope.transform.position.z;
-                canGrab = index < rope.Chain.ConnectedSegmentCount;
+                canGrab = index >= rope.ClimbableFirstSegment && index < rope.ClimbableEndSegment;
             }
             else
             {

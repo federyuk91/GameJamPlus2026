@@ -6,6 +6,10 @@
             <ui:VisualElement class="black-band black-band-bottom" picking-mode="Ignore" />
             <ui:VisualElement name="test-white-cover" class="test-white-cover" picking-mode="Ignore" />
             <ui:VisualElement name="hud-safe-area" class="hud-safe-area" picking-mode="Ignore">
+                <ui:VisualElement name="satiety-panel" class="satiety-panel" picking-mode="Ignore">
+                    <ui:Label text="SAZIETÀ" class="satiety-caption" picking-mode="Ignore" />
+                    <ui:VisualElement name="satiety-notches" class="satiety-notches" picking-mode="Ignore" />
+                </ui:VisualElement>
                 <ui:VisualElement name="interaction-hints" class="interaction-hints" picking-mode="Ignore" />
                 <ui:VisualElement class="timer-anchor" picking-mode="Ignore">
                     <ui:VisualElement class="timer-panel" picking-mode="Ignore">
@@ -15,15 +19,15 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="resource-counters" class="resource-counters" picking-mode="Ignore">
                     <ui:VisualElement name="counter-primary" class="counter" picking-mode="Ignore">
-                        <ui:Label name="counter-primary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Label name="counter-primary-value" text="0×" class="counter-value" picking-mode="Ignore" />
                         <ui:Image name="counter-primary-icon" class="counter-icon" picking-mode="Ignore" />
                     </ui:VisualElement>
                     <ui:VisualElement name="counter-secondary" class="counter" picking-mode="Ignore">
-                        <ui:Label name="counter-secondary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                        <ui:Label name="counter-secondary-value" text="0×" class="counter-value" picking-mode="Ignore" />
                         <ui:Image name="counter-secondary-icon" class="counter-icon" picking-mode="Ignore" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="counter-tertiary" class="counter" picking-mode="Ignore">
-                        <ui:Label name="counter-tertiary-value" text="3×" class="counter-value" picking-mode="Ignore" />
+                    <ui:VisualElement name="counter-tertiary" tooltip="Ricerca / Conoscenza" class="counter" picking-mode="Ignore">
+                        <ui:Label name="counter-tertiary-value" text="0×" class="counter-value" picking-mode="Ignore" />
                         <ui:Image name="counter-tertiary-icon" class="counter-icon" picking-mode="Ignore" />
                     </ui:VisualElement>
                     <ui:VisualElement name="counter-quaternary" class="counter" picking-mode="Ignore">

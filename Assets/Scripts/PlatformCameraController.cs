@@ -21,6 +21,9 @@ namespace MousePlatformer
         private Vector2 smoothVelocity;
         private float lookAhead;
         private float depth;
+        private float shakeRemaining;
+        private float shakeDuration;
+        private float shakeAmplitude;
 
         private void OnEnable()
         {
@@ -33,7 +36,15 @@ namespace MousePlatformer
             position = target != null ? (Vector2)target.position + offset : (Vector2)transform.position;
             smoothVelocity = Vector2.zero;
             lookAhead = 0f;
+            shakeRemaining = 0f;
             ApplyPosition();
+        }
+
+        public void PlayShake(float duration, float amplitude)
+        {
+            shakeDuration = Mathf.Max(0f, duration);
+            shakeRemaining = shakeDuration;
+            shakeAmplitude = Mathf.Max(0f, amplitude);
         }
 
         private void LateUpdate()
@@ -52,6 +63,7 @@ namespace MousePlatformer
                 horizontalSmoothTime, Mathf.Infinity, dt);
             position.y = Mathf.SmoothDamp(position.y, desired.y, ref smoothVelocity.y,
                 velocity.y < -1f ? fallingSmoothTime : verticalSmoothTime, Mathf.Infinity, dt);
+            shakeRemaining = Mathf.Max(0f, shakeRemaining - Time.unscaledDeltaTime);
             ApplyPosition();
         }
 
@@ -63,8 +75,12 @@ namespace MousePlatformer
         private void ApplyPosition()
         {
             float ppu = Mathf.Max(1, pixelsPerUnit);
-            transform.position = new Vector3(Mathf.Round(position.x * ppu) / ppu,
-                Mathf.Round(position.y * ppu) / ppu, depth);
+            float envelope = shakeDuration > 0f ? shakeRemaining / shakeDuration : 0f;
+            float phase = (shakeDuration - shakeRemaining) * 90f;
+            Vector2 shake = new Vector2(Mathf.Sin(phase), Mathf.Sin(phase * 1.37f)) * (shakeAmplitude * envelope);
+            Vector2 displayedPosition = position + shake;
+            transform.position = new Vector3(Mathf.Round(displayedPosition.x * ppu) / ppu,
+                Mathf.Round(displayedPosition.y * ppu) / ppu, depth);
         }
     }
 }

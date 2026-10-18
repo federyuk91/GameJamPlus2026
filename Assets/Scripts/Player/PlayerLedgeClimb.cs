@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace MousePlatformer
         public LedgeState State { get; private set; }
         public bool Active => State != LedgeState.None;
         public float Direction { get; private set; }
+        public event Action ClimbStarted;
         private LedgeClimbSettings Settings => physicsSettings != null ? physicsSettings.ledgeClimb : PhysicsSettings.DefaultLedgeClimb;
         private PlayerMovementSettings Movement => physicsSettings != null ? physicsSettings.player : PhysicsSettings.DefaultPlayer;
         private GravitySettings Gravity => physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity;
@@ -99,6 +101,7 @@ namespace MousePlatformer
             raised = false;
             elapsed = 0f;
             State = fromGround ? LedgeState.Climbing : LedgeState.Hanging;
+            if (fromGround) ClimbStarted?.Invoke();
             lastAttempt = fromGround ? "Salita avviata" : "Aggancio riuscito";
             return true;
         }
@@ -188,6 +191,7 @@ namespace MousePlatformer
                 if (horizontal * Direction < 0.1f) return true;
                 State = LedgeState.Climbing;
                 elapsed = 0f;
+                ClimbStarted?.Invoke();
             }
             if ((elapsed += dt) > 2f)
             { Stop(); released = true; return true; }
@@ -221,6 +225,7 @@ namespace MousePlatformer
             return true;
         }
 
+        public void Cancel() => Stop();
         private void Stop() { State = LedgeState.None; support = null; cooldown = Settings.retryDelay; }
         private void OnDisable() => Stop();
     }

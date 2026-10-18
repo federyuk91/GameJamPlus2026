@@ -240,6 +240,32 @@ namespace MousePlatformer
             Velocity = Vector2.zero;
             return true;
         }
+        public void TeleportTo(Vector2 destination)
+        {
+            if (crateInteraction != null) crateInteraction.Release();
+            if (ropeInteraction != null) ropeInteraction.Detach();
+            if (ladderInteraction != null) ladderInteraction.Detach();
+            if (ledgeClimb != null) ledgeClimb.Cancel();
+            if (platformRide != null) platformRide.Release();
+            if (digging != null) digging.ReleaseInput();
+            if (input != null) input.ConsumeJump();
+            CanInteractWithCrates = false;
+            IsMovingOnGround = false;
+            ResetSurfaceMotion();
+            Velocity = Vector2.zero;
+            coyoteRemaining = bufferRemaining = ropeLaunchRemaining = 0f;
+            jumpCut = false;
+            Vector3 position = transform.position;
+            transform.position = new Vector3(destination.x, destination.y, position.z);
+            Physics2D.SyncTransforms();
+            body.RefreshGround(Movement.maxSlopeAngle);
+            if (swimming != null)
+            {
+                swimming.ResetStrokeControl();
+                swimming.CheckWater();
+            }
+        }
+
         private void OnDisable()
         {
             CanInteractWithCrates = false;

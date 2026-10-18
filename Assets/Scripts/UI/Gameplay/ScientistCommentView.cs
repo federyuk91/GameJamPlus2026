@@ -166,7 +166,7 @@ namespace GameJamPlus.UI
                     if (remainingSeconds != displayedCountdown)
                     {
                         displayedCountdown = remainingSeconds;
-                        progress.text = waitForAdvance ? "Confirm to continue" : $"{page + 1}/{texts.Length} · {remainingSeconds}s";
+                        progress.text = waitForAdvance ? string.Empty : $"{page + 1}/{texts.Length} · {remainingSeconds}s";
                     }
                     if (followTyping)
                         transcript.scrollOffset = new Vector2(0f, Mathf.Max(0f, transcript.verticalScroller.highValue));

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -27,6 +28,7 @@ namespace MousePlatformer
         private bool biteChosen;
         public float BiteProgress => biteProgress;
         public float Reach => reach;
+        public event Action RopeCut;
         public bool CanStartDiggingWithSharedInput => isActiveAndEnabled && !consumedHold && !biteChosen;
 
         private void Awake()
@@ -85,6 +87,7 @@ namespace MousePlatformer
                 consumedHold = true;
                 ResetTarget();
                 lastAttempt = "Corda tagliata: rilasciare F / Est";
+                RopeCut?.Invoke();
             }
         }
 
@@ -107,9 +110,11 @@ namespace MousePlatformer
                 && ropeInteraction.TryGetGrip(out heldRope, out int gripSegment, out Vector2 gripPoint)
                 && heldRope.CanBeCut && HasLineOfSight(mouth, gripPoint - mouth, updateDiagnostics))
             {
-                // Keep the anchor-side segment as a handhold even when biting near the top.
-                int cutSegment = Mathf.Max(1, gripSegment);
-                if (cutSegment < heldRope.Chain.ConnectedSegmentCount)
+                // Preserve a handhold on the supported side of the cut.
+                int cutSegment = heldRope.KeepCrateSideAfterCut
+                    ? Mathf.Min(gripSegment, heldRope.ClimbableEndSegment - 2)
+                    : Mathf.Max(heldRope.ClimbableFirstSegment + 1, gripSegment);
+                if (cutSegment >= heldRope.ClimbableFirstSegment && cutSegment < heldRope.ClimbableEndSegment)
                 {
                     nearest = heldRope;
                     segment = cutSegment;
@@ -181,6 +186,11 @@ namespace MousePlatformer
         }
 
         private void OnDisable()
+        {
+            Cancel();
+        }
+
+        public void Cancel()
         {
             if (digging != null) digging.ReleaseInput();
             biteChosen = false;

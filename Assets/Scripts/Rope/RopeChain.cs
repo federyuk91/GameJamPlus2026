@@ -24,6 +24,15 @@ namespace MousePlatformer
             }
         }
         public float ConnectedLength => ConnectedSegmentCount * SegmentLength;
+        public int EndpointConnectedSegmentCount
+        {
+            get
+            {
+                int count = 0;
+                while (count < intact.Length && intact[intact.Length - 1 - count]) count++;
+                return count;
+            }
+        }
         public bool IsSegmentIntact(int index) => index >= 0 && index < intact.Length && intact[index];
 
         public bool CutSegment(int index)
@@ -123,20 +132,25 @@ namespace MousePlatformer
             return Vector2.Lerp(values[index], values[index + 1], coordinate - index);
         }
 
-        public Vector2 Tangent(float distance)
+        public Vector2 Tangent(float distance, float minimumDistance = 0f, float maximumDistance = float.PositiveInfinity)
         {
-            int index = Mathf.Clamp(Mathf.FloorToInt(distance / SegmentLength), 0, SegmentCount - 1);
-            int connected = ConnectedSegmentCount;
-            if (connected > 0 && distance >= ConnectedLength) index = Mathf.Min(index, connected - 1);
+            int first = Mathf.Clamp(Mathf.FloorToInt(minimumDistance / SegmentLength), 0, SegmentCount - 1);
+            int last = float.IsPositiveInfinity(maximumDistance) ? SegmentCount - 1
+                : Mathf.Clamp(Mathf.CeilToInt(maximumDistance / SegmentLength) - 1, first, SegmentCount - 1);
+            int index = Mathf.Clamp(Mathf.FloorToInt(distance / SegmentLength), first, last);
             return (points[index + 1] - points[index]).normalized;
         }
 
         public float ClosestDistance(Vector2 position, out float separation, bool anchoredOnly = false)
         {
+            return ClosestDistance(position, out separation, 0, anchoredOnly ? ConnectedSegmentCount : SegmentCount);
+        }
+
+        public float ClosestDistance(Vector2 position, out float separation, int firstSegment, int endSegment)
+        {
             float nearest = float.PositiveInfinity;
             float along = 0f;
-            int limit = anchoredOnly ? ConnectedSegmentCount : SegmentCount;
-            for (int i = 0; i < limit; i++)
+            for (int i = firstSegment; i < endSegment; i++)
             {
                 if (!intact[i]) continue;
                 Vector2 delta = points[i + 1] - points[i];

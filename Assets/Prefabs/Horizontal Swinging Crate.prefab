@@ -296,6 +296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rope: {fileID: 2827747081682800627}
   pushable: {fileID: 5443690112531502628}
+  motion: {fileID: 7998587169240745152}
   attachmentOffset: {x: 0, y: 0.5}
 --- !u!1 &795283313155343663
 GameObject:

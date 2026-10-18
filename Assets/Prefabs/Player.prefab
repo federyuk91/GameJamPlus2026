@@ -141,6 +141,12 @@ GameObject:
   - component: {fileID: 3354982396404189761}
   - component: {fileID: 1424147588155047261}
   - component: {fileID: 5709383898159029123}
+  - component: {fileID: 5709383898159029300}
+  - component: {fileID: 5709383898159029301}
+  - component: {fileID: 5709383898159029302}
+  - component: {fileID: 5709383898159029400}
+  - component: {fileID: 5709383898159029401}
+  - component: {fileID: 5709383898159029500}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -198,7 +204,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.10488264, y: -0.3599887}
+  m_Offset: {x: 0, y: -0.35}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.7}
@@ -208,7 +214,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.58910954, y: 0.3123188}
+  m_Size: {x: 0.25, y: 0.3}
   m_EdgeRadius: 0
 --- !u!114 &7712171590627343095
 MonoBehaviour:
@@ -274,6 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 7712171590627343095}
   visual: {fileID: 8503429192877497323}
+  playerCollider: {fileID: 5067529301207272031}
   ledgeClimb: {fileID: 922162904946277516}
   crateInteraction: {fileID: 7645364035520464402}
   spriteFacesRight: 1
@@ -368,12 +375,12 @@ MonoBehaviour:
   body: {fileID: 4027669037393712695}
   ledgeClimb: {fileID: 922162904946277516}
   ladderInteraction: {fileID: 4717284519982122627}
-  ladderAnimationSpeed: 1
   swimming: {fileID: 7210179708085743803}
-  swimmingAnimationSpeed: 1
   digging: {fileID: 7072776503502995229}
   crateInteraction: {fileID: 7645364035520464402}
   ropeInteraction: {fileID: 4776370160298788677}
+  swimmingAnimationSpeed: 1
+  ladderAnimationSpeed: 1
   diggingAnimationSpeed: 1
   pushingAnimationSpeed: 1
   runThreshold: 0.05
@@ -614,3 +621,202 @@ Transform:
   - {fileID: 6152871682746685960}
   m_Father: {fileID: 887508910703741189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5709383898159029300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027b8eb5294544148bfc29471a045c16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
+  playerCollider: {fileID: 5067529301207272031}
+  collector: {fileID: 5709383898159029123}
+  starvationOutcome: {fileID: 5709383898159029302}
+  maximumNotches: 5
+  drainInterval: 60
+--- !u!114 &5709383898159029301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
+  hud: {fileID: 0}
+  avatar: {fileID: 0}
+  messages:
+  - "Una dieta sana ed equilibrata è alla base di una lunga vita."
+  - "I pasti sono molto importanti. Ricordiamocelo per il prossimo test."
+  duration: 30
+--- !u!114 &5709383898159029302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.TestEndEvent
+  gameManager: {fileID: 0}
+  scientistComment: {fileID: 5709383898159029301}
+  subjectDied: 1
+  resultMessages:
+  - "Il soggetto ha dimostrato l'importanza di una dieta sana ed equilibrata."
+  - "Il soggetto ha approfondito gli effetti del digiuno prolungato."
+--- !u!82 &5709383898159029401
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &5709383898159029400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f67872c09704f14a8e1f5909bcce089, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerVoices
+  source: {fileID: 5709383898159029401}
+  collector: {fileID: 5709383898159029123}
+  ropeBite: {fileID: 5308502565440761107}
+  ropeInteraction: {fileID: 4776370160298788677}
+  crateInteraction: {fileID: 7645364035520464402}
+  satiety: {fileID: 5709383898159029300}
+  digging: {fileID: 7072776503502995229}
+  ledgeClimb: {fileID: 922162904946277516}
+  hud: {fileID: 0}
+  cheeseFirstClip: {fileID: 8300000, guid: 492133c7baf7b6c408712ba9191b011b, type: 3}
+  cheeseSecondClip: {fileID: 8300000, guid: e1dab278b63299644bf2bdaf69af17d9, type: 3}
+  ropeCutClip: {fileID: 8300000, guid: ddc9b4ba5f0d90147ad113baa485f273, type: 3}
+  sufferingClip: {fileID: 8300000, guid: e97624891ad0528468c1f48165129ee5, type: 3}
+  crateStartClip: {fileID: 8300000, guid: 3526ccfb05c44564b8e9e8877a03bb15, type: 3}
+  diggingClip: {fileID: 8300000, guid: 804b8529cf127334f822fa01c364bc22, type: 3}
+  climbUpClip: {fileID: 8300000, guid: 715a56991a9d8e04092aa8c558bd5ee0, type: 3}
+  photoClip: {fileID: 8300000, guid: a38a1f72221dc384981e1c9718eb1650, type: 3}
+  ropeJumpClip: {fileID: 8300000, guid: ebf25715b3701404ea3324fe0b1fa3e5, type: 3}
+  volume: 0.75
+  cheeseSequenceGap: 0.04
+  diggingVoiceMinInterval: 5
+  diggingVoiceMaxInterval: 9
+--- !u!114 &5709383898159029500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c02fb5ddb9744ff916186b1f68be08a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerRecovery
+  body: {fileID: 4027669037393712695}
+  movement: {fileID: 3818418520059698947}
+  ropeBite: {fileID: 5308502565440761107}

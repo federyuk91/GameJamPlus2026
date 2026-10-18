@@ -94,7 +94,7 @@ namespace MousePlatformer
             previousGrip = ladder.Point(height);
         }
 
-        private void Detach() { ladder = null; ClimbSpeed = 0f; cooldown = Settings.regrabDelay; }
+        public void Detach() { ladder = null; ClimbSpeed = 0f; cooldown = Settings.regrabDelay; }
         private void OnDisable() => Detach();
     }
 }

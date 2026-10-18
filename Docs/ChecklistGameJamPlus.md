@@ -56,8 +56,8 @@ Vincolo tecnico: il player usa `SimulatedBody2D`, che muove il Transform tramite
 
 ## Priorità 2 — Musica e atmosfera richieste nella chat
 
-- [ ] **Ascolto:** verificare che `SUPERMICE_music_gameplay.wav` rispetti la direzione scelta: influenze blues/jazz, resa SNES e malinconia con sottotesto da esperimento/distopia. L'analisi dei file conferma la presenza e il collegamento, non il risultato musicale.
-- [ ] Collegare `SUPERMICE_music_ending.wav` alla scena EndGame: il file esiste, ma il suo GUID non risulta referenziato da altri asset di progetto.
+- [ ] **Ascolto:** verificare che `Assets/Sounds/Music/Music_Gameplay.wav` rispetti la direzione scelta: influenze blues/jazz, resa SNES e malinconia con sottotesto da esperimento/distopia. L'analisi dei file conferma la presenza e il collegamento, non il risultato musicale.
+- [ ] Collegare `Assets/Sounds/Music/Music_Ending.wav` alla scena EndGame: il file esiste, ma il suo GUID non risulta referenziato da altri asset di progetto.
 - [ ] **Ascolto in gioco:** controllare loop, volumi relativi a passi/effetti e passaggi fra test. `BackgroundMusic` viene ricreato con LoopScene, quindi la traccia riparte a ogni caricamento.
 - [ ] **Verifica narrativa:** valutare insieme musica, battute e risultati: la comicità burocratica deve sostenere il sottotesto inquietante richiesto.
 - [ ] **Revisione visiva:** confrontare il livello con la direzione scelta dall'utente: utopia apparentemente accogliente, pixel art centrata sui topi e riferimenti da BioShock/Esperimento 25. La presenza di tile e sprite non certifica questa resa.

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -15,6 +16,7 @@ namespace MousePlatformer
         public bool Attached => rope != null;
         public float ClimbSpeed { get; private set; }
         public float GrabRadius => Settings.ropeGrabRadius;
+        public event Action JumpedFromRope;
 
         public bool TryGetGrip(out RopeSimulation heldRope, out int segment, out Vector2 point)
         {
@@ -22,11 +24,12 @@ namespace MousePlatformer
             segment = -1;
             point = Vector2.zero;
             if (rope == null || !rope.isActiveAndEnabled || rope.Chain == null
-                || rope.Chain.ConnectedSegmentCount == 0 || distance > rope.ClimbableLength) return false;
+                || rope.ClimbableEndSegment <= rope.ClimbableFirstSegment
+                || distance < rope.ClimbableStart || distance > rope.ClimbableLength) return false;
             heldRope = rope;
             // At a node, select the segment on the anchor side of the grip.
             segment = Mathf.Clamp(Mathf.CeilToInt(distance / rope.Chain.SegmentLength) - 1,
-                0, rope.Chain.ConnectedSegmentCount - 1);
+                rope.ClimbableFirstSegment, rope.ClimbableEndSegment - 1);
             point = rope.Chain.Point(distance);
             return true;
         }
@@ -34,14 +37,15 @@ namespace MousePlatformer
         internal void RetainGripAfterCut(RopeSimulation cutRope)
         {
             if (rope != cutRope) return;
-            if (rope.Chain.ConnectedSegmentCount == 0)
+            if (rope.ClimbableEndSegment <= rope.ClimbableFirstSegment)
             {
                 Detach();
                 return;
             }
-            if (distance <= rope.ClimbableLength) return;
+            float retainedDistance = Mathf.Clamp(distance, rope.ClimbableStart, rope.ClimbableLength);
+            if (Mathf.Approximately(distance, retainedDistance)) return;
 
-            distance = rope.ClimbableLength;
+            distance = retainedDistance;
             ClimbSpeed = 0f;
             Vector2 desired = rope.Chain.Point(distance) - handOffset;
             body.Move(desired - (Vector2)transform.position);
@@ -67,7 +71,8 @@ namespace MousePlatformer
             ClimbSpeed = 0f;
             released = false;
             cooldown = Mathf.Max(0f, cooldown - dt);
-            if (rope != null && (!rope.isActiveAndEnabled || distance > rope.ClimbableLength))
+            if (rope != null && (!rope.isActiveAndEnabled || rope.ClimbableEndSegment <= rope.ClimbableFirstSegment
+                || distance < rope.ClimbableStart || distance > rope.ClimbableLength))
             {
                 if (rope.Chain != null) velocity = rope.Chain.Velocity(distance);
                 Detach();
@@ -81,7 +86,7 @@ namespace MousePlatformer
             velocity = rope.Chain.Velocity(distance);
             if (jump)
             {
-                Vector2 tangent = rope.Chain.Tangent(distance);
+                Vector2 tangent = rope.Chain.Tangent(distance, rope.ClimbableStart, rope.ClimbableLength);
                 Vector2 swing = new Vector2(-tangent.y, tangent.x);
                 float direction = Vector2.Dot(velocity, swing);
                 if (Mathf.Abs(direction) < 0.1f)
@@ -89,15 +94,16 @@ namespace MousePlatformer
                 GravitySettings gravity = physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity;
                 velocity += swing * (Mathf.Sign(direction) * gravity.ropeJumpSwingBoost) + Vector2.up * gravity.ropeJumpUpSpeed;
                 Detach();
+                JumpedFromRope?.Invoke();
                 released = true;
                 return true;
             }
 
             // Floor-anchored ropes run upward, so their climbing coordinate has the opposite sign.
-            float climbDirection = Mathf.Sign(rope.Chain.Tangent(distance).y);
+            float climbDirection = Mathf.Sign(rope.Chain.Tangent(distance, rope.ClimbableStart, rope.ClimbableLength).y);
             float previousDistance = distance;
             distance = Mathf.Clamp(distance + vertical * climbDirection * Settings.ropeClimbSpeed * dt,
-                Mathf.Min(0.3f, rope.ClimbableLength), rope.ClimbableLength);
+                rope.MinimumGripDistance, rope.ClimbableLength);
             ClimbSpeed = dt > 0f ? (distance - previousDistance) / dt : 0f;
             rope.SetDrive(this, distance, horizontal * Settings.ropeSwingAcceleration);
             Vector2 desired = rope.Chain.Point(distance) - handOffset;
@@ -122,11 +128,12 @@ namespace MousePlatformer
             {
                 RopeSimulation candidate = RopeSimulation.ActiveRopes[ropeIndex];
                 if (candidate == null || !candidate.Available) continue;
-                float along = candidate.Chain.ClosestDistance((Vector2)transform.position + handOffset, out float separation, anchoredOnly: true);
+                float along = candidate.Chain.ClosestDistance((Vector2)transform.position + handOffset, out float separation,
+                    candidate.ClimbableFirstSegment, candidate.ClimbableEndSegment);
                 if (separation > best) continue;
                 best = separation;
                 nearest = candidate;
-                grip = Mathf.Clamp(along, Mathf.Min(0.3f, candidate.ClimbableLength), candidate.ClimbableLength);
+                grip = Mathf.Clamp(along, candidate.MinimumGripDistance, candidate.ClimbableLength);
             }
             if (nearest != null && nearest.Attach(this, grip, incomingVelocity))
             {
@@ -135,7 +142,7 @@ namespace MousePlatformer
             }
         }
 
-        private void Detach()
+        public void Detach()
         {
             ClimbSpeed = 0f;
             if (rope != null) rope.Release(this);

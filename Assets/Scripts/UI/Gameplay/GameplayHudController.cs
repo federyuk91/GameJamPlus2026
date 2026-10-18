@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameJamPlus.Gameplay;
 using MousePlatformer;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,7 +21,6 @@ namespace GameJamPlus.UI
         [SerializeField] private PixelPerfectViewport viewport;
         [SerializeField] private Sprite defaultCounterIcon;
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
-        [SerializeField] private int[] initialCounterValues = { 3, 3, 3, 3 };
         [SerializeField] private bool showWelcomeOnStart = true;
         [SerializeField, TextArea] private string welcomeText =
             "Benvenuto nell'universo-10, rilassati e goditi il soggiorno";
@@ -59,6 +59,7 @@ namespace GameJamPlus.UI
 
         public event Action TestCommentCompleted;
         public event Action TestContinueRequested;
+        public event Action PhotoShown;
 
         public double ElapsedSeconds => elapsedSeconds;
 
@@ -74,11 +75,6 @@ namespace GameJamPlus.UI
             scrollScientistComment.AddCompositeBinding("1DAxis")
                 .With("Positive", "<Keyboard>/pageUp")
                 .With("Negative", "<Keyboard>/pageDown");
-            for (int index = 0; index < counterValues.Length; index++)
-            {
-                counterValues[index] = initialCounterValues != null && index < initialCounterValues.Length
-                    ? Mathf.Max(0, initialCounterValues[index]) : 0;
-            }
         }
 
         private void OnEnable()
@@ -112,9 +108,11 @@ namespace GameJamPlus.UI
                 counterLabels[index] = root.Q<Label>("counter-" + CounterNames[index] + "-value");
                 counterImages[index] = root.Q<Image>("counter-" + CounterNames[index] + "-icon");
                 Sprite icon = counterIcons != null && index < counterIcons.Length ? counterIcons[index] : null;
-                counterImages[index].sprite = icon != null ? icon : defaultCounterIcon;
+                counterImages[index].sprite = icon != null ? icon : index == 2 ? null : defaultCounterIcon;
                 counterImages[index].scaleMode = ScaleMode.ScaleToFit;
                 counterImages[index].style.backgroundImage = StyleKeyword.None;
+                if (index == 2 && icon == null)
+                    counterImages[index].Add(new KnowledgeCounterIcon());
                 RefreshCounter(index);
             }
 
@@ -138,10 +136,9 @@ namespace GameJamPlus.UI
             if (collectibleCollector != null)
             {
                 collectibleCollector.CountChanged += OnCollectibleCountChanged;
-                OnCollectibleCountChanged(CollectibleType.Cheese, collectibleCollector.GetCount(CollectibleType.Cheese));
-                OnCollectibleCountChanged(CollectibleType.GreenCheese, collectibleCollector.GetCount(CollectibleType.GreenCheese));
-                OnCollectibleCountChanged(CollectibleType.Photo, collectibleCollector.GetCount(CollectibleType.Photo));
             }
+            foreach (CollectibleType type in Enum.GetValues(typeof(CollectibleType)))
+                OnCollectibleCountChanged(type, GameSession.GetCollectibleCount(type));
         }
 
         private void Start()
@@ -188,6 +185,7 @@ namespace GameJamPlus.UI
         public void ShowPhoto(Texture2D photo, Action onContinue = null)
         {
             if (!ready || testEnding) return;
+            bool opening = !photoView.IsVisible;
             if (!photoView.IsVisible && pauseWhilePhotoOpen)
             {
                 photoPreviousTimeScale = Time.timeScale;
@@ -197,6 +195,7 @@ namespace GameJamPlus.UI
             photoContinue = onContinue;
             photoView.Show(photo);
             RefreshInteractionHints();
+            if (opening) PhotoShown?.Invoke();
         }
 
         public void HidePhoto()
@@ -266,6 +265,9 @@ namespace GameJamPlus.UI
                     break;
                 case CollectibleType.Photo:
                     SetCounter(3, count);
+                    break;
+                case CollectibleType.Knowledge:
+                    SetCounter(2, count);
                     break;
             }
         }

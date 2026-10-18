@@ -8,10 +8,14 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private TestEndEvent testEnd;
+        [SerializeField] private bool showGizmos;
         private bool triggered;
 
         private void FixedUpdate()
         {
+            GameManager manager = GameManager.Instance;
+            if (manager == null || manager.State != GameManager.LoopState.Playing) return;
+            if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (triggered || testEnd == null || contactArea == null || playerCollider == null
                 || !contactArea.enabled || !playerCollider.enabled
                 || !playerCollider.gameObject.activeInHierarchy) return;
@@ -22,6 +26,28 @@ namespace GameJamPlus.Gameplay
             if (!contact.isValid || contact.distance > 0f) return;
             triggered = true;
             testEnd.EndTest();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!showGizmos || contactArea == null) return;
+            Matrix4x4 previousMatrix = Gizmos.matrix;
+            Color previousColor = Gizmos.color;
+            if (contactArea is BoxCollider2D box)
+            {
+                Gizmos.matrix = box.transform.localToWorldMatrix;
+                Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.06f);
+                Gizmos.DrawCube(box.offset, box.size);
+                Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.5f);
+                Gizmos.DrawWireCube(box.offset, box.size);
+            }
+            else
+            {
+                Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.5f);
+                Gizmos.DrawWireCube(contactArea.bounds.center, contactArea.bounds.size);
+            }
+            Gizmos.matrix = previousMatrix;
+            Gizmos.color = previousColor;
         }
 
         private void Reset()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameJamPlus.Gameplay;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -11,7 +12,6 @@ namespace MousePlatformer
         [SerializeField] private PlayerInputReader input;
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         private ContactFilter2D filter;
-        private readonly Dictionary<CollectibleType, int> counts = new Dictionary<CollectibleType, int>();
 
         public event Action<CollectibleType, int> CountChanged;
         public Collectible InteractionTarget { get; private set; }
@@ -19,14 +19,20 @@ namespace MousePlatformer
 
         public int GetCount(CollectibleType type)
         {
-            return counts.TryGetValue(type, out int count) ? count : 0;
+            return GameSession.GetCollectibleCount(type);
         }
 
         internal void RecordCollection(CollectibleType type)
         {
-            int count = GetCount(type) + 1;
-            counts[type] = count;
+            int count = GameSession.AddCollectibleCount(type, 1);
             CountChanged?.Invoke(type, count);
+        }
+
+        public void AddKnowledge(int amount)
+        {
+            if (amount <= 0) return;
+            int count = GameSession.AddCollectibleCount(CollectibleType.Knowledge, amount);
+            CountChanged?.Invoke(CollectibleType.Knowledge, count);
         }
 
         private void Awake()
