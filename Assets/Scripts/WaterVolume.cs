@@ -10,6 +10,13 @@ namespace MousePlatformer
         [SerializeField] private BoxCollider2D shape;
         public BoxCollider2D Shape => shape != null ? shape : shape = GetComponent<BoxCollider2D>();
 
+        public static bool ContainsPoint(Vector2 point)
+        {
+            foreach (WaterVolume volume in activeVolumes)
+                if (volume != null && volume.Shape.enabled && volume.Shape.OverlapPoint(point)) return true;
+            return false;
+        }
+
         public static float SubmergedFraction(Bounds bodyBounds)
         {
             float fraction = 0f;

@@ -13,4 +13,12 @@ La risoluzione originale viene conservata da Pixel Perfect Viewport per UI, band
 
 Se la scala normale è già 1×, Zoom Out è bloccato: una scala inferiore non può conservare tutti i pixel. Sotto 640×360 resta il comportamento preesistente del livello normale, che adatta l’immagine alla finestra.
 
-Da verificare in Unity: i tre livelli con rotella e shoulder buttons; dimensioni della UI; limiti di zoom; cambio risoluzione; pausa/foto; movimento Su/Giù della camera al 25% della nuova vista; arresto del Play Mode senza alterazioni alla camera salvata.
+Da verificare in Unity: i tre livelli con rotella e shoulder buttons; dimensioni della UI; limiti di zoom; cambio risoluzione; pausa/foto; movimento Su/Giù della camera al 50% della nuova vista; arresto del Play Mode senza alterazioni alla camera salvata.
+
+## Sguardo verticale e blocco altezza
+
+Tenendo Su/Giù mentre il topo è fermo su una superficie, la camera si sposta fino al 50% della propria altezza. Vertical Look Fraction e Vertical Look Smooth Time sono regolabili sul Platform Camera Controller.
+
+C sulla tastiera o la pressione dello stick destro sul gamepad blocca/sblocca la quota corrente della camera. Il movimento orizzontale continua a seguire il topo. Finché la quota è bloccata, Su/Giù e i movimenti verticali del topo non la modificano. Sbloccandola, la camera torna gradualmente all’inseguimento. Il recupero/respawn con SnapToTarget rimuove il blocco.
+
+In alto a destra appare CAMERA HEIGHT LOCKED con il comando per sbloccare, aggiornato al dispositivo attivo. Il comando di blocco è sospeso durante pausa e conclusione del test. Lo shake resta attivo anche a quota bloccata.

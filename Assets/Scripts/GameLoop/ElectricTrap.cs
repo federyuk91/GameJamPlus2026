@@ -1,6 +1,7 @@
 using UnityEngine;
 using MousePlatformer;
 using UnityEngine.Rendering.Universal;
+using GameJamPlus.UI;
 
 namespace GameJamPlus.Gameplay
 {
@@ -16,6 +17,9 @@ namespace GameJamPlus.Gameplay
         [SerializeField, Min(0.1f)] private float flickerFrequency = 18f;
         [SerializeField, Min(0f)] private float minimumLightIntensity = 0.15f;
         [SerializeField, Min(0f)] private float maximumLightIntensity = 2f;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip[] dischargeClips;
+        [SerializeField, Range(0f, 1f)] private float dischargeVolume = 0.65f;
         [SerializeField] private bool showGizmos = true;
         private bool triggered;
         private float remainingDuration;
@@ -30,6 +34,13 @@ namespace GameJamPlus.Gameplay
             if (contactArea == null) contactArea = GetComponent<Collider2D>();
             if (testEnd == null) testEnd = GetComponent<TestEndEvent>();
             contactArea.isTrigger = true;
+            if (audioSource == null) audioSource = GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.playOnAwake = false;
+                audioSource.loop = false;
+                audioSource.spatialBlend = 0f;
+            }
         }
 
         private void FixedUpdate()
@@ -49,6 +60,7 @@ namespace GameJamPlus.Gameplay
         {
             if (!isActiveAndEnabled || triggered) return;
             remainingDuration = Mathf.Max(0.01f, activationDuration);
+            PlayDischargeSound();
             UpdateLight();
             ApplyDischarge();
         }
@@ -57,6 +69,7 @@ namespace GameJamPlus.Gameplay
         {
             remainingDuration = 0f;
             automaticActivation = false;
+            if (audioSource != null) audioSource.Stop();
             UpdateLight();
         }
 
@@ -95,17 +108,36 @@ namespace GameJamPlus.Gameplay
 
         private void OnEnable()
         {
+            GameAudioSettings.EffectsVolumeChanged += ApplyEffectsVolume;
+            ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
             if (automaticActivation) Activate();
             else UpdateLight();
         }
 
         private void OnDisable()
         {
+            GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
+            if (audioSource != null) audioSource.Stop();
             remainingDuration = 0f;
             if (electricLight != null) electricLight.enabled = false;
         }
 
         private void Update() => UpdateLight();
+
+        private void PlayDischargeSound()
+        {
+            if (audioSource == null || dischargeClips == null || dischargeClips.Length == 0) return;
+            AudioClip clip = dischargeClips[Random.Range(0, dischargeClips.Length)];
+            if (clip == null) return;
+            ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
+
+        private void ApplyEffectsVolume(float effectsVolume)
+        {
+            if (audioSource != null) audioSource.volume = dischargeVolume * effectsVolume;
+        }
 
         private void UpdateLight()
         {
@@ -129,6 +161,7 @@ namespace GameJamPlus.Gameplay
         private void OnValidate()
         {
             if (contactArea != null) contactArea.isTrigger = true;
+            if (Application.isPlaying) ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
         }
 
         private void OnDrawGizmos()

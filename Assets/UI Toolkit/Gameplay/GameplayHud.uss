@@ -73,3 +73,8 @@
 .scientist-transcript .unity-scroll-view__content-viewport { min-width: 0; }
 .scientist-transcript .unity-scroll-view__content-container { width: 100%; flex-grow: 1; }
 .scientist-text, .interaction-hints { flex-shrink: 0; }
+
+.camera-height-lock { display: none; position: absolute; top: 4px; right: 8px; max-width: 420px; margin: 0; padding: 2px 5px; font-size: 7px; color: var(--hud-gold); background-color: rgba(1, 8, 13, 0.85); -unity-text-align: middle-right; }
+
+.oxygen-notches .satiety-notch { background-color: rgb(85, 211, 243); border-color: rgb(181, 239, 255); }
+.oxygen-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }

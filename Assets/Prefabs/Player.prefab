@@ -148,6 +148,11 @@ GameObject:
   - component: {fileID: 5709383898159029401}
   - component: {fileID: 5709383898159029500}
   - component: {fileID: 5709383898159029700}
+  - component: {fileID: 5709383898159029800}
+  - component: {fileID: 5709383898159029801}
+  - component: {fileID: 5709383898159029802}
+  - component: {fileID: 5709383898159029803}
+  - component: {fileID: 5709383898159029804}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -837,3 +842,115 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerButtonInteraction
   input: {fileID: 7712171590627343095}
   body: {fileID: 4027669037393712695}
+--- !u!114 &5709383898159029800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bd8f2ae75f64879a0d4e95dc2583ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygen
+  playerCollider: {fileID: 5067529301207272031}
+  drowningOutcome: {fileID: 5709383898159029802}
+  maximumNotches: 5
+  drainInterval: 5
+  recoveryInterval: 5
+  breathingPointHeight: 0.85
+  warningSeconds: 10
+  onLowOxygen:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5709383898159029803}
+        m_TargetAssemblyTypeName: GameJamPlus.UI.DialogueMessagePlayer, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5709383898159029801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
+  hud: {fileID: 0}
+  avatar: {fileID: 0}
+  messages:
+  - "Una pausa per riprendere fiato è sempre una buona idea."
+  - "Ricordiamo al soggetto l’importanza di respirare tra un esercizio e l’altro."
+  duration: 30
+--- !u!114 &5709383898159029802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.TestEndEvent
+  gameManager: {fileID: 0}
+  scientistComment: {fileID: 5709383898159029801}
+  subjectDied: 1
+  resultMessages:
+  - "Il soggetto ha approfondito i propri limiti di apnea."
+  - "Il soggetto ha dimostrato che anche sott’acqua respirare è importante."
+--- !u!114 &5709383898159029803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
+  hud: {fileID: 0}
+  avatar: {fileID: 0}
+  messages:
+  - "Ottima concentrazione! Ricordiamoci anche di respirare, però."
+  - "Una breve risalita aiuta a mantenere la mente lucida."
+  duration: 6
+--- !u!114 &5709383898159029804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85f960e7fde4f15ab35404d99ad3986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygenBubbles
+  playerCollider: {fileID: 5067529301207272031}
+  facing: {fileID: 6712765668103962099}
+  playerVisual: {fileID: 8503429192877497323}
+  bubbleSprites:
+  - {fileID: 2924118864771949876, guid: 4374c8c23350dd14cb449b2735be0f83, type: 3}
+  - {fileID: -3577410830333116246, guid: 06ec57235becc924aa442c733645ea9f, type: 3}
+  - {fileID: 8247251890452737138, guid: 8726360923d23114c9241a9e9914ab00, type: 3}
+  emissionInterval: 0.12
+  riseSpeed: 1.5
+  wobbleWidth: 0.04
+  mouthHeight: 0.75
+  pixelsPerUnit: 32
