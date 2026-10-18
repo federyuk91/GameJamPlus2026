@@ -15,6 +15,7 @@ namespace MousePlatformer
         private DiggableTerrain terrain;
         public bool InputClaimed { get; private set; }
         public bool IsDigging { get; private set; }
+        public Vector2 Direction { get; private set; }
         public bool CanStartDigging => isActiveAndEnabled && body != null && Settings.enabled && !AttachedElsewhere()
             && (TryFindTerrain(Vector2.left, out _) || TryFindTerrain(Vector2.right, out _)
                 || TryFindTerrain(Vector2.up, out _) || TryFindTerrain(Vector2.down, out _));
@@ -67,6 +68,7 @@ namespace MousePlatformer
         {
             velocity = Vector2.zero;
             IsDigging = false;
+            Direction = Vector2.zero;
             if (!InputClaimed || !input.BiteHeld || !Settings.enabled || terrain == null
                 || !terrain.isActiveAndEnabled || AttachedElsewhere()) return false;
             Vector2 direction = Vector2.ClampMagnitude(new Vector2(input.Horizontal, input.Vertical), 1f);
@@ -82,6 +84,7 @@ namespace MousePlatformer
             {
                 terrain.Excavate(center, center + allowed + forward, radius);
                 IsDigging = true;
+                Direction = direction.normalized;
             }
             Vector2 start = transform.position;
             body.Move(allowed);
@@ -93,6 +96,7 @@ namespace MousePlatformer
         {
             InputClaimed = false;
             IsDigging = false;
+            Direction = Vector2.zero;
             terrain = null;
         }
 

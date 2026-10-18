@@ -76,5 +76,5 @@ MonoBehaviour:
     speed: 1.5
     radius: 0.45
     reach: 0.08
-    excavatedAlpha: 254
-    excavatedTint: {r: 0.04, g: 0.025, b: 0.015, a: 1}
+    excavatedAlpha: 200
+    excavatedTint: {r: 0.049744904, g: 0.18867922, b: 0, a: 1}

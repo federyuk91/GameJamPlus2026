@@ -398,6 +398,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
   visualPivot: {fileID: 5355322660398281183}
+  digging: {fileID: 7072776503502995229}
+  facing: {fileID: 6712765668103962099}
 --- !u!114 &4147716882159431439
 MonoBehaviour:
   m_ObjectHideFlags: 0
