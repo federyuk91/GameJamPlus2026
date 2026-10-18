@@ -23,6 +23,12 @@ namespace MousePlatformer
         public bool IsSliding { get; private set; }
         public bool IsMovingOnGround { get; private set; }
         public bool CanInteractWithCrates { get; private set; }
+        public bool CanLookVertically => isActiveAndEnabled && body != null && body.Grounded && !IsSliding
+            && input != null && Mathf.Abs(input.Horizontal) < 0.1f && Velocity.sqrMagnitude < 0.01f
+            && (ropeInteraction == null || !ropeInteraction.Attached)
+            && (ladderInteraction == null || !ladderInteraction.Attached)
+            && (ledgeClimb == null || !ledgeClimb.Active)
+            && (digging == null || !digging.InputClaimed);
         private float coyoteRemaining;
         private float bufferRemaining;
         private bool jumpCut;
@@ -208,7 +214,7 @@ namespace MousePlatformer
                 if (walkingUnderwater)
                     displacement = crateInteraction.ResolveSwimming(displacement, dt);
                 else
-                    displacement.x = crateInteraction.ResolveHorizontal(displacement.x, input.GrabHeld,
+                    displacement.x = crateInteraction.ResolveHorizontal(displacement.x, input.CrateGrabHeld,
                         body.Grounded && surfaceMotion && !IsSliding);
                 velocity.x = displacement.x / dt;
             }

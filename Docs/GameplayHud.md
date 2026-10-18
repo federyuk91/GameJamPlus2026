@@ -72,10 +72,66 @@ L'anteprima UI Builder mostra i contatori e il cronometro a zero; lo schermo del
 `Collectible Collector` nell'Inspector del controller HUD e assegnato al componente del player in LoopScene. Il controller ascolta `CountChanged` e mostra i totali di `Cheese` nello slot 0 e `GreenCheese` nello slot 1. Questi due slot seguono i dati del collector; eventuali chiamate manuali a `SetCounter` vengono riallineate alla successiva raccolta o riattivazione dell'HUD. Vedere `Docs/Collectibles.md` per il tipo e l'evento configurabile sui raccoglibili.
 
 
-Il quarto contatore usa il formaggio come immagine di default ed è aggiornabile con SetCounter(3, valore). Le dimensioni attuali di ogni contatore sono 60 × 21 pixel logici, con icona da 14 e testo da 13. I collegamenti dei primi due slot al collector rimangono invariati.
+Il quarto contatore usa il formaggio come immagine di default ed è aggiornabile con SetCounter(3, valore). I quattro contatori condividono il pannello da 280 × 60 pixel con la sazietà: icone esistenti da 20 pixel, testo da 11 e bordi ciano. I collegamenti dei primi due slot al collector rimangono invariati.
 
-Comunicazioni e collezionabili sono a 10 pixel logici dal bordo inferiore dello schermo; il cronometro è a 10 pixel logici dal bordo superiore, sempre centrato. Le posizioni tengono conto sia delle due fasce nere da 20 pixel sia delle eventuali bande aggiuntive sulle risoluzioni non multiple. Gli elementi possono sovrapporsi alle fasce; i margini scalano insieme al gioco. L'altezza della comunicazione resta 60 pixel.
+Comunicazioni e pannello risorse sono a 10 pixel logici dal bordo inferiore, interamente nella fascia riservata da 80 pixel. Il timer è in alto a sinistra, nella banda superiore da 20 pixel, con cornice 70 × 18. Le posizioni tengono conto del letterboxing e della scala intera. L'altezza della comunicazione resta 60 pixel.
 
 I suggerimenti di gameplay sono contestuali, in inglese e possono mostrare più azioni contemporaneamente. La tastiera usa E per Eat cheese e F tenuto premuto per Cut rope / Dig; il controller usa i pulsanti ovest ed est con i nomi del suo layout. Dettagli e condizioni di disponibilità in Docs/InteractionHints.md.
 
-La disposizione attuale della comunicazione è [Messaggio | Pulsante | Sprite]: avatar all'estrema destra, cornice 44 × 52 pixel logici e immagine 40 × 48. Il pannello rimane alto 60 pixel. La colonna comandi è larga 70 pixel e centrata verticalmente per lasciare spazio al messaggio scorrevole.
+La comunicazione mantiene lo sprite a destra: cornice 60 × 52, immagine 54 × 39 e didascalia SCIENZIATO. A sinistra: spia di stato, testo scorrevole e pulsante nell'angolo inferiore destro; nessuna intestazione CANALE INTERNO. Sfondo CRT vuoto separato dai dati del gioco; il pannello rimane 300 × 60.
+
+Le comunicazioni non mostrano il numero di frase (ad esempio 1/1) né i secondi rimanenti. Il timeout interno e il passaggio automatico restano invariati; il pulsante Reveal / Next / Close rimane visibile.
+
+## Restyling del terminale — 18 ottobre 2026
+
+Riferimento: allegato `codex-clipboard-d16df1c8-8e60-4a3a-809f-1af39e2362f5.png`. Palette blu scuro, bordi crema/oro e ciano, spia e testo verde. Sazietà e quattro contatori hanno una cornice comune. Non sono stati sostituiti sprite di raccoglibili, lampadina procedurale o icone dei comandi.
+
+`PixelPerfectViewport.Bottom Border Pixels` è impostato a 80 solo in LoopScene, con banda superiore ancora da 20. L'area visibile del mondo è quindi 640 × 260 nella base 640 × 360: il rendering mantiene la griglia e l'inquadratura, la maschera esistente riserva ulteriori 60 righe inferiori alla HUD. La HUD non si sovrappone all'area visibile di gameplay. Il valore -1 nelle altre istanze conserva il bordo inferiore uguale a quello superiore.
+
+API, coroutine e sequenza di `ScientistCommentView` non cambiano in questo restyling: avatar ricevuto dal gioco, messaggi singoli/array, scrittura progressiva, timeout, pulsante coerente col device, scorrimento e accensione/spegnimento CRT. Il nuovo sfondo non contiene un ritratto o testi fissi del messaggio.
+
+Asset e prompt: `Docs/GameplayHudVisualAssets.md`. Nessun test automatico, compilazione o Play Mode eseguito. Da verificare manualmente: leggibilità a 640 × 360, cornici durante l'animazione CRT, messaggi lunghi e avatar di proporzioni diverse, timer, raccolte, sazietà e cambio dispositivo. La fascia riservata riduce l'area visibile inferiore della camera: controllare l'inquadratura del topo vicino al bordo.
+### Bordi e sfondi degli elementi
+
+I contatori hanno sfondo trasparente e nessun bordo USS. Gli elementi interni della comunicazione (`.scientist-portrait-frame`, `.scientist-message-panel`, `.scientist-advance`) non hanno bordi USS. Questi selettori sono modificabili direttamente in GameplayHud.uss anche quando `scientist-screen` è nascosto nell'anteprima. La grafica della cornice esterna è contenuta nel PNG CommunicationTerminal_Background.
+
+### Terminale persistente e spia di stato
+
+La cornice esterna resta visibile anche senza comunicazioni. Il pallino è rosso a riposo e verde dall'inizio di una comunicazione fino al termine della chiusura, poi torna rosso. CANALE INTERNO è stato rimosso.
+
+L'apertura e la chiusura CRT agiscono su `scientist-display`, una finestra di ritaglio centrata all'interno della cornice. Testo, avatar e comando mantengono dimensioni costanti mentre la finestra si espande o si comprime; il bagliore è confinato al display interno. La spia è fuori dal contenuto animato e rimane sempre visibile.
+
+`ScientistCommentView.IsVisible` continua a indicare una comunicazione attiva (comprese le transizioni), non la visibilità della cornice persistente: suggerimenti contestuali e priorità degli input mantengono il comportamento precedente. `Hide()` svuota testo e ritratto e torna allo stato rosso. Array, timeout, digitazione e comandi sono invariati. Nessun test o Play Mode eseguito; verificare manualmente accensione/spegnimento e ritorno dei suggerimenti dopo una comunicazione.
+### Due terminali distinti e 9-slicing
+
+La struttura duplicata è sostituita da due pannelli univoci: `scientist-screen` per il testo (176 × 60, right 77) e `scientist-avatar-screen` per il solo avatar (60 × 60, right 4), conservando le posizioni del layout manuale. Un solo LED resta sotto il ritratto: verde se c'è una comunicazione o un suggerimento SYSTEM, rosso a riposo. Niente messaggi, pulsanti o etichette duplicati nel terminale dell'avatar.
+
+La finestra animata e il contenuto si dimensionano tramite GeometryChangedEvent sulle dimensioni effettive di scientist-display-viewport. Il vecchio contenuto fisso da 290 pixel e l'offset sinistro manuale da 20 pixel sono eliminati. Il testo usa la larghezza del viewport e scorre in verticale; il pulsante ha una riga propria soltanto nei dialoghi dello scienziato. Durante le comunicazioni normali non viene riservata una riga per l'intestazione.
+
+Cornici configurate direttamente in USS con `-unity-slice-left/right/top/bottom`, `-unity-slice-scale` e `-unity-slice-type: sliced`. Bordi 6 px per risorse, terminale del testo e terminale avatar; timer 6 px ai lati e 3 sopra/sotto. Le texture originali e le icone non cambiano. I valori si possono modificare in UI Builder > Background > Slice. Riferimento: [documentazione Unity](https://docs.unity.com/en-us/engine/6000.3/manual/uitoolkits/uielements/uie-uss/properties/uib-styling-ui-backgrounds).
+
+Le API pubbliche dei messaggi restano compatibili; la UXML richiede ora i due nomi distinti del pannello e i nuovi contenitori. Eventuali copie personalizzate del documento HUD devono essere aggiornate con la stessa struttura. Da controllare manualmente in Unity: testo lungo, ridimensionamento dei pannelli, cornici sliced, ritratto isolato e priorità delle azioni. Nessuna compilazione, test o Play Mode eseguito.
+
+### Anteprima prima del Play
+
+La UXML mostra di default una comunicazione di esempio: “Welcome to Universe-10. Relax and enjoy your stay.”, pulsante F Close e LED verde. In UI Builder selezionare `scientist-text` o il selettore `.scientist-text` per regolare font, dimensioni, spaziature e colore. Display e contenuto usano il 100% dello spazio interno per l'anteprima. All'inizializzazione in Play, `ScientistCommentView.Hide()` svuota il placeholder e ripristina lo stato a riposo; messaggi, stato LED e animazioni sono quindi gestiti dal gioco. Il placeholder non è un messaggio accodato.
+
+### Compatibilità con il layout manuale senza footer
+
+`scientist-footer` è stato eliminato intenzionalmente: la view ora mostra/nasconde direttamente `scientist-advance` e non richiede quel contenitore. La classe `scientist-dialogue` riserva lo spazio del pulsante solo durante i dialoghi e nell'anteprima; i suggerimenti SYSTEM usano tutta l'altezza disponibile.
+
+Il testo è nuovamente nel transcript scorrevole, mantenendo font 10, allineamento middle-left e padding impostati manualmente. Altezza e larghezza fisse sono sostituite da min-height e larghezza 100%, per consentire al testo lungo di espandersi e scorrere. Il pulsante conserva l'ancoraggio bottom 4/right 2, con altezza minima 12 e larghezza adattiva per icona e parola del comando.
+
+Il bagliore CRT è fratello del contenuto nel display animato, anziché figlio dello ScrollView: non scorre con il testo e non è tagliato dal relativo viewport. L'avatar è direttamente nel proprio terminale (nessun contenitore reinserito), con margini interni per la cornice e il LED. Le posizioni manuali del terminale avatar (right 6) e del LED (left 7/bottom 7) restano conservate. Anche placeholder, slicing e priorità dei messaggi sono mantenuti.
+
+Analisi statica dei riferimenti UXML/C#; nessuna compilazione, test automatico o Play Mode. Verificare manualmente testo lungo e scorrimento, pulsante con icone dei diversi dispositivi, transizioni CRT e comunicazioni SYSTEM.
+
+### Allineamenti interni
+
+Margini comuni del display: 8 px laterali e 7 px verticali. SYSTEM e prima icona condividono il bordo sinistro; intestazione da 7 px con 3 px di separazione dai suggerimenti. I comandi hanno una colonna icona da 12 px e distanza testo di 5 px; l'icona resta allineata alla prima riga anche quando la descrizione va a capo. Il messaggio normale non aggiunge più un secondo padding interno. LED centrato sotto il ritratto (left 27, bottom 7 sul terminale da 60 px). Cornici, icone, posizioni dei terminali e logica delle comunicazioni sono invariati. Verifica visiva manuale in Unity.
+
+### Allineamenti sazietà, contatori e timer
+
+Pannello risorse con margini interni di 8 px laterali e 7 px verticali, intestazione da 12 px e separazione di 6 px dai contatori. Didascalia sazietà da 8 px, tacche da 14 × 7 allineate al centro. Quattro colonne uguali con icone invariate da 20 px, distanza icona/valore di 6 px e numeri da 10 px centrati verticalmente in un'area da 20 px; nessuno sfondo dei contatori.
+
+Timer largo 80 px, ancora alto 18 nella banda superiore: titolo da 5 px su riga di 6, cifre da 7 su riga di 9, padding superiore 1 e inferiore 2. Le righe non si comprimono e i testi sono centrati; ridotta la dimensione delle cifre per evitarne il taglio inferiore. Nessuna logica o icona modificata. Verifica visiva manuale in Unity.

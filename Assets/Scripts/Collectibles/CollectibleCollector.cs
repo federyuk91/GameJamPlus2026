@@ -15,6 +15,9 @@ namespace MousePlatformer
 
         public event Action<CollectibleType, int> CountChanged;
         public Collectible InteractionTarget { get; private set; }
+        public float TargetDistanceSquared => InteractionTarget != null && collectionArea != null
+            ? ((InteractionTarget.PickupArea != null ? InteractionTarget.PickupArea.bounds.center : InteractionTarget.transform.position)
+                - collectionArea.bounds.center).sqrMagnitude : float.PositiveInfinity;
         public void ConsumeInteractionInput() => input?.ConsumeCollectibleInteraction();
 
         public int GetCount(CollectibleType type)
@@ -45,16 +48,37 @@ namespace MousePlatformer
 
         private void FixedUpdate()
         {
-            CollectOverlapping(false);
+            CollectOverlapping();
         }
 
         private void Update()
         {
             if (Time.timeScale > 0f && input != null && input.isActiveAndEnabled && input.InteractionPressed)
-                CollectOverlapping(true);
+                CollectSelectedTarget();
         }
 
-        private void CollectOverlapping(bool interactionPressed)
+        private void CollectSelectedTarget()
+        {
+            Collectible selected = InteractionTarget;
+            if (selected == null || !selected.CanBeCollected || collectionArea == null || !collectionArea.enabled) return;
+            Physics2D.SyncTransforms();
+            overlaps.Clear();
+            collectionArea.Overlap(filter, overlaps);
+            foreach (Collider2D candidate in overlaps)
+            {
+                if (candidate == null || !candidate.TryGetComponent(out Collectible collectible) || collectible != selected) continue;
+                if (selected.TryCollect(this, true))
+                {
+                    input.ConsumeCollectibleInteraction();
+                    InteractionTarget = null;
+                }
+                return;
+            }
+        }
+
+        public void RefreshInteractionTarget() => CollectOverlapping(false);
+
+        private void CollectOverlapping(bool collectAutomatic = true)
         {
             InteractionTarget = null;
             if (collectionArea == null || !collectionArea.enabled) return;
@@ -70,8 +94,11 @@ namespace MousePlatformer
                 if (candidate != null && candidate.TryGetComponent(out Collectible collectible)
                     && collectible.CanBeCollected)
                 {
-                    if (!collectible.RequiresInteraction && !interactionPressed) collectible.TryCollect(this);
-                    else if (collectible.RequiresInteraction)
+                    if (!collectible.RequiresInteraction)
+                    {
+                        if (collectAutomatic) collectible.TryCollect(this);
+                    }
+                    else
                     {
                         float distance = (candidate.bounds.center - collectionArea.bounds.center).sqrMagnitude;
                         if (distance < nearestDistance)
@@ -84,11 +111,6 @@ namespace MousePlatformer
                 if (!isActiveAndEnabled || Time.timeScale <= 0f) return;
             }
             InteractionTarget = nearest;
-            if (interactionPressed && nearest != null && nearest.TryCollect(this, true))
-            {
-                if (input != null) input.ConsumeCollectibleInteraction();
-                InteractionTarget = null;
-            }
         }
 
         private void Reset()

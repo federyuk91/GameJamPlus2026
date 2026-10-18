@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GameJamPlus.UI
 {
     public enum InputPromptFamily { Keyboard, Xbox, PlayStation, NintendoSwitch }
-    public enum InputPromptAction { Interact, CutOrDig, Advance, Collect }
+    public enum InputPromptAction { Interact, CutOrDig, Advance, Collect, MoveCrate }
 
     [Serializable]
     public sealed class InputPromptIconSet
@@ -36,6 +36,8 @@ namespace GameJamPlus.UI
         {
             if (action == InputPromptAction.Collect)
                 action = family == InputPromptFamily.Keyboard ? InputPromptAction.CutOrDig : InputPromptAction.Interact;
+            if (action == InputPromptAction.MoveCrate)
+                action = family == InputPromptFamily.Keyboard ? InputPromptAction.Interact : InputPromptAction.CutOrDig;
             InputPromptIconSet icons;
             switch (family)
             {

@@ -4,129 +4,124 @@
     padding-top: 20px;
     padding-bottom: 20px;
 }
-
 .menu-root {
-    --menu-background: rgb(217, 203, 174);
-    --menu-surface: rgb(103, 65, 58);
-    --menu-text: rgb(26, 20, 23);
-    --menu-border: rgb(124, 131, 129);
-    --menu-hover: rgb(56, 77, 100);
-    --menu-active: rgb(103, 65, 58);
-    --menu-accent: rgb(193, 133, 73);
-    --menu-focus: rgb(141, 179, 94);
-    --menu-on-control: rgb(217, 203, 174);
-    --menu-title: rgb(175, 75, 59);
+    --menu-background: rgb(240, 229, 202);
+    --menu-surface: rgb(20, 43, 58);
+    --menu-text: rgb(20, 43, 58);
+    --menu-border: rgb(172, 159, 130);
+    --menu-hover: rgb(174, 73, 47);
+    --menu-active: rgb(137, 54, 35);
+    --menu-accent: rgb(174, 73, 47);
+    --menu-focus: rgb(174, 73, 47);
+    --menu-on-control: rgb(247, 237, 211);
+    --menu-title: rgb(20, 43, 58);
+    --menu-subtitle: rgb(42, 57, 64);
+    --menu-ready: rgb(120, 173, 98);
     flex-grow: 1;
     background-color: var(--menu-background);
     color: var(--menu-text);
+    -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Regular.ttf");
     font-size: 14px;
 }
+.background { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-image: url("../../Art/UI/MainMenu/Backgrounds/WelcomeProgram_Paper.png"); -unity-background-scale-mode: scale-and-crop; }
+.content { flex-grow: 1; width: 640px; max-width: 100%; align-self: center; flex-direction: row; align-items: center; justify-content: space-between; padding: 8px 16px; }
+.menu-column { width: 244px; flex-shrink: 0; }
+.program-heading { font-size: 10px; letter-spacing: 2px; color: var(--menu-accent); margin: 0 0 5px 0; }
+.title-logo { width: 244px; height: 82px; flex-shrink: 0; background-image: url("../../Art/UI/MainMenu/Branding/Universe10_TitleLogo.png"); -unity-background-scale-mode: scale-to-fit; }
+.subtitle { font-size: 16px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); color: var(--menu-subtitle); margin: 0 0 16px 0; }
+.menu-button { height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: flex-start; margin: 0; padding: 0 10px; background-color: transparent; color: var(--menu-text); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); font-size: 20px; border-width: 0; border-bottom-width: 1px; border-color: var(--menu-border); border-radius: 0; }
+.menu-button > Label { margin: 0; }
+.menu-button .menu-pointer { width: 22px; flex-shrink: 0; font-size: 12px; visibility: hidden; }
+.menu-button:hover, .menu-button:focus { background-color: var(--menu-hover); border-color: var(--menu-hover); color: var(--menu-on-control); border-radius: 4px; }
+.menu-button:hover .menu-pointer, .menu-button:focus .menu-pointer { visibility: visible; }
+.menu-button:active { background-color: var(--menu-active); }
+.menu-button:disabled { opacity: 0.5; }
+.status { font-size: 11px; white-space: normal; color: var(--menu-accent); margin: 0; }
 
-.background, .shade { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-.background {
-    background-image: url("../../Art/UI/MainMenu/Backgrounds/MainMenu_Background_Placeholder.png");
-    -unity-background-scale-mode: scale-and-crop;
-    opacity: 0.04;
-}
-.shade { background-color: rgba(217, 203, 174, 0.8); }
-
-.content {
-    flex-grow: 1;
-    width: 640px;
-    max-width: 100%;
-    align-self: center;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-}
-.menu-column { width: 288px; flex-shrink: 0; }
-.brand-row { flex-direction: row; align-items: center; height: 20px; margin-bottom: 8px; flex-shrink: 0; }
-.logo {
-    width: 32px;
-    height: 16px;
-    flex-shrink: 0;
-    margin-right: 8px;
-    background-image: url("../../Art/UI/MainMenu/Branding/MainMenu_Logo_Placeholder.png");
-    -unity-background-scale-mode: scale-to-fit;
-}
-.brand-label { color: var(--menu-hover); font-size: 11px; white-space: normal; }
-.title {
-    font-size: 24px;
-    -unity-font-style: bold;
-    letter-spacing: 1px;
-    margin: 0 0 12px 0;
-    color: var(--menu-title);
-    white-space: normal;
-    flex-shrink: 0;
-}
-.subtitle { font-size: 14px; white-space: normal; margin: 0 0 8px 0; }
-.menu-button {
-    height: 32px;
-    flex-shrink: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    margin: 0 0 4px 0;
-    padding: 0 10px;
-    background-color: var(--menu-surface);
-    color: var(--menu-on-control);
-    font-size: 15px;
-    border-width: 2px;
-    border-color: var(--menu-border);
-    border-radius: 6px;
-}
-.menu-button:hover, .dialog-button:hover { background-color: var(--menu-hover); border-color: var(--menu-accent); }
-.menu-button:focus, .dialog-button:focus { background-color: var(--menu-hover); border-color: var(--menu-focus); color: var(--menu-on-control); }
-.menu-button:active, .dialog-button:active { background-color: var(--menu-active); }
-.icon { width: 16px; height: 16px; margin-right: 10px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
-.new-game-icon { background-image: url("../../Art/UI/MainMenu/Icons/MainMenu_NewGame_Icon_Placeholder.png"); }
-.options-icon { background-image: url("../../Art/UI/MainMenu/Icons/MainMenu_Options_Icon_Placeholder.png"); }
-.credits-icon { background-image: url("../../Art/UI/MainMenu/Icons/MainMenu_Credits_Icon_Placeholder.png"); }
-.quit-icon { background-image: url("../../Art/UI/MainMenu/Icons/MainMenu_Quit_Icon_Placeholder.png"); }
-.status { color: var(--menu-hover); font-size: 12px; white-space: normal; min-height: 16px; margin: 0; }
-
-.art-column { width: 288px; flex-shrink: 0; align-items: center; }
-.room-card {
-    width: 100%;
-    padding: 10px;
-    background-color: var(--menu-hover);
-    border-width: 2px;
-    border-color: var(--menu-border);
-    border-radius: 10px;
-    align-items: center;
-}
-.room-header { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
-.eyebrow { font-size: 12px; color: var(--menu-on-control); white-space: normal; margin: 0; }
-.ready-light { width: 8px; height: 8px; flex-shrink: 0; margin-left: 8px; background-color: var(--menu-focus); border-radius: 4px; }
-.key-art {
-    width: 100%;
-    height: 112px;
-    margin-top: 6px;
-    background-image: url("../../Art/UI/MainMenu/Illustrations/MainMenu_KeyArt_Placeholder.png");
-    -unity-background-scale-mode: scale-to-fit;
-    opacity: 0.8;
-}
-.room-controls { flex-direction: row; justify-content: center; margin-top: 6px; }
-.room-button { width: 16px; height: 16px; margin: 0 6px; background-color: var(--menu-focus); border-width: 2px; border-color: var(--menu-background); border-radius: 8px; }
-.room-button-secondary { background-color: var(--menu-accent); }
-.room-button-tertiary { background-color: var(--menu-title); }
-.art-caption { margin: 6px 0 0 0; font-size: 14px; color: var(--menu-on-control); white-space: normal; -unity-text-align: middle-center; }
-.welcome-note { margin: 8px 0 0 0; color: var(--menu-hover); font-size: 12px; white-space: normal; -unity-text-align: middle-center; }
-.footer { flex-shrink: 0; flex-direction: row; justify-content: space-between; padding: 6px 12px; background-color: var(--menu-text); color: var(--menu-on-control); font-size: 12px; }
+.art-column { width: 348px; flex-shrink: 0; align-items: center; }
+.room-card { width: 100%; padding: 4px; background-color: var(--menu-surface); border-width: 1px; border-color: var(--menu-surface); border-radius: 6px; align-items: center; }
+.room-header { width: 100%; height: 28px; flex-shrink: 0; padding: 0 8px; margin-bottom: 4px; flex-direction: row; justify-content: space-between; align-items: center; border-width: 1px; border-color: var(--menu-border); border-radius: 4px; }
+.eyebrow { font-size: 17px; letter-spacing: 2px; color: var(--menu-on-control); margin: 0; }
+.online-status { flex-direction: row; align-items: center; color: var(--menu-on-control); font-size: 10px; letter-spacing: 1px; }
+.online-status > Label { margin: 0 0 0 6px; }
+.ready-light { width: 8px; height: 8px; flex-shrink: 0; background-color: var(--menu-ready); border-radius: 4px; }
+.key-art { width: 100%; height: 186px; flex-shrink: 0; background-image: url("../../Art/UI/MainMenu/Illustrations/WelcomeRoom_Mouse.png"); -unity-background-scale-mode: scale-to-fit; }
+.room-status { width: 100%; height: 24px; margin-top: 4px; flex-direction: row; align-items: center; justify-content: center; border-width: 1px; border-color: var(--menu-border); border-radius: 4px; }
+.art-caption { margin: 0 0 0 10px; font-size: 11px; letter-spacing: 2px; color: var(--menu-on-control); }
+.welcome-note { margin: 5px 0 0 0; color: var(--menu-text); font-size: 15px; letter-spacing: 1px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-text-align: middle-center; }
+.footer { height: 24px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 16px; background-color: var(--menu-surface); color: var(--menu-on-control); font-size: 11px; }
 .footer > Label { margin: 0; }
+.dialog-title { font-size: 20px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); white-space: normal; margin: 0 0 8px 0; }
+.dialog-button { height: 30px; margin: 8px 0 0 0; background-color: var(--menu-surface); color: var(--menu-on-control); font-size: 16px; border-width: 1px; border-color: var(--menu-border); border-radius: 3px; }
+.dialog-button:hover, .dialog-button:focus { background-color: var(--menu-hover); border-color: var(--menu-on-control); }
+.dialog-button:active { background-color: var(--menu-active); }
 
-.modal { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(103, 65, 58, 0.6); align-items: center; justify-content: center; }
-.dialog { width: 400px; max-width: 96%; padding: 12px; background-color: var(--menu-background); border-width: 2px; border-color: var(--menu-accent); border-radius: 8px; }
-.dialog-title { font-size: 20px; -unity-font-style: bold; white-space: normal; margin: 0 0 8px 0; }
-.dialog-button { height: 32px; margin: 8px 0 0 0; background-color: var(--menu-surface); color: var(--menu-on-control); font-size: 15px; border-width: 2px; border-color: var(--menu-border); border-radius: 6px; }
-.credits-text { white-space: normal; font-size: 14px; color: var(--menu-text); margin: 0; }
 .audio-slider { height: 28px; margin: 0 0 4px 0; border-width: 2px; border-color: transparent; }
 #fullscreen { height: 28px; margin: 0; border-width: 2px; border-color: transparent; }
 .audio-slider:focus, #fullscreen:focus { border-color: var(--menu-focus); }
 .audio-slider .unity-base-field__label, #fullscreen .unity-base-field__label { color: var(--menu-text); min-width: 104px; font-size: 14px; }
 .audio-slider .unity-base-slider__tracker { background-color: var(--menu-border); }
-.audio-slider .unity-base-slider__dragger { background-color: var(--menu-focus); border-color: var(--menu-background); width: 14px; height: 14px; }
+.audio-slider .unity-base-slider__dragger { background-color: var(--menu-accent); border-color: var(--menu-background); width: 14px; height: 14px; }
 #fullscreen .unity-toggle__input { background-color: var(--menu-surface); border-color: var(--menu-border); }
-#fullscreen .unity-toggle__checkmark { -unity-background-image-tint-color: var(--menu-focus); }
+#fullscreen .unity-toggle__checkmark { -unity-background-image-tint-color: var(--menu-ready); }
 .hidden { display: none; }
+
+/* Settings and staff cards share the welcome-room monitor frame. */
+
+.panel-header { height: 30px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-items: center; padding: 0 10px; background-color: var(--menu-surface); border-width: 1px; border-color: var(--menu-border); border-radius: 3px; }
+.panel-title { margin: 0; color: var(--menu-on-control); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); font-size: 18px; letter-spacing: 2px; }
+.panel-stamp { margin: 0; color: var(--menu-on-control); font-size: 10px; letter-spacing: 1px; }
+.section-heading { margin: 6px 0 3px 0; color: var(--menu-accent); font-size: 10px; letter-spacing: 1px; }
+.credit-row { height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; border-bottom-width: 1px; border-bottom-color: var(--menu-border); }
+.credit-details { flex-grow: 1; flex-direction: row; align-items: center; justify-content: flex-start; }
+.credit-role { width: 184px; flex-shrink: 0; margin: 0 8px 0 0; font-size: 14px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-font-style: bold; color: var(--menu-text); }
+.credit-name { margin: 0; font-size: 14px; color: var(--menu-subtitle); }
+.special-thanks-title { margin: 6px 0 2px 0; font-size: 14px; color: var(--menu-accent); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-text-align: middle-center; }
+.special-thanks-logos { height: 44px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-around; }
+.thanks-logo { width: 110px; height: 44px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.thanks-gamejamplus { background-image: url("../../Art/UI/Branding/GameJamPlus_Icon.png"); }
+.thanks-igda-italy { background-image: url("../../Art/UI/MainMenu/Branding/IGDAItaly_Logo.png"); }
+.thanks-sgs { background-image: url("../../Art/UI/MainMenu/Branding/SGS_Logo.png"); }
+#options-panel .audio-slider { height: 32px; margin: 0; border-radius: 3px; }
+#options-panel .unity-base-field__label { -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); }
+.audio-slider:hover, #fullscreen:hover { background-color: rgba(174, 73, 47, 0.08); }
+.audio-slider:focus, #fullscreen:focus { background-color: rgba(174, 73, 47, 0.12); }
+.audio-slider .unity-base-slider__tracker { height: 4px; border-radius: 0; }
+.audio-slider .unity-base-slider__dragger { border-width: 1px; border-radius: 0; }
+#fullscreen .unity-toggle__input { border-width: 1px; border-radius: 0; }
+
+.art-column { height: 280px; }
+.welcome-panel { width: 100%; height: 100%; }
+.context-card { width: 100%; height: 100%; padding: 4px 6px; background-color: transparent; border-width: 0; color: var(--menu-on-control); }
+.menu-button.menu-selected { background-color: var(--menu-hover); border-color: var(--menu-hover); color: var(--menu-on-control); border-radius: 4px; }
+.menu-button.menu-selected .menu-pointer { visibility: visible; }
+.context-card .credit-role { width: 158px; margin-right: 6px; font-size: 12px; }
+.context-card .credit-name { font-size: 13px; }
+.context-card .thanks-logo { width: 92px; }
+#quit-panel { justify-content: center; }
+.main-panel.menu-locked .menu-button { background-color: transparent; border-color: var(--menu-border); color: var(--menu-text); }
+.main-panel.menu-locked .menu-button .menu-pointer { visibility: hidden; }
+.main-panel.menu-locked .menu-button.menu-selected { background-color: var(--menu-hover); border-color: var(--menu-hover); color: var(--menu-on-control); }
+.main-panel.menu-locked .menu-button.menu-selected .menu-pointer { visibility: visible; }
+
+.art-column { overflow: hidden; }
+.channel-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; background-color: var(--menu-on-control); }
+
+.room-card { height: 256px; flex-shrink: 0; }
+.channel-viewport { position: relative; width: 100%; height: 186px; flex-shrink: 0; overflow: hidden; }
+.channel-aperture { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
+.channel-content { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.context-card .section-heading { height: 12px; margin: 0 0 3px 0; font-size: 9px; color: var(--menu-on-control); }
+.context-card .credit-row { height: 25px; border-bottom-color: rgba(247, 237, 211, 0.25); }
+.context-card .credit-role { font-size: 11px; color: var(--menu-on-control); }
+.context-card .credit-name { font-size: 12px; color: var(--menu-on-control); }
+.context-card .special-thanks-title { height: 16px; font-size: 12px; margin: 4px 0 2px 0; color: var(--menu-on-control); }
+.context-card .special-thanks-logos { height: 34px; }
+.context-card .thanks-logo { width: 84px; height: 30px; background-color: var(--menu-on-control); border-radius: 2px; }
+.context-card .audio-slider { height: 25px; }
+#options-panel .audio-slider { height: 25px; }
+.context-card .audio-slider .unity-base-field__label, .context-card #fullscreen .unity-base-field__label { min-width: 84px; font-size: 12px; color: var(--menu-on-control); }
+.context-card #fullscreen { height: 23px; }
+.context-card .dialog-button { height: 24px; min-height: 24px; margin-top: 4px; font-size: 14px; }
+#options-back { margin-top: auto; }
+.context-card .dialog-title { color: var(--menu-on-control); font-size: 18px; }

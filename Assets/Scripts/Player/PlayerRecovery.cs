@@ -134,6 +134,8 @@ namespace MousePlatformer
                 if (area == null || IsPlayerCollider(area)) continue;
                 if (area.TryGetComponent(out RecoveryZone recovery) && recovery.isActiveAndEnabled) return false;
                 if (area.TryGetComponent(out LethalContact lethal) && lethal.isActiveAndEnabled) return false;
+                if (area.TryGetComponent(out MouseTrap trap) && trap.isActiveAndEnabled) return false;
+                if (area.TryGetComponent(out ElectricTrap electricTrap) && electricTrap.IsDangerous) return false;
                 if (area.TryGetComponent(out StarvationDeathZone starvation) && starvation.isActiveAndEnabled) return false;
             }
             return true;

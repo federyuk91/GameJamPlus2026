@@ -10,18 +10,18 @@ La Main Camera di LoopScene usa il Pixel Perfect Camera di URP:
 - Filter Mode: Point, senza interpolazione fra pixel.
 - Crop Frame: Windowbox, per ingrandire a multipli interi senza deformare o tagliare la scena.
 
-La camera mantiene una vista completa di 20 × 11,25 unità, con una zona centrale visibile di 20 × 10 unità dopo le bande. Il controller della camera conserva lo smoothing interno e arrotonda solo la posizione finale alla griglia dei pixel.
+La camera mantiene una vista completa di 20 × 11,25 unità, con una zona visibile di 20 × 8,125 unità dopo le fasce HUD di LoopScene. Il controller della camera conserva lo smoothing interno e arrotonda solo la posizione finale alla griglia dei pixel.
 
 | Schermo / Game View | Area visibile di gioco | Bande nere |
 | --- | --- | --- |
-| 640 × 360 | 640 × 320, scala 1× | 20 px sopra e sotto |
-| 1280 × 720 | 1280 × 640, scala 2× | 40 px sopra e sotto |
-| 1920 × 1080 | 1920 × 960, scala 3× | 60 px sopra e sotto |
-| 1366 × 768 | 1280 × 640, scala 2× | 64 px sopra/sotto e 43 px ai lati |
-| 2560 × 1440 | 2560 × 1280, scala 4× | 80 px sopra e sotto |
-| 1024 × 768 | 640 × 320, scala 1× | 224 px sopra/sotto e 192 px ai lati |
+| 640 × 360 | 640 × 260, scala 1× | 20 px sopra, 80 px sotto |
+| 1280 × 720 | 1280 × 520, scala 2× | 40 px sopra, 160 px sotto |
+| 1920 × 1080 | 1920 × 780, scala 3× | 60 px sopra, 240 px sotto |
+| 1366 × 768 | 1280 × 520, scala 2× | 64 px sopra, 184 px sotto, 43 px ai lati |
+| 2560 × 1440 | 2560 × 1040, scala 4× | 80 px sopra, 320 px sotto |
+| 1024 × 768 | 640 × 260, scala 1× | 224 px sopra, 284 px sotto, 192 px ai lati |
 
-La base complessiva è 640 × 360: 20 righe nere sopra, 320 righe visibili e 20 righe nere sotto. Le 40 righe riservate partecipano al calcolo della scala intera. Gli schermi con dimensioni o rapporto diversi possono aggiungere altre bande esterne. Le bande del gameplay sono una maschera nera disegnata da PixelPerfectViewport dopo il rendering della camera, senza ricevere input.
+La base complessiva è 640 × 360: 20 righe nere sopra, 260 righe visibili e 80 righe inferiori riservate alla HUD in LoopScene. Le 100 righe riservate partecipano al calcolo della scala intera. Gli schermi con dimensioni o rapporto diversi possono aggiungere altre bande esterne. Le bande del gameplay sono una maschera nera disegnata da PixelPerfectViewport dopo il rendering della camera, senza ricevere input.
 
 Le bande sono intenzionali: occupare tutto uno schermo di dimensioni non multiple richiederebbe pixel di dimensione non uniforme oppure interpolazione. L'inquadratura resta la stessa a qualsiasi rapporto dello schermo.
 

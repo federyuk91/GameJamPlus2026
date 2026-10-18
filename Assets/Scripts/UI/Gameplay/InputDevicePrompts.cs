@@ -12,9 +12,11 @@ namespace GameJamPlus.UI
         public bool UsingGamepad { get; private set; }
         public event Action Changed;
         public string Interact => UsingGamepad ? gamepad.buttonWest.displayName : "E";
+        public string MoveCrate => UsingGamepad ? gamepad.buttonEast.displayName : "E";
         public string Collect => UsingGamepad ? gamepad.buttonWest.displayName : "F";
         public string CutOrDig => UsingGamepad ? gamepad.buttonEast.displayName : "F";
         public string Advance => UsingGamepad ? gamepad.buttonWest.displayName : "F";
+        public string CameraHeightLock => UsingGamepad ? gamepad.rightStickButton.displayName : "C";
         public InputPromptFamily Family
         {
             get

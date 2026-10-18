@@ -19,6 +19,7 @@ namespace GameJamPlus.UI
         [SerializeField] private GameplayInteractionAvailability interactionAvailability;
         [SerializeField] private InputPromptIcons inputPromptIcons;
         [SerializeField] private PixelPerfectViewport viewport;
+        [SerializeField] private PlatformCameraController cameraController;
         [SerializeField] private Sprite defaultCounterIcon;
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
         [SerializeField] private bool showWelcomeOnStart = true;
@@ -37,6 +38,7 @@ namespace GameJamPlus.UI
         private VisualElement frame;
         private VisualElement safeArea;
         private Label timeLabel;
+        private Label cameraHeightLock;
         private ScientistCommentView scientistView;
         private Coroutine scientistRoutine;
         private InputAction advanceScientistComment;
@@ -52,6 +54,8 @@ namespace GameJamPlus.UI
         private VisualElement interactionHints;
         private bool hintsPaused;
         private bool hintsDialogueVisible;
+        private bool communicationInProgress;
+        private bool refreshingHints;
         private PhotoView photoView;
         private Action photoContinue;
         private float photoPreviousTimeScale;
@@ -103,6 +107,8 @@ namespace GameJamPlus.UI
             frame = root.Q("hud-frame");
             safeArea = root.Q("hud-safe-area");
             timeLabel = root.Q<Label>("elapsed-time");
+            cameraHeightLock = root.Q<Label>("camera-height-lock");
+            if (cameraController != null) cameraController.HeightLockChanged += OnCameraHeightLockChanged;
             for (int index = 0; index < counterValues.Length; index++)
             {
                 counterLabels[index] = root.Q<Label>("counter-" + CounterNames[index] + "-value");
@@ -153,7 +159,7 @@ namespace GameJamPlus.UI
                 return;
 
             bool paused = Time.timeScale <= 0f;
-            bool dialogueVisible = scientistView.IsVisible;
+            bool dialogueVisible = communicationInProgress || scientistView.IsVisible;
             if (hintsPaused != paused || hintsDialogueVisible != dialogueVisible)
             {
                 hintsPaused = paused;
@@ -234,6 +240,7 @@ namespace GameJamPlus.UI
         public void ShowTestComment(string text, Sprite portrait)
         {
             HideScientistComment();
+            communicationInProgress = true;
             scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, 30f, true));
         }
 
@@ -291,6 +298,7 @@ namespace GameJamPlus.UI
             if (messages.Count == 0) return;
 
             HideScientistComment();
+            communicationInProgress = true;
             scientistRoutine = StartCoroutine(RunScientistComment(messages.ToArray(), portrait, duration, false));
             RefreshInteractionHints();
         }
@@ -299,13 +307,15 @@ namespace GameJamPlus.UI
         {
             yield return scientistView.Show(texts, portrait, duration, waitForAdvance);
             scientistRoutine = null;
+            communicationInProgress = false;
             if (waitForAdvance) TestCommentCompleted?.Invoke();
+            RefreshInteractionHints();
         }
 
         private void OnAdvanceScientistComment(InputAction.CallbackContext context)
         {
             if ((photoView != null && photoView.IsVisible) || (testResultView != null && testResultView.IsVisible)
-                || (scientistView != null && scientistView.IsVisible))
+                || communicationInProgress || (scientistView != null && scientistView.IsVisible))
                 collectibleCollector?.ConsumeInteractionInput();
             if (photoView != null && photoView.IsVisible) ContinuePhoto();
             else if (testResultView != null && testResultView.IsVisible) testResultView.Continue();
@@ -314,6 +324,9 @@ namespace GameJamPlus.UI
 
         public void HideScientistComment()
         {
+            communicationInProgress = false;
+            interactionHints?.Clear();
+            if (interactionHints != null) interactionHints.style.display = DisplayStyle.None;
             if (scientistRoutine != null)
             {
                 StopCoroutine(scientistRoutine);
@@ -329,35 +342,79 @@ namespace GameJamPlus.UI
 
         private void RefreshDevicePrompts()
         {
+            interactionAvailability?.SetUsingGamepad(devicePrompts.UsingGamepad);
             Sprite advanceIcon = GetPromptIcon(InputPromptAction.Advance);
             scientistView.SetAdvanceKey(devicePrompts.Advance, advanceIcon);
             testResultView.SetAdvanceKey(devicePrompts.Advance, advanceIcon);
             photoView.SetCloseKey(devicePrompts.Advance);
+            RefreshCameraHeightLock();
             RefreshInteractionHints();
+        }
+
+        private void OnCameraHeightLockChanged(bool locked) => RefreshCameraHeightLock();
+
+        private void RefreshCameraHeightLock()
+        {
+            if (cameraHeightLock == null || devicePrompts == null) return;
+            bool locked = cameraController != null && cameraController.IsHeightLocked;
+            cameraHeightLock.style.display = locked ? DisplayStyle.Flex : DisplayStyle.None;
+            cameraHeightLock.text = "CAMERA HEIGHT LOCKED — " + devicePrompts.CameraHeightLock + " TO UNLOCK";
         }
 
         private void OnAvailableActionsChanged(AvailableGameplayActions actions) => RefreshInteractionHints();
 
         private void RefreshInteractionHints()
         {
-            AvailableGameplayActions available = interactionAvailability != null
-                ? interactionAvailability.Current : AvailableGameplayActions.None;
+            if (refreshingHints) return;
+            refreshingHints = true;
+            try
+            {
+                RefreshCurrentInteractionHints();
+            }
+            finally
+            {
+                refreshingHints = false;
+            }
+        }
+
+        private void RefreshCurrentInteractionHints()
+        {
             interactionHints.Clear();
+            bool blocked = communicationInProgress || scientistView.IsVisible || testEnding
+                || Time.timeScale <= 0f || photoView.IsVisible || testResultView.IsVisible;
+            if (blocked)
+            {
+                interactionHints.style.display = DisplayStyle.None;
+                scientistView.ShowSystemHints(false);
+                return;
+            }
+
+            AvailableGameplayActions available = interactionAvailability != null
+                ? interactionAvailability.RefreshCurrent() : AvailableGameplayActions.None;
+            // Refreshing availability can invoke gameplay callbacks that start a communication.
+            if (communicationInProgress || scientistView.IsVisible)
+            {
+                interactionHints.style.display = DisplayStyle.None;
+                scientistView.ShowSystemHints(false);
+                return;
+            }
             if ((available & AvailableGameplayActions.MoveCrate) != 0)
-                AddInteractionHint(InputPromptAction.Interact, devicePrompts.Interact, "Hold + direction to push / pull");
+                AddInteractionHint(InputPromptAction.MoveCrate, devicePrompts.MoveCrate, "Hold + direction to push / pull");
             if ((available & AvailableGameplayActions.EatCheese) != 0)
                 AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Eat cheese");
             if ((available & AvailableGameplayActions.EatGreenCheese) != 0)
                 AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Eat green cheese");
             if ((available & AvailableGameplayActions.CollectPhoto) != 0)
                 AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Collect photo");
+            if ((available & AvailableGameplayActions.PressButton) != 0)
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press button");
             if ((available & AvailableGameplayActions.CutRope) != 0)
                 AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold to cut rope");
             if ((available & AvailableGameplayActions.Dig) != 0)
                 AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold + direction to dig");
-            interactionHints.style.display = !testEnding && !hintsPaused && !photoView.IsVisible
-                && !scientistView.IsVisible && interactionHints.childCount > 0
-                ? DisplayStyle.Flex : DisplayStyle.None;
+            bool showSystem = interactionHints.childCount > 0;
+            interactionHints.style.display = showSystem ? DisplayStyle.Flex : DisplayStyle.None;
+            scientistView.ShowSystemHints(showSystem);
         }
 
         private Sprite GetPromptIcon(InputPromptAction action)
@@ -414,19 +471,21 @@ namespace GameJamPlus.UI
             frame.style.width = viewport.ReferenceResolution.x;
             frame.style.height = viewport.ReferenceResolution.y;
             safeArea.style.top = viewport.VerticalBorderPixels;
-            safeArea.style.bottom = viewport.VerticalBorderPixels;
+            safeArea.style.bottom = viewport.BottomBorderPixels;
+            hudRoot.Q(className: "black-band-top").style.height = viewport.VerticalBorderPixels;
+            hudRoot.Q(className: "black-band-bottom").style.height = viewport.BottomBorderPixels;
             // Include any external letterboxing so the margins are measured from the screen edges.
             float bottomLetterbox = (Screen.height - viewport.FrameRect.yMax) / scale;
-            float bottomAnchor = 10f - viewport.VerticalBorderPixels - bottomLetterbox;
-            hudRoot.Q("resource-counters").style.bottom = bottomAnchor;
+            float bottomAnchor = 10f - viewport.BottomBorderPixels - bottomLetterbox;
+            hudRoot.Q("resource-dashboard").style.bottom = bottomAnchor;
             hudRoot.Q(className: "timer-anchor").style.top =
-                10f - viewport.VerticalBorderPixels - viewport.FrameRect.y / scale;
+                1f - viewport.VerticalBorderPixels - viewport.FrameRect.y / scale;
             scientistView.SetBottomInset(bottomAnchor);
-            interactionHints.style.bottom = bottomAnchor;
         }
 
         private void OnDisable()
         {
+            if (cameraController != null) cameraController.HeightLockChanged -= OnCameraHeightLockChanged;
             HidePhoto();
             if (interactionAvailability != null) interactionAvailability.Changed -= OnAvailableActionsChanged;
             if (devicePrompts != null)

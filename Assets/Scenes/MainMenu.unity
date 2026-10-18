@@ -325,8 +325,12 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.MainMenuController
   document: {fileID: 528639516}
+  uiInputModule: {fileID: 1957430536}
   gameplaySceneName: LoopScene
-  creditsText: "PLEASE PRESS CONTINUE\n\nDesigner&Programmer - Federico Bachis\nArtist - Roberta Piroddi\nPixel Artist - Andrea Serra\nSound&Music - Giuliano Cau\n\nGrazie per la visita."
+  designerProgrammerName: Federico Bachis
+  artistName: Roberta Piredda
+  pixelArtistName: Andrea Serra
+  soundMusicName: Giuliano Cau
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

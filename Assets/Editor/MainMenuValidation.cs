@@ -29,7 +29,7 @@ namespace GameJamPlus.Editor
                 InputSystemUIInputModule input = UnityEngine.Object.FindFirstObjectByType<InputSystemUIInputModule>();
                 Require(input != null && input.move.action != null && input.submit.action != null && input.cancel.action != null, "UI input actions");
                 TemplateContainer tree = document.visualTreeAsset.CloneTree();
-                foreach (string name in new[] { "new-game", "options", "credits", "quit", "options-back", "credits-back", "quit-back", "quit-confirm" })
+                foreach (string name in new[] { "new-game", "options", "credits", "quit", "options-back", "quit-back", "quit-confirm" })
                     Require(tree.Q<Button>(name) != null, "Button " + name);
 
                 InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -76,7 +76,7 @@ namespace GameJamPlus.Editor
                         Press(GamepadButton.East);
                         break;
                     case 5:
-                        Require(root.Q("modal").ClassListContains("hidden"), "Gamepad cancel closes modal");
+                        Require(!root.Q("options-panel").ClassListContains("hidden"), "Options preview remains visible after cancel");
                         Require(root.focusController.focusedElement == root.Q<Button>("options"), "Restore focus");
                         Release();
                         break;

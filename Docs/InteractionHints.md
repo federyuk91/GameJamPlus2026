@@ -41,3 +41,24 @@ Il suggerimento per le casse riusa la portata e le verifiche di PlayerCrateInter
 Le comunicazioni ora usano F al posto di Invio sulla tastiera, mantenendo il pulsante nord sul gamepad. Anche Next delle foto e dei risultati usa F. Durante una comunicazione, la pressione viene consumata dalla UI e non raccoglie contemporaneamente oggetti o avvia morso/scavo; serve rilasciare F prima di una nuova interazione.
 
 Aggiornamento gamepad: anche le comunicazioni, le foto e i risultati usano ora il pulsante ovest, equivalente al comando dei collezionabili: X su Xbox, Square su PlayStation e Y su Switch. Le icone sono aggiornate. La pressione della UI viene consumata anche sul gamepad, impedendo la raccolta contemporanea.
+
+## Comunicazioni SYSTEM e selezione condivisa
+
+I suggerimenti contestuali ora si leggono nel terminale del testo sotto la dicitura SYSTEM, con le icone dei tasti esistenti. Restano attivi finché l'azione è disponibile, senza timeout e senza comando Close; si aggiornano al cambio dispositivo. L'avatar è in un terminale separato e resta vuoto durante i suggerimenti del sistema. Una comunicazione dello scienziato ha precedenza e mantiene array, macchina da scrivere, timeout e Reveal/Next/Close. I suggerimenti tornano alla fine se l'interagibile è ancora vicino.
+
+`GameplayInteractionAvailability.Current` espone le azioni selezionate per i tasti effettivi, non tutte le azioni concorrenti. La selezione viene applicata anche a PlayerInputReader e ai componenti che eseguono le azioni:
+
+- Tastiera: F raccoglie il bersaglio selezionato; quando c'è un raccoglibile, il taglio/scavo sullo stesso F è escluso. E per spostare una cassa resta indipendente.
+- Controller: il pulsante ovest raccoglie o preme un pulsante. Il pulsante est, tenuto insieme alla direzione, spinge/tira le casse. Una cassa raggiungibile ha precedenza su taglio/scavo, che condividono il pulsante est. La presa della corda resta sul pulsante ovest.
+- Taglio ha precedenza sullo scavo sul loro tasto condiviso.
+- Fra più raccoglibili viene scelto quello più vicino. Alla pressione viene validato e raccolto lo stesso `InteractionTarget` selezionato per il suggerimento, senza cercare un nuovo oggetto nel mezzo della pressione. Se non è più raggiungibile non viene sostituito con un altro a sorpresa.
+
+Il cambio dispositivo rilevato dal gestore dei prompt viene comunicato alla selezione. Senza GameplayInteractionAvailability attivo, PlayerInputReader conserva l'abilitazione di tutte le azioni per compatibilità con altre scene.
+
+Nessun test automatico o Play Mode eseguito. Provare manualmente sovrapposizioni formaggio/foto, raccoglibile/corda con F, raccoglibile/cassa col controller, tasti diversi simultanei, cambio dispositivo e ritorno dei suggerimenti dopo lo scienziato.
+
+### Precedenza senza buffer
+
+Le comunicazioni prenotano il terminale appena richieste, prima dell'avvio della coroutine e dell'animazione. Fino alla fine della chiusura CRT, gli aggiornamenti di disponibilità scartano e svuotano i suggerimenti SYSTEM senza costruire righe nascoste né accodare tooltip. Alla conclusione vengono ricalcolate sovrapposizioni e azioni correnti, senza raccogliere automaticamente oggetti durante la lettura: appare soltanto un suggerimento ancora valido in quel momento. Un controllo aggiuntivo tutela il caso in cui il ricalcolo invochi callback che avviano una nuova comunicazione.
+
+Da verificare manualmente: comunicazione e prossimità nello stesso frame; uscire dall'area durante il dialogo; restare vicino e attendere la fine; arrivare a un secondo interagibile prima della fine. Nessun test o Play Mode eseguito.

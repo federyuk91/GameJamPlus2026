@@ -9,17 +9,22 @@ namespace MousePlatformer
     {
         [SerializeField] private PixelPerfectCamera pixelPerfectCamera;
         [SerializeField, Min(0)] private int verticalBorderPixels = 20;
+        [SerializeField, Min(-1)] private int bottomBorderPixels = -1;
 
         private Vector2Int lastScreenSize;
         private PixelPerfectCamera.CropFrame originalCropFrame;
+        private Vector2Int originalReferenceResolution;
+        private int zoomLevel;
         private Rect visibleGameRect;
 
         public event Action ViewportChanged;
         public Rect FrameRect { get; private set; }
         public float DisplayScale { get; private set; }
-        public Vector2Int ReferenceResolution => new Vector2Int(
-            pixelPerfectCamera.refResolutionX, pixelPerfectCamera.refResolutionY);
+        public Vector2Int ReferenceResolution => originalReferenceResolution.x > 0 ? originalReferenceResolution
+            : new Vector2Int(pixelPerfectCamera.refResolutionX, pixelPerfectCamera.refResolutionY);
+        public int ZoomLevel => zoomLevel;
         public int VerticalBorderPixels => verticalBorderPixels;
+        public int BottomBorderPixels => bottomBorderPixels < 0 ? verticalBorderPixels : bottomBorderPixels;
 
         private void OnEnable()
         {
@@ -27,7 +32,25 @@ namespace MousePlatformer
                 pixelPerfectCamera = GetComponent<PixelPerfectCamera>();
 
             originalCropFrame = pixelPerfectCamera.cropFrame;
+            originalReferenceResolution = new Vector2Int(pixelPerfectCamera.refResolutionX, pixelPerfectCamera.refResolutionY);
+            zoomLevel = 0;
             ApplyViewport();
+        }
+
+        public void StepZoom(int direction)
+        {
+            if (!Application.isPlaying || !isActiveAndEnabled || direction == 0) return;
+            int nextLevel = Mathf.Clamp(zoomLevel + (direction > 0 ? 1 : -1), -1, 1);
+            if (nextLevel < 0 && NormalPixelScale() <= 1) nextLevel = 0;
+            if (nextLevel == zoomLevel) return;
+            zoomLevel = nextLevel;
+            ApplyViewport();
+        }
+
+        private int NormalPixelScale()
+        {
+            Vector2Int reference = ReferenceResolution;
+            return Mathf.Max(1, Mathf.Min(Screen.width / reference.x, Screen.height / reference.y));
         }
 
         private void LateUpdate()
@@ -40,30 +63,45 @@ namespace MousePlatformer
         private void ApplyViewport()
         {
             lastScreenSize = new Vector2Int(Screen.width, Screen.height);
-            bool belowReference = Screen.width < pixelPerfectCamera.refResolutionX
-                || Screen.height < pixelPerfectCamera.refResolutionY;
+            Vector2Int reference = ReferenceResolution;
+            bool belowReference = Screen.width < reference.x || Screen.height < reference.y;
+            if (zoomLevel < 0 && NormalPixelScale() <= 1) zoomLevel = 0;
 
             // Below 1x, preserve the full game frame rather than cropping it; some detail is inevitably lost.
-            pixelPerfectCamera.cropFrame = belowReference
-                ? PixelPerfectCamera.CropFrame.StretchFill
-                : PixelPerfectCamera.CropFrame.Windowbox;
+            if (zoomLevel == 0)
+            {
+                pixelPerfectCamera.refResolutionX = reference.x;
+                pixelPerfectCamera.refResolutionY = reference.y;
+                pixelPerfectCamera.cropFrame = belowReference
+                    ? PixelPerfectCamera.CropFrame.StretchFill : PixelPerfectCamera.CropFrame.Windowbox;
+            }
+            else
+            {
+                int pixelScale = Mathf.Max(1, NormalPixelScale() + zoomLevel);
+                // Integer scale, full-screen rendering; the existing masks keep the HUD frame fixed.
+                pixelPerfectCamera.refResolutionX = Mathf.Max(1, Screen.width / pixelScale);
+                pixelPerfectCamera.refResolutionY = Mathf.Max(1, Screen.height / pixelScale);
+                pixelPerfectCamera.cropFrame = PixelPerfectCamera.CropFrame.None;
+            }
 
-            float scale = Mathf.Min((float)Screen.width / pixelPerfectCamera.refResolutionX,
-                (float)Screen.height / pixelPerfectCamera.refResolutionY);
+            float scale = Mathf.Min((float)Screen.width / reference.x,
+                (float)Screen.height / reference.y);
             if (!belowReference)
                 scale = Mathf.Floor(scale);
 
-            float frameWidth = pixelPerfectCamera.refResolutionX * scale;
-            float frameHeight = pixelPerfectCamera.refResolutionY * scale;
+            float frameWidth = reference.x * scale;
+            float frameHeight = reference.y * scale;
             DisplayScale = scale;
             FrameRect = new Rect(Mathf.Floor((Screen.width - frameWidth) * 0.5f),
                 Mathf.Floor((Screen.height - frameHeight) * 0.5f), frameWidth, frameHeight);
-            float borderHeight = Mathf.Clamp(verticalBorderPixels, 0,
-                pixelPerfectCamera.refResolutionY / 2) * scale;
+            float topBorderHeight = Mathf.Clamp(verticalBorderPixels, 0,
+                reference.y / 2) * scale;
+            float bottomBorderHeight = Mathf.Clamp(BottomBorderPixels * scale, 0f,
+                frameHeight - topBorderHeight);
             visibleGameRect = new Rect(
                 Mathf.Floor((Screen.width - frameWidth) * 0.5f),
-                Mathf.Floor((Screen.height - frameHeight) * 0.5f) + borderHeight,
-                frameWidth, frameHeight - 2f * borderHeight);
+                Mathf.Floor((Screen.height - frameHeight) * 0.5f) + topBorderHeight,
+                frameWidth, frameHeight - topBorderHeight - bottomBorderHeight);
             ViewportChanged?.Invoke();
         }
 
@@ -95,7 +133,14 @@ namespace MousePlatformer
         private void OnDisable()
         {
             if (pixelPerfectCamera != null)
+            {
                 pixelPerfectCamera.cropFrame = originalCropFrame;
+                if (originalReferenceResolution.x > 0)
+                {
+                    pixelPerfectCamera.refResolutionX = originalReferenceResolution.x;
+                    pixelPerfectCamera.refResolutionY = originalReferenceResolution.y;
+                }
+            }
         }
     }
 }

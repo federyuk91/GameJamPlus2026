@@ -8,18 +8,21 @@ namespace GameJamPlus.UI
 {
     public sealed class ScientistCommentView : IDisposable
     {
-        private const float ScreenWidth = 300f;
-        private const float ScreenHeight = 60f;
         private const float ScreenInset = 10f;
-        private float bottomInset;
+        private float displayWidth = 160f;
+        private float displayHeight = 46f;
         private const float CharactersPerSecond = 30f;
         private readonly VisualElement screen;
+        private readonly VisualElement avatarScreen;
+        private readonly VisualElement displayViewport;
+        private readonly VisualElement display;
+        private readonly VisualElement signal;
         private readonly VisualElement content;
         private readonly VisualElement powerGlow;
-        private readonly VisualElement portraitFrame;
         private readonly Image avatar;
         private readonly Label message;
-        private readonly Label progress;
+        private readonly Label speaker;
+        private readonly VisualElement hints;
         private readonly ScrollView transcript;
         private readonly Button advanceButton;
         private readonly VisualElement advanceIcon;
@@ -32,6 +35,8 @@ namespace GameJamPlus.UI
         private bool followTyping;
         private string advanceKey = "F";
         private bool hasFollowingMessage;
+        private bool communicationVisible;
+        private bool systemVisible;
 
         public void SetAdvanceKey(string key, Sprite sprite = null)
         {
@@ -49,27 +54,29 @@ namespace GameJamPlus.UI
             advanceAction.text = advanceSprite != null ? action : advanceKey + " " + action;
         }
 
-        public bool IsOpen => canAdvance;
-        public bool IsVisible => screen.style.display.value != DisplayStyle.None;
+        public bool IsOpen => canAdvance || systemVisible;
+        public bool IsVisible => communicationVisible;
 
         public void SetBottomInset(float inset)
         {
-            bottomInset = inset;
-            if (screen.style.display.value != DisplayStyle.None)
-                SetScreenSize(screen.style.width.value.value, screen.style.height.value.value);
+            screen.style.bottom = inset;
+            avatarScreen.style.bottom = inset;
         }
 
         public ScientistCommentView(VisualElement root, int lowerBorderPixels = 20)
         {
-            bottomInset = ScreenInset - lowerBorderPixels;
             screen = root.Q("scientist-screen");
+            avatarScreen = root.Q("scientist-avatar-screen");
+            displayViewport = root.Q("scientist-display-viewport");
+            display = root.Q("scientist-display");
+            signal = root.Q("scientist-signal");
             content = root.Q("scientist-content");
             powerGlow = root.Q("scientist-power-glow");
-            portraitFrame = root.Q("scientist-portrait-frame");
             avatar = root.Q<Image>("scientist-avatar");
             avatar.scaleMode = ScaleMode.ScaleToFit;
             message = root.Q<Label>("scientist-text");
-            progress = root.Q<Label>("scientist-progress");
+            speaker = root.Q<Label>("communication-speaker");
+            hints = root.Q("interaction-hints");
             transcript = root.Q<ScrollView>("scientist-transcript");
             transcript.pickingMode = PickingMode.Position;
             transcript.contentViewport.pickingMode = PickingMode.Position;
@@ -87,7 +94,44 @@ namespace GameJamPlus.UI
             advanceButton.pickingMode = PickingMode.Position;
             advanceButton.focusable = false;
             advanceButton.clicked += Advance;
+            displayViewport.RegisterCallback<GeometryChangedEvent>(OnDisplayGeometryChanged);
+            SetBottomInset(ScreenInset - lowerBorderPixels);
             Hide();
+        }
+
+        private void OnDisplayGeometryChanged(GeometryChangedEvent geometryEvent)
+        {
+            if (geometryEvent.newRect.width <= 0f || geometryEvent.newRect.height <= 0f) return;
+            displayWidth = Mathf.Round(geometryEvent.newRect.width);
+            displayHeight = Mathf.Round(geometryEvent.newRect.height);
+            content.style.width = displayWidth;
+            content.style.height = displayHeight;
+            if (systemVisible || canAdvance) SetDisplaySize(displayWidth, displayHeight);
+        }
+
+        public void ShowSystemHints(bool visible)
+        {
+            if (communicationVisible) return;
+            if (!visible)
+            {
+                if (systemVisible) Hide();
+                return;
+            }
+            if (!systemVisible) transcript.scrollOffset = Vector2.zero;
+            systemVisible = true;
+            speaker.text = "SYSTEM";
+            speaker.style.display = DisplayStyle.Flex;
+            message.style.display = DisplayStyle.None;
+            hints.style.display = DisplayStyle.Flex;
+            content.RemoveFromClassList("scientist-dialogue");
+            advanceButton.style.display = DisplayStyle.None;
+            avatar.sprite = null;
+            avatar.style.opacity = 0f;
+            signal.AddToClassList("signal-active");
+            display.style.display = DisplayStyle.Flex;
+            content.style.opacity = 1f;
+            powerGlow.style.opacity = 0f;
+            SetDisplaySize(displayWidth, displayHeight);
         }
 
         public void Advance()
@@ -99,7 +143,7 @@ namespace GameJamPlus.UI
 
         public void ScrollText(float offset)
         {
-            if (!canAdvance || Mathf.Abs(offset) < 0.001f) return;
+            if (!IsOpen || Mathf.Abs(offset) < 0.001f) return;
             followTyping = false;
             transcript.scrollOffset = new Vector2(0f, Mathf.Clamp(transcript.scrollOffset.y + offset,
                 0f, Mathf.Max(0f, transcript.verticalScroller.highValue)));
@@ -107,25 +151,40 @@ namespace GameJamPlus.UI
 
         private void OnManualScroll(WheelEvent wheelEvent)
         {
-            if (canAdvance) followTyping = false;
+            if (IsOpen) followTyping = false;
         }
 
         public IEnumerator Show(string[] texts, Sprite portrait, float timeout, bool waitForAdvance = false)
         {
+            if (texts == null || texts.Length == 0)
+            {
+                Hide();
+                yield break;
+            }
+
+            communicationVisible = true;
+            systemVisible = false;
+            hints.Clear();
+            speaker.style.display = DisplayStyle.None;
+            message.style.display = DisplayStyle.Flex;
+            hints.style.display = DisplayStyle.None;
+            content.AddToClassList("scientist-dialogue");
+            advanceButton.style.display = DisplayStyle.Flex;
+            signal.AddToClassList("signal-active");
             avatar.sprite = portrait;
             // Keep the monitor frame visible even before an actual scientist portrait is supplied.
             avatar.style.display = portrait != null ? DisplayStyle.Flex : DisplayStyle.None;
-            portraitFrame.EnableInClassList("portrait-missing", portrait == null);
+            avatar.style.opacity = 0f;
             message.text = string.Empty;
-            progress.text = string.Empty;
             content.style.opacity = 0f;
-            SetScreenSize(2f, 2f);
+            display.style.display = DisplayStyle.Flex;
+            SetDisplaySize(2f, 2f);
             powerGlow.style.opacity = 1f;
             screen.style.display = DisplayStyle.Flex;
             advanceButton.SetEnabled(false);
 
-            yield return AnimateSize(2f, ScreenWidth, 2f, 2f, 0.12f);
-            yield return AnimateSize(ScreenWidth, ScreenWidth, 2f, ScreenHeight, 0.18f);
+            yield return AnimateSize(2f, displayWidth, 2f, 2f, 0.12f);
+            yield return AnimateSize(displayWidth, displayWidth, 2f, displayHeight, 0.18f);
             yield return AnimatePowerGlow(1f, 0f, 0.14f, true);
             advanceButton.SetEnabled(true);
 
@@ -135,7 +194,6 @@ namespace GameJamPlus.UI
                 string text = texts[page];
                 int[] characterStarts = StringInfo.ParseCombiningCharacters(text);
                 int revealedCharacters = 0;
-                int displayedCountdown = -1;
                 float elapsed = 0f;
                 typing = true;
                 canAdvance = true;
@@ -162,12 +220,6 @@ namespace GameJamPlus.UI
                     typing = revealedCharacters < characterStarts.Length;
                     RefreshAdvanceLabel();
 
-                    int remainingSeconds = Mathf.Max(0, Mathf.CeilToInt(pageTimeout - elapsed));
-                    if (remainingSeconds != displayedCountdown)
-                    {
-                        displayedCountdown = remainingSeconds;
-                        progress.text = waitForAdvance ? string.Empty : $"{page + 1}/{texts.Length} · {remainingSeconds}s";
-                    }
                     if (followTyping)
                         transcript.scrollOffset = new Vector2(0f, Mathf.Max(0f, transcript.verticalScroller.highValue));
                     yield return null;
@@ -178,9 +230,10 @@ namespace GameJamPlus.UI
             advanceButton.SetEnabled(false);
             content.style.opacity = 0f;
             powerGlow.style.opacity = 0.85f;
-            yield return AnimateSize(ScreenWidth, ScreenWidth, ScreenHeight, 2f, 0.16f);
+            avatar.style.opacity = 0f;
+            yield return AnimateSize(displayWidth, displayWidth, displayHeight, 2f, 0.16f);
             powerGlow.style.opacity = 1f;
-            yield return AnimateSize(ScreenWidth, 2f, 2f, 2f, 0.12f);
+            yield return AnimateSize(displayWidth, 2f, 2f, 2f, 0.12f);
             yield return AnimatePowerGlow(1f, 0f, 0.1f, false);
             Hide();
         }
@@ -189,7 +242,17 @@ namespace GameJamPlus.UI
         {
             canAdvance = false;
             typing = false;
-            screen.style.display = DisplayStyle.None;
+            communicationVisible = false;
+            systemVisible = false;
+            signal.RemoveFromClassList("signal-active");
+            screen.style.display = DisplayStyle.Flex;
+            display.style.display = DisplayStyle.None;
+            message.text = string.Empty;
+            avatar.sprite = null;
+            hints.Clear();
+            hints.style.display = DisplayStyle.None;
+            avatar.style.opacity = 0f;
+            advanceButton.SetEnabled(false);
             content.style.opacity = 0f;
             powerGlow.style.opacity = 0f;
         }
@@ -198,6 +261,7 @@ namespace GameJamPlus.UI
         {
             advanceButton.clicked -= Advance;
             transcript.UnregisterCallback<WheelEvent>(OnManualScroll, TrickleDown.TrickleDown);
+            displayViewport.UnregisterCallback<GeometryChangedEvent>(OnDisplayGeometryChanged);
             Hide();
         }
 
@@ -208,22 +272,28 @@ namespace GameJamPlus.UI
             {
                 elapsed += Time.unscaledDeltaTime;
                 float progressValue = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
-                SetScreenSize(Mathf.Lerp(fromWidth, toWidth, progressValue),
+                SetDisplaySize(Mathf.Lerp(fromWidth, toWidth, progressValue),
                     Mathf.Lerp(fromHeight, toHeight, progressValue));
                 yield return null;
             }
-            SetScreenSize(toWidth, toHeight);
+            SetDisplaySize(toWidth, toHeight);
         }
 
-        private void SetScreenSize(float width, float height)
+        private void SetDisplaySize(float width, float height)
         {
             width = Mathf.Round(width);
             height = Mathf.Round(height);
-            screen.style.width = width;
-            screen.style.height = height;
-            // A CRT collapses around its centre, while the final panel remains anchored at the bottom right.
-            screen.style.right = ScreenInset + Mathf.Floor((ScreenWidth - width) * 0.5f);
-            screen.style.bottom = bottomInset + Mathf.Floor((ScreenHeight - height) * 0.5f);
+            float left = Mathf.Floor((displayWidth - width) * 0.5f);
+            float top = Mathf.Floor((displayHeight - height) * 0.5f);
+            content.style.width = displayWidth;
+            content.style.height = displayHeight;
+            display.style.width = width;
+            display.style.height = height;
+            display.style.left = left;
+            display.style.top = top;
+            // Reveal the fixed-size content through a centred CRT aperture without reflowing the text.
+            content.style.left = -left;
+            content.style.top = -top;
         }
 
         private IEnumerator AnimatePowerGlow(float from, float to, float duration, bool revealContent)
@@ -234,11 +304,19 @@ namespace GameJamPlus.UI
                 elapsed += Time.unscaledDeltaTime;
                 float progressValue = Mathf.Clamp01(elapsed / duration);
                 powerGlow.style.opacity = Mathf.Lerp(from, to, progressValue);
-                if (revealContent) content.style.opacity = progressValue;
+                if (revealContent)
+                {
+                    content.style.opacity = progressValue;
+                    avatar.style.opacity = progressValue;
+                }
                 yield return null;
             }
             powerGlow.style.opacity = to;
-            if (revealContent) content.style.opacity = 1f;
+            if (revealContent)
+            {
+                content.style.opacity = 1f;
+                avatar.style.opacity = 1f;
+            }
         }
     }
 }

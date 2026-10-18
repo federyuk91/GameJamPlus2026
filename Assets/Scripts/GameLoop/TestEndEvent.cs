@@ -34,5 +34,17 @@ namespace GameJamPlus.Gameplay
         {
             return DialogueMessagePlayer.ChooseRandomMessage(resultMessages);
         }
+
+        public bool BeginAnimatedEnd()
+        {
+            GameManager manager = gameManager != null ? gameManager : GameManager.Instance;
+            return manager != null && manager.BeginTestAnimation(this);
+        }
+
+        public void CompleteAnimatedEnd()
+        {
+            GameManager manager = gameManager != null ? gameManager : GameManager.Instance;
+            if (manager != null) manager.CompleteTestAnimation(this);
+        }
     }
 }

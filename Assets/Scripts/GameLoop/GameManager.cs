@@ -15,7 +15,8 @@ namespace GameJamPlus.Gameplay
             Flash,
             ScientistComment,
             Results,
-            Loading
+            Loading,
+            DeathAnimation
         }
 
         [SerializeField] private GameplayHudController hud;
@@ -36,6 +37,9 @@ namespace GameJamPlus.Gameplay
         private string completedResult;
         private float previousTimeScale;
         private bool ownsPause;
+        private TestEndEvent animatedOutcome;
+        private string pendingComment;
+        private Sprite pendingAvatar;
 
         public static GameManager Instance { get; private set; }
         public LoopState State { get; private set; } = LoopState.Playing;
@@ -111,8 +115,23 @@ namespace GameJamPlus.Gameplay
 
         public void EndTest(TestEndEvent outcome)
         {
-            if (!isActiveAndEnabled || State != LoopState.Playing || outcome == null) return;
+            PrepareTestEnding(outcome, false);
+        }
+
+        public bool BeginTestAnimation(TestEndEvent outcome) => PrepareTestEnding(outcome, true);
+
+        public void CompleteTestAnimation(TestEndEvent outcome)
+        {
+            if (!isActiveAndEnabled || State != LoopState.DeathAnimation || animatedOutcome != outcome) return;
+            animatedOutcome = null;
             State = LoopState.Flash;
+            StartCoroutine(EndSequence(pendingComment, pendingAvatar));
+        }
+
+        private bool PrepareTestEnding(TestEndEvent outcome, bool waitForAnimation)
+        {
+            if (!isActiveAndEnabled || State != LoopState.Playing || outcome == null) return false;
+            State = waitForAnimation ? LoopState.DeathAnimation : LoopState.Flash;
             hud.HidePhoto();
             completedTime = hud.ElapsedSeconds;
             completedResult = outcome.ChooseResult();
@@ -125,7 +144,11 @@ namespace GameJamPlus.Gameplay
             DialogueMessagePlayer dialogue = outcome.ScientistComment;
             string comment = dialogue != null ? dialogue.ChooseMessage() : string.Empty;
             Sprite avatar = dialogue != null ? dialogue.Avatar : null;
-            StartCoroutine(EndSequence(string.IsNullOrWhiteSpace(comment) ? fallbackComment : comment, avatar));
+            pendingComment = string.IsNullOrWhiteSpace(comment) ? fallbackComment : comment;
+            pendingAvatar = avatar;
+            if (waitForAnimation) animatedOutcome = outcome;
+            else StartCoroutine(EndSequence(pendingComment, pendingAvatar));
+            return true;
         }
 
         private IEnumerator EndSequence(string comment, Sprite avatar)

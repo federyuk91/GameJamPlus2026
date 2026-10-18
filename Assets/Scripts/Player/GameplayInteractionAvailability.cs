@@ -4,7 +4,12 @@ using UnityEngine;
 namespace MousePlatformer
 {
     [Flags]
-    public enum AvailableGameplayActions { None = 0, EatCheese = 1, EatGreenCheese = 2, CutRope = 4, Dig = 8, CollectPhoto = 16, MoveCrate = 32 }
+    public enum AvailableGameplayActions
+    {
+        None = 0, EatCheese = 1, EatGreenCheese = 2, CutRope = 4, Dig = 8, CollectPhoto = 16, MoveCrate = 32,
+        PressButton = 64,
+        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton
+    }
 
     [DefaultExecutionOrder(130), DisallowMultipleComponent]
     public sealed class GameplayInteractionAvailability : MonoBehaviour
@@ -15,11 +20,33 @@ namespace MousePlatformer
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerMovement movement;
         [SerializeField] private PlayerCrateInteraction crates;
+        [SerializeField] private PlayerButtonInteraction buttons;
 
         public AvailableGameplayActions Current { get; private set; }
         public event Action<AvailableGameplayActions> Changed;
+        private bool usingGamepad;
+
+        public AvailableGameplayActions RefreshCurrent()
+        {
+            if (!isActiveAndEnabled) return AvailableGameplayActions.None;
+            if (collector != null && collector.isActiveAndEnabled) collector.RefreshInteractionTarget();
+            if (buttons != null && buttons.isActiveAndEnabled) buttons.RefreshInteractionTarget();
+            Refresh();
+            return Current;
+        }
+
+        public void SetUsingGamepad(bool value)
+        {
+            usingGamepad = value;
+            Refresh();
+        }
 
         private void FixedUpdate()
+        {
+            Refresh();
+        }
+
+        private void Refresh()
         {
             AvailableGameplayActions available = AvailableGameplayActions.None;
             if (input != null && input.isActiveAndEnabled)
@@ -49,6 +76,23 @@ namespace MousePlatformer
                 else if (ropeBite != null && ropeBite.CanStartDiggingWithSharedInput && digging != null && digging.CanStartDigging)
                     available |= AvailableGameplayActions.Dig;
             }
+            AvailableGameplayActions collection = available & (AvailableGameplayActions.EatCheese
+                | AvailableGameplayActions.EatGreenCheese | AvailableGameplayActions.CollectPhoto);
+            if (buttons != null && buttons.isActiveAndEnabled && buttons.InteractionTarget != null
+                && buttons.InteractionTarget.CanPress
+                && (collection == AvailableGameplayActions.None || buttons.TargetDistanceSquared < collector.TargetDistanceSquared))
+            {
+                available &= ~collection;
+                available |= AvailableGameplayActions.PressButton;
+                collection = AvailableGameplayActions.PressButton;
+            }
+            // The nearest collectible/button wins its physical input; other controls remain available.
+            if (!usingGamepad && collection != AvailableGameplayActions.None)
+                available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
+            // Crate movement and cutting/digging share East on the gamepad.
+            if (usingGamepad && (available & AvailableGameplayActions.MoveCrate) != 0)
+                available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
+            input?.SetSelectedInteractions(available, usingGamepad);
             SetAvailable(available);
         }
 
@@ -59,6 +103,10 @@ namespace MousePlatformer
             Changed?.Invoke(Current);
         }
 
-        private void OnDisable() => SetAvailable(AvailableGameplayActions.None);
+        private void OnDisable()
+        {
+            input?.SetSelectedInteractions(AvailableGameplayActions.All);
+            SetAvailable(AvailableGameplayActions.None);
+        }
     }
 }

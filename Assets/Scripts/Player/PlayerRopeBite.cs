@@ -42,7 +42,7 @@ namespace MousePlatformer
 
         private void FixedUpdate()
         {
-            if (!input.BiteHeld)
+            if (!input.RawBiteHeld)
             {
                 consumedHold = false;
                 biteChosen = false;
@@ -53,10 +53,19 @@ namespace MousePlatformer
                 return;
             }
             if (consumedHold) return;
+            if (!input.BiteHeld)
+            {
+                if (digging != null) digging.ReleaseInput();
+                ResetTarget();
+                return;
+            }
             // Always evaluate reachable ropes before digging can consume the shared input.
             Physics2D.SyncTransforms();
             blockingCollider = null;
-            TryFindCutTarget(out RopeSimulation nearest, out int segment, true);
+            RopeSimulation nearest = null;
+            int segment = -1;
+            if (input.IsInteractionSelected(AvailableGameplayActions.CutRope))
+                TryFindCutTarget(out nearest, out segment, true);
             if (nearest == null || !nearest.CanBeCut)
             {
                 ResetTarget();
@@ -65,7 +74,8 @@ namespace MousePlatformer
                     lastAttempt = "Scavo attivo: nessuna corda raggiungibile";
                     return;
                 }
-                if (!biteChosen && digging != null && digging.TryClaimInput())
+                if (!biteChosen && input.IsInteractionSelected(AvailableGameplayActions.Dig)
+                    && digging != null && digging.TryClaimInput())
                     lastAttempt = "Scavo avviato";
                 else lastAttempt = blockingCollider != null ? "Corda coperta da un collider" : "Nessuna corda tagliabile davanti alla bocca";
                 return;

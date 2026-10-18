@@ -392,6 +392,91 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1001 &56116824
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2000, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_Name
+      value: Interactable Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 10.763708
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 882832111}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Activate
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameJamPlus.Gameplay.ElectricTrap, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 037905aa64774ebc8677862e10f363f4, type: 3}
 --- !u!1001 &67437439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1549,6 +1634,7 @@ GameObject:
   - component: {fileID: 519420033}
   - component: {fileID: 519420034}
   - component: {fileID: 519420035}
+  - component: {fileID: 519420036}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1712,6 +1798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1138048426}
   movement: {fileID: 1138048432}
+  input: {fileID: 1138048430}
   offset: {x: 0, y: 0.75}
   deadZone: {x: 0.75, y: 0.5}
   horizontalSmoothTime: 0.12
@@ -1719,6 +1806,8 @@ MonoBehaviour:
   fallingSmoothTime: 0.08
   lookAheadDistance: 1.25
   fallingLookAhead: 1
+  verticalLookFraction: 0.25
+  verticalLookSmoothTime: 0.2
   pixelsPerUnit: 32
 --- !u!114 &519420035
 MonoBehaviour:
@@ -1734,6 +1823,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PixelPerfectViewport
   pixelPerfectCamera: {fileID: 519420033}
   verticalBorderPixels: 20
+  bottomBorderPixels: 80
+--- !u!114 &519420036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65a1bf8e1ad14d2aa01541c8e1b284bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PixelPerfectZoom
+  viewport: {fileID: 519420035}
 --- !u!1 &612875503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3013,6 +3116,94 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1001 &882832107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1000, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_Name
+      value: Electric Trap
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.185218
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5462859
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1001, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1002, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_Size.x
+      value: 5.1762295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1002, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_Size.y
+      value: 3.7011595
+      objectReference: {fileID: 0}
+    - target: {fileID: 1002, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_Offset.x
+      value: 1.106822
+      objectReference: {fileID: 0}
+    - target: {fileID: 1002, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: m_Offset.y
+      value: -7.107984
+      objectReference: {fileID: 0}
+    - target: {fileID: 1003, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+      propertyPath: automaticActivation
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+--- !u!114 &882832111 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1003, guid: f1f0fb33be4042cca008be7f1f1783e4, type: 3}
+  m_PrefabInstance: {fileID: 882832107}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72c0bc4204144b1a7a866c2175875, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.ElectricTrap
 --- !u!1 &908467989
 GameObject:
   m_ObjectHideFlags: 0
@@ -5367,6 +5558,10 @@ GameObject:
   - component: {fileID: 2100004201}
   - component: {fileID: 2100004202}
   - component: {fileID: 2100004203}
+  - component: {fileID: 2100007300}
+  - component: {fileID: 2100007301}
+  - component: {fileID: 2100007302}
+  - component: {fileID: 2100007303}
   m_Layer: 0
   m_Name: Piranha
   m_TagString: Untagged
@@ -50008,10 +50203,10 @@ MonoBehaviour:
   arrivalDistance: 0.02
   initialDirection: {x: -1, y: 0}
   waypoints:
-  - {x: -0.1498642, y: -0.49480355}
-  - {x: -1.5957966, y: 0.6889634}
-  - {x: -0.41311646, y: 1.7101846}
-  - {x: 1.006156, y: 1.2333212}
+  - {x: -1.7459478, y: 0.057685852}
+  - {x: -1.8720407, y: 1.6404748}
+  - {x: 0.26215076, y: 0.82006025}
+  - {x: 2.0804443, y: -0.23998833}
 --- !u!114 &2000000111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56066,6 +56261,7 @@ MonoBehaviour:
   digging: {fileID: 2000000100}
   movement: {fileID: 1138048432}
   crates: {fileID: 1138048434}
+  buttons: {fileID: 2100006600}
 --- !u!1001 &2100004000
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -56276,6 +56472,85 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c714825da97fe6e43acf6ea850bc030d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2100006600 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5709383898159029700, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+  m_PrefabInstance: {fileID: 7666400714346116476}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 450f06cc2b6c1394ea5fed3bd72983b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerButtonInteraction
+--- !u!114 &2100007300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444577698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864983febbba456b9b70debd98dafad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PiranhaDeath
+  visual: {fileID: 1444577699}
+  patrol: {fileID: 2000000110}
+  chase: {fileID: 2000000111}
+  lethalContact: {fileID: 2100004201}
+  body: {fileID: 2100007301}
+  floatingMotion: {fileID: 2100007302}
+  passengerDownwardAcceleration: 180
+--- !u!114 &2100007301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444577698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb2f84b02814dd79f0cc1d0590d8725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.SimulatedBody2D
+  solidLayers:
+    serializedVersion: 2
+    m_Bits: 65
+  skin: 0.005
+--- !u!114 &2100007302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444577698}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8306221604146f39dc3f7e31e3d2789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.CrateMotion
+  body: {fileID: 2100007301}
+  physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
+  buoyancy: {fileID: 2100007303}
+  tether: {fileID: 0}
+  pushable: {fileID: 0}
+  initialVelocity: {x: 0, y: 0}
+  airDrag: 0.35
+--- !u!114 &2100007303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444577698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9156c6c6762c7e14598f184690f3b4e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.CrateBuoyancy
+  buoyancyAcceleration: 100
+  waterDrag: 5
 --- !u!1 &2110005000
 GameObject:
   m_ObjectHideFlags: 0
@@ -57315,3 +57590,5 @@ SceneRoots:
   - {fileID: 822583048}
   - {fileID: 151365278}
   - {fileID: 686145618}
+  - {fileID: 56116824}
+  - {fileID: 882832107}

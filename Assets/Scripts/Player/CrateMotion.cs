@@ -19,6 +19,7 @@ namespace MousePlatformer
         public float SubmergedFraction { get; private set; }
         public bool InWater => SubmergedFraction > 0f;
         public float Weight => pushable != null ? pushable.Weight : 1f;
+        public float PassengerDownwardAcceleration { get; set; }
 
         private void Awake()
         {
@@ -42,6 +43,8 @@ namespace MousePlatformer
                     velocity = buoyancy.Integrate(velocity, Gravity.crateGravity, SubmergedFraction, dt);
                 else
                     velocity.y -= Gravity.crateGravity * dt;
+                if (passenger != null && passenger.isActiveAndEnabled)
+                    velocity.y -= Mathf.Max(0f, PassengerDownwardAcceleration) * dt;
                 velocity.x *= Mathf.Exp(-airDrag * (1f - SubmergedFraction) * dt);
                 velocity.y = Mathf.Clamp(velocity.y, -Gravity.crateTerminalSpeed, Gravity.crateTerminalSpeed);
                 Vector2 start = transform.position;
