@@ -6,6 +6,7 @@ namespace GameJamPlus.Gameplay
     [DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D))]
     public sealed class StarvationDeathZone : MonoBehaviour
     {
+        public Animator anim;
         private static readonly List<StarvationDeathZone> activeZones = new List<StarvationDeathZone>();
         internal static IReadOnlyList<StarvationDeathZone> ActiveZones => activeZones;
         [SerializeField] private BoxCollider2D area;

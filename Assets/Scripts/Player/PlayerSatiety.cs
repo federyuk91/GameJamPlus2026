@@ -47,7 +47,18 @@ namespace MousePlatformer
                 for (int index = 0; index < StarvationDeathZone.ActiveZones.Count; index++)
                 {
                     StarvationDeathZone zone = StarvationDeathZone.ActiveZones[index];
-                    if (zone.Contains(playerCollider)) interval = Mathf.Min(interval, zone.DrainInterval);
+                    if (zone.Contains(playerCollider))
+                    {
+                        playerCollider.GetComponentInChildren<SpriteRenderer>().enabled = false;
+                        zone.anim.SetBool("isActive", true);
+                        interval = Mathf.Min(interval, zone.DrainInterval);
+                    }
+                    else
+                    {
+
+                        playerCollider.GetComponentInChildren<SpriteRenderer>().enabled=true;
+                        zone.anim.SetBool("isActive", false);
+                    }
                 }
             }
             // Preserve partial consumption when changing zones; overlapping zones use the fastest rate.

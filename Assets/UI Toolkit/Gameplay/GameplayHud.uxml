@@ -9,13 +9,13 @@
             <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area">
                 <ui:VisualElement picking-mode="Ignore" class="timer-anchor">
                     <ui:VisualElement picking-mode="Ignore" class="timer-panel">
-                        <ui:Label text="PERMANENZA" picking-mode="Ignore" class="timer-caption"/>
-                        <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time"/>
+                        <ui:Label text="PERMANENZA" picking-mode="Ignore" class="timer-caption" style="-unity-text-align: lower-center; padding-top: 0; margin-top: 2px;"/>
+                        <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-center; height: 7px; bottom: 1px;"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard">
                     <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
-                        <ui:Label name="satiety-caption" text="SAZIETÀ" picking-mode="Ignore" class="satiety-caption"/>
+                        <ui:Label name="satiety-caption" text="SAZIETÀ" picking-mode="Ignore" class="satiety-caption" style="padding-left: 3px; padding-top: 3px;"/>
                         <ui:VisualElement name="satiety-notches" picking-mode="Ignore" class="satiety-notches"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="resource-counters" picking-mode="Ignore" class="resource-counters">
@@ -42,19 +42,19 @@
                         <ui:VisualElement name="scientist-display" picking-mode="Ignore" class="scientist-display">
                             <ui:VisualElement name="scientist-content" picking-mode="Ignore" class="scientist-content scientist-dialogue">
                                 <ui:Label name="communication-speaker" text="SCIENTIST" picking-mode="Ignore" class="communication-speaker"/>
-                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript">
-                                    <ui:Label name="scientist-text" text="Welcome to Universe-10.&#10;Relax and enjoy your stay." enable-rich-text="false" picking-mode="Ignore" class="scientist-text" style="-unity-text-align: middle-left; width: 100%; font-size: 10px; -unity-paragraph-spacing: 0;"/>
+                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript" style="width: 157px; margin-bottom: 0; padding-right: 10px; margin-right: 0;">
+                                    <ui:Label name="scientist-text" text="Welcome to Universe-10.&#10;Relax and enjoy your stay." enable-rich-text="false" picking-mode="Ignore" class="scientist-text" style="-unity-text-align: upper-left; width: auto; font-size: 10px; -unity-paragraph-spacing: 0; min-height: 100%; max-height: 100%; justify-content: center; align-items: center; align-self: flex-start; margin-top: 0; margin-bottom: 0; padding-bottom: 5px; padding-top: 5px; min-width: 90%; max-width: 100%; padding-left: 5px;"/>
                                     <ui:VisualElement name="interaction-hints" picking-mode="Ignore" class="interaction-hints"/>
                                 </ui:ScrollView>
-                                <ui:Button name="scientist-advance" text="F Close" focusable="false" class="scientist-advance" style="bottom: 4px; height: 12px; right: 2px; justify-content: flex-start; width: auto; min-width: 48px; align-self: flex-end;"/>
+                                <ui:Button name="scientist-advance" text="F Close" focusable="false" class="scientist-advance" style="bottom: 4px; height: auto; right: 2px; justify-content: flex-start; width: auto; min-width: 32px; align-self: flex-end; min-height: 10px; max-width: 50px; max-height: 15px;"/>
                             </ui:VisualElement>
-                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow"/>
+                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow" style="top: 0;"/>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="scientist-avatar-screen" picking-mode="Ignore" class="scientist-avatar-screen" style="bottom: -70px; justify-content: center; align-self: flex-end; align-content: auto; right: 6px;">
                     <ui:Image name="scientist-avatar" picking-mode="Ignore" class="scientist-avatar"/>
-                    <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active"/>
+                    <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active" style="left: 10px; bottom: 10px;"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="test-result" picking-mode="Ignore" class="test-result">
