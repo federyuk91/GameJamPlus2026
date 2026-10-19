@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MousePlatformer;
 using UnityEngine;
 
 namespace GameJamPlus.Gameplay
@@ -10,7 +11,15 @@ namespace GameJamPlus.Gameplay
         private static readonly List<StarvationDeathZone> activeZones = new List<StarvationDeathZone>();
         internal static IReadOnlyList<StarvationDeathZone> ActiveZones => activeZones;
         [SerializeField] private BoxCollider2D area;
-        [SerializeField, Min(0.1f)] private float drainInterval = 5f;
+        [SerializeField, Min(0.1f)] private float drainInterval = 1f;
+        [SerializeField] private Transform mountPoint;
+        [SerializeField] private Transform exitPoint;
+        private PlayerWheelInteraction occupant;
+        private static readonly int IsActive = Animator.StringToHash("isActive");
+        public bool CanUse => isActiveAndEnabled && occupant == null;
+        public Vector2 InteractionPoint => area != null ? (Vector2)area.bounds.center : (Vector2)transform.position;
+        public Vector2 MountPosition(Vector2 fallback) => mountPoint != null ? (Vector2)mountPoint.position : fallback;
+        public Vector2 ExitPosition(Vector2 fallback) => exitPoint != null ? (Vector2)exitPoint.position : fallback;
         [SerializeField] private bool showGizmos = true;
         public float DrainInterval => Mathf.Max(0.1f, drainInterval);
 
@@ -26,9 +35,29 @@ namespace GameJamPlus.Gameplay
         private void OnEnable()
         {
             if (!activeZones.Contains(this)) activeZones.Add(this);
+            if (anim != null) anim.SetBool(IsActive, false);
         }
 
-        private void OnDisable() => activeZones.Remove(this);
+        private void OnDisable()
+        {
+            activeZones.Remove(this);
+            if (occupant != null) occupant.StopUsing();
+        }
+
+        public bool TryUse(PlayerWheelInteraction player, Collider2D shape)
+        {
+            if (!CanUse || player == null || !Contains(shape)) return false;
+            occupant = player;
+            if (anim != null) anim.SetBool(IsActive, true);
+            return true;
+        }
+
+        public void Release(PlayerWheelInteraction player)
+        {
+            if (occupant != player) return;
+            occupant = null;
+            if (anim != null) anim.SetBool(IsActive, false);
+        }
 
         public bool Contains(Collider2D playerCollider)
         {

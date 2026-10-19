@@ -1,5 +1,11 @@
 # Collectibles and messages
 
+## Ground physics
+
+Cheese and CheeseGreen prefabs, and the four standalone cheeses in LoopScene, use `CollectibleGravity`. It applies gravity with a maximum fall speed and casts a small box matching the visible plate base against Default and Diggable terrain. Trigger areas and the mouse do not support it. A supporting moving platform or crate carries the collectible until support is lost.
+
+The pickup trigger remains separate: eating the cheese disables interaction but leaves gravity active on the empty plate. No Rigidbody2D is needed, consistently with the project's Transform-based simulation. Plates do not block the mouse. In the Inspector, adjust Ground Layers, Gravity, Maximum Fall Speed and Footprint Size/Offset; selecting the object draws the footprint in yellow. Keep the footprint aligned with the plate if changing the artwork or pivot. Check placement, falling after ground removal, and collection on a platform in Unity.
+
 In LoopScene, eat Cheese by pressing F / gamepad West while its trigger intersects the player collider. No tags, special layers or Rigidbody2D are needed.
 
 ## Components

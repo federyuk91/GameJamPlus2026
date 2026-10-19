@@ -49,7 +49,7 @@
                                         <ui:Slider name="music-volume" label="Music" low-value="0" high-value="1" value="1" class="audio-slider" />
                                         <ui:Slider name="effects-volume" label="Effects" low-value="0" high-value="1" value="1" class="audio-slider" />
                                         <ui:Label text="DISPLAY" class="section-heading" />
-                                        <ui:Toggle name="fullscreen" label="Fullscreen" />
+                                        <ui:Toggle name="fullscreen" label="Fullscreen" value="true" />
                                         <ui:Button name="options-back" text="Back" class="dialog-button" />
                                     </ui:VisualElement>
                                     <ui:VisualElement name="credits-panel" class="context-card hidden">
@@ -102,8 +102,8 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="footer">
-                <ui:Label text="Arrows / D-pad  Navigate" />
-                <ui:Label text="Space / A  Confirm     Esc / B  Back" />
+                <ui:Label name="menu-navigation-hint" text="WASD / Arrows  Navigate" />
+                <ui:Label name="menu-action-hint" text="Space  Confirm     Esc  Back" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

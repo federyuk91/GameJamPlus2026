@@ -22,12 +22,18 @@ namespace MousePlatformer
         public bool CanBeCollected => !collected && isActiveAndEnabled && (pickupArea == null || pickupArea.enabled)
             && (remains == null || !remains.IsConsumed);
 
+        private void Awake()
+        {
+            if (remains == null) remains = GetComponent<CollectibleRemains>();
+        }
+
         private void Start()
         {
             if (remains == null || !remains.IsConsumed) return;
             collected = true;
             if (pickupArea != null) pickupArea.enabled = false;
             remains.Show();
+            enabled = false;
         }
 
         public bool TryCollect(CollectibleCollector collector, bool interactionPressed = false)
@@ -46,7 +52,11 @@ namespace MousePlatformer
             }
             finally
             {
-                if (remains != null) remains.Show();
+                if (remains != null)
+                {
+                    remains.Show();
+                    enabled = false;
+                }
                 else gameObject.SetActive(false);
             }
             return true;

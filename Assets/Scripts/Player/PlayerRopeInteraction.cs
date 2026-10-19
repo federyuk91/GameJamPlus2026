@@ -13,6 +13,7 @@ namespace MousePlatformer
         private RopeSimulation rope;
         private float distance;
         private float cooldown;
+        private float lastSwingDirection;
         public bool Attached => rope != null;
         public float ClimbSpeed { get; private set; }
         public float GrabRadius => Settings.ropeGrabRadius;
@@ -84,15 +85,23 @@ namespace MousePlatformer
             if (rope == null) return false;
 
             velocity = rope.Chain.Velocity(distance);
+            Vector2 tangent = rope.Chain.Tangent(distance, rope.ClimbableStart, rope.ClimbableLength);
+            Vector2 swing = new Vector2(-tangent.y, tangent.x);
+            float swingSpeed = Vector2.Dot(velocity, swing);
+            if (Mathf.Abs(swingSpeed) > 0.01f) lastSwingDirection = Mathf.Sign(swingSpeed);
             if (jump)
             {
-                Vector2 tangent = rope.Chain.Tangent(distance, rope.ClimbableStart, rope.ClimbableLength);
-                Vector2 swing = new Vector2(-tangent.y, tangent.x);
-                float direction = Vector2.Dot(velocity, swing);
-                if (Mathf.Abs(direction) < 0.1f)
-                    direction = Mathf.Abs(horizontal) > 0.1f ? horizontal * Mathf.Sign(swing.x) : 1f;
                 GravitySettings gravity = physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity;
-                velocity += swing * (Mathf.Sign(direction) * gravity.ropeJumpSwingBoost) + Vector2.up * gravity.ropeJumpUpSpeed;
+                if (Mathf.Abs(horizontal) > 0.1f)
+                {
+                    // Redirect inherited momentum too, so an opposite swing cannot override the chosen side.
+                    velocity.x = Mathf.Sign(horizontal) * Mathf.Max(Mathf.Abs(velocity.x), gravity.ropeJumpSwingBoost);
+                    velocity.y += gravity.ropeJumpUpSpeed;
+                }
+                else
+                {
+                    velocity += swing * (lastSwingDirection * gravity.ropeJumpSwingBoost) + Vector2.up * gravity.ropeJumpUpSpeed;
+                }
                 Detach();
                 JumpedFromRope?.Invoke();
                 released = true;
@@ -139,12 +148,14 @@ namespace MousePlatformer
             {
                 rope = nearest;
                 distance = grip;
+                lastSwingDirection = 0f;
             }
         }
 
         public void Detach()
         {
             ClimbSpeed = 0f;
+            lastSwingDirection = 0f;
             if (rope != null) rope.Release(this);
             rope = null;
             cooldown = Settings.ropeRegrabDelay;

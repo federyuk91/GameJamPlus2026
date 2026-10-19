@@ -13,6 +13,13 @@ namespace MousePlatformer
         public bool Attached { get; private set; }
         public bool HasRopeConnection => Attached || tailAttached;
         public bool InWater => motion != null && motion.InWater;
+        public bool Floats => motion != null && (motion.InWater || motion.UsesAirLift);
+        public RopeSimulation Rope => rope;
+        public CrateMotion Motion => motion;
+        public BalloonLift LiftingBalloon => Attached && rope != null && rope.HasIntactLoadConnection
+            && rope.BalloonAnchor != null && rope.BalloonAnchor.isActiveAndEnabled
+            && rope.transform.position.y > AttachmentPoint.y + 0.01f ? rope.BalloonAnchor : null;
+        public float LiftCapacity => LiftingBalloon != null ? LiftingBalloon.LiftCapacity : 0f;
         public Vector2 AttachmentPoint => transform.TransformPoint(attachmentOffset);
 
         private void Awake()
@@ -25,7 +32,7 @@ namespace MousePlatformer
         {
             if (rope == null || !rope.BindLoad(this)) return;
             Attached = true;
-            pushable.enabled = false;
+            pushable.enabled = rope.BalloonAnchor != null;
             rope.Cut += HandleCut;
         }
 
@@ -43,7 +50,8 @@ namespace MousePlatformer
             Vector2 radial = AttachmentPoint - (Vector2)rope.transform.position;
             if (radial.magnitude < rope.Length - 0.01f) return velocity;
             Vector2 normal = radial.normalized;
-            return velocity - normal * Mathf.Max(0f, Vector2.Dot(velocity, normal));
+            Vector2 anchorVelocity = LiftingBalloon != null ? LiftingBalloon.Motion.Velocity : Vector2.zero;
+            return velocity - normal * Mathf.Max(0f, Vector2.Dot(velocity - anchorVelocity, normal));
         }
 
         private void HandleCut(RopeSimulation source)

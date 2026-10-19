@@ -115,7 +115,7 @@ MonoBehaviour:
   - "Interesting. The subject has decided to test gravity personally."
   - "A very convincing descent. I would say we have earned a break."
   - "Excellent, the falling test is complete too. Let us rest for a moment."
-  duration: 30
+  duration: 7
 --- !u!114 &1005
 MonoBehaviour:
   m_ObjectHideFlags: 0

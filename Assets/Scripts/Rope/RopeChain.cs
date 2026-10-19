@@ -42,6 +42,25 @@ namespace MousePlatformer
             return true;
         }
 
+        public int RemoveShortFragments(int minimumPieces)
+        {
+            int minimum = Mathf.Max(1, minimumPieces);
+            int start = 0;
+            int remaining = 0;
+            for (int index = 0; index <= intact.Length; index++)
+            {
+                if (index < intact.Length && intact[index]) continue;
+                int count = index - start;
+                if (count < minimum)
+                {
+                    for (int piece = start; piece < index; piece++) intact[piece] = false;
+                }
+                else remaining += count;
+                start = index + 1;
+            }
+            return remaining;
+        }
+
         public void InitializeEndpoint(Vector2 anchor, Vector2 endpoint)
         {
             for (int i = 0; i < points.Length; i++)

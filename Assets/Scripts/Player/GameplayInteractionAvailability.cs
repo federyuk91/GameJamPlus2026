@@ -8,7 +8,9 @@ namespace MousePlatformer
     {
         None = 0, EatCheese = 1, EatGreenCheese = 2, CutRope = 4, Dig = 8, CollectPhoto = 16, MoveCrate = 32,
         PressButton = 64,
-        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton
+        ClimbLedge = 128,
+        UseWheel = 256,
+        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton | ClimbLedge | UseWheel
     }
 
     [DefaultExecutionOrder(130), DisallowMultipleComponent]
@@ -21,16 +23,32 @@ namespace MousePlatformer
         [SerializeField] private PlayerMovement movement;
         [SerializeField] private PlayerCrateInteraction crates;
         [SerializeField] private PlayerButtonInteraction buttons;
+        [SerializeField] private PlayerWheelInteraction wheel;
+        public bool IsUsingWheel => wheel != null && wheel.IsUsing;
 
         public AvailableGameplayActions Current { get; private set; }
         public event Action<AvailableGameplayActions> Changed;
         private bool usingGamepad;
+
+        private void OnEnable()
+        {
+            if (wheel != null) wheel.UsageChanged += OnWheelUsageChanged;
+        }
+
+        private void OnWheelUsageChanged()
+        {
+            AvailableGameplayActions previous = Current;
+            Refresh();
+            // Mounting changes the prompt from enter to exit without changing its action flag.
+            if (previous == Current) Changed?.Invoke(Current);
+        }
 
         public AvailableGameplayActions RefreshCurrent()
         {
             if (!isActiveAndEnabled) return AvailableGameplayActions.None;
             if (collector != null && collector.isActiveAndEnabled) collector.RefreshInteractionTarget();
             if (buttons != null && buttons.isActiveAndEnabled) buttons.RefreshInteractionTarget();
+            if (wheel != null && wheel.isActiveAndEnabled) wheel.RefreshInteractionTarget();
             Refresh();
             return Current;
         }
@@ -48,6 +66,19 @@ namespace MousePlatformer
 
         private void Refresh()
         {
+            if (input != null && input.GameplayActionsLocked)
+            {
+                AvailableGameplayActions lockedActions = IsUsingWheel ? AvailableGameplayActions.UseWheel : AvailableGameplayActions.None;
+                input.SetSelectedInteractions(lockedActions, usingGamepad);
+                SetAvailable(lockedActions);
+                return;
+            }
+            if (movement != null && movement.IsHangingFromLedge && input != null && input.isActiveAndEnabled)
+            {
+                input.SetSelectedInteractions(AvailableGameplayActions.ClimbLedge, usingGamepad);
+                SetAvailable(AvailableGameplayActions.ClimbLedge);
+                return;
+            }
             AvailableGameplayActions available = AvailableGameplayActions.None;
             if (input != null && input.isActiveAndEnabled)
             {
@@ -86,9 +117,22 @@ namespace MousePlatformer
                 available |= AvailableGameplayActions.PressButton;
                 collection = AvailableGameplayActions.PressButton;
             }
-            // The nearest collectible/button wins its physical input; other controls remain available.
-            if (!usingGamepad && collection != AvailableGameplayActions.None)
+            float selectedDistance = collection == AvailableGameplayActions.PressButton ? buttons.TargetDistanceSquared
+                : collection != AvailableGameplayActions.None ? collector.TargetDistanceSquared : float.PositiveInfinity;
+            if (wheel != null && wheel.isActiveAndEnabled && wheel.InteractionTarget != null
+                && wheel.InteractionTarget.CanUse && wheel.TargetDistanceSquared < selectedDistance)
+            {
+                available &= ~(AvailableGameplayActions.EatCheese | AvailableGameplayActions.EatGreenCheese
+                    | AvailableGameplayActions.CollectPhoto | AvailableGameplayActions.PressButton);
+                available |= AvailableGameplayActions.UseWheel;
+                collection = AvailableGameplayActions.UseWheel;
+            }
+            // Press interactions win F/East; on gamepad this also excludes crate movement.
+            if (collection != AvailableGameplayActions.None)
+            {
                 available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
+                if (usingGamepad) available &= ~AvailableGameplayActions.MoveCrate;
+            }
             // Crate movement and cutting/digging share East on the gamepad.
             if (usingGamepad && (available & AvailableGameplayActions.MoveCrate) != 0)
                 available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
@@ -105,6 +149,7 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            if (wheel != null) wheel.UsageChanged -= OnWheelUsageChanged;
             input?.SetSelectedInteractions(AvailableGameplayActions.All);
             SetAvailable(AvailableGameplayActions.None);
         }

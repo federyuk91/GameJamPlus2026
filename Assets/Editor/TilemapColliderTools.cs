@@ -27,6 +27,7 @@ public static class TilemapColliderTools
 
     private static void RepairPendingTransfer()
     {
+        RebuildRequestedTileShapes();
         if (!File.Exists(RequestPath) || EditorApplication.isPlayingOrWillChangePlaymode) return;
         Scene scene = SceneManager.GetSceneByPath("Assets/Scenes/LoopScene.unity");
         if (!scene.IsValid() || !scene.isLoaded) return;
@@ -55,6 +56,33 @@ public static class TilemapColliderTools
                 return;
             }
         }
+    }
+
+    private static void RebuildRequestedTileShapes()
+    {
+        const string request = "Temp/TileColliderInvestigation/Rebuild.request";
+        if (!File.Exists(request) || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        Scene scene = SceneManager.GetSceneByPath("Assets/Scenes/LoopScene.unity");
+        if (!scene.IsValid() || !scene.isLoaded) return;
+        File.Delete(request);
+        AssetDatabase.ImportAsset("Assets/Art/Tiles/TilemapTube.png",
+            ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        AssetDatabase.ImportAsset("Assets/Art/Tiles/TilemapTube_complete.png",
+            ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        int rebuilt = 0;
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            foreach (Tilemap map in root.GetComponentsInChildren<Tilemap>(true))
+            {
+                if (map.GetComponent<TilemapCollider2D>() == null) continue;
+                Rebuild(map);
+                rebuilt++;
+            }
+        }
+        EditorSceneManager.MarkSceneDirty(scene);
+        string result = "TilemapTube and TilemapTube_complete shapes reimported; rebuilt tilemaps: " + rebuilt + ". Scene not saved automatically.";
+        File.WriteAllText("Temp/TileColliderInvestigation/Rebuild.result", result);
+        Debug.Log(result);
     }
 
     [MenuItem("Tools/Mouse Platformer/Tilemaps/Rebuild Selected Colliders")]

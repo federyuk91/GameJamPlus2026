@@ -31,3 +31,9 @@ These maps were not created in this setup; existing scene terrain/water remain a
 Unity slice coordinates start at the image bottom. Adding a row below existing upper artwork requires shifting old Sprite Editor rectangles upward. Preserve names and especially Sprite ID/internalID used by Tile assets/rooms; do not reslice away old sprites. Adding cells on the right avoids this vertical shift.
 
 TilemapTube repair: 16 original sprites now use y=32 in the updated 544×64 image. Six lower-row slices are TilemapTube_New_0..5. Their Tile assets are in TilemapTube and the added palette row. Two manually created Tile assets retain their GUIDs.
+
+## Room outline colliders
+
+TilemapTube_complete sprites 0, 1, 3, 10, 20, 30, 32 and 33 now have explicit physics shapes instead of automatic silhouettes. These sprites are used by LoopScene's room Terrain - Solid map. Corners 0/3/30/33 match the corresponding previously repaired TilemapTube corners 8/9/10/11; straight rails and the left wall follow the opaque frame. Sprite 10 retains two separate end caps with a gap through the middle. Existing custom shapes on sprites 13 and 23 are preserved, as are sprite IDs, slicing, artwork and painted cells.
+
+The pending collider repair reimports both tube sheets and refreshes Tilemap/Composite geometry in the open LoopScene without saving it automatically. If needed, select the affected room/Grid and use Tools → Mouse Platformer → Tilemaps → Rebuild Selected Colliders. Inspect the top-left corner beneath the cheese, adjacent horizontal rail and corresponding mirrored corners in Unity; no Play Mode tests were run.

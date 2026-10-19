@@ -44,7 +44,7 @@ namespace MousePlatformer
             if (input == null && movement != null) input = movement.GetComponent<PlayerInputReader>();
             toggleHeightLock = new InputAction("Toggle Camera Height Lock", InputActionType.Button);
             toggleHeightLock.AddBinding("<Keyboard>/c");
-            toggleHeightLock.AddBinding("<Gamepad>/rightStickPress");
+            toggleHeightLock.AddBinding("<Gamepad>/rightShoulder");
         }
 
         private void OnEnable()
@@ -61,6 +61,7 @@ namespace MousePlatformer
         {
             GameManager manager = GameManager.Instance;
             if (Time.timeScale <= 0f || (manager != null && manager.State != GameManager.LoopState.Playing)) return;
+            if (input != null && input.GameplayActionsLocked) return;
             if (toggleHeightLock.WasPressedThisFrame()) ToggleHeightLock();
         }
 

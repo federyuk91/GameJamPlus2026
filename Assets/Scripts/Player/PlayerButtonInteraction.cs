@@ -1,3 +1,4 @@
+using System;
 using GameJamPlus.Gameplay;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace MousePlatformer
         [SerializeField] private SimulatedBody2D body;
         private readonly RaycastHit2D[] obstacles = new RaycastHit2D[16];
         public InteractableButton InteractionTarget { get; private set; }
+        public event Action ButtonPressed;
         public float TargetDistanceSquared => InteractionTarget != null && body != null
             ? (InteractionTarget.InteractionPoint - (Vector2)body.Shape.bounds.center).sqrMagnitude : float.PositiveInfinity;
 
@@ -30,7 +32,11 @@ namespace MousePlatformer
             if (!selected.Contains(body.Shape) || !HasLineOfSight(selected.InteractionPoint)) return;
             // Claim the shared press before invoking an event that may pause or change the scene.
             input.ConsumeInteraction();
-            if (selected.TryPress()) InteractionTarget = null;
+            if (selected.TryPress())
+            {
+                InteractionTarget = null;
+                ButtonPressed?.Invoke();
+            }
         }
 
         public void RefreshInteractionTarget()

@@ -15,17 +15,29 @@ Both example ropes are cuttable. Player references also include the original sce
 ## Crate components
 
 - CrateMotion integrates velocity, gravity, collisions and constraints, including while tethered. All LoopScene crates, including the original two, use it.
-- CrateBuoyancy configures full-submersion lift and drag per crate. Submersion uses collider bounds and active water volumes. Lift must exceed gravity to float: initial values 100 and 66 yield roughly 66% equilibrium submersion.
-- PushableCrate enables grabbing with E / gamepad West and exposes Weight as a push/pull speed divisor. It no longer handles falling.
+- CrateBuoyancy configures full-submersion lift and drag per crate. Submersion uses collider bounds and active water volumes. Effective weight decreases continuously with immersion. With lift 100, crate gravity 66 and dry weight 1, a single crate balances near 49.6% submersion. Vertical Damping Ratio defaults to 1 (critical damping near the surface).
+- PushableCrate enables grabbing with E / gamepad East and exposes individual Weight plus cumulative StackWeight. It no longer handles falling.
 - CrateRopeAttachment references a rope and local attachment point. Its distance constraint does not rotate the crate and allows slack. Hanging crates attach at the top; seabed-tethered crates at the bottom.
 
-Attachment disables PushableCrate and cutting reenables it. Detachment preserves velocity. Push/pull weight is independent of buoyancy. Existing crates outside LoopScene need CrateMotion and physics settings, plus CrateBuoyancy to float. Adding PushableCrate to a new crate automatically adds movement.
+Attachment disables PushableCrate and cutting reenables it. Detachment preserves velocity. Effective stack weight affects player pushing and flotation load; buoyancy strength remains a separate setting. Existing crates outside LoopScene need CrateMotion and physics settings, plus CrateBuoyancy to float. Adding PushableCrate to a new crate automatically adds movement.
 
-## Mouse contact
+## Stack weight and mouse contact
 
-Underwater contact pushes crates without E, including tethered crates; rope constraints and Weight still limit movement. Slow downward swimmer motion on a crate does not become a downward force that cancels flotation.
+Player push/pull speed uses the target crate's effective weight plus every supported crate above it, recursively, counting each crate once. Each crate contributes Weight * (1 - 0.5 * submergedFraction): 100% dry, 75% at half immersion, 50% fully submerged. Three dry unit-weight crates give effective weights 3 / 2 / 1 from bottom / middle / top; three fully immersed ones give 1.5 / 1 / 0.5. A fully submerged base with two dry crates above gives 2.5. Side-by-side crates and the support below the target are not added. Disabled PushableCrate components on active upper crates still contribute their load. The total is recalculated from current contacts and immersion.
 
-PlayerPlatformRide carries a standing mouse and transfers support velocity on jumping. A rising crate can lift a submerged mouse. Overhead obstacles limit carrying to prevent passage through ceilings; crushing damage is not implemented.
+At effective total weight 5 or higher the player cannot push or pull, including by swimming contact. The ground interaction hint is unavailable and a held crate is released if its stack becomes too heavy. Below the limit, base push speed is divided by StackWeight. Passive gravity, buoyancy and support carrying are not disabled by this player strength limit.
+
+Ground push/pull and CrateMotion (including water drift and swimming pushes) carry crates resting on top by the support's actual horizontal displacement, including stacks with multiple levels. Carrying does not add velocity; player displacement already accounts for cumulative stack weight. Each carried crate retains its own solid collisions: if an upper crate meets a wall, it stops while its support can slide underneath. Upper crates require an enabled PushableCrate for horizontal carrying; tethered upper crates remain excluded. A tethered lower support can still carry free crates through its CrateMotion movement.
+
+## Coordinated flotation
+
+Water stacks now use a single vertical simulation, computed once per physics tick before individual crate movement, independently of component execution order. Contact grouping is rebuilt each tick; a horizontal slide that removes support takes effect in the next tick. The solver sums each member's buoyancy and effective gravity once, divides by total dry mass, averages drag, and critically damps near the waterline. Members share vertical velocity instead of repeatedly applying upper loads to each level. Dry stacks retain ordinary free-fall handling.
+
+CrateMotion -> Maximum Water Vertical Speed defaults to 2 units/s, both rising and falling. The lowest member limit applies to a coordinated stack, including dry upper crates. Swimming pushes and rope corrections share the per-crate vertical travel budget for that physics tick. CrateBuoyancy -> Vertical Damping Ratio defaults to 1; larger values slow settling further. Vertical movement is swept against external solids; group members are ignored during clearance checks, then moved in leading order. Rope constraints and passenger clearance can limit the group's movement. Immersion no longer halves weight instantaneously.
+
+Underwater contact pushes crates without E, including tethered crates; rope constraints and effective stack weight limit movement. Slow downward swimmer motion on a crate does not become a downward force that cancels flotation. PlayerPlatformRide carries a standing mouse and transfers support velocity on jumping. Rising crates can lift submerged mice. Overhead clearance limits carrying; crushing damage is not implemented.
+
+Review a free floating crate, three-crate stacks entering/exiting water, mixed weights, effective total 4.5 versus 5, side walls, low ceilings, rope-tethered supports, swimming pushes and a mouse riding the top crate in Unity. No compilation or Play Mode tests were run. See [CrateFlotation.md](CrateFlotation.md) for numerical details.
 
 ## Biting
 

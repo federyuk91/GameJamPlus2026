@@ -1,5 +1,7 @@
 # Contextual hints and active input device
 
+Current bindings and shared East selection are documented in [CurrentControls.md](CurrentControls.md); they supersede the historical bindings below. Gameplay interactions and scientist messages/photos/stage results use East on controllers. W / Up climbs ledges and attaches to ropes; camera lock uses RB / R1. SYSTEM hints put the large green-tinted command sprite in the avatar terminal and usage instructions in the text terminal.
+
 LoopScene assigns GameplayInteractionAvailability to PlayerInputReader, CollectibleCollector, PlayerRopeBite and PlayerDigging through Inspector. Availability is evaluated after interaction ticks and emits Changed only on changes. Gameplay HUD displays hints in the bottom-right dialogue region without focus/click capture. Scientist dialogue takes priority throughout opening/display/closing; hints return afterward.
 
 ## Original bindings
@@ -48,3 +50,11 @@ Prompt device changes update selection. Without active GameplayInteractionAvaila
 Communications reserve the terminal immediately on request, before coroutine/animation startup. Until CRT closing finishes, availability updates discard/clear SYSTEM hints instead of building hidden rows or queued tooltips. Completion recalculates overlaps/current actions without collecting during reading; only still-valid hints appear. Additional guarding handles callbacks starting another communication during recalculation.
 
 Manually check same-frame communication/proximity, leaving an area during dialogue, staying nearby until completion and approaching another interactable before completion. No tests or Play Mode were run.
+
+## Ledge climb confirmation
+
+After grabbing a ledge from a jump, holding the approach direction no longer starts climbing automatically. Press F / gamepad West, or release the direction toward the ledge and press it again. Down still drops the mouse; Jump still launches away from the ledge. Ground-level obstacle climbs remain automatic when moving toward the obstacle.
+
+While hanging from a ledge, ClimbLedge owns the interaction input and its SYSTEM hint. Collectibles, buttons and cutting/digging cannot use the same press. Interaction presses are queued for the physics step and consumed on climb confirmation.
+
+While hanging, Jump + direction toward the ledge also confirms Climb Up, without requiring a direction release. Jump + the opposite direction still launches away; Jump with no horizontal direction keeps the same detach behavior. F / West and releasing/repressing the direction remain available.

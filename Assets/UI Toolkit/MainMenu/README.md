@@ -100,3 +100,5 @@ All content fits within the original 186 px image viewport: the mouse, compact O
 Channel switching follows Loop communications: collapse vertically to a thin line, compress toward the center, pause for Channel Switch Delay (0.12 s), reopen the line and display, then fade the inner glow. Only `channel-aperture` animates; `channel-content` retains full dimensions to avoid text reflow. The navy frame and heading stay visible at full size. The heading changes during the pause between closing and reopening.
 
 Unscaled timing, latest-selection behavior, left-menu locking after Options/Quit confirmation and focus transfer after animation remain unchanged. No tests, compilation or Play Mode checks were run; manually check readability at 640 × 360 and rapid channel changes.
+
+Fullscreen is enabled by default when Settings.Fullscreen is absent. The Options toggle uses the same default and reflects the saved preference; existing windowed/fullscreen choices are preserved. Player Settings already starts desktop builds in Fullscreen Window mode.

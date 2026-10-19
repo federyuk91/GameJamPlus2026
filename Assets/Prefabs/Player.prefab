@@ -153,6 +153,10 @@ GameObject:
   - component: {fileID: 5709383898159029802}
   - component: {fileID: 5709383898159029803}
   - component: {fileID: 5709383898159029804}
+  - component: {fileID: 5709383898159029805}
+  - component: {fileID: 5709383898159029806}
+  - component: {fileID: 5709383898159029807}
+  - component: {fileID: 5709383898159029810}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -222,6 +226,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.25, y: 0.3}
   m_EdgeRadius: 0
+--- !u!114 &5709383898159029810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccb531786b9b4312a9cdb94a8d4d094f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerWheelInteraction
+  input: {fileID: 7712171590627343095}
+  body: {fileID: 4027669037393712695}
+  movement: {fileID: 3818418520059698947}
+  visual: {fileID: 8503429192877497323}
+  collector: {fileID: 5709383898159029123}
 --- !u!114 &7712171590627343095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,8 +406,13 @@ MonoBehaviour:
   digging: {fileID: 7072776503502995229}
   crateInteraction: {fileID: 7645364035520464402}
   ropeInteraction: {fileID: 4776370160298788677}
+  buttonInteraction: {fileID: 5709383898159029700}
+  pressButtonClip: {fileID: 7400000, guid: c3bb1be247514b5e80639d7b0a6a7d60, type: 2}
+  pressButtonAnimationSpeed: 1
   swimmingAnimationSpeed: 1
   ladderAnimationSpeed: 1
+  ropeAnimationSpeed: 1
+  climbUpAnimationSpeed: 1
   diggingAnimationSpeed: 1
   pushingAnimationSpeed: 1
   runThreshold: 0.05
@@ -644,6 +670,7 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   collector: {fileID: 5709383898159029123}
   starvationOutcome: {fileID: 5709383898159029302}
+  wheel: {fileID: 5709383898159029810}
   maximumNotches: 5
   drainInterval: 60
 --- !u!114 &5709383898159029301
@@ -663,7 +690,7 @@ MonoBehaviour:
   messages:
   - "A healthy, balanced diet is the foundation of a long life."
   - "Meals are very important. Let us remember that for the next test."
-  duration: 30
+  duration: 7
 --- !u!114 &5709383898159029302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -893,7 +920,7 @@ MonoBehaviour:
   messages:
   - "A break to catch your breath is always a good idea."
   - "Let us remind the subject to breathe between exercises."
-  duration: 30
+  duration: 7
 --- !u!114 &5709383898159029802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -929,7 +956,7 @@ MonoBehaviour:
   messages:
   - "Excellent concentration! Let us remember to breathe, though."
   - "A quick trip to the surface helps keep the mind clear."
-  duration: 6
+  duration: 7
 --- !u!114 &5709383898159029804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -945,6 +972,9 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   facing: {fileID: 6712765668103962099}
   playerVisual: {fileID: 8503429192877497323}
+  audioSource: {fileID: 5709383898159029805}
+  bubbleClip: {fileID: 8300000, guid: d93de1358d651764fa2e37f4a8b907fe, type: 3}
+  bubbleVolume: 0.6
   bubbleSprites:
   - {fileID: 2924118864771949876, guid: 4374c8c23350dd14cb449b2735be0f83, type: 3}
   - {fileID: -3577410830333116246, guid: 06ec57235becc924aa442c733645ea9f, type: 3}
@@ -954,3 +984,217 @@ MonoBehaviour:
   wobbleWidth: 0.04
   mouthHeight: 0.75
   pixelsPerUnit: 32
+--- !u!82 &5709383898159029805
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.6
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &5709383898159029806
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.65
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &5709383898159029807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e90607ad4ab4523b7444c05b4d49a31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSwimmingAudio
+  swimming: {fileID: 7210179708085743803}
+  audioSource: {fileID: 5709383898159029806}
+  strokeClips:
+  - {fileID: 8300000, guid: 9cc90e60b34d80441823be929ae46953, type: 3}
+  - {fileID: 8300000, guid: 02c3d7681669eab46ae5bac6edab411e, type: 3}
+  - {fileID: 8300000, guid: 2bee5237658dc5c4cb560751a7d14fcb, type: 3}
+  - {fileID: 8300000, guid: d8f152d82f8be424792a8c7f1d956d31, type: 3}
+  volume: 0.65

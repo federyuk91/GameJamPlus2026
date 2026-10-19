@@ -5,7 +5,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(PlayerMovement), typeof(SimulatedBody2D))]
     public sealed class PlayerAnimation : MonoBehaviour
     {
-        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb }
+        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging }
 
         [SerializeField] private Animator animator;
         [SerializeField] private PlayerMovement movement;
@@ -16,8 +16,14 @@ namespace MousePlatformer
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerCrateInteraction crateInteraction;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
+        [SerializeField] private PlayerButtonInteraction buttonInteraction;
+        [SerializeField] private AnimationClip pressButtonClip;
+        [SerializeField, Min(0.01f)] private float pressButtonAnimationSpeed = 1f;
+        private float buttonPressRemaining;
         [SerializeField, Min(0f)] private float swimmingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float ladderAnimationSpeed = 1f;
+        [SerializeField, Min(0f)] private float ropeAnimationSpeed = 1f;
+        [SerializeField, Min(0f)] private float climbUpAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float diggingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float pushingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float runThreshold = 0.05f;
@@ -31,6 +37,23 @@ namespace MousePlatformer
         private static readonly int MotionState = Animator.StringToHash("MotionState");
         private static readonly int DiggingSpeed = Animator.StringToHash("DiggingSpeed");
         private static readonly int PushingSpeed = Animator.StringToHash("PushingSpeed");
+        private static readonly int ClimbUpSpeed = Animator.StringToHash("ClimbUpSpeed");
+        private static readonly int PressButtonSpeed = Animator.StringToHash("PressButtonSpeed");
+        private static readonly int PressButtonState = Animator.StringToHash("Base Layer.PressButton");
+
+        private void OnEnable()
+        {
+            if (buttonInteraction != null) buttonInteraction.ButtonPressed += OnButtonPressed;
+        }
+
+        private void OnButtonPressed()
+        {
+            if (animator == null || pressButtonClip == null) return;
+            buttonPressRemaining = pressButtonClip.length / Mathf.Max(0.01f, pressButtonAnimationSpeed);
+            animator.SetFloat(PressButtonSpeed, pressButtonAnimationSpeed);
+            animator.SetInteger(MotionState, (int)Motion.PressButton);
+            animator.Play(PressButtonState, 0, 0f);
+        }
 
         private void Awake()
         {
@@ -48,6 +71,8 @@ namespace MousePlatformer
         private void Update()
         {
             if (animator == null || movement == null || body == null) return;
+            buttonPressRemaining = Mathf.Max(0f, buttonPressRemaining - Time.deltaTime);
+            animator.SetFloat(PressButtonSpeed, pressButtonAnimationSpeed);
             bool ledgeActive = ledgeClimb != null && ledgeClimb.Active;
             bool onLadder = !ledgeActive && ladderInteraction != null && ladderInteraction.Attached;
             bool inWater = !ledgeActive && !onLadder && swimming != null && swimming.isActiveAndEnabled && swimming.InWater;
@@ -58,7 +83,8 @@ namespace MousePlatformer
             animator.SetInteger(LedgeState, ledgeClimb != null ? (int)ledgeClimb.State : 0);
             animator.SetBool(IsRunning, !ledgeActive && !onLadder && !inWater && body.Grounded && Mathf.Abs(movement.Velocity.x) > runThreshold);
             bool climbingRope = ropeInteraction != null && ropeInteraction.Attached && Mathf.Abs(ropeInteraction.ClimbSpeed) > 0.01f;
-            if (climbingRope) animator.SetFloat(LadderSpeed, ladderAnimationSpeed);
+            if (climbingRope) animator.SetFloat(LadderSpeed, ropeAnimationSpeed);
+            animator.SetFloat(ClimbUpSpeed, climbUpAnimationSpeed);
             animator.SetFloat(DiggingSpeed, diggingAnimationSpeed);
             animator.SetFloat(PushingSpeed, Mathf.Abs(movement.Velocity.x) > runThreshold ? pushingAnimationSpeed : 0f);
             animator.SetInteger(MotionState, (int)ChooseMotion(ledgeActive, onLadder, inWater, climbingRope));
@@ -67,9 +93,10 @@ namespace MousePlatformer
         private Motion ChooseMotion(bool ledgeActive, bool onLadder, bool inWater, bool climbingRope)
         {
             if (ledgeActive)
-                return ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging ? Motion.Hanging : Motion.ClimbUp;
+                return ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging ? Motion.WallHanging : Motion.ClimbUp;
             if (onLadder) return Motion.LadderClimb;
             if (ropeInteraction != null && ropeInteraction.Attached) return climbingRope ? Motion.RopeClimb : Motion.Hanging;
+            if (buttonPressRemaining > 0f) return Motion.PressButton;
             if (digging != null && digging.isActiveAndEnabled && digging.IsDigging) return Motion.Dig;
             if (inWater) return Motion.Swimming;
             if (!body.Grounded) return Motion.Jump;
@@ -79,6 +106,8 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            if (buttonInteraction != null) buttonInteraction.ButtonPressed -= OnButtonPressed;
+            buttonPressRemaining = 0f;
             if (animator != null)
             {
                 animator.SetBool(IsRunning, false);

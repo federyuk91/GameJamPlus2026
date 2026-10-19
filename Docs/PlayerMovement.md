@@ -1,5 +1,9 @@
 # Player platformer
 
+Airborne ledge attachment checks the reachable side/top and collision-free hanging alignment independently of the space above the ledge. Landing space and the swept up-then-across path are checked when attempting to climb, and rechecked on each new attempt so a moving obstacle can clear the route. A blocked climb keeps the mouse hanging. Jump + Up launches vertically when climbing is blocked; with a clear route it climbs normally. Jump away/no direction still launches away, Down drops, and ground-level automatic climbs still require full clearance before starting. Upward launches remain collision-constrained and cannot pass through ceilings. Review low-ceiling hangs, blocked/clear landing space and moving obstacles in Unity; no Play Mode tests were run.
+
+Ledge attachment and automatic obstacle climbs are blocked while PlayerSwimming detects the player underwater. The check refreshes after movement so entering water during the same physics tick cannot start a ledge hang. An active ledge interaction is cancelled if the player becomes submerged. Existing water detection uses the player collider's centre; ledges become available again when that point leaves the water volume.
+
 ## Ledge grabbing and climbing
 
 `PlayerLedgeClimb` distinguishes None, Hanging and Climbing:
@@ -60,7 +64,7 @@ LoopScene's Rope originally contained five Rope Piece objects joined through sim
 - Attach with E / gamepad west, or Up/W near the rope. Holding the button is unnecessary after attachment.
 - Climb with Up/Down, W/S, vertical stick or D-pad, at 2 units/s, clamped to the rope endpoints.
 - Swing with Left/Right, A/D, horizontal stick or D-pad. Rope acceleration is 70 units/s²; alternate input with the swing.
-- Release with Jump. The launch inherits velocity at the grip and adds 4 units/s tangentially in the swing direction plus 7 units/s upward. On a stationary rope, horizontal input chooses the jump side. Air control is reduced for 0.25 s to preserve momentum.
+- Release with Jump. Horizontal input (A/D, Left/Right, left stick or D-pad) selects the launch side, even opposite the current swing. Horizontal speed keeps the inherited magnitude with a minimum of Rope Jump Swing Boost (default 4 units/s), redirected toward the chosen side; vertical velocity inherits the rope's motion plus Rope Jump Up Speed (default 7 units/s). With no horizontal input, the launch follows the measured swing direction; at turning points it retains the last measured direction. A stationary rope with no direction input adds only the upward boost. Air control remains reduced for 0.25 s after release. Review jumps toward both sides, against the swing and without directional input in Unity; no automated tests or Play Mode were run for this change.
 
 `RopeChain` uses Verlet integration, four substeps and 24 constraint iterations. `RopeSimulation` connects the solver to scene pieces. `PlayerRopeInteraction` handles attachment, climbing and release; PlayerMovement coordinates each tick and releases crates when attaching to a rope. Reach, speed, acceleration, damping and timing are adjustable with explicit units. Reattachment is blocked for 0.3 s after release.
 
@@ -102,7 +106,7 @@ Create profiles with Create > Mouse Platformer > Physics Settings and assign eac
 
 Stair contains five StairPiece rungs and two child rails. Its Ladder trigger is 1×5 units. `PlayerLadderInteraction`, coordinated by PlayerMovement, attaches/climbs with Up/W/vertical input and descends with Down/S. Without vertical input it holds position without gravity. Jump plus Left/Right chooses the launch side; without direction it uses the last facing side.
 
-Grip position is stored in ladder-local space. Moving Stair or its parent carries the player at that point; support velocity is added to jumps. PlayerMovement ticks after default-order scripts, allowing FixedUpdate ladder movers to update first. Do not reparent the player or add Rigidbody2D. SimulatedBody2D sweeps remain active; blocked following releases the grip. Reaching either end detaches; at the top it attempts to place the feet above the edge without passing through solid platforms.
+Grip position is stored in ladder-local space. Moving Stair or its parent carries the player at that point; support velocity is added to jumps. PlayerMovement ticks after default-order scripts, allowing FixedUpdate ladder movers to update first. Do not reparent the player or add Rigidbody2D. SimulatedBody2D sweeps remain active; blocked following releases the grip. Descending past the bottom detaches. At the top, climbing stops 0.6 world units below the former feet-clearance position, clamped to the ladder bottom for very short ladders. The same limit applies on attachment. The player stays attached, including while holding Up or releasing vertical input. Down resumes descent; Jump releases the ladder.
 
 PhysicsSettings > Ladder contains climb speed 3 units/s, horizontal jump 6 units/s, upward jump 9 units/s, reach 0.65 units and reattachment delay 0.3 s. An already-held rope takes priority. Ladders can be used from water and release crate grips.
 

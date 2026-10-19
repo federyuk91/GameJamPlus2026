@@ -209,7 +209,7 @@ MonoBehaviour:
   - "Three photographs already? Such curiosity! We had better take a break now."
   - "You have seen quite enough for today. Let us give that curious mind a rest."
   - "What an inquisitive little mouse. Further observation will not be necessary."
-  duration: 30
+  duration: 7
 --- !u!114 &5000004101
 MonoBehaviour:
   m_ObjectHideFlags: 0

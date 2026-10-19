@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using GameJamPlus.UI;
 
 namespace MousePlatformer
 {
@@ -10,6 +11,9 @@ namespace MousePlatformer
         [SerializeField] private MouseFacing facing;
         [SerializeField] private SpriteRenderer playerVisual;
         [SerializeField] private Sprite[] bubbleSprites;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip bubbleClip;
+        [SerializeField, Range(0f, 1f)] private float bubbleVolume = 0.6f;
         [SerializeField, Min(0.01f)] private float emissionInterval = 0.12f;
         [SerializeField, Min(0.01f)] private float riseSpeed = 1.5f;
         [SerializeField, Min(0f)] private float wobbleWidth = 0.04f;
@@ -20,6 +24,7 @@ namespace MousePlatformer
         private int remainingEmissions;
         private int spriteIndex;
         private float emissionRemaining;
+        private bool burstSoundPlayed;
 
         private sealed class Bubble
         {
@@ -33,6 +38,23 @@ namespace MousePlatformer
             if (playerCollider == null) playerCollider = GetComponent<Collider2D>();
             if (facing == null) facing = GetComponent<MouseFacing>();
             effectRoot = new GameObject("Oxygen Bubbles FX");
+            if (audioSource != null)
+            {
+                audioSource.playOnAwake = false;
+                audioSource.loop = false;
+                audioSource.spatialBlend = 0f;
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameAudioSettings.EffectsVolumeChanged += ApplyEffectsVolume;
+            ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
+        }
+
+        private void ApplyEffectsVolume(float effectsVolume)
+        {
+            if (audioSource != null) audioSource.volume = bubbleVolume * effectsVolume;
         }
 
         public void PlayBurst()
@@ -41,6 +63,7 @@ namespace MousePlatformer
             remainingEmissions = 3;
             spriteIndex = 0;
             emissionRemaining = 0f;
+            burstSoundPlayed = false;
         }
 
         private void Update()
@@ -83,6 +106,16 @@ namespace MousePlatformer
                 Mathf.Lerp(bounds.min.y, bounds.max.y, mouthHeight));
             Sprite sprite = bubbleSprites[spriteIndex++ % bubbleSprites.Length];
             if (sprite == null || !WaterVolume.ContainsPoint(mouth)) return;
+            if (!burstSoundPlayed)
+            {
+                burstSoundPlayed = true;
+                if (audioSource != null && bubbleClip != null)
+                {
+                    ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
+                    audioSource.clip = bubbleClip;
+                    audioSource.Play();
+                }
+            }
             Bubble available = null;
             foreach (Bubble candidate in bubbles)
             {
@@ -114,6 +147,8 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
+            if (audioSource != null) audioSource.Stop();
             remainingEmissions = 0;
             foreach (Bubble bubble in bubbles)
                 if (bubble.Visual != null) bubble.Visual.enabled = false;

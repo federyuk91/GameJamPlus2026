@@ -94,7 +94,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.StarvationDeathZone
   anim: {fileID: 2722672897503172498}
   area: {fileID: 1002}
-  drainInterval: 5
+  drainInterval: 1
   showGizmos: 1
 --- !u!1 &2581307282513697735
 GameObject:

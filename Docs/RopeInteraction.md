@@ -1,5 +1,7 @@
 # Rope interaction
 
+After each successful cut, every contiguous fragment with fewer than two intact pieces is removed, on both the anchor/crate side and the falling side. Exactly two pieces remain visible. Cleanup runs before grip reassignment and cut callbacks, so the mouse detaches and crate connections release when their last surviving fragment disappears. If no pieces survive, RopeSimulation is disabled and unregisters from interaction searches; its piece visuals are hidden without deleting the parent object. Uncut one-piece ropes remain unchanged. Review cuts producing 1+1, 2+1 and 2+2 fragments and cuts while riding/tethered in Unity; no Play Mode tests were run.
+
 Player Rope Bite and Player Rope Interaction automatically choose nearby ropes from the registry of enabled RopeSimulation instances. No Player Ropes list is required; old lists no longer restrict interactions.
 
 - Grab: nearest anchor-connected segment to the hand within Physics Settings → Interaction Areas → Rope Grab Radius. The rope must be Available.

@@ -4,22 +4,29 @@ using UnityEngine;
 namespace GameJamPlus.UI
 {
     public enum InputPromptFamily { Keyboard, Xbox, PlayStation, NintendoSwitch }
-    public enum InputPromptAction { Interact, CutOrDig, Advance, Collect, MoveCrate }
+    public enum InputPromptAction { Interact, CutOrDig, Advance, Collect, MoveCrate, Up }
 
     [Serializable]
     public sealed class InputPromptIconSet
     {
         [SerializeField] private Sprite interact;
+        [SerializeField] private Sprite collect;
+        [SerializeField] private Sprite moveCrate;
         [SerializeField] private Sprite cutOrDig;
         [SerializeField] private Sprite advance;
+        [SerializeField] private Sprite up;
 
         public Sprite Get(InputPromptAction action)
         {
             switch (action)
             {
                 case InputPromptAction.Interact: return interact;
+                case InputPromptAction.Collect: return collect;
+                case InputPromptAction.MoveCrate: return moveCrate;
                 case InputPromptAction.CutOrDig: return cutOrDig;
-                default: return advance;
+                case InputPromptAction.Up: return up;
+                case InputPromptAction.Advance: return advance;
+                default: return null;
             }
         }
     }
@@ -34,10 +41,6 @@ namespace GameJamPlus.UI
 
         public Sprite Get(InputPromptFamily family, InputPromptAction action)
         {
-            if (action == InputPromptAction.Collect)
-                action = family == InputPromptFamily.Keyboard ? InputPromptAction.CutOrDig : InputPromptAction.Interact;
-            if (action == InputPromptAction.MoveCrate)
-                action = family == InputPromptFamily.Keyboard ? InputPromptAction.Interact : InputPromptAction.CutOrDig;
             InputPromptIconSet icons;
             switch (family)
             {

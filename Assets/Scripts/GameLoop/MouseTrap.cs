@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using GameJamPlus.UI;
 
 namespace GameJamPlus.Gameplay
 {
@@ -11,6 +12,9 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Sprite[] closingFrames;
         [SerializeField] private TestEndEvent testEnd;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip goreClip;
+        [SerializeField, Range(0f, 1f)] private float goreVolume = 0.8f;
         [SerializeField, Min(0.01f)] private float frameDuration = 0.08f;
         [SerializeField, Min(0f)] private float closedHoldDuration = 0.25f;
         [SerializeField] private bool showGizmos = true;
@@ -23,7 +27,32 @@ namespace GameJamPlus.Gameplay
             if (contactArea == null) contactArea = GetComponent<BoxCollider2D>();
             if (testEnd == null) testEnd = GetComponent<TestEndEvent>();
             contactArea.isTrigger = true;
+            if (audioSource != null)
+            {
+                audioSource.playOnAwake = false;
+                audioSource.loop = false;
+                audioSource.spatialBlend = 0f;
+            }
             if (visual != null && closingFrames != null && closingFrames.Length > 0) visual.sprite = closingFrames[0];
+        }
+
+        private void OnEnable()
+        {
+            GameAudioSettings.EffectsVolumeChanged += ApplyEffectsVolume;
+            ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
+        }
+
+        private void ApplyEffectsVolume(float effectsVolume)
+        {
+            if (audioSource != null) audioSource.volume = goreVolume * effectsVolume;
+        }
+
+        private void PlayGoreSound()
+        {
+            if (audioSource == null || goreClip == null) return;
+            ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
+            audioSource.clip = goreClip;
+            audioSource.Play();
         }
 
         private void FixedUpdate()
@@ -37,6 +66,7 @@ namespace GameJamPlus.Gameplay
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f || !testEnd.BeginAnimatedEnd()) return;
             triggered = true;
+            PlayGoreSound();
             animationRoutine = StartCoroutine(PlayClosingAnimation());
         }
 
@@ -56,6 +86,8 @@ namespace GameJamPlus.Gameplay
 
         private void OnDisable()
         {
+            GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
+            if (audioSource != null) audioSource.Stop();
             if (animationRoutine != null) StopCoroutine(animationRoutine);
             animationRoutine = null;
             // A despawned trap must not leave the game paused while awaiting animation completion.

@@ -27,9 +27,15 @@ namespace GameJamPlus.UI
         private VisualElement root;
         private VisualElement mainPanel;
         private InputAction menuSubmit;
+        private InputAction menuNavigate;
+        private InputAction menuCancel;
         private InputActionAsset menuInputAsset;
         private InputActionReference menuSubmitReference;
         private InputActionReference originalSubmitReference;
+        private InputActionReference menuNavigateReference;
+        private InputActionReference menuCancelReference;
+        private InputActionReference originalNavigateReference;
+        private InputActionReference originalCancelReference;
         private VisualElement optionsPanel;
         private VisualElement[] previewPanels;
         private Button[] menuButtons;
@@ -39,6 +45,9 @@ namespace GameJamPlus.UI
         private Slider effectsVolume;
         private Toggle fullscreen;
         private Label status;
+        private InputDevicePrompts devicePrompts;
+        private Label navigationHint;
+        private Label actionHint;
         private bool editingRightPanel;
         private VisualElement previewColumn;
         private VisualElement channelOverlay;
@@ -84,6 +93,11 @@ namespace GameJamPlus.UI
             previewPanels = new VisualElement[] { root.Q("welcome-panel"), optionsPanel, root.Q("credits-panel"), root.Q("quit-panel") };
             menuButtons = new Button[] { root.Q<Button>("new-game"), root.Q<Button>("options"), root.Q<Button>("credits"), root.Q<Button>("quit") };
             status = root.Q<Label>("status");
+            navigationHint = root.Q<Label>("menu-navigation-hint");
+            actionHint = root.Q<Label>("menu-action-hint");
+            devicePrompts = new InputDevicePrompts();
+            devicePrompts.Changed += RefreshDevicePrompts;
+            RefreshDevicePrompts();
             masterVolume = root.Q<Slider>("volume");
             musicVolume = root.Q<Slider>("music-volume");
             effectsVolume = root.Q<Slider>("effects-volume");
@@ -112,7 +126,7 @@ namespace GameJamPlus.UI
             masterVolume.SetValueWithoutNotify(GameAudioSettings.MasterVolume);
             musicVolume.SetValueWithoutNotify(GameAudioSettings.MusicVolume);
             effectsVolume.SetValueWithoutNotify(GameAudioSettings.EffectsVolume);
-            bool savedFullscreen = PlayerPrefs.GetInt(FullscreenKey, Screen.fullScreen ? 1 : 0) == 1;
+            bool savedFullscreen = PlayerPrefs.GetInt(FullscreenKey, 1) == 1;
             fullscreen.SetValueWithoutNotify(savedFullscreen);
             Screen.fullScreen = savedFullscreen;
             masterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
@@ -128,6 +142,9 @@ namespace GameJamPlus.UI
         {
             initialFocus?.Pause();
             if (root == null) return;
+            devicePrompts.Changed -= RefreshDevicePrompts;
+            devicePrompts.Dispose();
+            devicePrompts = null;
             CancelChannelTransition();
             channelViewport.UnregisterCallback<GeometryChangedEvent>(OnChannelGeometryChanged);
             channelOverlay.RemoveFromHierarchy();
@@ -155,10 +172,18 @@ namespace GameJamPlus.UI
             root = null;
         }
 
+        private void RefreshDevicePrompts()
+        {
+            navigationHint.text = $"{devicePrompts.Move}  Navigate";
+            actionHint.text = $"{devicePrompts.Confirm}  Confirm     {devicePrompts.Cancel}  Back";
+        }
+
         private void ConfigureSubmit()
         {
             if (uiInputModule == null) return;
             originalSubmitReference = uiInputModule.submit;
+            originalNavigateReference = uiInputModule.move;
+            originalCancelReference = uiInputModule.cancel;
             menuInputAsset = ScriptableObject.CreateInstance<InputActionAsset>();
             menuInputAsset.name = "Main Menu Input";
             InputActionMap menuMap = menuInputAsset.AddActionMap("MainMenu");
@@ -168,22 +193,56 @@ namespace GameJamPlus.UI
             menuSubmit.AddBinding("<Joystick>/{Submit}");
             menuSubmit.AddBinding("<XRController>/{Submit}");
             menuSubmitReference = InputActionReference.Create(menuSubmit);
+            menuNavigate = menuMap.AddAction("Navigate", InputActionType.PassThrough);
+            menuNavigate.expectedControlType = "Vector2";
+            menuNavigate.AddBinding("<Gamepad>/leftStick").WithProcessor("stickDeadzone");
+            menuNavigate.AddBinding("<Gamepad>/dpad");
+            menuNavigate.AddCompositeBinding("2DVector")
+                .With("Up", "<Keyboard>/w").With("Up", "<Keyboard>/upArrow")
+                .With("Down", "<Keyboard>/s").With("Down", "<Keyboard>/downArrow")
+                .With("Left", "<Keyboard>/a").With("Left", "<Keyboard>/leftArrow")
+                .With("Right", "<Keyboard>/d").With("Right", "<Keyboard>/rightArrow");
+            menuCancel = menuMap.AddAction("Back", InputActionType.Button);
+            menuCancel.AddBinding("<Keyboard>/escape");
+            menuCancel.AddBinding("<Gamepad>/buttonEast");
+            menuNavigateReference = InputActionReference.Create(menuNavigate);
+            menuCancelReference = InputActionReference.Create(menuCancel);
             uiInputModule.submit = menuSubmitReference;
+            uiInputModule.move = menuNavigateReference;
+            uiInputModule.cancel = menuCancelReference;
             menuSubmit.Enable();
+            menuNavigate.Enable();
+            menuCancel.Enable();
         }
 
         private void RestoreSubmit()
         {
             if (uiInputModule != null && menuSubmitReference != null)
+            {
                 uiInputModule.submit = originalSubmitReference;
+                uiInputModule.move = originalNavigateReference;
+                uiInputModule.cancel = originalCancelReference;
+            }
             menuSubmit?.Disable();
+            menuNavigate?.Disable();
+            menuCancel?.Disable();
             menuSubmit?.Dispose();
+            menuNavigate?.Dispose();
+            menuCancel?.Dispose();
             if (menuSubmitReference != null) Destroy(menuSubmitReference);
+            if (menuNavigateReference != null) Destroy(menuNavigateReference);
+            if (menuCancelReference != null) Destroy(menuCancelReference);
             if (menuInputAsset != null) Destroy(menuInputAsset);
             menuSubmit = null;
+            menuNavigate = null;
+            menuCancel = null;
             menuSubmitReference = null;
+            menuNavigateReference = null;
+            menuCancelReference = null;
             menuInputAsset = null;
             originalSubmitReference = null;
+            originalNavigateReference = null;
+            originalCancelReference = null;
         }
 
         private void OnMenuPointerEnter(PointerEnterEvent pointerEvent)

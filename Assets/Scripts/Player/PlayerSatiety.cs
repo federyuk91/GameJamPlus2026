@@ -10,9 +10,11 @@ namespace MousePlatformer
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private CollectibleCollector collector;
         [SerializeField] private TestEndEvent starvationOutcome;
+        [SerializeField] private PlayerWheelInteraction wheel;
         [SerializeField, Min(1)] private int maximumNotches = 5;
         [SerializeField, Min(0.1f)] private float drainInterval = 60f;
         private float drainProgress;
+        private float wheelDrainProgress;
 
         public int Current { get; private set; }
         public int Maximum => Mathf.Max(1, maximumNotches);
@@ -29,42 +31,35 @@ namespace MousePlatformer
         private void OnEnable()
         {
             if (collector != null) collector.CountChanged += OnCollected;
+            if (wheel != null) wheel.UsageChanged += ResetWheelDrain;
         }
 
         private void OnDisable()
         {
             if (collector != null) collector.CountChanged -= OnCollected;
+            if (wheel != null) wheel.UsageChanged -= ResetWheelDrain;
         }
+
+        private void ResetWheelDrain() => wheelDrainProgress = 0f;
 
         private void FixedUpdate()
         {
             GameManager manager = GameManager.Instance;
             if (Current <= 0 || manager == null || manager.State != GameManager.LoopState.Playing) return;
             float interval = Mathf.Max(0.1f, drainInterval);
-            if (StarvationDeathZone.ActiveZones.Count > 0)
+            if (wheel != null && wheel.IsUsing)
             {
-                Physics2D.SyncTransforms();
-                for (int index = 0; index < StarvationDeathZone.ActiveZones.Count; index++)
-                {
-                    StarvationDeathZone zone = StarvationDeathZone.ActiveZones[index];
-                    if (zone.Contains(playerCollider))
-                    {
-                        playerCollider.GetComponentInChildren<SpriteRenderer>().enabled = false;
-                        zone.anim.SetBool("isActive", true);
-                        interval = Mathf.Min(interval, zone.DrainInterval);
-                    }
-                    else
-                    {
-
-                        playerCollider.GetComponentInChildren<SpriteRenderer>().enabled=true;
-                        zone.anim.SetBool("isActive", false);
-                    }
-                }
+                wheelDrainProgress += Time.fixedDeltaTime;
+                if (wheelDrainProgress < wheel.DrainInterval) return;
+                wheelDrainProgress -= wheel.DrainInterval;
             }
-            // Preserve partial consumption when changing zones; overlapping zones use the fastest rate.
-            drainProgress += Time.fixedDeltaTime / interval;
-            if (drainProgress < 1f) return;
-            drainProgress -= 1f;
+            else
+            {
+                wheelDrainProgress = 0f;
+                drainProgress += Time.fixedDeltaTime / interval;
+                if (drainProgress < 1f) return;
+                drainProgress -= 1f;
+            }
             Current--;
             Changed?.Invoke(Current, Maximum);
             NotchLost?.Invoke();
@@ -81,6 +76,7 @@ namespace MousePlatformer
             if (Current <= 0) return;
             Current = Maximum;
             drainProgress = 0f;
+            wheelDrainProgress = 0f;
             Changed?.Invoke(Current, Maximum);
         }
     }

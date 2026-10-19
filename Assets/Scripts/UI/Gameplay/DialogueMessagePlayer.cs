@@ -8,7 +8,7 @@ namespace GameJamPlus.UI
         [SerializeField] private GameplayHudController hud;
         [SerializeField] private Sprite avatar;
         [SerializeField, TextArea(2, 6)] private string[] messages = new string[0];
-        [SerializeField, Range(1f, 30f)] private float duration = 30f;
+        [SerializeField, Range(1f, 30f)] private float duration = 7f;
 
         public Sprite Avatar => avatar;
         public string ChooseMessage() => ChooseRandomMessage(messages);

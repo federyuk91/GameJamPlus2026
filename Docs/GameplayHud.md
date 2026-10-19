@@ -102,3 +102,13 @@ Display margins: 8 px horizontally, 7 vertically. SYSTEM and first icon share th
 Resources use 8-pixel horizontal/7-pixel vertical margins, a 12-pixel heading and 6-pixel counter gap. Satiety caption is 8 px; notches 14×7 centered. Four equal columns retain 20-pixel icons, a 6-pixel value gap, 10-pixel numbers vertically centered in a 20-pixel region, without backgrounds.
 
 Timer is now 80×18 in the upper band: 5-pixel title on a 6-pixel row, 7-pixel digits on a 9-pixel row, padding top 1/bottom 2. Rows do not shrink; text is centered and digits reduced to avoid bottom clipping. No logic/icons changed. Visual review remains manual.
+
+## Automatic communication timeout
+
+All existing scientist dialogue components and the welcome message use a 7-second timeout per message. Test-ending comments also close automatically after 7 seconds, then show the result screen via the existing completion callback. Reveal/Next/Close remain available to advance earlier. The timeout uses unscaled time, including while the game is paused for a test ending. SYSTEM interaction hints keep their contextual visibility.
+
+## SYSTEM command portrait
+
+Contextual hints now put the active device's green-tinted key sprite in the avatar terminal, at 40 × 40 logical pixels. The text terminal contains English usage instructions (press, hold, direction) without inline key sprites. When two different keys have available actions, both appear side by side at 22 × 32; the instructions include key names to associate each action with its sprite. Missing sprites fall back to the key name in the avatar terminal.
+
+The key display is rebuilt from current availability, without a tooltip queue. Scientist communications retain priority and restore the normal portrait; leaving interaction range clears the keys and returns the LED to idle. The runtime container `system-command-keys` uses the existing avatar terminal and does not modify its manually edited frame or LED positioning. Visual review remains manual.

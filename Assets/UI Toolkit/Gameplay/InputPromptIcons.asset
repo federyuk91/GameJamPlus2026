@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: InputPromptIcons
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.InputPromptIcons
   keyboard:
-    interact: {fileID: 1622727937493990531, guid: 481e01d7e03bc164686d0a15ef7a530c, type: 3}
+    interact: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
+    collect: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
+    moveCrate: {fileID: 1622727937493990531, guid: 481e01d7e03bc164686d0a15ef7a530c, type: 3}
     cutOrDig: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
     advance: {fileID: -9125861541802950594, guid: 0c0d17ffbe7495d4d9240192b298942f, type: 3}
-
+    up: {fileID: 6539619573780045288, guid: c8eb95b5702a07f4bbe73b9c2ea87221, type: 3}
   xbox:
-    interact: {fileID: 7183707057315010591, guid: 317d2474d21a5fa43a91bf1721c5b3ad, type: 3}
-    cutOrDig: {fileID: 643402748272714948, guid: 30b9d6bcf39bbe841880000237ae34fd, type: 3}
-    advance: {fileID: 7183707057315010591, guid: 317d2474d21a5fa43a91bf1721c5b3ad, type: 3}
-
+    interact: {fileID: 188512448405969343, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
+    collect: {fileID: 188512448405969343, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
+    moveCrate: {fileID: 188512448405969343, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
+    cutOrDig: {fileID: 5693697828646014099, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
+    advance: {fileID: 188512448405969343, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
+    up: {fileID: 3535339483587531409, guid: 1b7610699cadc43428b740e53bfd1014, type: 3}
   playStation:
-    interact: {fileID: 265468883692527984, guid: b5204d2fbfd0d274fabf08cfe95251e6, type: 3}
-    cutOrDig: {fileID: -5433958992158819592, guid: c2416f49c143ce2499ed2334e512c585, type: 3}
-    advance: {fileID: 265468883692527984, guid: b5204d2fbfd0d274fabf08cfe95251e6, type: 3}
-
+    interact: {fileID: 0}
+    collect: {fileID: 0}
+    moveCrate: {fileID: 0}
+    cutOrDig: {fileID: 0}
+    advance: {fileID: 0}
+    up: {fileID: 0}
   nintendoSwitch:
-    interact: {fileID: 6336310393044179604, guid: dd9d3dc3a08248a4eaea29d2559a8d2f, type: 3}
-    cutOrDig: {fileID: -679083064054180673, guid: e2f5ff3c4ae0fe84a88f76bc4be87749, type: 3}
-    advance: {fileID: 6336310393044179604, guid: dd9d3dc3a08248a4eaea29d2559a8d2f, type: 3}
+    interact: {fileID: 0}
+    collect: {fileID: 0}
+    moveCrate: {fileID: 0}
+    cutOrDig: {fileID: 0}
+    advance: {fileID: 0}
+    up: {fileID: 0}

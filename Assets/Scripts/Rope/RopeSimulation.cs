@@ -28,6 +28,7 @@ namespace MousePlatformer
         [SerializeField] private RopeSwingConstraint swingLimits = new RopeSwingConstraint();
         [SerializeField] private bool canBeCut = true;
         [SerializeField] private bool showGizmos = true;
+        [SerializeField] private BalloonLift balloonAnchor;
         private CrateRopeAttachment load;
         private bool retainCrateSide;
         private RopeChain chain;
@@ -44,7 +45,11 @@ namespace MousePlatformer
         public bool CanBeCut => canBeCut;
         public bool ShowGizmos => showGizmos;
         public bool HasBeenCut { get; private set; }
-        public bool KeepCrateSideAfterCut => retainCrateSide || (!HasBeenCut && load != null && load.InWater
+        public BalloonLift BalloonAnchor => balloonAnchor;
+        public CrateRopeAttachment Load => load;
+        public bool HasIntactLoadConnection => load != null && load.Attached && !HasBeenCut
+            && chain != null && chain.ConnectedSegmentCount == chain.SegmentCount;
+        public bool KeepCrateSideAfterCut => retainCrateSide || (!HasBeenCut && load != null && load.Floats
             && load.AttachmentPoint.y > transform.position.y + 0.01f);
         public int ClimbableFirstSegment => chain != null && retainCrateSide
             ? chain.SegmentCount - chain.EndpointConnectedSegmentCount : 0;
@@ -53,6 +58,38 @@ namespace MousePlatformer
         public float ClimbableLength => chain != null ? ClimbableEndSegment * chain.SegmentLength : 0f;
         public float MinimumGripDistance => retainCrateSide ? ClimbableStart : Mathf.Min(0.3f, ClimbableLength);
         public event Action<RopeSimulation> Cut;
+
+        public Vector2 AnchorPull(Vector2 anchorVelocity)
+        {
+            if (rider == null || !rider.isActiveAndEnabled || chain == null
+                || gripDistance <= 0f || gripDistance > chain.ConnectedLength)
+                return Vector2.zero;
+            return RiderPull(transform.position, anchorVelocity);
+        }
+
+        public Vector2 LoadPull(CrateRopeAttachment attachment, Vector2 endpointVelocity)
+        {
+            if (load != attachment || attachment == null || !attachment.HasRopeConnection
+                || rider == null || !rider.isActiveAndEnabled || chain == null
+                || chain.EndpointConnectedSegmentCount == 0
+                || gripDistance < (chain.SegmentCount - chain.EndpointConnectedSegmentCount) * chain.SegmentLength)
+                return Vector2.zero;
+            return RiderPull(attachment.AttachmentPoint, endpointVelocity);
+        }
+
+        private Vector2 RiderPull(Vector2 attachmentPoint, Vector2 attachmentVelocity)
+        {
+            Vector2 radial = chain.Point(gripDistance) - attachmentPoint;
+            float distance = radial.magnitude;
+            if (distance < 0.01f) return Vector2.zero;
+            Vector2 direction = radial / distance;
+            Vector2 relativeVelocity = chain.Velocity(gripDistance) - attachmentVelocity;
+            Vector2 tangentVelocity = relativeVelocity - direction * Vector2.Dot(relativeVelocity, direction);
+            float gravity = (physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity).ropeGravity;
+            // Pendulum tension transfers both the hanging weight and the swing's centripetal load.
+            float tension = Mathf.Max(0f, -gravity * direction.y) + tangentVelocity.sqrMagnitude / distance;
+            return direction * Mathf.Min(tension, 120f);
+        }
 
         public void SetPieces(Transform[] value)
         {
@@ -115,11 +152,13 @@ namespace MousePlatformer
             if (!isActiveAndEnabled || !canBeCut || chain == null || !chain.IsSegmentIntact(segment)) return false;
             bool keepCrate = KeepCrateSideAfterCut;
             if (!chain.CutSegment(segment)) return false;
+            int remainingPieces = chain.RemoveShortFragments(2);
             retainCrateSide = keepCrate;
             HasBeenCut = true;
             rider?.RetainGripAfterCut(this);
             Cut?.Invoke(this);
             UpdatePieces();
+            if (remainingPieces == 0) enabled = false;
             return true;
         }
 

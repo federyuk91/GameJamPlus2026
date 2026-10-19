@@ -15,18 +15,20 @@ namespace GameJamPlus.UI
         private static readonly string[] CounterNames = { "primary", "secondary", "tertiary", "quaternary" };
 
         [SerializeField] private UIDocument document;
+        [SerializeField] private PlayerInputReader playerInput;
         [SerializeField] private CollectibleCollector collectibleCollector;
         [SerializeField] private GameplayInteractionAvailability interactionAvailability;
         [SerializeField] private InputPromptIcons inputPromptIcons;
         [SerializeField] private PixelPerfectViewport viewport;
         [SerializeField] private PlatformCameraController cameraController;
+        [SerializeField] private Sprite scientistPortrait;
         [SerializeField] private Sprite defaultCounterIcon;
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
         [SerializeField] private bool showWelcomeOnStart = true;
         [SerializeField, TextArea] private string welcomeText =
             "Welcome to Universe-10. Relax and enjoy your stay.";
         [SerializeField] private Sprite welcomePortrait;
-        [SerializeField, Range(1f, 30f)] private float welcomeDuration = 30f;
+        [SerializeField, Range(1f, 30f)] private float welcomeDuration = 7f;
         [SerializeField] private bool pauseWhilePhotoOpen = true;
 
         private readonly int[] counterValues = new int[CounterNames.Length];
@@ -60,6 +62,7 @@ namespace GameJamPlus.UI
         private Action photoContinue;
         private float photoPreviousTimeScale;
         private bool photoOwnsPause;
+        private GameplayPauseMenuView pauseMenu;
 
         public event Action TestCommentCompleted;
         public event Action TestContinueRequested;
@@ -71,7 +74,7 @@ namespace GameJamPlus.UI
         {
             advanceScientistComment = new InputAction("Advance Scientist Comment", InputActionType.Button);
             advanceScientistComment.AddBinding("<Keyboard>/f");
-            advanceScientistComment.AddBinding("<Gamepad>/buttonWest");
+            advanceScientistComment.AddBinding("<Gamepad>/buttonEast");
             advanceScientistComment.performed += OnAdvanceScientistComment;
             scrollScientistComment = new InputAction("Scroll Scientist Comment", InputActionType.Value,
                 expectedControlType: "Axis");
@@ -125,6 +128,9 @@ namespace GameJamPlus.UI
             scientistView = new ScientistCommentView(root, viewport.VerticalBorderPixels);
             testResultView = new TestResultView(root, OnTestContinueRequested);
             photoView = new PhotoView(root, ContinuePhoto);
+            pauseMenu = new GameplayPauseMenuView(root, playerInput,
+                () => ready && !testEnding && !photoView.IsVisible && !testResultView.IsVisible);
+            pauseMenu.Changed += OnPauseChanged;
             interactionHints = root.Q("interaction-hints");
             devicePrompts = new InputDevicePrompts();
             devicePrompts.Changed += RefreshDevicePrompts;
@@ -158,6 +164,9 @@ namespace GameJamPlus.UI
             if (!ready)
                 return;
 
+            pauseMenu.Tick();
+            if (!ready || pauseMenu == null || pauseMenu.IsOpen) return;
+
             bool paused = Time.timeScale <= 0f;
             bool dialogueVisible = communicationInProgress || scientistView.IsVisible;
             if (hintsPaused != paused || hintsDialogueVisible != dialogueVisible)
@@ -168,6 +177,8 @@ namespace GameJamPlus.UI
             }
             if (scientistView.IsOpen)
                 scientistView.ScrollText(-scrollScientistComment.ReadValue<float>() * 60f * Time.unscaledDeltaTime);
+            if (testResultView.IsVisible)
+                testResultView.ScrollNotes(-scrollScientistComment.ReadValue<float>() * 60f * Time.unscaledDeltaTime);
             if (!timerRunning) return;
 
             elapsedSeconds += Time.deltaTime;
@@ -181,6 +192,23 @@ namespace GameJamPlus.UI
             if (ready) RefreshTimer();
         }
 
+        private void OnPauseChanged(bool paused)
+        {
+            scientistView.SetSuspended(paused);
+            if (paused)
+            {
+                advanceScientistComment.Disable();
+                scrollScientistComment.Disable();
+            }
+            else
+            {
+                advanceScientistComment.Enable();
+                scrollScientistComment.Enable();
+            }
+            hintsPaused = Time.timeScale <= 0f;
+            RefreshInteractionHints();
+        }
+
         public void SetTimerRunning(bool running)
         {
             timerRunning = running;
@@ -191,6 +219,7 @@ namespace GameJamPlus.UI
         public void ShowPhoto(Texture2D photo, Action onContinue = null)
         {
             if (!ready || testEnding) return;
+            pauseMenu?.Resume();
             bool opening = !photoView.IsVisible;
             if (!photoView.IsVisible && pauseWhilePhotoOpen)
             {
@@ -239,9 +268,10 @@ namespace GameJamPlus.UI
 
         public void ShowTestComment(string text, Sprite portrait)
         {
+            if (portrait == null) portrait = scientistPortrait;
             HideScientistComment();
             communicationInProgress = true;
-            scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, 30f, true));
+            scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, 7f, true));
         }
 
         public void ShowTestResult(int universeNumber, double elapsed, string result)
@@ -279,7 +309,7 @@ namespace GameJamPlus.UI
             }
         }
 
-        public void ShowScientistComment(string text, Sprite portrait, float duration = 30f)
+        public void ShowScientistComment(string text, Sprite portrait, float duration = 7f)
         {
             if (!ready || string.IsNullOrWhiteSpace(text))
                 return;
@@ -287,9 +317,10 @@ namespace GameJamPlus.UI
             ShowScientistComment(new[] { text }, portrait, duration);
         }
 
-        public void ShowScientistComment(string[] texts, Sprite portrait, float duration = 30f)
+        public void ShowScientistComment(string[] texts, Sprite portrait, float duration = 7f)
         {
             if (!ready || testEnding || texts == null) return;
+            if (portrait == null) portrait = scientistPortrait;
             List<string> messages = new List<string>();
             foreach (string text in texts)
             {
@@ -314,6 +345,8 @@ namespace GameJamPlus.UI
 
         private void OnAdvanceScientistComment(InputAction.CallbackContext context)
         {
+            if (pauseMenu != null && pauseMenu.IsOpen) return;
+            if (playerInput != null && playerInput.GameplayActionsLocked && !testEnding) return;
             if ((photoView != null && photoView.IsVisible) || (testResultView != null && testResultView.IsVisible)
                 || communicationInProgress || (scientistView != null && scientistView.IsVisible))
                 collectibleCollector?.ConsumeInteractionInput();
@@ -342,6 +375,7 @@ namespace GameJamPlus.UI
 
         private void RefreshDevicePrompts()
         {
+            pauseMenu?.SetDevice(devicePrompts);
             interactionAvailability?.SetUsingGamepad(devicePrompts.UsingGamepad);
             Sprite advanceIcon = GetPromptIcon(InputPromptAction.Advance);
             scientistView.SetAdvanceKey(devicePrompts.Advance, advanceIcon);
@@ -380,6 +414,7 @@ namespace GameJamPlus.UI
         private void RefreshCurrentInteractionHints()
         {
             interactionHints.Clear();
+            scientistView.ClearSystemCommands();
             bool blocked = communicationInProgress || scientistView.IsVisible || testEnding
                 || Time.timeScale <= 0f || photoView.IsVisible || testResultView.IsVisible;
             if (blocked)
@@ -399,19 +434,26 @@ namespace GameJamPlus.UI
                 return;
             }
             if ((available & AvailableGameplayActions.MoveCrate) != 0)
-                AddInteractionHint(InputPromptAction.MoveCrate, devicePrompts.MoveCrate, "Hold + direction to push / pull");
+                AddInteractionHint(InputPromptAction.MoveCrate, devicePrompts.MoveCrate, "Hold {key} and move to push or pull.");
+            if ((available & AvailableGameplayActions.ClimbLedge) != 0)
+                AddInteractionHint(InputPromptAction.Up, devicePrompts.Up,
+                    "Press {key} to climb up, or " + devicePrompts.Jump + " toward the ledge. Down to drop; "
+                    + devicePrompts.Jump + " away to jump off. If blocked, " + devicePrompts.Jump + " + Up to jump upward.");
             if ((available & AvailableGameplayActions.EatCheese) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Eat cheese");
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to eat the cheese.");
             if ((available & AvailableGameplayActions.EatGreenCheese) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Eat green cheese");
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to eat the green cheese.");
             if ((available & AvailableGameplayActions.CollectPhoto) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Collect photo");
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to collect the photo.");
             if ((available & AvailableGameplayActions.PressButton) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press button");
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to activate the button.");
+            if ((available & AvailableGameplayActions.UseWheel) != 0)
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect,
+                    interactionAvailability.IsUsingWheel ? "Press {key} to step off the wheel." : "Press {key} to use the wheel.");
             if ((available & AvailableGameplayActions.CutRope) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold to cut rope");
+                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold {key} to cut the rope.");
             if ((available & AvailableGameplayActions.Dig) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold + direction to dig");
+                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.CutOrDig, "Hold {key} and choose a direction to dig.");
             bool showSystem = interactionHints.childCount > 0;
             interactionHints.style.display = showSystem ? DisplayStyle.Flex : DisplayStyle.None;
             scientistView.ShowSystemHints(showSystem);
@@ -426,21 +468,8 @@ namespace GameJamPlus.UI
         {
             VisualElement row = new VisualElement { pickingMode = PickingMode.Ignore };
             row.AddToClassList("interaction-hint-row");
-            Sprite sprite = GetPromptIcon(action);
-            if (sprite != null)
-            {
-                VisualElement icon = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = key };
-                icon.AddToClassList("input-key-icon");
-                icon.style.backgroundImage = new StyleBackground(sprite);
-                row.Add(icon);
-            }
-            else
-            {
-                Label fallback = new Label(key) { pickingMode = PickingMode.Ignore };
-                fallback.AddToClassList("input-key-fallback");
-                row.Add(fallback);
-            }
-            Label label = new Label(description) { pickingMode = PickingMode.Ignore };
+            scientistView.AddSystemCommand(key, GetPromptIcon(action));
+            Label label = new Label(description.Replace("{key}", key)) { pickingMode = PickingMode.Ignore };
             label.AddToClassList("interaction-hint-description");
             row.Add(label);
             interactionHints.Add(row);
@@ -485,6 +514,12 @@ namespace GameJamPlus.UI
 
         private void OnDisable()
         {
+            if (pauseMenu != null)
+            {
+                pauseMenu.Dispose();
+                pauseMenu.Changed -= OnPauseChanged;
+                pauseMenu = null;
+            }
             if (cameraController != null) cameraController.HeightLockChanged -= OnCameraHeightLockChanged;
             HidePhoto();
             if (interactionAvailability != null) interactionAvailability.Changed -= OnAvailableActionsChanged;

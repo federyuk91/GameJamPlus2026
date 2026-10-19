@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -10,6 +11,7 @@ namespace MousePlatformer
         [SerializeField] private PhysicsSettings physicsSettings;
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         public bool InWater { get; private set; }
+        public event Action StrokePerformed;
         private float strokeControlRemaining;
         private SwimMotion Settings => physicsSettings != null ? physicsSettings.water : PhysicsSettings.DefaultWater;
         public bool HasStrokeControl => isActiveAndEnabled && strokeControlRemaining > 0f;
@@ -21,13 +23,13 @@ namespace MousePlatformer
             if (!isActiveAndEnabled) { InWater = false; return false; }
             if (body == null) body = GetComponent<SimulatedBody2D>();
             Physics2D.SyncTransforms();
-            var filter = new ContactFilter2D { useTriggers = true };
+            ContactFilter2D filter = new ContactFilter2D { useTriggers = true };
             // Point queries work for simulated Transform bodies without trigger callbacks.
             Physics2D.OverlapPoint(body.Shape.bounds.center, filter, overlaps);
             InWater = false;
             foreach (Collider2D candidate in overlaps)
             {
-                var volume = candidate.GetComponent<WaterVolume>();
+                WaterVolume volume = candidate.GetComponent<WaterVolume>();
                 if (volume == null || !volume.isActiveAndEnabled || !candidate.isTrigger) continue;
                 InWater = true;
                 break;
@@ -37,7 +39,11 @@ namespace MousePlatformer
 
         public Vector2 Step(Vector2 velocity, float horizontal, bool strokePressed, float dt)
         {
-            if (strokePressed) strokeControlRemaining = Settings.strokeControlTime;
+            if (strokePressed)
+            {
+                strokeControlRemaining = Settings.strokeControlTime;
+                if (InWater && dt > 0f) StrokePerformed?.Invoke();
+            }
             return Settings.Step(velocity, horizontal, strokePressed, dt, HasStrokeControl);
         }
 

@@ -47,18 +47,23 @@ namespace MousePlatformer
 
             if (held != null)
             {
+                float weight = held.StackWeight;
+                if (weight >= PushableCrate.PlayerPushWeightLimit)
+                {
+                    Release();
+                    return 0f;
+                }
                 if (!interactionStarted && Mathf.Abs(requested) > 0.0001f)
                 {
                     interactionStarted = true;
                     InteractionStarted?.Invoke();
                 }
-                float maxDisplacement = Settings.crateMoveSpeed / held.Weight * Time.fixedDeltaTime;
+                float maxDisplacement = Settings.crateMoveSpeed / Mathf.Max(0.01f, weight) * Time.fixedDeltaTime;
                 float limited = Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
                 float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape);
                 float crateAllowed = held.Body.AllowedHorizontal(limited, body.Shape);
                 float shared = Mathf.Sign(limited) * Mathf.Min(Mathf.Abs(playerAllowed), Mathf.Abs(crateAllowed));
-                held.Body.MoveHorizontal(shared, body.Shape);
-                return shared;
+                return held.MoveHorizontal(shared, body.Shape);
             }
 
             return requested;
@@ -68,7 +73,8 @@ namespace MousePlatformer
         {
             Collider2D hit = body.Probe(Vector2.right * direction, reach, out distance);
             PushableCrate crate = hit != null ? hit.GetComponent<PushableCrate>() : null;
-            return crate != null && crate.isActiveAndEnabled && crate.Body.Grounded ? crate : null;
+            return crate != null && crate.isActiveAndEnabled && crate.Body.Grounded
+                && crate.StackWeight < PushableCrate.PlayerPushWeightLimit ? crate : null;
         }
 
         private bool CanReach(PushableCrate crate)
@@ -93,7 +99,10 @@ namespace MousePlatformer
             // The swimmer's sinking acceleration must not cancel the buoyancy of their supporting crate.
             if (axis.y > 0f && amount < 0f && crate.IsPassenger(body)) return amount;
             float gap = Mathf.Max(0f, distance - body.Skin);
-            float push = Mathf.Min(Mathf.Max(0f, Mathf.Abs(amount) - gap), Settings.crateMoveSpeed / crate.Weight * dt);
+            float weight = crate.PushWeight;
+            if (weight >= PushableCrate.PlayerPushWeightLimit)
+                return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), gap);
+            float push = Mathf.Min(Mathf.Max(0f, Mathf.Abs(amount) - gap), Settings.crateMoveSpeed / Mathf.Max(0.01f, weight) * dt);
             Vector2 moved = crate.PushBySwimming(direction * push, body, dt);
             return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), gap + Mathf.Max(0f, Vector2.Dot(moved, direction)));
         }

@@ -55,6 +55,7 @@ namespace MousePlatformer
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.collider == body.Shape || hit.collider.transform.IsChildOf(transform)) continue;
+                if (hit.collider != wall || hit.normal.y < 0.9f) continue;
                 if (hit.distance <= 0f) continue;
                 if (hit.distance < nearest) { nearest = hit.distance; top = hit; }
             }
@@ -71,21 +72,8 @@ namespace MousePlatformer
             if (!fromGround && Mathf.Abs(hangShift) > Settings.grabVerticalReach) return Reject("Ledge is beyond the paws' vertical reach", wall);
 
             Vector2 shift = new Vector2(probeX - bounds.center.x, rise);
-            // Inset clearance queries avoid counting the adjacent floor or wall as initial overlaps.
-            Vector2 clearanceSize = (Vector2)bounds.size - Vector2.one * (body.Skin * 2f);
-            clearanceSize.x = Mathf.Max(0.001f, clearanceSize.x);
-            clearanceSize.y = Mathf.Max(0.001f, clearanceSize.y);
-            if (!HasClearPath(bounds.center, clearanceSize, Vector2.up * rise)) return false;
-            Vector2 raisedCenter = (Vector2)bounds.center + Vector2.up * rise;
-            if (!HasClearPath(raisedCenter, clearanceSize, Vector2.right * shift.x)) return false;
-            overlaps.Clear();
-            Physics2D.OverlapBox((Vector2)bounds.center + shift, clearanceSize, 0f, body.SolidFilter, overlaps);
-            foreach (Collider2D collider in overlaps)
-                if (collider != body.Shape && !collider.transform.IsChildOf(transform))
-                    return Reject($"Landing space occupied: feet {bounds.min.y + rise:F4}, "
-                        + $"collider top {collider.bounds.max.y:F4}", collider);
-
             Vector2 originalPosition = transform.position;
+            if (fromGround && !CanClimbTo(originalPosition + shift)) return false;
             if (!fromGround)
             {
                 Vector2 adjustment = Vector2.up * hangShift;
@@ -111,6 +99,27 @@ namespace MousePlatformer
             lastAttempt = reason;
             blockingCollider = blocker;
             return false;
+        }
+
+        private bool CanClimbTo(Vector2 destination)
+        {
+            Physics2D.SyncTransforms();
+            blockingCollider = null;
+            Bounds bounds = body.Shape.bounds;
+            Vector2 shift = destination - (Vector2)transform.position;
+            // Inset clearance queries avoid counting the adjacent floor or wall as initial overlaps.
+            Vector2 clearanceSize = (Vector2)bounds.size - Vector2.one * (body.Skin * 2f);
+            clearanceSize.x = Mathf.Max(0.001f, clearanceSize.x);
+            clearanceSize.y = Mathf.Max(0.001f, clearanceSize.y);
+            if (!HasClearPath(bounds.center, clearanceSize, Vector2.up * shift.y)) return false;
+            Vector2 raisedCenter = (Vector2)bounds.center + Vector2.up * shift.y;
+            if (!HasClearPath(raisedCenter, clearanceSize, Vector2.right * shift.x)) return false;
+            overlaps.Clear();
+            Physics2D.OverlapBox((Vector2)bounds.center + shift, clearanceSize, 0f, body.SolidFilter, overlaps);
+            foreach (Collider2D collider in overlaps)
+                if (collider != body.Shape && !collider.transform.IsChildOf(transform))
+                    return Reject("Landing space occupied", collider);
+            return true;
         }
 
         private bool HasClearPath(Vector2 center, Vector2 size, Vector2 displacement)
@@ -156,6 +165,12 @@ namespace MousePlatformer
         public bool Tick(float dt, float horizontal, float vertical, bool jumpPressed,
             out Vector2 velocity, out bool released)
         {
+            return Tick(dt, horizontal, vertical, jumpPressed, false, out velocity, out released);
+        }
+
+        public bool Tick(float dt, float horizontal, float vertical, bool jumpPressed, bool interactionPressed,
+            out Vector2 velocity, out bool released)
+        {
             velocity = Vector2.zero;
             released = false;
             cooldown = Mathf.Max(0f, cooldown - dt);
@@ -172,7 +187,10 @@ namespace MousePlatformer
                 body.Move(carry, ignored: support);
                 if (Vector2.Distance(transform.position, hangTarget) > 0.01f)
                 { Stop(); velocity = carryVelocity; released = true; return true; }
-                if (jumpPressed)
+                bool towardLedge = horizontal * Direction >= 0.1f;
+                bool jumpToClimb = jumpPressed && towardLedge;
+                bool jumpUp = jumpPressed && vertical > 0.1f;
+                if (jumpPressed && !towardLedge && !jumpUp)
                 {
                     velocity = carryVelocity + new Vector2(-Direction * Movement.speed,
                         JumpPhysics.LaunchSpeed(Gravity.jumpHeight, Gravity.playerGravity));
@@ -180,7 +198,7 @@ namespace MousePlatformer
                     released = true;
                     return true;
                 }
-                if (vertical < -0.1f)
+                if (vertical < -0.1f && !jumpToClimb)
                 {
                     velocity = new Vector2(0f, Mathf.Min(0f, carryVelocity.y));
                     Stop();
@@ -188,7 +206,18 @@ namespace MousePlatformer
                     return true;
                 }
                 velocity = carryVelocity;
-                if (horizontal * Direction < 0.1f) return true;
+                if (vertical <= 0.1f && !interactionPressed && !jumpToClimb && !jumpUp) return true;
+                Vector2 destination = support.transform.TransformPoint(localDestination);
+                if (!CanClimbTo(destination))
+                {
+                    if (jumpUp)
+                    {
+                        velocity = new Vector2(0f, carryVelocity.y + JumpPhysics.LaunchSpeed(Gravity.jumpHeight, Gravity.playerGravity));
+                        Stop();
+                        released = true;
+                    }
+                    return true;
+                }
                 State = LedgeState.Climbing;
                 elapsed = 0f;
                 ClimbStarted?.Invoke();

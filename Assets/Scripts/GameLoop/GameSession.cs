@@ -18,6 +18,23 @@ namespace GameJamPlus.Gameplay
         public static int PhotosCollectedThisTest => GetTestCollectibleCount(CollectibleType.Photo);
         public static int RecoveredSubjects => SubjectsUsed - DeceasedSubjects;
         private static bool active;
+        private static TestObservation testObservations;
+
+        public static void RecordObservation(TestObservation observation)
+        {
+            if (active) testObservations |= observation;
+        }
+
+        public static TestObservation GetTestObservations(double elapsedSeconds)
+        {
+            TestObservation observations = testObservations;
+            if (GetTestCollectibleCount(CollectibleType.Cheese) > 0
+                || GetTestCollectibleCount(CollectibleType.GreenCheese) > 0)
+                observations |= TestObservation.EnjoysFood;
+            if (PhotosCollectedThisTest > 0) observations |= TestObservation.EnjoysGardening;
+            if (elapsedSeconds > 60d) observations |= TestObservation.ExtendedStay;
+            return observations;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Reset()
@@ -29,6 +46,7 @@ namespace GameJamPlus.Gameplay
             DeceasedSubjects = 0;
             testCollectibleCounts.Clear();
             active = false;
+            testObservations = TestObservation.None;
             collectibleCounts.Clear();
             collectedPhotoIds.Clear();
             consumedCollectibleIds.Clear();
@@ -47,12 +65,14 @@ namespace GameJamPlus.Gameplay
             DeceasedSubjects = 0;
             testCollectibleCounts.Clear();
             active = true;
+            testObservations = TestObservation.None;
         }
 
         public static void Advance()
         {
             Universe = Mathf.Max(0, Universe - 1);
             testCollectibleCounts.Clear();
+            testObservations = TestObservation.None;
         }
 
         public static int GetCollectibleCount(CollectibleType type)

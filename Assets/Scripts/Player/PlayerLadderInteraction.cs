@@ -6,6 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(SimulatedBody2D))]
     public sealed class PlayerLadderInteraction : MonoBehaviour
     {
+        private const float TopStopOffset = 0.6f;
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private PhysicsSettings physicsSettings;
         [SerializeField] private Vector2 handOffset = new Vector2(0f, 0.2f);
@@ -51,8 +52,7 @@ namespace MousePlatformer
             }
 
             float bottom = ladder.Bottom;
-            // Allow the feet to clear the top before returning to normal movement.
-            float top = ladder.Top + (body.Shape.bounds.extents.y + handOffset.y + body.Skin) / ladder.AxisScale;
+            float top = GetTopHeight();
             float previousHeight = height;
             height = Settings.Climb(height, vertical, ladder.AxisScale, dt, bottom, top);
             ClimbSpeed = (height - previousHeight) * ladder.AxisScale / dt;
@@ -62,7 +62,7 @@ namespace MousePlatformer
             velocity = ((Vector2)transform.position - start) / dt;
             previousGrip = ladder.Point(height);
             if (Vector2.Distance(transform.position, desired) > 0.06f
-                || (vertical > 0.1f && height >= top) || (vertical < -0.1f && height <= bottom))
+                || (vertical < -0.1f && height <= bottom))
             {
                 Detach();
                 released = true;
@@ -89,9 +89,16 @@ namespace MousePlatformer
             }
             if (selected == null) return;
             ladder = selected;
-            float top = ladder.Top + (body.Shape.bounds.extents.y + handOffset.y + body.Skin) / ladder.AxisScale;
+            float top = GetTopHeight();
             height = Mathf.Clamp(ladder.transform.InverseTransformPoint(hand).y, ladder.Bottom, top);
             previousGrip = ladder.Point(height);
+        }
+
+        private float GetTopHeight()
+        {
+            // Convert the world-space stop offset to ladder-local height, including scaled ladders.
+            float offset = (body.Shape.bounds.extents.y + handOffset.y + body.Skin - TopStopOffset) / ladder.AxisScale;
+            return Mathf.Max(ladder.Bottom, ladder.Top + offset);
         }
 
         public void Detach() { ladder = null; ClimbSpeed = 0f; cooldown = Settings.regrabDelay; }

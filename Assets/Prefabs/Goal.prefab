@@ -191,4 +191,4 @@ MonoBehaviour:
   messages:
   - "You found the way out! Excellent navigation. Your test is complete; enjoy a well-deserved rest."
   - "Splendid! Another successful journey through the maze. We can conclude the test here."
-  duration: 30
+  duration: 7

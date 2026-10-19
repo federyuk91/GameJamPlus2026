@@ -11,12 +11,19 @@ namespace GameJamPlus.UI
         private Gamepad gamepad;
         public bool UsingGamepad { get; private set; }
         public event Action Changed;
-        public string Interact => UsingGamepad ? gamepad.buttonWest.displayName : "E";
+        public string Interact => UsingGamepad ? gamepad.buttonEast.displayName : "F";
         public string MoveCrate => UsingGamepad ? gamepad.buttonEast.displayName : "E";
-        public string Collect => UsingGamepad ? gamepad.buttonWest.displayName : "F";
+        public string Collect => UsingGamepad ? gamepad.buttonEast.displayName : "F";
+        public string Up => UsingGamepad ? "Stick / D-pad Up" : "W / Up";
         public string CutOrDig => UsingGamepad ? gamepad.buttonEast.displayName : "F";
-        public string Advance => UsingGamepad ? gamepad.buttonWest.displayName : "F";
-        public string CameraHeightLock => UsingGamepad ? gamepad.rightStickButton.displayName : "C";
+        public string Advance => UsingGamepad ? gamepad.buttonEast.displayName : "F";
+        public string Jump => UsingGamepad ? gamepad.buttonSouth.displayName : "Space";
+        public string Confirm => UsingGamepad ? gamepad.buttonSouth.displayName : "Space";
+        public string Cancel => UsingGamepad ? gamepad.buttonEast.displayName : "Esc";
+        public string Pause => UsingGamepad ? gamepad.startButton.displayName : "Esc";
+        public string Move => UsingGamepad ? gamepad.leftStick.displayName + " / " + gamepad.dpad.displayName : "WASD / Arrows";
+        public string ScrollMessages => UsingGamepad ? gamepad.rightStick.displayName : "PgUp / PgDn";
+        public string CameraHeightLock => UsingGamepad ? gamepad.rightShoulder.displayName : "C";
         public InputPromptFamily Family
         {
             get

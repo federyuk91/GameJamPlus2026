@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,6 +21,8 @@ namespace GameJamPlus.UI
         private readonly VisualElement content;
         private readonly VisualElement powerGlow;
         private readonly Image avatar;
+        private readonly VisualElement systemCommands;
+        private readonly HashSet<string> systemCommandKeys = new HashSet<string>();
         private readonly Label message;
         private readonly Label speaker;
         private readonly VisualElement hints;
@@ -56,6 +59,9 @@ namespace GameJamPlus.UI
 
         public bool IsOpen => canAdvance || systemVisible;
         public bool IsVisible => communicationVisible;
+        private bool suspended;
+
+        public void SetSuspended(bool value) => suspended = value;
 
         public void SetBottomInset(float inset)
         {
@@ -74,6 +80,10 @@ namespace GameJamPlus.UI
             powerGlow = root.Q("scientist-power-glow");
             avatar = root.Q<Image>("scientist-avatar");
             avatar.scaleMode = ScaleMode.ScaleToFit;
+            systemCommands = new VisualElement { name = "system-command-keys", pickingMode = PickingMode.Ignore };
+            systemCommands.AddToClassList("system-command-keys");
+            avatarScreen.Insert(avatarScreen.IndexOf(signal), systemCommands);
+            systemCommands.style.display = DisplayStyle.None;
             message = root.Q<Label>("scientist-text");
             speaker = root.Q<Label>("communication-speaker");
             hints = root.Q("interaction-hints");
@@ -109,6 +119,31 @@ namespace GameJamPlus.UI
             if (systemVisible || canAdvance) SetDisplaySize(displayWidth, displayHeight);
         }
 
+        public void ClearSystemCommands()
+        {
+            systemCommands.Clear();
+            systemCommandKeys.Clear();
+        }
+
+        public void AddSystemCommand(string key, Sprite sprite)
+        {
+            if (!systemCommandKeys.Add(key)) return;
+            VisualElement command;
+            if (sprite != null)
+            {
+                command = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = key };
+                command.style.backgroundImage = new StyleBackground(sprite);
+            }
+            else
+            {
+                command = new Label(key) { pickingMode = PickingMode.Ignore };
+                command.AddToClassList("system-command-fallback");
+            }
+            command.AddToClassList("system-command-key");
+            systemCommands.Add(command);
+            systemCommands.EnableInClassList("system-commands-multiple", systemCommandKeys.Count > 1);
+        }
+
         public void ShowSystemHints(bool visible)
         {
             if (communicationVisible) return;
@@ -126,7 +161,9 @@ namespace GameJamPlus.UI
             content.RemoveFromClassList("scientist-dialogue");
             advanceButton.style.display = DisplayStyle.None;
             avatar.sprite = null;
+            avatar.style.display = DisplayStyle.None;
             avatar.style.opacity = 0f;
+            systemCommands.style.display = DisplayStyle.Flex;
             signal.AddToClassList("signal-active");
             display.style.display = DisplayStyle.Flex;
             content.style.opacity = 1f;
@@ -164,6 +201,8 @@ namespace GameJamPlus.UI
 
             communicationVisible = true;
             systemVisible = false;
+            systemCommands.style.display = DisplayStyle.None;
+            ClearSystemCommands();
             hints.Clear();
             speaker.style.display = DisplayStyle.None;
             message.style.display = DisplayStyle.Flex;
@@ -205,8 +244,9 @@ namespace GameJamPlus.UI
                 hasFollowingMessage = waitForAdvance || page < texts.Length - 1;
                 RefreshAdvanceLabel();
 
-                while ((waitForAdvance || elapsed < pageTimeout) && !nextMessageRequested)
+                while (elapsed < pageTimeout && !nextMessageRequested)
                 {
+                    if (suspended) { yield return null; continue; }
                     elapsed += Time.unscaledDeltaTime;
                     int visibleCharacters = completeTypingRequested ? characterStarts.Length
                         : Mathf.Min(characterStarts.Length, Mathf.FloorToInt(elapsed * CharactersPerSecond));
@@ -249,6 +289,8 @@ namespace GameJamPlus.UI
             display.style.display = DisplayStyle.None;
             message.text = string.Empty;
             avatar.sprite = null;
+            systemCommands.style.display = DisplayStyle.None;
+            ClearSystemCommands();
             hints.Clear();
             hints.style.display = DisplayStyle.None;
             avatar.style.opacity = 0f;
@@ -270,6 +312,7 @@ namespace GameJamPlus.UI
             float elapsed = 0f;
             while (elapsed < duration)
             {
+                if (suspended) { yield return null; continue; }
                 elapsed += Time.unscaledDeltaTime;
                 float progressValue = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
                 SetDisplaySize(Mathf.Lerp(fromWidth, toWidth, progressValue),
@@ -301,6 +344,7 @@ namespace GameJamPlus.UI
             float elapsed = 0f;
             while (elapsed < duration)
             {
+                if (suspended) { yield return null; continue; }
                 elapsed += Time.unscaledDeltaTime;
                 float progressValue = Mathf.Clamp01(elapsed / duration);
                 powerGlow.style.opacity = Mathf.Lerp(from, to, progressValue);

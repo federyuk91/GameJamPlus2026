@@ -23,6 +23,7 @@ namespace MousePlatformer
         public bool IsSliding { get; private set; }
         public bool IsMovingOnGround { get; private set; }
         public bool CanInteractWithCrates { get; private set; }
+        public bool IsHangingFromLedge => ledgeClimb != null && ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging;
         public bool CanLookVertically => isActiveAndEnabled && body != null && body.Grounded && !IsSliding
             && input != null && Mathf.Abs(input.Horizontal) < 0.1f && Velocity.sqrMagnitude < 0.01f
             && (ropeInteraction == null || !ropeInteraction.Attached)
@@ -67,6 +68,7 @@ namespace MousePlatformer
             bool jumpPressed = input.ConsumeJump();
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
+            if (inWater && ledgeClimb != null && ledgeClimb.Active) ledgeClimb.Cancel();
             if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed,
                 out Vector2 climbVelocity, out bool ledgeReleased))
             {
@@ -237,6 +239,8 @@ namespace MousePlatformer
         private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
         {
             if ((!fromGround && body.OnSteepSlope) || input.Vertical < -0.1f || ledgeClimb == null) return false;
+            // Recheck after moving: this tick may have crossed the water surface.
+            if (swimming != null && swimming.CheckWater()) return false;
             float direction = Mathf.Abs(input.Horizontal) >= 0.1f ? input.Horizontal : fromGround ? 0f : horizontalVelocity;
             if (!ledgeClimb.TryBegin(direction, fromGround)) return false;
             ResetSurfaceMotion();
