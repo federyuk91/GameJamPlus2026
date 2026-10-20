@@ -103,7 +103,7 @@ Other assistant-proposed deaths (laser, acid, press, freezing, etc.), the illust
 - `Assets/Scripts/GameLoop/GameManager.cs`, `GameSession.cs`, `TestEndEvent.cs`.
 - `Assets/Scripts/GameLoop/LethalContact.cs` for the piranha's lethal contact.
 - `Assets/Scripts/Enemies/PiranhaChase.cs`, `PiranhaPatrol.cs`.
-- `Assets/Scripts/Player/PlayerSwimming.cs`, `SimulatedBody2D.cs`.
-- `Assets/Prefabs/CheeseGreen.prefab`, `Assets/Prefabs/Photo Collectible.prefab`.
+- `Assets/Scripts/Player/Movement/PlayerSwimming.cs`, `SimulatedBody2D.cs`.
+- `Assets/Prefabs/Collectibles/CheeseGreen.prefab`, `Assets/Prefabs/Collectibles/Photo Collectible.prefab`.
 - `Assets/Scenes/LoopScene.unity`, `Assets/Scenes/EndGame.unity`.
 - `Docs/GameLoop.md`, `Docs/EndGame.md`, `Docs/Rooms.md`.

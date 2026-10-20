@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -6,12 +5,28 @@ namespace MousePlatformer
     [CreateAssetMenu(fileName = "PhysicsSettings", menuName = "Mouse Platformer/Physics Settings")]
     public sealed class PhysicsSettings : ScriptableObject
     {
+        [Tooltip("Positive world gravity acceleration in world units/s². Bodies and ropes apply their own Gravity Scale; swimmer response applies its separate multiplier.")]
+        [Min(0.001f)] public float gravityAcceleration = DefaultGravityAcceleration;
+        public static float DefaultGravityAcceleration => 30f;
+        [Header("Shared simulation rules")]
+        [Tooltip("Substeps per fixed tick for props and their coordinated vertical groups. Higher values improve precision at a higher CPU cost.")]
+        [Min(1)] public int simulationSubsteps = DefaultSimulationSubsteps;
+        [Tooltip("Substeps per fixed tick for rope simulation, including the velocity history used when grabbing or releasing a rope.")]
+        [Min(1)] public int ropeSimulationSubsteps = DefaultRopeSimulationSubsteps;
+        [Tooltip("Distance constraint passes per rope substep. Higher values reduce stretching at a higher CPU cost.")]
+        [Min(1)] public int ropeConstraintIterations = DefaultRopeConstraintIterations;
+        [Tooltip("Fraction of dry prop weight retained at full immersion. Interpolated progressively with immersion; affects pushing and gravitational load, not inertial mass. 0.5 retains half the weight.")]
+        [Range(0f, 1f)] public float fullSubmersionWeightMultiplier = DefaultFullSubmersionWeightMultiplier;
+
+        public static int DefaultSimulationSubsteps => 4;
+        public static int DefaultRopeSimulationSubsteps => 4;
+        public static int DefaultRopeConstraintIterations => 24;
+        public static float DefaultFullSubmersionWeightMultiplier => 0.5f;
+
         [Header("Player movement")]
-        public PlayerMovementSettings player = new PlayerMovementSettings();
+        public SharedPlayerMovementSettings player = new SharedPlayerMovementSettings();
         [Header("Player interactions — crates and ropes")]
         public PlayerInteractionSettings interactions = new PlayerInteractionSettings();
-        [Header("Gravity and jumping — 1 unit = 32 pixels")]
-        public GravitySettings gravity = new GravitySettings();
         [Header("Water / swimming")]
         public SwimMotion water = new SwimMotion();
         [Header("Ladder climbing and jumping")]
@@ -24,27 +39,11 @@ namespace MousePlatformer
         public static DiggingSettings DefaultDigging { get; } = new DiggingSettings();
 
         // Components created at runtime can work before an asset is assigned.
-        public static GravitySettings DefaultGravity { get; } = new GravitySettings();
         public static SwimMotion DefaultWater { get; } = new SwimMotion();
         public static LadderSettings DefaultLadder { get; } = new LadderSettings();
-        public static PlayerMovementSettings DefaultPlayer { get; } = new PlayerMovementSettings();
+        public static SharedPlayerMovementSettings DefaultPlayer { get; } = new SharedPlayerMovementSettings();
         public static PlayerInteractionSettings DefaultInteractions { get; } = new PlayerInteractionSettings();
         public static LedgeClimbSettings DefaultLedgeClimb { get; } = new LedgeClimbSettings();
     }
 
-    [Serializable]
-    public sealed class GravitySettings
-    {
-        [Min(0.001f)] public float playerGravity = 30f;
-        [Min(1f)] public float fallGravityMultiplier = 2.2f;
-        [Min(0f)] public float playerTerminalSpeed = 26f;
-        [Tooltip("Height above takeoff for a full held jump, without overhead obstacles.")]
-        [Min(0f)] public float jumpHeight = 2f;
-        [Range(0f, 1f)] public float jumpReleaseMultiplier = 0.45f;
-        [Min(0f)] public float crateGravity = 66f;
-        [Min(0f)] public float crateTerminalSpeed = 26f;
-        [Min(0f)] public float ropeGravity = 30f;
-        [Min(0f)] public float ropeJumpUpSpeed = 7f;
-        [Min(0f)] public float ropeJumpSwingBoost = 4f;
-    }
 }

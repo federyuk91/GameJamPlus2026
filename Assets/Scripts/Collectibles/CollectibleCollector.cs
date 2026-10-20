@@ -67,6 +67,7 @@ namespace MousePlatformer
             foreach (Collider2D candidate in overlaps)
             {
                 if (candidate == null || !candidate.TryGetComponent(out Collectible collectible) || collectible != selected) continue;
+                if (selected.PickupArea != null && candidate != selected.PickupArea) continue;
                 if (selected.TryCollect(this, true))
                 {
                     input.ConsumeCollectibleInteraction();
@@ -92,7 +93,8 @@ namespace MousePlatformer
             foreach (Collider2D candidate in overlaps)
             {
                 if (candidate != null && candidate.TryGetComponent(out Collectible collectible)
-                    && collectible.CanBeCollected)
+                    && collectible.CanBeCollected
+                    && (collectible.PickupArea == null || candidate == collectible.PickupArea))
                 {
                     if (!collectible.RequiresInteraction)
                     {

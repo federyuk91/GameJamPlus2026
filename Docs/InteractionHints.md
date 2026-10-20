@@ -28,7 +28,7 @@ Dialogue buttons display Reveal, Next or Close. Device switching updates open di
 
 No automated tests or Play Mode were run. Check real proximity and obstructed ropes, overlapping collectible/rope hints, digging direction/cut priority, device switching in open dialogue, drift/mouse-motion rejection, disconnection and pause/resume.
 
-Crate hints reuse PlayerCrateInteraction checks and require grounded, dry, non-sliding, non-climbing players. Tethered crates with disabled PushableCrate show no hint. The panel retains the dialogue's bottom anchoring across resolutions.
+Crate hints reuse PlayerCrateInteraction checks and require grounded, dry, non-sliding, non-climbing players. Tethered crates with disabled Pushable show no hint. The panel retains the dialogue's bottom anchoring across resolutions.
 
 Communications later changed from Enter to F, including photos/results. UI consumes the press so it cannot simultaneously collect or start bite/dig; release F before a new interaction. Controller communications/photos/results later changed from North to West, matching collectibles (Xbox X, PlayStation Square, Switch Y). Icons and input consumption reflect that update.
 
@@ -58,3 +58,5 @@ After grabbing a ledge from a jump, holding the approach direction no longer sta
 While hanging from a ledge, ClimbLedge owns the interaction input and its SYSTEM hint. Collectibles, buttons and cutting/digging cannot use the same press. Interaction presses are queued for the physics step and consumed on climb confirmation.
 
 While hanging, Jump + direction toward the ledge also confirms Climb Up, without requiring a direction release. Jump + the opposite direction still launches away; Jump with no horizontal direction keeps the same detach behavior. F / West and releasing/repressing the direction remain available.
+
+Ledge jump update: Jump without a horizontal direction launches upward. Jump away from the ledge adds backward launch speed; Jump toward the ledge confirms Climb Up. Existing upward movement commands and interaction confirmation are preserved.

@@ -111,7 +111,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -165,309 +165,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WinchDrum_0
+      name: WinchDrum_Sheet_0
       rect:
         serializedVersion: 2
-        x: 20
-        y: 47
-        width: 13
-        height: 7
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8f92ac8f78654fcf0800000000000000
-      internalID: -219455339839739400
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_1
-      rect:
-        serializedVersion: 2
-        x: 33
+        x: 0
         y: 0
-        width: 25
-        height: 54
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8150157c98fb17920800000000000000
-      internalID: 2986378626398749976
+      spriteID: 6579d5a47aa676041bcd0c8cc3eed0ce
+      internalID: 1279681464
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WinchDrum_2
+      name: WinchDrum_Sheet_1
       rect:
         serializedVersion: 2
-        x: 100
-        y: 5
-        width: 6
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7ac8679c506c15e50800000000000000
-      internalID: 6796431040835914919
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_3
-      rect:
-        serializedVersion: 2
-        x: 148
-        y: 11
-        width: 38
-        height: 41
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b2cb03a0cb6053590800000000000000
-      internalID: -7695236983598040021
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_4
-      rect:
-        serializedVersion: 2
-        x: 225
-        y: 15
-        width: 25
-        height: 38
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4fd93f3967b147da0800000000000000
-      internalID: -5948099011747275276
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_5
-      rect:
-        serializedVersion: 2
-        x: 289
-        y: 23
-        width: 25
-        height: 31
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3941d840301d3f330800000000000000
-      internalID: 3743565526166475923
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_6
-      rect:
-        serializedVersion: 2
-        x: 353
-        y: 31
-        width: 25
-        height: 22
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ddc96fefbc61906f0800000000000000
-      internalID: -718017600177136419
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_7
-      rect:
-        serializedVersion: 2
-        x: 404
-        y: 35
-        width: 38
-        height: 17
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 43f1dad16319e4290800000000000000
-      internalID: -7904220634376495308
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_8
-      rect:
-        serializedVersion: 2
-        x: 468
-        y: 45
-        width: 13
-        height: 6
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3148f96d09a935090800000000000000
-      internalID: -8046918162314197997
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_9
-      rect:
-        serializedVersion: 2
-        x: 481
-        y: 36
-        width: 25
-        height: 17
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 34fcce14c0f060770800000000000000
-      internalID: 8576559085693751107
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_10
-      rect:
-        serializedVersion: 2
-        x: 212
-        y: 40
-        width: 13
-        height: 6
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b12d17d2450556ac0800000000000000
-      internalID: -3862592782930423269
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_11
-      rect:
-        serializedVersion: 2
-        x: 276
-        y: 34
-        width: 13
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e79eddfc9d4036ca0800000000000000
-      internalID: -6024966542949750402
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_12
-      rect:
-        serializedVersion: 2
-        x: 340
-        y: 38
-        width: 13
-        height: 7
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fa7c04300b6a67e30800000000000000
-      internalID: 4500968152502421423
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WinchDrum_13
-      rect:
-        serializedVersion: 2
-        x: 3
+        x: 64
         y: 0
-        width: 11
-        height: 33
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 094976707e80de680800000000000000
-      internalID: -8724307114792086384
+      spriteID: d902c7a981877b74aafe24f256993d35
+      internalID: 614436862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a7cab3194e0dd94dbbb8645abc2c167
+      internalID: 1082723119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c30b224446f95184eb4e80aee7833775
+      internalID: -558376960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75f8f22246f49d947b9724377cd65044
+      internalID: -1065701341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16b02028081ecf74d8c641406c53da28
+      internalID: -913834766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2139b0ee33a0a6b44b297d535c01e4b7
+      internalID: -1258648264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinchDrum_Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60c41e82c12339d4fbc539f9afcc6dbc
+      internalID: -2051610133
       vertices: []
       indices: 
       edges: []
@@ -486,22 +354,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      WinchDrum_0: -219455339839739400
-      WinchDrum_1: 2986378626398749976
-      WinchDrum_10: -3862592782930423269
-      WinchDrum_11: -6024966542949750402
-      WinchDrum_12: 4500968152502421423
-      WinchDrum_13: -8724307114792086384
-      WinchDrum_2: 6796431040835914919
-      WinchDrum_3: -7695236983598040021
-      WinchDrum_4: -5948099011747275276
-      WinchDrum_5: 3743565526166475923
-      WinchDrum_6: -718017600177136419
-      WinchDrum_7: -7904220634376495308
-      WinchDrum_8: -8046918162314197997
-      WinchDrum_9: 8576559085693751107
+      WinchDrum_Sheet_0: 1279681464
+      WinchDrum_Sheet_1: 614436862
+      WinchDrum_Sheet_2: 1082723119
+      WinchDrum_Sheet_3: -558376960
+      WinchDrum_Sheet_4: -1065701341
+      WinchDrum_Sheet_5: -913834766
+      WinchDrum_Sheet_6: -1258648264
+      WinchDrum_Sheet_7: -2051610133
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

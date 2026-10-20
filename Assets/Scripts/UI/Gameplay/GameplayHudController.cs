@@ -41,6 +41,8 @@ namespace GameJamPlus.UI
         private VisualElement safeArea;
         private Label timeLabel;
         private Label cameraHeightLock;
+        private Label cameraLockReminder;
+        private float cameraReminderUntil;
         private ScientistCommentView scientistView;
         private Coroutine scientistRoutine;
         private InputAction advanceScientistComment;
@@ -111,7 +113,12 @@ namespace GameJamPlus.UI
             safeArea = root.Q("hud-safe-area");
             timeLabel = root.Q<Label>("elapsed-time");
             cameraHeightLock = root.Q<Label>("camera-height-lock");
-            if (cameraController != null) cameraController.HeightLockChanged += OnCameraHeightLockChanged;
+            cameraLockReminder = root.Q<Label>("camera-lock-reminder");
+            if (cameraController != null)
+            {
+                cameraController.ModeChanged += OnCameraModeChanged;
+                cameraController.LockedMovementAttempted += OnLockedCameraMovementAttempted;
+            }
             for (int index = 0; index < counterValues.Length; index++)
             {
                 counterLabels[index] = root.Q<Label>("counter-" + CounterNames[index] + "-value");
@@ -166,6 +173,7 @@ namespace GameJamPlus.UI
 
             pauseMenu.Tick();
             if (!ready || pauseMenu == null || pauseMenu.IsOpen) return;
+            RefreshCameraLockReminder();
 
             bool paused = Time.timeScale <= 0f;
             bool dialogueVisible = communicationInProgress || scientistView.IsVisible;
@@ -385,14 +393,49 @@ namespace GameJamPlus.UI
             RefreshInteractionHints();
         }
 
-        private void OnCameraHeightLockChanged(bool locked) => RefreshCameraHeightLock();
+        private void OnCameraModeChanged(PlatformCameraController.CameraMode mode)
+        {
+            cameraReminderUntil = 0f;
+            RefreshCameraHeightLock();
+            RefreshCameraLockReminder();
+            RefreshInteractionHints();
+        }
+
+        private void OnLockedCameraMovementAttempted() => cameraReminderUntil = Time.unscaledTime + 2.5f;
 
         private void RefreshCameraHeightLock()
         {
             if (cameraHeightLock == null || devicePrompts == null) return;
-            bool locked = cameraController != null && cameraController.IsHeightLocked;
-            cameraHeightLock.style.display = locked ? DisplayStyle.Flex : DisplayStyle.None;
-            cameraHeightLock.text = "CAMERA HEIGHT LOCKED — " + devicePrompts.CameraHeightLock + " TO UNLOCK";
+            PlatformCameraController.CameraMode mode = cameraController != null
+                ? cameraController.Mode : PlatformCameraController.CameraMode.Follow;
+            cameraHeightLock.style.display = mode != PlatformCameraController.CameraMode.Follow ? DisplayStyle.Flex : DisplayStyle.None;
+            switch (mode)
+            {
+                case PlatformCameraController.CameraMode.Inspect:
+                    cameraHeightLock.text = "CAMERA CONTROL — " + devicePrompts.Jump + " TO LOCK / "
+                        + devicePrompts.CameraHeightLock + " TO RETURN";
+                    break;
+                case PlatformCameraController.CameraMode.Fixed:
+                    cameraHeightLock.text = "CAMERA LOCKED — " + devicePrompts.Jump + " TO ADJUST / "
+                        + devicePrompts.CameraHeightLock + " TO CONTROL MOUSE";
+                    break;
+                case PlatformCameraController.CameraMode.FollowOffset:
+                    cameraHeightLock.text = "CAMERA OFFSET ACTIVE — " + devicePrompts.CameraHeightLock + " TO ADJUST";
+                    break;
+            }
+        }
+
+        private void RefreshCameraLockReminder()
+        {
+            if (cameraLockReminder == null || devicePrompts == null) return;
+            bool visible = cameraController != null && cameraController.IsHeightLocked
+                && Time.unscaledTime < cameraReminderUntil && Time.timeScale > 0f;
+            cameraLockReminder.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible) return;
+            cameraLockReminder.text = "CAMERA LOCKED\nPress " + devicePrompts.Jump
+                + " to move the camera\nor " + devicePrompts.CameraHeightLock + " to control the mouse";
+            cameraLockReminder.style.opacity = Mathf.Lerp(0.35f, 1f,
+                Mathf.PingPong(Time.unscaledTime * 3f, 1f));
         }
 
         private void OnAvailableActionsChanged(AvailableGameplayActions actions) => RefreshInteractionHints();
@@ -520,7 +563,11 @@ namespace GameJamPlus.UI
                 pauseMenu.Changed -= OnPauseChanged;
                 pauseMenu = null;
             }
-            if (cameraController != null) cameraController.HeightLockChanged -= OnCameraHeightLockChanged;
+            if (cameraController != null)
+            {
+                cameraController.ModeChanged -= OnCameraModeChanged;
+                cameraController.LockedMovementAttempted -= OnLockedCameraMovementAttempted;
+            }
             HidePhoto();
             if (interactionAvailability != null) interactionAvailability.Changed -= OnAvailableActionsChanged;
             if (devicePrompts != null)

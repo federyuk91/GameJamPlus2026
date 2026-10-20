@@ -1,6 +1,6 @@
 # Recovery Zone
 
-Place Assets/Prefabs/Recovery Zone.prefab below or around the map, separate from playable areas. It is invisible in gameplay with a faint red Editor gizmo. Box Collider 2D → Size/Offset defines its volume.
+Place Assets/Prefabs/GameLoop/Recovery Zone.prefab below or around the map, separate from playable areas. It is invisible in gameplay with a faint red Editor gizmo. Box Collider 2D → Size/Offset defines its volume.
 
 Recovery Zone seeks a nearly horizontal surface with full mouse-collider clearance and support at left, center and right. It uses the Player SimulatedBody2D's Solid Filter. Short vertical rays also find floors beneath ceilings in the same CompositeCollider2D. The nearest valid sampled destination wins.
 

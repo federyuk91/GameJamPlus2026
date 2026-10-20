@@ -117,7 +117,7 @@
 .context-card .credit-name { font-size: 12px; color: var(--menu-on-control); }
 .context-card .special-thanks-title { height: 16px; font-size: 12px; margin: 4px 0 2px 0; color: var(--menu-on-control); }
 .context-card .special-thanks-logos { height: 34px; }
-.context-card .thanks-logo { width: 84px; height: 30px; background-color: var(--menu-on-control); border-radius: 2px; }
+.context-card .thanks-logo { width: 84px; height: 30px; background-color: transparent; }
 .context-card .audio-slider { height: 25px; }
 #options-panel .audio-slider { height: 25px; }
 .context-card .audio-slider .unity-base-field__label, .context-card #fullscreen .unity-base-field__label { min-width: 84px; font-size: 12px; color: var(--menu-on-control); }

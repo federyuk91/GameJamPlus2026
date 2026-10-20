@@ -12,16 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd8896b5e8c41e5b14bf3fb834a3b41, type: 3}
   m_Name: PhysicsSettings
   m_EditorClassIdentifier: 
+  gravityAcceleration: 30
+  simulationSubsteps: 4
+  ropeSimulationSubsteps: 4
+  ropeConstraintIterations: 24
+  fullSubmersionWeightMultiplier: 0.5
   player:
-    speed: 5
-    groundAcceleration: 45
-    airAcceleration: 28
     maxStepHeight: 0.15
-    maxSlopeAngle: 45
-    slopeSlideAngle: 30
-    slideOnSteepSlopes: 1
-    slopeSlideAcceleration: 20
-    slopeSlideMaxSpeed: 8
     coyoteTime: 0.1
     jumpBuffer: 0.12
     launchControlTime: 0.25
@@ -29,51 +26,32 @@ MonoBehaviour:
     runFootstepsPerSecond: 6
     walkFootstepsPerSecond: 3
   interactions:
-    crateMoveSpeed: 2.5
-    crateGrabReach: 0.1
-    ropeClimbSpeed: 2
-    ropeSwingAcceleration: 50
-    ropeGrabRadius: 0.5
-    ropeRegrabDelay: 0.3
-  gravity:
-    playerGravity: 30
-    fallGravityMultiplier: 2.2
-    playerTerminalSpeed: 26
-    jumpHeight: 2.0166667
-    jumpReleaseMultiplier: 0.45
-    crateGravity: 66
-    crateTerminalSpeed: 26
-    ropeGravity: 30
     ropeJumpUpSpeed: 7
     ropeJumpSwingBoost: 4
+    crateMoveSpeed: 2.5
+    ropeClimbSpeed: 2
+    ropeSwingAcceleration: 50
+    ropeRegrabDelay: 0.3
   water:
-    speed: 5
     bottomWalkSpeedMultiplier: 0.5
     acceleration: 10
     strokeAcceleration: 45
     strokeControlTime: 0.35
     braking: 6
-    gravity: 7
+    gravityMultiplier: 0.23333333
     maxSinkSpeed: 3.5
     strokeSpeed: 4.8
-    verticalDrag: 1.5
   ladder:
-    climbSpeed: 3
     jumpHorizontalSpeed: 6
     jumpUpSpeed: 9
-    grabReach: 0.65
     regrabDelay: 0.3
   ledgeClimb:
     enabled: 1
     maxHeight: 0.75
-    forwardReach: 0.12
     hangHeightFraction: 0.85
-    grabVerticalReach: 0.15
-    climbSpeed: 5
     retryDelay: 0.15
   digging:
     enabled: 1
-    speed: 1.5
     radius: 0.45
     reach: 0.08
     excavatedAlpha: 200

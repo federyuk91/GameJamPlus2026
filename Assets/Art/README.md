@@ -18,4 +18,4 @@ Animation sheets end in `_Sheet`; frame names include `Mouse_Run_0`, `PressureBu
 - `UI/Branding/GameJamPlus_Icon.png`: application icon assigned in Player Settings.
 - `UI/MainMenu`: backgrounds, branding, icons and menu illustrations organized by function.
 
-Palette and UI artwork retain their import settings outside Pixel Art. Mouse animations remain in `Assets/Animations/Mouse`; scripts, scenes and settings retain their paths.
+Palette and UI artwork retain their import settings outside Pixel Art. Animations are grouped by subject in `Assets/Animations`; see `Docs/ProjectStructure.md` for script and prefab locations. Scenes and settings retain their paths.

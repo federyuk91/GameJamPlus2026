@@ -10,7 +10,7 @@ Player Rope Bite and Player Rope Interaction automatically choose nearby ropes f
 
 When biting a rope hanging from above, the mouse moves to the end of the still-anchored section and the lower section falls. A hanging bite never cuts segment 0: near the anchor it cuts the next segment, retaining at least one piece to hold. If only that piece remains, hanging bites are unavailable; it can still be cut from the ground.
 
-If the crate is in water and its attachment point is above the anchor at the first cut, the crate side is retained. The crate loses its seabed constraint (Attached = false), reenables PushableCrate, but remains connected to the upper section (HasRopeConnection = true). The mouse reattaches to the first intact point toward the crate and rises with it, remaining able to climb or jump. The lower section stays on the seabed. This side selection persists at the surface. Later bites retain at least one segment on the crate side.
+If the crate is in water and its attachment point is above the anchor at the first cut, the crate side is retained. The crate loses its seabed constraint (Attached = false), reenables Pushable, but remains connected to the upper section (HasRopeConnection = true). The mouse reattaches to the first intact point toward the crate and rises with it, remaining able to climb or jump. The lower section stays on the seabed. This side selection persists at the surface. Later bites retain at least one segment on the crate side.
 
 In both cases repositioning respects solid colliders; an unreachable new grip causes detachment.
 

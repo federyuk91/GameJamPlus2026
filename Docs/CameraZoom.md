@@ -22,3 +22,21 @@ Hold Up/Down while the mouse stands still on a surface to move the camera by up 
 C or right-stick press locks/unlocks the current camera height. Horizontal following continues. While locked, Up/Down and player vertical movement do not change the height. Unlocking smoothly restores following. Recovery/respawn through SnapToTarget clears the lock.
 
 CAMERA HEIGHT LOCKED and the current device's unlock command appear at the top right. Lock input is suspended during pauses and test endings. Shake remains active while height is locked.
+## Camera control modes
+
+Camera control is explicit; Up/Down no longer shifts the camera during normal player movement. The camera command is C on keyboard and the current right-shoulder binding on gamepad.
+
+| Current mode | Camera command | Jump | Direction input |
+| --- | --- | --- | --- |
+| Follow | Enter Inspect if the player is still and supported/hanging | Normal gameplay jump | Move the mouse |
+| Inspect | Return to Follow, clear the manual offset | Freeze the selected framing (Fixed) | Pan the camera |
+| Fixed | Enable mouse movement, retaining the framing offset (FollowOffset) | Resume Inspect | Flash the centered unlock reminder |
+| FollowOffset | Re-enter Inspect when the mouse is still | Normal gameplay jump | Move the mouse |
+
+Inspection requires no movement input and either grounded rest, ledge hanging, or a stopped rope/ladder climb. It is unavailable while falling, sliding, climbing up a ledge, digging or using another interaction that locks gameplay input. PlayerMovement is suspended during Inspect and Fixed, and gameplay input is blocked with a separate camera-owned lock; wheel interactions keep their own lock. Time and the rest of the scene continue to run. Jump used for the camera is cleared from the gameplay jump queue.
+
+Pan limits are half the current camera width/height (Horizontal Look Fraction and Vertical Look Fraction, both 0.5); Camera Move Speed is 6 world units per second. Smoothing uses Vertical Look Smooth Time for both manual axes. Position rendering stays on the pixel grid; zoom changes are reflected in the inspection bounds. FollowOffset continues normal player following with the selected two-axis offset. C from Inspect returns smoothly to normal framing. Recovery/respawn SnapToTarget clears camera mode and offset.
+
+Trying to move while Fixed shows a blinking centered message: Jump unlocks camera control; C re-enables the mouse. The message follows the active device prompts and disappears after stopping the attempt or switching mode. The top-right status describes the current mode. Pause suspends camera controls, and the camera input lock does not change wheel ownership or other gameplay locks.
+
+Manual checks: enter Inspect while stationary on the floor and hanging; reject entry while falling or moving; move the camera in all four directions to the limits; Jump to Fixed; direction input shows the blinking reminder; Jump resumes inspection; C from Fixed restores player control with offset retained; re-enter Inspect then C returns to standard framing; pause and respawn while inspecting.

@@ -2,9 +2,15 @@
 
 ## Ground physics
 
-Cheese and CheeseGreen prefabs, and the four standalone cheeses in LoopScene, use `CollectibleGravity`. It applies gravity with a maximum fall speed and casts a small box matching the visible plate base against Default and Diggable terrain. Trigger areas and the mouse do not support it. A supporting moving platform or crate carries the collectible until support is lost.
+Cheese and CheeseGreen prefabs, and the four standalone cheeses in LoopScene, now use SimulatedBody2D + PropsMotion. CollectibleGravity and its meta file were removed. The existing gravity component file IDs were retained for PropsMotion, while a body and a separate footprint BoxCollider2D were added to each object. No Rigidbody2D is required.
 
-The pickup trigger remains separate: eating the cheese disables interaction but leaves gravity active on the empty plate. No Rigidbody2D is needed, consistently with the project's Transform-based simulation. Plates do not block the mouse. In the Inspector, adjust Ground Layers, Gravity, Maximum Fall Speed and Footprint Size/Offset; selecting the object draws the footprint in yellow. Keep the footprint aligned with the plate if changing the artwork or pivot. Check placement, falling after ground removal, and collection on a platform in Unity.
+SimulatedBody2D explicitly references the plate footprint collider (size 0.90625 x 0.25, offset 0.015625, -0.375). This collider remains a trigger, so the mouse and other solid bodies pass through it; custom body casts still use its geometry to stop against terrain and solid supports. The original Pickup Area remains assigned to the original, separate trigger. Eating disables pickup but leaves body motion active on the empty plate. Ignore Player Colliders is enabled on these bodies, so they cannot land on the mouse.
+
+The body preserves Ground Layers (65), Skin (0.002), Max Speed (8) and the old 30 units/s² acceleration through Gravity Scale = 1 with the shared world gravity of 30. Air Drag is 0 to preserve the former falling response. Weight starts at 0.01 kg and remains editable per object; no buoyancy or pushable behaviour was added. Wind and other shared prop forces can now affect these objects. Changing world gravity also changes their acceleration proportionally.
+
+PropsMotion > Follow Support is enabled for these non-blocking objects. The shared fixed-tick coordinator simulates ordinary props first and support followers afterwards. Followers carry their previous support's local point through its transform, using collision-constrained movement and the body's speed budget, then update the current support. Followers do not join load-bearing stack groups, so plates do not introduce additional stack load. The setting is reusable on other non-blocking props; their collider's solidity is configured separately.
+
+In the Inspector, select SimulatedBody2D to adjust Shape, Solid Layers, Gravity Scale, Skin and Max Speed. Edit the assigned footprint collider's Size/Offset to match new artwork. Keep Pickup Area assigned to the original collection trigger. In Unity review initial placement, falling when terrain disappears, crates carrying cheese horizontally/vertically, collecting while carried, and empty plates remaining non-blocking. No compilation, automated checks or Play Mode were run.
 
 In LoopScene, eat Cheese by pressing F / gamepad West while its trigger intersects the player collider. No tags, special layers or Rigidbody2D are needed.
 

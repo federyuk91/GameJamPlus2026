@@ -16,7 +16,18 @@ namespace MousePlatformer
         private AvailableGameplayActions selectedInteractions = AvailableGameplayActions.All;
         private bool gameplayLocked;
         private bool waitingForInteractionRelease;
-        public bool GameplayActionsLocked => gameplayLocked || waitingForInteractionRelease;
+        private bool cameraControlsLocked;
+        public bool ExternalGameplayActionsLocked => gameplayLocked || waitingForInteractionRelease;
+        public bool GameplayActionsLocked => ExternalGameplayActionsLocked || cameraControlsLocked;
+        public Vector2 CameraMove => move != null ? move.ReadValue<Vector2>() : Vector2.zero;
+        public bool CameraJumpPressed => jump != null && jump.WasPressedThisFrame();
+
+        public void SetCameraControlsLocked(bool locked)
+        {
+            cameraControlsLocked = locked;
+            jumpQueued = false;
+            ConsumeInteraction();
+        }
         public bool WheelInteractionPressed => collect != null && collect.WasPressedThisFrame() && !collectionConsumed
             && (selectedInteractions & AvailableGameplayActions.UseWheel) != 0;
 

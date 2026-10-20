@@ -5,6 +5,7 @@
             <ui:VisualElement picking-mode="Ignore" class="black-band black-band-top"/>
             <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom"/>
             <ui:Label name="camera-height-lock" text="CAMERA HEIGHT LOCKED — C TO UNLOCK" picking-mode="Ignore" class="camera-height-lock"/>
+            <ui:Label name="camera-lock-reminder" picking-mode="Ignore" class="camera-lock-reminder"/>
             <ui:VisualElement name="test-white-cover" picking-mode="Ignore" class="test-white-cover"/>
             <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area">
                 <ui:VisualElement picking-mode="Ignore" class="timer-anchor">

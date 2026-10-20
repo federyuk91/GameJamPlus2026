@@ -95,7 +95,7 @@ No automated tests or Play Mode checks were run; manually check rapid hovering a
 
 New Game's room-card now serves as the shared monitor: navy background, heading, ONLINE indicator and footer stay fixed. `channel-title` retains the WELCOME ROOM style and displays WELCOME ROOM, OPTIONS, CREDITS or QUIT. The footer caption changes with the channel; Play. Eat. Learn. Relax. remains below the monitor.
 
-All content fits within the original 186 px image viewport: the mouse, compact Options controls, inline credit roles/names and Special Thanks logos, or Quit confirmation. Inner panels are transparent with light text. Small light logo backgrounds keep IGDA's black lettering readable.
+All content fits within the original 186 px image viewport: the mouse, compact Options controls, inline credit roles/names and Special Thanks logos, or Quit confirmation. Inner panels are transparent with light text. Special Thanks logos have transparent containers and appear directly on the navy background.
 
 Channel switching follows Loop communications: collapse vertically to a thin line, compress toward the center, pause for Channel Switch Delay (0.12 s), reopen the line and display, then fade the inner glow. Only `channel-aperture` animates; `channel-content` retains full dimensions to avoid text reflow. The navy frame and heading stay visible at full size. The heading changes during the pause between closing and reopening.
 

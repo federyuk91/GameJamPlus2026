@@ -24,12 +24,23 @@ namespace MousePlatformer
         [SerializeField, HideInInspector] private Vector2 restDirection = Vector2.down;
         [SerializeField, Min(0.01f)] private float segmentLength = 0.5f;
         [SerializeField] private PhysicsSettings physicsSettings;
+        [SerializeField, Min(0f), Tooltip("Individual multiplier of world gravity for this rope's segments and rider tension calculation. Independent of a connected body's Gravity Scale.")]
+        private float gravityScale = 1f;
+        private float GravityAcceleration => (physicsSettings != null
+            ? physicsSettings.gravityAcceleration : PhysicsSettings.DefaultGravityAcceleration) * Mathf.Max(0f, gravityScale);
+        [SerializeField, Min(0f), Tooltip("Distance below full rope length at which the balloon and attached body both consider this rope taut, in world units.")]
+        private float tautTolerance = 0.01f;
+        public float TautTolerance => Mathf.Clamp(tautTolerance, 0f, Length);
+        private int SimulationSubsteps => Mathf.Max(1, physicsSettings != null
+            ? physicsSettings.ropeSimulationSubsteps : PhysicsSettings.DefaultRopeSimulationSubsteps);
+        private int ConstraintIterations => Mathf.Max(1, physicsSettings != null
+            ? physicsSettings.ropeConstraintIterations : PhysicsSettings.DefaultRopeConstraintIterations);
         [SerializeField, Min(0f)] private float damping = 0.35f;
         [SerializeField] private RopeSwingConstraint swingLimits = new RopeSwingConstraint();
         [SerializeField] private bool canBeCut = true;
         [SerializeField] private bool showGizmos = true;
         [SerializeField] private BalloonLift balloonAnchor;
-        private CrateRopeAttachment load;
+        private RopeAttachment load;
         private bool retainCrateSide;
         private RopeChain chain;
         private PlayerRopeInteraction rider;
@@ -46,7 +57,7 @@ namespace MousePlatformer
         public bool ShowGizmos => showGizmos;
         public bool HasBeenCut { get; private set; }
         public BalloonLift BalloonAnchor => balloonAnchor;
-        public CrateRopeAttachment Load => load;
+        public RopeAttachment Load => load;
         public bool HasIntactLoadConnection => load != null && load.Attached && !HasBeenCut
             && chain != null && chain.ConnectedSegmentCount == chain.SegmentCount;
         public bool KeepCrateSideAfterCut => retainCrateSide || (!HasBeenCut && load != null && load.Floats
@@ -58,23 +69,38 @@ namespace MousePlatformer
         public float ClimbableLength => chain != null ? ClimbableEndSegment * chain.SegmentLength : 0f;
         public float MinimumGripDistance => retainCrateSide ? ClimbableStart : Mathf.Min(0.3f, ClimbableLength);
         public event Action<RopeSimulation> Cut;
+        private bool AnchorSupportsRider => rider != null && rider.isActiveAndEnabled && chain != null
+            && gripDistance > 0f && gripDistance <= chain.ConnectedLength;
+        private bool LoadSupportsRider => rider != null && rider.isActiveAndEnabled && chain != null
+            && load != null && load.HasRopeConnection && chain.EndpointConnectedSegmentCount > 0
+            && gripDistance >= (chain.SegmentCount - chain.EndpointConnectedSegmentCount) * chain.SegmentLength;
+        public float AnchorRiderWeight => AnchorSupportsRider ? rider.WeightKg
+            * (LoadSupportsRider ? 1f - Mathf.Clamp01(gripDistance / chain.Length) : 1f) : 0f;
+
+        public float LoadRiderWeight(RopeAttachment attachment)
+        {
+            if (load != attachment || !LoadSupportsRider) return 0f;
+            return rider.WeightKg * (AnchorSupportsRider ? Mathf.Clamp01(gripDistance / chain.Length) : 1f);
+        }
 
         public Vector2 AnchorPull(Vector2 anchorVelocity)
         {
             if (rider == null || !rider.isActiveAndEnabled || chain == null
                 || gripDistance <= 0f || gripDistance > chain.ConnectedLength)
                 return Vector2.zero;
-            return RiderPull(transform.position, anchorVelocity);
+            return RiderPull(transform.position, anchorVelocity)
+                * (LoadSupportsRider ? 1f - Mathf.Clamp01(gripDistance / chain.Length) : 1f);
         }
 
-        public Vector2 LoadPull(CrateRopeAttachment attachment, Vector2 endpointVelocity)
+        public Vector2 LoadPull(RopeAttachment attachment, Vector2 endpointVelocity)
         {
             if (load != attachment || attachment == null || !attachment.HasRopeConnection
                 || rider == null || !rider.isActiveAndEnabled || chain == null
                 || chain.EndpointConnectedSegmentCount == 0
                 || gripDistance < (chain.SegmentCount - chain.EndpointConnectedSegmentCount) * chain.SegmentLength)
                 return Vector2.zero;
-            return RiderPull(attachment.AttachmentPoint, endpointVelocity);
+            return RiderPull(attachment.AttachmentPoint, endpointVelocity)
+                * (AnchorSupportsRider ? Mathf.Clamp01(gripDistance / chain.Length) : 1f);
         }
 
         private Vector2 RiderPull(Vector2 attachmentPoint, Vector2 attachmentVelocity)
@@ -85,10 +111,10 @@ namespace MousePlatformer
             Vector2 direction = radial / distance;
             Vector2 relativeVelocity = chain.Velocity(gripDistance) - attachmentVelocity;
             Vector2 tangentVelocity = relativeVelocity - direction * Vector2.Dot(relativeVelocity, direction);
-            float gravity = (physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity).ropeGravity;
+            float gravity = GravityAcceleration;
             // Pendulum tension transfers both the hanging weight and the swing's centripetal load.
             float tension = Mathf.Max(0f, -gravity * direction.y) + tangentVelocity.sqrMagnitude / distance;
-            return direction * Mathf.Min(tension, 120f);
+            return direction * (Mathf.Min(tension, 120f) * rider.WeightKg);
         }
 
         public void SetPieces(Transform[] value)
@@ -126,13 +152,14 @@ namespace MousePlatformer
 
         private void FixedUpdate()
         {
-            float gravity = (physicsSettings != null ? physicsSettings.gravity : PhysicsSettings.DefaultGravity).ropeGravity;
+            float gravity = GravityAcceleration;
             chain.Step(transform.position, Time.fixedDeltaTime, gravity, damping, gripDistance, drive,
+                ConstraintIterations, SimulationSubsteps,
                 swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null);
             UpdatePieces();
         }
 
-        public bool BindLoad(CrateRopeAttachment attachment)
+        public bool BindLoad(RopeAttachment attachment)
         {
             if (!isActiveAndEnabled || HasBeenCut || (load != null && load != attachment)) return false;
             load = attachment;
@@ -140,10 +167,10 @@ namespace MousePlatformer
             return true;
         }
 
-        public void ReleaseLoad(CrateRopeAttachment attachment)
+        public void ReleaseLoad(RopeAttachment attachment)
         {
             if (load != attachment) return;
-            chain?.ReleaseEndpoint(Time.fixedDeltaTime);
+            chain?.ReleaseEndpoint(Time.fixedDeltaTime, SimulationSubsteps);
             load = null;
         }
 
@@ -167,7 +194,7 @@ namespace MousePlatformer
             if (!Available) return false;
             rider = player;
             gripDistance = distance;
-            chain.AddVelocity(distance, incomingVelocity * 0.4f, Time.fixedDeltaTime);
+            chain.AddVelocity(distance, incomingVelocity * 0.4f, Time.fixedDeltaTime, SimulationSubsteps);
             return true;
         }
 

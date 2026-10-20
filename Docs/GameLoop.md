@@ -42,7 +42,7 @@ Edit comments on DialogueMessagePlayer and results on TestEndEvent. Subject Died
 
 ## Spawn Points
 
-Assets/Prefabs/Spawn Point.prefab is an empty point with a green Scene View gizmo. Position it by the player pivot, not feet. Point rotation does not rotate the mouse.
+Assets/Prefabs/GameLoop/Spawn Point.prefab is an empty point with a green Scene View gizmo. Position it by the player pivot, not feet. Point rotation does not rotate the mouse.
 
 Assign Player, Gameplay Camera and scene instances in GameManager.Spawn Points. Each LoopScene instance randomly chooses an assigned active point with an enabled component; nulls are ignored. Awake places the player before component initialization. Startup snaps the camera to avoid the old position; player Z is preserved.
 
@@ -56,4 +56,4 @@ LoopScene's Goal is a level escape. Its 1×1-unit BoxCollider2D is a trigger; Te
 
 Check in Unity: enter Goal from both sides, verify one completion and one recovery, then confirm progression to the next test (or EndGame after the last test).
 
-Goal is now the reusable prefab at Assets/Prefabs/Goal.prefab. LoopScene contains an instance at its original position. Sprite, trigger, contact detection, survival outcome and scientist dialogue are stored in the prefab. Player, GameManager and HUD references are assigned as scene overrides; newly placed instances can fall back to the scene GameManager for those references.
+Goal is now the reusable prefab at Assets/Prefabs/GameLoop/Goal.prefab. LoopScene contains an instance at its original position. Sprite, trigger, contact detection, survival outcome and scientist dialogue are stored in the prefab. Player, GameManager and HUD references are assigned as scene overrides; newly placed instances can fall back to the scene GameManager for those references.

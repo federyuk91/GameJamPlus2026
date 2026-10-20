@@ -7,4 +7,4 @@ Textures in this folder and its subfolders are automatically imported as sprites
 
 Rules apply on import, reimport and image/folder moves within this hierarchy. Sprite sheets use Multiple; frame slicing remains editable in Sprite Editor without imposing a grid or replacing existing slices.
 
-Importer: `Assets/Editor/PixelArtTexturePostprocessor.cs`.
+Importer: `Assets/Editor/Importing/PixelArtTexturePostprocessor.cs`.

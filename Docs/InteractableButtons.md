@@ -1,6 +1,6 @@
 # Interactable Button
 
-Drag Assets/Prefabs/Interactable Button.prefab into the scene. The pivot is at the button's base. Three PressureButton_Sheet frames keep the base aligned while pressing.
+Drag Assets/Prefabs/Interactables/Buttons/Interactable Button.prefab into the scene. The pivot is at the button's base. Three PressureButton_Sheet frames keep the base aligned while pressing.
 
 The mouse must overlap Interaction Area and have a clear line to the button. Press F or gamepad West (Xbox X / PlayStation Square). Walking over it does not press it automatically.
 

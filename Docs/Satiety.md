@@ -8,7 +8,7 @@ The HUD displays notches above the bottom-left counters. Gameplay HUD → Satiet
 
 At zero, PlayerSatiety calls Starvation Outcome: on the Player, Dialogue Message Player contains diet comments and Test End Event contains random results with Subject Died = true. The normal sequence is white flash → comment → result → next universe.
 
-Drag Assets/Prefabs/Starvation Death Zone.prefab into desired areas. Box Collider 2D → Size/Offset defines the volume. Its Drain Interval initially equals 5 seconds. Show Gizmos controls the faint red outline, invisible in gameplay. No Player references, tags or Rigidbody2D are needed: zones register automatically and are checked against the mouse collider.
+Drag Assets/Prefabs/Hazards/Starvation Death Zone.prefab into desired areas. Box Collider 2D → Size/Offset defines the volume. Its Drain Interval initially equals 5 seconds. Show Gizmos controls the faint red outline, invisible in gameplay. No Player references, tags or Rigidbody2D are needed: zones register automatically and are checked against the mouse collider.
 
 Zones accelerate the existing timer, preserving partial progress on entry/exit. Overlapping zones use the shortest interval without stacking losses.
 

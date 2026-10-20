@@ -70,9 +70,9 @@ namespace MousePlatformer
             }
         }
 
-        public void ReleaseEndpoint(float fixedDeltaTime)
+        public void ReleaseEndpoint(float fixedDeltaTime, int substeps)
         {
-            previous[SegmentCount] = points[SegmentCount] - velocities[SegmentCount] * (fixedDeltaTime / 4f);
+            previous[SegmentCount] = points[SegmentCount] - velocities[SegmentCount] * (fixedDeltaTime / Mathf.Max(1, substeps));
         }
 
         public RopeChain(Vector2 anchor, int segments, float segmentLength)
@@ -90,19 +90,25 @@ namespace MousePlatformer
         }
 
         public void Step(Vector2 anchor, float dt, float gravity, float damping,
-            float gripDistance, float driveAcceleration, int iterations = 24, int substeps = 4,
+            float gripDistance, float driveAcceleration, int iterations, int substeps,
             RopeSwingConstraint swingLimits = null, Vector2? endpoint = null)
         {
             if (dt <= 0f) return;
+            substeps = Mathf.Max(1, substeps);
+            iterations = Mathf.Max(1, iterations);
             if (endpoint.HasValue || ConnectedSegmentCount != SegmentCount) swingLimits = null;
             swingLimits?.Sanitize();
             for (int i = 0; i < points.Length; i++) stepStart[i] = points[i];
             int driven = Mathf.Clamp(Mathf.RoundToInt(gripDistance / SegmentLength), 1, SegmentCount);
             float h = dt / Mathf.Max(1, substeps);
+            Vector2 anchorVelocity = (anchor - stepStart[0]) / dt;
             for (int step = 0; step < substeps; step++)
             {
                 float startAngle = RopeSwingConstraint.Angle(points[SegmentCount] - anchor);
-                float filteredDrive = swingLimits != null ? swingLimits.FilterDrive(startAngle, driveAcceleration) : driveAcceleration;
+                float filteredDrive = driveAcceleration;
+                if (!endpoint.HasValue && driven <= ConnectedSegmentCount)
+                    filteredDrive = FilterSwingDrive(anchor, anchorVelocity, driven, h, gravity, filteredDrive);
+                if (swingLimits != null) filteredDrive = swingLimits.FilterDrive(startAngle, filteredDrive);
                 for (int i = 1; i < points.Length; i++)
                 {
                     Vector2 position = points[i];
@@ -143,6 +149,26 @@ namespace MousePlatformer
         }
 
         public Vector2 Point(float distance) => Sample(points, distance);
+
+        private float FilterSwingDrive(Vector2 anchor, Vector2 anchorVelocity, int driven, float dt,
+            float gravity, float drive)
+        {
+            Vector2 radial = points[driven] - anchor;
+            float radius = radial.magnitude;
+            if (radial.y >= 0f || radius <= 0.00001f || drive == 0f) return drive;
+
+            Vector2 tangent = new Vector2(-radial.y, radial.x) / radius;
+            Vector2 relativeVelocity = (points[driven] - previous[driven]) / dt - anchorVelocity;
+            float swingSpeed = Vector2.Dot(relativeVelocity, tangent);
+            if (swingSpeed * drive * tangent.x < 0f) return 0f;
+            if (radial.x * drive <= 0f) return drive;
+
+            // Keep full pumping strength except close to a turning point or stationary deflection.
+            const float turningSpeedFraction = 0.1f;
+            float turningSpeed = Mathf.Sqrt(Mathf.Max(0f, gravity) * radius) * turningSpeedFraction;
+            return drive * Mathf.Clamp01(Mathf.Abs(swingSpeed) / Mathf.Max(0.00001f, turningSpeed));
+        }
+
         public Vector2 Velocity(float distance) => Sample(velocities, distance);
         private Vector2 Sample(Vector2[] values, float distance)
         {
@@ -181,11 +207,11 @@ namespace MousePlatformer
             return along;
         }
 
-        public void AddVelocity(float distance, Vector2 velocity, float fixedDeltaTime)
+        public void AddVelocity(float distance, Vector2 velocity, float fixedDeltaTime, int substeps)
         {
-            // Verlet history uses the substep duration (four substeps per fixed tick).
+            // Verlet history must use the same substep duration as the rope solver.
             int index = Mathf.Clamp(Mathf.RoundToInt(distance / SegmentLength), 1, SegmentCount);
-            previous[index] -= Vector2.ClampMagnitude(velocity, 20f) * (fixedDeltaTime / 4f);
+            previous[index] -= Vector2.ClampMagnitude(velocity, 20f) * (fixedDeltaTime / Mathf.Max(1, substeps));
         }
     }
 }

@@ -1,6 +1,6 @@
 # Electric Trap
 
-Drag `Assets/Prefabs/Electric Trap.prefab` into the scene. Its top pivot supports ceiling placement. Resize/move Box Collider 2D (Is Trigger) to define the lethal area.
+Drag `Assets/Prefabs/Hazards/Electric Trap.prefab` into the scene. Its top pivot supports ceiling placement. Resize/move Box Collider 2D (Is Trigger) to define the lethal area.
 
 - `Automatic Activation`: starts an electrified period when enabled. If off, waits for external input. The period expires and requires reactivation.
 - `Activate()`: electrifies the area for `Activation Duration` (default 3 seconds), including later entrants. Calling it again restarts the duration. Kills overlapping piranhas and ends the test if the mouse is inside.

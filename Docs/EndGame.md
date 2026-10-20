@@ -22,7 +22,7 @@ EndGameOutcomeSelector.Select(int deceasedSubjects):
 
 Ending classification uses the death count: zero, exactly one, or two and above, independently of the total number of tests.
 
-EndGame assigns the supplied artwork: `Assets/Art/End Game 0 Morti.JPG` for no deaths, `Assets/Art/EndGame 1 morto.JPG` for one death, and `Assets/Art/End Game Molte Morti.JPG` for two or more deaths. The former placeholder images remain available but are no longer assigned. Former serialized field names migrate through FormerlySerializedAs. Each ending has a distinct title and subject summary. Main Menu returns without automatically starting a new game.
+EndGame assigns the supplied artwork: `Assets/Art/UI/EndGame/End Game 0 Morti.JPG` for no deaths, `Assets/Art/UI/EndGame/EndGame 1 morto.JPG` for one death, and `Assets/Art/UI/EndGame/End Game Molte Morti.JPG` for two or more deaths. The former placeholder images remain available but are no longer assigned. Former serialized field names migrate through FormerlySerializedAs. Each ending has a distinct title and subject summary. Main Menu returns without automatically starting a new game.
 
 ## Session data
 
