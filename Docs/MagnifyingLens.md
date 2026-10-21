@@ -10,6 +10,26 @@ This setup supports one lens plane per camera. Overlapping lenses with different
 
 ## Scientist parallax
 
-Busto and Lente are linked by ScientistParallax on their common parent. The bust follows camera translation with Parallax Factor (0.8 horizontal, 0.85 vertical). Lens center remains on the interpolated eye position: horizontal camera travel moves it from First Eye UV to Second Eye UV over Camera Travel For Sweep (6 world units). Movement reverses when the camera returns; Reverse Sweep swaps the travel direction. Initial Sweep Position chooses the starting eye. Sweep Smooth Time softens changes. Both sprite transforms retain their scale and Z position, and no colliders or camera settings change. The first LateUpdate captures the camera reference after camera startup positioning; disabling restores the original sprite positions.
+ScientistParallax keeps the bust's Parallax Factor and the lens sweep controls.
+Lens Left Limit and Lens Right Limit are lens-center coordinates in the bust's
+local space. The cyan and yellow Scene handles move them with Undo; Show Gizmos
+also displays both endpoints without selecting the object. Lens Vertical Offset
+adds world-space vertical displacement relative to the bust to both limits.
+Camera Travel For Sweep controls the speed between limits, Initial Sweep Position
+the starting position, and Reverse Sweep its direction. Old eye UV limits migrate
+to equivalent local coordinates without changing the saved camera travel.
 
-Tools > Gameplay > Configure Scientist Parallax wires the loaded Welcome scene using Undo and marks it dirty without saving. Save normally after reviewing Inspector settings. Eye UVs use the current Busto.png artwork and can be adjusted if it changes. No Play Mode checks were run.
+The four empty groups are 01 Far Background, 02 Distant Background,
+03 Middle Background and 04 Near Background. Place decorative objects under the
+appropriate group. Their configurable factors default to 0.95, 0.9, 0.85, 0.8:
+1 follows the camera completely (distant); 0 stays in world space (near).
+Groups are siblings. Their SortingGroups use the lens sorting layer, with orders
+immediately below the lens, far to near; children keep their internal ordering.
+The lens is the frontmost plane and keeps its separate, bounded sweep over the
+bust. Busto and Lente retain their existing parents and own motion settings.
+
+Use Create Background Groups in the component Inspector, or Tools > Gameplay >
+Configure Scientist Parallax with Welcome open. Setup is undoable, does not move
+existing scenery into groups, preserves assigned roots and marks the loaded
+scene dirty without saving. Save normally after reviewing the result. Disable
+restores original positions. No Play Mode checks were run.
