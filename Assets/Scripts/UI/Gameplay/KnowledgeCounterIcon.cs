@@ -3,7 +3,8 @@ using UnityEngine.UIElements;
 
 namespace GameJamPlus.UI
 {
-    public sealed class KnowledgeCounterIcon : VisualElement
+    [UxmlElement]
+    public sealed partial class KnowledgeCounterIcon : VisualElement
     {
         public KnowledgeCounterIcon()
         {

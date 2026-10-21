@@ -26,12 +26,12 @@ MonoBehaviour:
     runFootstepsPerSecond: 6
     walkFootstepsPerSecond: 3
   interactions:
-    ropeJumpUpSpeed: 7
-    ropeJumpSwingBoost: 4
+    ropeJumpUpSpeed: 8
+    ropeJumpSwingBoost: 7
     crateMoveSpeed: 2.5
-    ropeClimbSpeed: 2
-    ropeSwingAcceleration: 50
-    ropeRegrabDelay: 0.3
+    ropeClimbSpeed: 3
+    ropeSwingAcceleration: 70
+    ropeRegrabDelay: 0.25
   water:
     bottomWalkSpeedMultiplier: 0.5
     acceleration: 10
@@ -40,7 +40,9 @@ MonoBehaviour:
     braking: 6
     gravityMultiplier: 0.23333333
     maxSinkSpeed: 3.5
-    strokeSpeed: 4.8
+    strokeSpeed: 4
+    surfaceJumpSpeed: 6
+    surfaceJumpDepth: 0.25
   ladder:
     jumpHorizontalSpeed: 6
     jumpUpSpeed: 9

@@ -19,6 +19,16 @@
 # Recordings can get excessive in size
 /[Rr]ecordings/
 
+# Local trailer editing projects, renders, audio exports and backups
+/[Tt]railer/
+
+# Local scene recovery and repair backups
+/[Rr]ecovery/
+
+# MP4 videos and their Unity metadata
+*.[mM][pP]4
+*.[mM][pP]4.meta
+
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
 

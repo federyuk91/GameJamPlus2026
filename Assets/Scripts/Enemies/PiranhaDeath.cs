@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using GameJamPlus.Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MousePlatformer
 {
@@ -12,7 +12,7 @@ namespace MousePlatformer
         [SerializeField] private Animator animator;
         [SerializeField] private PiranhaPatrol patrol;
         [SerializeField] private PiranhaChase chase;
-        [SerializeField] private LethalContact lethalContact;
+        [SerializeField, FormerlySerializedAs("lethalContact")] private PiranhaBite bite;
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private PropsMotion floatingMotion;
 
@@ -26,7 +26,7 @@ namespace MousePlatformer
             if (animator == null) animator = GetComponent<Animator>();
             if (patrol == null) patrol = GetComponent<PiranhaPatrol>();
             if (chase == null) chase = GetComponent<PiranhaChase>();
-            if (lethalContact == null) lethalContact = GetComponent<LethalContact>();
+            if (bite == null) bite = GetComponent<PiranhaBite>();
             if (body == null) body = GetComponent<SimulatedBody2D>();
             if (floatingMotion == null) floatingMotion = GetComponent<PropsMotion>();
             floatingMotion.enabled = false;
@@ -42,9 +42,9 @@ namespace MousePlatformer
             if (animator != null) animator.speed = 0f;
             if (chase != null) chase.enabled = false;
             if (patrol != null) patrol.enabled = false;
-            if (lethalContact != null) lethalContact.enabled = false;
+            if (bite != null) bite.enabled = false;
             if (visual != null) visual.flipY = !visual.flipY;
-            // The living fish is a lethal trigger; its corpse must support the player.
+            // The living fish uses a bite trigger; its corpse must support the player.
             body.Shape.isTrigger = false;
             Vector2 offset = body.Shape.offset;
             offset.y = -offset.y;

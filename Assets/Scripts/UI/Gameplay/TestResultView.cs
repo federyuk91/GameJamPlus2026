@@ -8,6 +8,7 @@ namespace GameJamPlus.UI
     public sealed class TestResultView : IDisposable
     {
         private readonly VisualElement cover;
+        private readonly TestEndingTunnel tunnel;
         private readonly VisualElement resultScreen;
         private readonly VisualElement counters;
         private readonly VisualElement timer;
@@ -39,6 +40,9 @@ namespace GameJamPlus.UI
         {
             this.continueRequested = continueRequested;
             cover = root.Q("test-white-cover");
+            cover.style.backgroundColor = Color.clear;
+            tunnel = new TestEndingTunnel();
+            cover.Add(tunnel);
             resultScreen = root.Q("test-result");
             counters = root.Q("resource-counters");
             timer = root.Q(className: "timer-anchor");
@@ -75,10 +79,21 @@ namespace GameJamPlus.UI
             counters.style.display = DisplayStyle.None;
             timer.style.display = DisplayStyle.None;
             cover.style.opacity = 0f;
+            cover.style.backgroundColor = Color.clear;
+            tunnel.style.display = DisplayStyle.Flex;
+            tunnel.SetProgress(0f);
             cover.style.display = DisplayStyle.Flex;
         }
 
-        public void SetCoverOpacity(float opacity) => cover.style.opacity = Mathf.Clamp01(opacity);
+        public void SetCoverOpacity(float opacity)
+        {
+            cover.style.opacity = 1f;
+            float progress = Mathf.Clamp01(opacity);
+            bool complete = progress >= 1f;
+            cover.style.backgroundColor = complete ? Color.white : Color.clear;
+            tunnel.style.display = complete ? DisplayStyle.None : DisplayStyle.Flex;
+            tunnel.SetProgress(progress);
+        }
 
         public void Show(int universeNumber, double elapsedSeconds, string resultMessage)
         {
@@ -112,6 +127,10 @@ namespace GameJamPlus.UI
             if (IsVisible) continueRequested?.Invoke();
         }
 
-        public void Dispose() => next.clicked -= Continue;
+        public void Dispose()
+        {
+            next.clicked -= Continue;
+            tunnel.RemoveFromHierarchy();
+        }
     }
 }

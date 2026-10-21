@@ -171,8 +171,9 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 4009145}
   subjectDied: 0
+  flashDurationOverride: 4
   resultMessages:
-  - "The subject has escaped the maze and survived the test."
+  - "The subject has escaped the maze and completed the trial."
   - "The subject has successfully reached the exit and has been recovered alive."
 --- !u!114 &4009145
 MonoBehaviour:
@@ -189,6 +190,6 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
   messages:
-  - "You found the way out! Excellent navigation. Your test is complete; enjoy a well-deserved rest."
-  - "Splendid! Another successful journey through the maze. We can conclude the test here."
+  - "You found the way out! Excellent navigation. Your trial is complete; enjoy a well-deserved rest."
+  - "Splendid! Another successful journey through the maze. We can conclude this trial here."
   duration: 7

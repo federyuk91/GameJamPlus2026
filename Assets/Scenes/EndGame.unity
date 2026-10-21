@@ -592,7 +592,7 @@ MonoBehaviour:
   noDeathsEndingImage: {fileID: 2800000, guid: ab2e940874f5eb446b68557808d58159, type: 3}
   singleDeathEndingImage: {fileID: 2800000, guid: d980144eb17ea6c40b33b58ef4ed2e10, type: 3}
   multipleDeathsEndingImage: {fileID: 2800000, guid: d83642ce56f3ec2488fcfcfe4e2f131d, type: 3}
-  mainMenuSceneName: MainMenu
+  creditsSceneName: EndGameCredits
   previewDeceasedSubjects: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -16,7 +16,7 @@ namespace GameJamPlus.UI
         [SerializeField] private Texture2D noDeathsEndingImage;
         [SerializeField, FormerlySerializedAs("partialLossEndingImage")] private Texture2D singleDeathEndingImage;
         [SerializeField, FormerlySerializedAs("allSubjectsLostEndingImage")] private Texture2D multipleDeathsEndingImage;
-        [SerializeField] private string mainMenuSceneName = "MainMenu";
+        [SerializeField, FormerlySerializedAs("mainMenuSceneName")] private string creditsSceneName = "EndGameCredits";
         [SerializeField, Range(0, 10)] private int previewDeceasedSubjects = 5;
 
         private VisualElement root;
@@ -25,7 +25,7 @@ namespace GameJamPlus.UI
         private VisualElement glow;
         private VisualElement endingView;
         private Button continueButton;
-        private Button menuButton;
+        private Button creditsButton;
         private ScreenState state = ScreenState.Inactive;
         private int deceasedSubjects;
         private int recoveredSubjects;
@@ -43,9 +43,9 @@ namespace GameJamPlus.UI
             glow = root.Q("report-power-glow");
             endingView = root.Q("ending-view");
             continueButton = root.Q<Button>("report-continue");
-            menuButton = root.Q<Button>("return-to-menu");
+            creditsButton = root.Q<Button>("show-credits");
             continueButton.clicked += Continue;
-            menuButton.clicked += ReturnToMenu;
+            creditsButton.clicked += ShowCredits;
             endingView.AddToClassList("hidden");
             monitor.style.display = DisplayStyle.Flex;
             BindReport();
@@ -138,19 +138,19 @@ namespace GameJamPlus.UI
                 $"Subjects deceased: {deceasedSubjects} · Subjects recovered: {recoveredSubjects}";
             endingView.RemoveFromClassList("hidden");
             state = ScreenState.Ending;
-            menuButton.Focus();
+            creditsButton.Focus();
         }
 
-        private void ReturnToMenu()
+        private void ShowCredits()
         {
             if (state != ScreenState.Ending) return;
-            if (!Application.CanStreamedLevelBeLoaded(mainMenuSceneName))
+            if (!Application.CanStreamedLevelBeLoaded(creditsSceneName))
             {
-                Debug.LogError("Include the menu scene in Build Profiles: " + mainMenuSceneName, this);
+                Debug.LogError("Include the credits scene in Build Profiles: " + creditsSceneName, this);
                 return;
             }
             state = ScreenState.Inactive;
-            SceneManager.LoadScene(mainMenuSceneName);
+            SceneManager.LoadScene(creditsSceneName);
         }
 
         private IEnumerator AnimateMonitor(float fromX, float toX, float fromY, float toY, float duration)
@@ -175,7 +175,7 @@ namespace GameJamPlus.UI
         {
             StopAllCoroutines();
             if (continueButton != null) continueButton.clicked -= Continue;
-            if (menuButton != null) menuButton.clicked -= ReturnToMenu;
+            if (creditsButton != null) creditsButton.clicked -= ShowCredits;
             state = ScreenState.Inactive;
         }
     }

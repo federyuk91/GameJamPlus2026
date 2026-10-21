@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 307c5b6f17c54a319cdfd49c47e69de6, type: 3}
+  m_Name: ScientistSpeech
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.ScientistSpeechSettings
+  idlePortrait: {fileID: 21300000, guid: 839037457bc2c634a92d2ec8284df8aa, type: 3}
+  idleFrames:
+  - {fileID: 21300000, guid: 839037457bc2c634a92d2ec8284df8aa, type: 3}
+  - {fileID: 21300000, guid: c51a5b4b81dfd5a4f9a89a557448346f, type: 3}
+  - {fileID: 21300000, guid: f129c3c424eddb34ca85a9659626083d, type: 3}
+  - {fileID: 21300000, guid: 2327fad272a57f24bb7440b759fcbdea, type: 3}
+  - {fileID: 21300000, guid: 7c81262ae8211be4dba5070101be855e, type: 3}
+  - {fileID: 21300000, guid: 2186f74665e640579b7b5db46949d873, type: 3}
+  idleFramesPerSecond: 8
+  recognizedPortraits:
+  - {fileID: 21300000, guid: 85b9a31c70ccfa8439c9fb67ccd1c100, type: 3}
+  - {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+  letterAnimations:
+  - letters: AEIOQW
+    frames:
+    - {fileID: 21300000, guid: 8bcc038a922665045a3dc923eddef418, type: 3}
+    - {fileID: 21300000, guid: 6c89093b00eaa2448934a88632edda65, type: 3}
+    - {fileID: 21300000, guid: 4f7a8ece45119054d8d11d5f7f6453e5, type: 3}
+    - {fileID: 21300000, guid: 33c2c4f417528a949af7493374535168, type: 3}
+  - letters: BMPFV
+    frames:
+    - {fileID: 21300000, guid: 8bcc038a922665045a3dc923eddef418, type: 3}
+    - {fileID: 21300000, guid: a68bd00f59527094b9eaf160c936ab96, type: 3}
+    - {fileID: 21300000, guid: d2ed823ed5a12e5429b367e29e7ea407, type: 3}
+  - letters: U
+    frames:
+    - {fileID: 21300000, guid: 40f73e9e5d0c99a418b8d4396fa1fb89, type: 3}
+  otherLetterFrames:
+  - {fileID: 21300000, guid: 8bcc038a922665045a3dc923eddef418, type: 3}
+  - {fileID: 21300000, guid: a68bd00f59527094b9eaf160c936ab96, type: 3}
+  mouthFramesPerSecond: 8
+  textCharactersPerSecond: 30

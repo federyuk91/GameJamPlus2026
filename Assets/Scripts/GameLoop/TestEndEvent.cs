@@ -10,13 +10,16 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private DialogueMessagePlayer scientistComment;
         [SerializeField, Tooltip("Disable for a test that ends with the subject still alive.")]
         private bool subjectDied = true;
+        [SerializeField, Min(-1f), Tooltip("Tunnel transition duration for this ending in seconds. A negative value uses the Game Manager's Flash Duration.")]
+        private float flashDurationOverride = -1f;
         [SerializeField, TextArea(2, 6)] private string[] resultMessages =
         {
-            "The subject has completed the test."
+            "The subject has completed the stage."
         };
 
         public DialogueMessagePlayer ScientistComment => scientistComment;
         public bool SubjectDied => subjectDied;
+        public float FlashDurationOverride => flashDurationOverride;
 
         public void EndTest()
         {

@@ -15,6 +15,7 @@ namespace GameJamPlus.UI
         private static readonly string[] CounterNames = { "primary", "secondary", "tertiary", "quaternary" };
 
         [SerializeField] private UIDocument document;
+        [SerializeField] private SatietyHud resourceHud;
         [SerializeField] private PlayerInputReader playerInput;
         [SerializeField] private CollectibleCollector collectibleCollector;
         [SerializeField] private GameplayInteractionAvailability interactionAvailability;
@@ -22,8 +23,15 @@ namespace GameJamPlus.UI
         [SerializeField] private PixelPerfectViewport viewport;
         [SerializeField] private PlatformCameraController cameraController;
         [SerializeField] private Sprite scientistPortrait;
+        [SerializeField] private ScientistSpeechSettings scientistSpeech;
+        [SerializeField] private ScientistVoice scientistVoice;
+        [SerializeField] private AudioSource typingAudio;
+        [SerializeField] private AudioClip typingClip;
+        [SerializeField, Range(0f, 1f)] private float typingVolume = 0.25f;
         [SerializeField] private Sprite defaultCounterIcon;
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
+        [SerializeField, Tooltip("Cheese counter frames ordered from full plate to empty plate. Zero collected uses the last frame; each collected cheese advances one frame toward the first. The numeric total remains uncapped.")]
+        private Sprite[] cheeseCounterFrames = new Sprite[0];
         [SerializeField] private bool showWelcomeOnStart = true;
         [SerializeField, TextArea] private string welcomeText =
             "Welcome to Universe-10. Relax and enjoy your stay.";
@@ -74,6 +82,12 @@ namespace GameJamPlus.UI
 
         private void Awake()
         {
+            if (typingAudio != null)
+            {
+                typingAudio.playOnAwake = false;
+                typingAudio.loop = false;
+                typingAudio.spatialBlend = 0f;
+            }
             advanceScientistComment = new InputAction("Advance Scientist Comment", InputActionType.Button);
             advanceScientistComment.AddBinding("<Keyboard>/f");
             advanceScientistComment.AddBinding("<Gamepad>/buttonEast");
@@ -124,15 +138,20 @@ namespace GameJamPlus.UI
                 counterLabels[index] = root.Q<Label>("counter-" + CounterNames[index] + "-value");
                 counterImages[index] = root.Q<Image>("counter-" + CounterNames[index] + "-icon");
                 Sprite icon = counterIcons != null && index < counterIcons.Length ? counterIcons[index] : null;
-                counterImages[index].sprite = icon != null ? icon : index == 2 ? null : defaultCounterIcon;
+                SetCounterSprite(index, icon != null ? icon : index == 2 ? null : defaultCounterIcon);
                 counterImages[index].scaleMode = ScaleMode.ScaleToFit;
                 counterImages[index].style.backgroundImage = StyleKeyword.None;
-                if (index == 2 && icon == null)
-                    counterImages[index].Add(new KnowledgeCounterIcon());
+                if (index == 2)
+                {
+                    KnowledgeCounterIcon knowledgeIcon = counterImages[index].Q<KnowledgeCounterIcon>();
+                    if (icon != null) knowledgeIcon?.RemoveFromHierarchy();
+                    else if (knowledgeIcon == null) counterImages[index].Add(new KnowledgeCounterIcon());
+                }
                 RefreshCounter(index);
             }
 
-            scientistView = new ScientistCommentView(root, viewport.VerticalBorderPixels);
+            scientistView = new ScientistCommentView(root, viewport.VerticalBorderPixels, scientistSpeech);
+            scientistView.CharacterRevealed += OnScientistCharacterRevealed;
             testResultView = new TestResultView(root, OnTestContinueRequested);
             photoView = new PhotoView(root, ContinuePhoto);
             pauseMenu = new GameplayPauseMenuView(root, playerInput,
@@ -203,6 +222,7 @@ namespace GameJamPlus.UI
         private void OnPauseChanged(bool paused)
         {
             scientistView.SetSuspended(paused);
+            if (paused) scientistVoice?.StopSpeaking();
             if (paused)
             {
                 advanceScientistComment.Disable();
@@ -274,6 +294,8 @@ namespace GameJamPlus.UI
 
         public void SetTestCoverOpacity(float opacity) => testResultView.SetCoverOpacity(opacity);
 
+        public void PlayDamageFlash() => resourceHud?.PlayDamageFlash();
+
         public void ShowTestComment(string text, Sprite portrait)
         {
             if (portrait == null) portrait = scientistPortrait;
@@ -342,6 +364,15 @@ namespace GameJamPlus.UI
             RefreshInteractionHints();
         }
 
+        private void OnScientistCharacterRevealed(char character)
+        {
+            if (scientistView != null && scientistView.IsScientistSpeaking)
+                scientistVoice?.Speak(character);
+            if (char.IsWhiteSpace(character) || typingAudio == null || typingClip == null) return;
+            typingAudio.volume = typingVolume * GameAudioSettings.EffectsVolume;
+            typingAudio.PlayOneShot(typingClip);
+        }
+
         private IEnumerator RunScientistComment(string[] texts, Sprite portrait, float duration, bool waitForAdvance)
         {
             yield return scientistView.Show(texts, portrait, duration, waitForAdvance);
@@ -360,11 +391,17 @@ namespace GameJamPlus.UI
                 collectibleCollector?.ConsumeInteractionInput();
             if (photoView != null && photoView.IsVisible) ContinuePhoto();
             else if (testResultView != null && testResultView.IsVisible) testResultView.Continue();
-            else scientistView?.Advance();
+            else
+            {
+                scientistVoice?.StopSpeaking();
+                scientistView?.Advance();
+            }
         }
 
         public void HideScientistComment()
         {
+            scientistVoice?.StopSpeaking();
+            if (typingAudio != null) typingAudio.Stop();
             communicationInProgress = false;
             interactionHints?.Clear();
             if (interactionHints != null) interactionHints.style.display = DisplayStyle.None;
@@ -378,7 +415,22 @@ namespace GameJamPlus.UI
 
         private void RefreshCounter(int index)
         {
-            counterLabels[index].text = counterValues[index] + "×";
+            counterLabels[index].text = counterValues[index] + "\u00D7";
+            if (index == 0 && cheeseCounterFrames != null && cheeseCounterFrames.Length > 0)
+            {
+                int frameIndex = Mathf.Clamp(cheeseCounterFrames.Length - 1 - counterValues[index],
+                    0, cheeseCounterFrames.Length - 1);
+                Sprite sprite = cheeseCounterFrames[frameIndex];
+                if (sprite != null) SetCounterSprite(index, sprite);
+            }
+        }
+
+        private void SetCounterSprite(int index, Sprite sprite)
+        {
+            Image image = counterImages[index];
+            image.sprite = sprite;
+            image.style.width = sprite != null ? Mathf.RoundToInt(sprite.rect.width) : 16;
+            image.style.height = sprite != null ? Mathf.RoundToInt(sprite.rect.height) : 16;
         }
 
         private void RefreshDevicePrompts()
@@ -412,15 +464,15 @@ namespace GameJamPlus.UI
             switch (mode)
             {
                 case PlatformCameraController.CameraMode.Inspect:
-                    cameraHeightLock.text = "CAMERA CONTROL — " + devicePrompts.Jump + " TO LOCK / "
+                    cameraHeightLock.text = "CAMERA CONTROL \u2014 " + devicePrompts.Jump + " TO LOCK / "
                         + devicePrompts.CameraHeightLock + " TO RETURN";
                     break;
                 case PlatformCameraController.CameraMode.Fixed:
-                    cameraHeightLock.text = "CAMERA LOCKED — " + devicePrompts.Jump + " TO ADJUST / "
+                    cameraHeightLock.text = "CAMERA LOCKED \u2014 " + devicePrompts.Jump + " TO ADJUST / "
                         + devicePrompts.CameraHeightLock + " TO CONTROL MOUSE";
                     break;
                 case PlatformCameraController.CameraMode.FollowOffset:
-                    cameraHeightLock.text = "CAMERA OFFSET ACTIVE — " + devicePrompts.CameraHeightLock + " TO ADJUST";
+                    cameraHeightLock.text = "CAMERA OFFSET ACTIVE \u2014 " + devicePrompts.CameraHeightLock + " TO ADJUST";
                     break;
             }
         }
@@ -581,6 +633,7 @@ namespace GameJamPlus.UI
             HideScientistComment();
             advanceScientistComment?.Disable();
             scrollScientistComment?.Disable();
+            if (scientistView != null) scientistView.CharacterRevealed -= OnScientistCharacterRevealed;
             scientistView?.Dispose();
             scientistView = null;
             testResultView?.Dispose();

@@ -16,6 +16,8 @@ namespace MousePlatformer
         public bool InWater { get; private set; }
         public event Action StrokePerformed;
         private float strokeControlRemaining;
+        private bool nearSurface;
+        private bool surfaceJumpActive;
         private SwimMotion Settings => WorldSettings != null ? WorldSettings.water : PhysicsSettings.DefaultWater;
         public bool HasStrokeControl => isActiveAndEnabled && strokeControlRemaining > 0f;
         public float SwimSpeed => Mathf.Max(0f, playerMovement.MovementSettings.moveSpeed) * Mathf.Max(0f, swimSpeedMultiplier);
@@ -29,7 +31,8 @@ namespace MousePlatformer
 
         public bool CheckWater()
         {
-            if (!isActiveAndEnabled) { InWater = false; return false; }
+            nearSurface = false;
+            if (!isActiveAndEnabled) { InWater = false; surfaceJumpActive = false; return false; }
             if (body == null) body = GetComponent<SimulatedBody2D>();
             Physics2D.SyncTransforms();
             ContactFilter2D filter = new ContactFilter2D { useTriggers = true };
@@ -41,24 +44,32 @@ namespace MousePlatformer
                 WaterVolume volume = candidate.GetComponent<WaterVolume>();
                 if (volume == null || !volume.isActiveAndEnabled || !candidate.isTrigger) continue;
                 InWater = true;
-                break;
+                Bounds playerBounds = body.Shape.bounds;
+                float surfaceY = volume.Shape.bounds.max.y;
+                if (playerBounds.max.y >= surfaceY - Settings.surfaceJumpDepth
+                    && !WaterVolume.ContainsPoint(new Vector2(playerBounds.center.x, surfaceY + 0.001f)))
+                    nearSurface = true;
             }
+            if (!InWater) surfaceJumpActive = false;
             return InWater;
         }
 
         public Vector2 Step(Vector2 velocity, float horizontal, bool strokePressed, float dt)
         {
+            if (velocity.y <= 0f) surfaceJumpActive = false;
             if (strokePressed)
             {
+                surfaceJumpActive = InWater && nearSurface;
                 strokeControlRemaining = Settings.strokeControlTime;
                 if (InWater && dt > 0f) StrokePerformed?.Invoke();
             }
-            return Settings.Step(velocity, horizontal, strokePressed, dt, body.GravityAcceleration, SwimSpeed, body.WaterDrag, HasStrokeControl);
+            // Preserve the surface impulse until the body leaves water instead of capping it on the next tick.
+            return Settings.Step(velocity, horizontal, strokePressed, dt, body.GravityAcceleration, SwimSpeed, body.WaterDrag, HasStrokeControl, surfaceJumpActive);
         }
 
         public float SurfaceHorizontal(float velocity, float horizontal, float dt)
             => Settings.StepHorizontal(velocity, horizontal, dt, SwimSpeed, HasStrokeControl);
 
-        private void OnDisable() { InWater = false; ResetStrokeControl(); }
+        private void OnDisable() { InWater = false; nearSurface = surfaceJumpActive = false; ResetStrokeControl(); }
     }
 }

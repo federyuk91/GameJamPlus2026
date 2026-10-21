@@ -112,9 +112,9 @@ MonoBehaviour:
   hud: {fileID: 0}
   avatar: {fileID: 0}
   messages:
-  - "Interesting. The subject has decided to test gravity personally."
+  - "Interesting. The subject has decided to explore gravity personally."
   - "A very convincing descent. I would say we have earned a break."
-  - "Excellent, the falling test is complete too. Let us rest for a moment."
+  - "Excellent, the descent stage is complete too. Let us rest for a moment."
   duration: 7
 --- !u!114 &1005
 MonoBehaviour:

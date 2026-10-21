@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 5709383898159029807}
   - component: {fileID: 5709383898159029810}
   - component: {fileID: 9700001000}
+  - component: {fileID: 9800091001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -179,6 +180,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5355322660398281183}
+  - {fileID: 4210369097115253428}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &5067529301207272031
@@ -254,6 +256,9 @@ MonoBehaviour:
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
   waterDrag: 1.5
+  groundFriction: 1
+  maxSlopeAngle: 45
+  groundContact: {fileID: 9700001000}
   maxSpeed: 26
   gravityScale: 1
   shape: {fileID: 0}
@@ -263,9 +268,6 @@ MonoBehaviour:
     m_Bits: 65
   skin: 0.005
   weight: 0.03
-  groundFriction: 1
-  maxSlopeAngle: 45
-  groundContact: {fileID: 9700001000}
 --- !u!114 &3818418520059698947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,6 +649,8 @@ MonoBehaviour:
   wheel: {fileID: 5709383898159029810}
   maximumNotches: 5
   drainInterval: 60
+  poisonInterval: 3
+  poisonTicks: 5
 --- !u!114 &5709383898159029301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,7 +667,7 @@ MonoBehaviour:
   avatar: {fileID: 0}
   messages:
   - A healthy, balanced diet is the foundation of a long life.
-  - Meals are very important. Let us remember that for the next test.
+  - Meals are very important. Let us remember that for the next stage.
   duration: 7
 --- !u!114 &5709383898159029302
 MonoBehaviour:
@@ -680,6 +684,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 5709383898159029301}
   subjectDied: 1
+  flashDurationOverride: -1
   resultMessages:
   - The subject has demonstrated the importance of a healthy, balanced diet.
   - The subject has investigated the effects of prolonged fasting.
@@ -910,6 +915,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 5709383898159029801}
   subjectDied: 1
+  flashDurationOverride: -1
   resultMessages:
   - The subject has explored its breath-holding limits.
   - The subject has demonstrated that breathing matters even underwater.
@@ -1189,6 +1195,124 @@ MonoBehaviour:
   movement: {fileID: 3818418520059698947}
   visual: {fileID: 8503429192877497323}
   collector: {fileID: 5709383898159029123}
+--- !u!114 &9700001000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 4027669037393712695}
+--- !u!114 &9800091001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04e4f302cd174c0e896709aa77c3a97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visual: {fileID: 8503429192877497323}
+  playerCollider: {fileID: 5067529301207272031}
+  crushDuration: 0.25
+  crushedHoldDuration: 0.1
+--- !u!1 &2059410933207641600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4210369097115253428}
+  - component: {fileID: 6451300830759829362}
+  - component: {fileID: 2295011373493329530}
+  - component: {fileID: 3247254178557939207}
+  m_Layer: 0
+  m_Name: Cheese Collection Goal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4210369097115253428
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059410933207641600}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 887508910703741189}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6451300830759829362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059410933207641600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.TestEndEvent
+  gameManager: {fileID: 0}
+  scientistComment: {fileID: 2295011373493329530}
+  subjectDied: 0
+  flashDurationOverride: -1
+  resultMessages:
+  - The subject has enjoyed ten portions of cheese and completed the trial in good
+    health.
+--- !u!114 &2295011373493329530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059410933207641600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
+  hud: {fileID: 0}
+  avatar: {fileID: 0}
+  messages:
+  - Excellent appetite! That is enough cheese for this trial. Time for a well-earned
+    rest.
+  - Ten portions already! What a healthy appetite. We can conclude this trial here.
+  duration: 7
+--- !u!114 &3247254178557939207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059410933207641600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e5c84523bcc44f3ad1b51743f7f017d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.CollectibleTestGoal
+  collector: {fileID: 5709383898159029123}
+  type: 0
+  requiredCount: 10
+  outcome: {fileID: 6451300830759829362}
+  useSessionTotal: 1
 --- !u!1 &8026293878368258149
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,16 +1345,3 @@ Transform:
   - {fileID: 6152871682746685960}
   m_Father: {fileID: 887508910703741189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9700001000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  body: {fileID: 4027669037393712695}

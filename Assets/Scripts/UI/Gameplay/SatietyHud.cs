@@ -12,9 +12,15 @@ namespace GameJamPlus.UI
         [SerializeField] private PlayerOxygen oxygen;
         [SerializeField] private PlayerOxygenBubbles oxygenBubbles;
         [SerializeField] private PlatformCameraController gameplayCamera;
-        [SerializeField] private Color flashColor = new Color(1f, 0f, 0f, 0.25f);
+        [SerializeField, Tooltip("Screen tint when a satiety notch is lost and hunger increases.")]
+        private Color flashColor = new Color(1f, 0.85f, 0.1f, 0.25f);
+        [SerializeField, Tooltip("Screen tint for a crushing impact, independent of hunger and oxygen warnings.")]
+        private Color damageFlashColor = new Color(1f, 0f, 0f, 0.25f);
+        [SerializeField, Tooltip("Green screen tint when poisoning consumes a satiety notch, including its final tick.")]
+        private Color poisonFlashColor = new Color(64f / 255f, 201f / 255f, 119f / 255f, 0.25f);
         [SerializeField, Min(0.01f)] private float flashDuration = 0.35f;
-        [SerializeField] private Color oxygenFlashColor = new Color(0.35f, 0.8f, 1f, 0.16f);
+        [SerializeField, Tooltip("White and pale-blue screen tint when an oxygen notch is consumed.")]
+        private Color oxygenFlashColor = new Color(0.8f, 0.94f, 1f, 0.2f);
         [SerializeField, Min(0.01f)] private float oxygenFlashDuration = 0.25f;
         [SerializeField, Min(0f)] private float shakeDuration = 0.2f;
         [SerializeField, Min(0f)] private float shakeAmplitude = 0.06f;
@@ -26,9 +32,11 @@ namespace GameJamPlus.UI
         private VisualElement oxygenFlash;
         private float oxygenFlashRemaining;
         private bool oxygenBubblesPending;
+        private Color activeFlashColor;
 
         private void OnEnable()
         {
+            activeFlashColor = flashColor;
             if (document == null) document = GetComponent<UIDocument>();
             if (satiety != null)
             {
@@ -54,7 +62,7 @@ namespace GameJamPlus.UI
                 caption = root?.Q<Label>("satiety-caption");
                 if (root != null)
                 {
-                    flash = CreateFlash("satiety-flash", flashColor);
+                    flash = CreateFlash("satiety-flash", activeFlashColor);
                     oxygenFlash = CreateFlash("oxygen-flash", oxygenFlashColor);
                     RefreshResources();
                 }
@@ -116,10 +124,20 @@ namespace GameJamPlus.UI
             if (showOxygen) RefreshNotches(oxygen.Current, oxygen.Maximum);
             else if (satiety != null) RefreshNotches(satiety.Current, satiety.Maximum);
             notches?.EnableInClassList("oxygen-notches", showOxygen);
+            notches?.EnableInClassList("poisoned-notches", !showOxygen && satiety != null && satiety.IsPoisoned);
         }
 
         private void OnNotchLost()
         {
+            PlayFlash(satiety != null && satiety.LastLossWasPoison ? poisonFlashColor : flashColor);
+        }
+
+        public void PlayDamageFlash() => PlayFlash(damageFlashColor);
+
+        private void PlayFlash(Color color)
+        {
+            activeFlashColor = color;
+            if (flash != null) flash.style.backgroundColor = color;
             flashRemaining = flashDuration;
             if (gameplayCamera != null) gameplayCamera.PlayShake(shakeDuration, shakeAmplitude);
         }

@@ -225,12 +225,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4142468269563670406}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 980bc42a60034824a2b30eef9181d9f1, type: 3}
+  m_Script: {fileID: 11500000, guid: 8da097ac8b2b4c0b8cbd671c90aaa62e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PiranhaBite
   contactArea: {fileID: 6326247046255604221}
   playerCollider: {fileID: 0}
-  testEnd: {fileID: 3489158560104624151}
+  playerOxygen: {fileID: 0}
+  biteInterval: 1
   showGizmos: 0
 --- !u!114 &2521859256895114778
 MonoBehaviour:
@@ -285,7 +286,7 @@ MonoBehaviour:
   animator: {fileID: 955000000000000001}
   patrol: {fileID: 6986156002363741020}
   chase: {fileID: 7972442162392002557}
-  lethalContact: {fileID: 4706726384842075749}
+  bite: {fileID: 4706726384842075749}
   body: {fileID: 732327564472501584}
   floatingMotion: {fileID: 793098272634803150}
 --- !u!114 &732327564472501584

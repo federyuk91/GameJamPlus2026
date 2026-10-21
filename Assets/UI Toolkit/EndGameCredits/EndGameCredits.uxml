@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="EndGameCredits.uss"/>
+    <ui:VisualElement class="final-root">
+        <ui:VisualElement name="final-monitor" class="final-monitor">
+            <ui:VisualElement name="monitor-content" class="monitor-content">
+                <ui:VisualElement class="monitor-header">
+                    <ui:Label text="SuperMice Team:" class="team-heading typed"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="team-rows">
+                    <ui:VisualElement class="team-row"><ui:Label text="Designer &amp; Programmer" class="team-role typed"/><ui:Label text="Federico Bachis" class="team-name typed"/></ui:VisualElement>
+                    <ui:VisualElement class="team-row"><ui:Label text="Artist" class="team-role typed"/><ui:Label text="Roberta Piredda" class="team-name typed"/></ui:VisualElement>
+                    <ui:VisualElement class="team-row"><ui:Label text="Pixel Artist" class="team-role typed"/><ui:Label text="Andrea Serra" class="team-name typed"/></ui:VisualElement>
+                    <ui:VisualElement class="team-row"><ui:Label text="Sound &amp; Music" class="team-role typed"/><ui:Label text="Giuliano Cau" class="team-name typed"/></ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label text="Special Thanks" class="thanks-heading typed"/>
+                <ui:VisualElement name="thanks-logos" class="thanks-logos">
+                    <ui:VisualElement tooltip="GameJamPlus" class="thanks-logo gjplus"/>
+                    <ui:VisualElement tooltip="IGDA Italy" class="thanks-logo igda"/>
+                    <ui:VisualElement tooltip="SGS" class="thanks-logo sgs"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="monitor-footer">
+                    <ui:VisualElement class="transmission-line">
+                        <ui:Label text="END OF TRANSMISSION" class="transmission typed"/>
+                        <ui:Label name="transmission-cursor" text="_" class="transmission typed"/>
+                    </ui:VisualElement>
+                    <ui:Button name="main-menu" text="Main Menu" class="menu-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="power-glow" picking-mode="Ignore" class="power-glow"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="unity-logo" picking-mode="Ignore" class="unity-splash">
+            <ui:VisualElement tooltip="Made with Unity" class="unity-logo"/>
+            <ui:Label name="thank-you-message" text="Thank you for playing" class="thank-you-message"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="power-led" picking-mode="Ignore" class="status-led"/>
+    </ui:VisualElement>
+</ui:UXML>

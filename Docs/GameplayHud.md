@@ -112,3 +112,25 @@ All existing scientist dialogue components and the welcome message use a 7-secon
 Contextual hints now put the active device's green-tinted key sprite in the avatar terminal, at 40 × 40 logical pixels. The text terminal contains English usage instructions (press, hold, direction) without inline key sprites. When two different keys have available actions, both appear side by side at 22 × 32; the instructions include key names to associate each action with its sprite. Missing sprites fall back to the key name in the avatar terminal.
 
 The key display is rebuilt from current availability, without a tooltip queue. Scientist communications retain priority and restore the normal portrait; leaving interaction range clears the keys and returns the LED to idle. The runtime container `system-command-keys` uses the existing avatar terminal and does not modify its manually edited frame or LED positioning. Visual review remains manual.
+
+## Collected cheese plate
+
+The primary collectible counter uses Cheese-Sheet.png (ten 64×64 cells, Point filtering, no mipmaps or texture compression). GameplayHudController exposes Cheese Counter Frames ordered full to empty, and LoopScene assigns all ten frames. Zero cheese uses frame 10 (empty); each collected cheese advances one frame toward frame 1 (full at nine collected). Higher totals keep the full plate while the adjacent numeric count remains exact. Green cheese and satiety indicators keep their existing visuals and behavior. No compilation or Play Mode was run.
+
+## Shared gameplay HUD prefab
+
+`Assets/Prefabs/UI/Gameplay HUD.prefab` contains UIDocument, GameplayHudController, GameplayInteractionAvailability, RopeBiteProgressView and SatietyHud, including all ten cheese plate frames. LoopScene and Levels/1_WelcomeToUniverse both instantiate this prefab. Shared artwork and UI settings belong on the prefab; scene instances override only their player/camera/resource references. Existing scene-local IDs for HUD components are retained, preserving references from game managers and interaction systems.
+
+To use the prefab in another scene, assign the scene-local player, collector, interaction, viewport, camera, satiety and oxygen references in its components. These references intentionally remain empty in the prefab asset because they belong to a scene. Both migrated scenes retain their assigned references. No compilation or Play Mode was run; manually open the level and check counters, dialogue, pause, oxygen/satiety and input hints.
+
+## Native sprite pixels
+
+Collectible counter images now use each assigned sprite's rect width and height in base-resolution pixels, independent of its Pixels Per Unit import value. The cheese plate is 64×64, the green cheese 31×21 and the photo 32×32; the procedural knowledge bulb uses its 16×16 design grid. Scientist portraits also use their sprite rect dimensions (currently 32×32) and are centered on integer coordinates. The shared viewport still provides the display scale.
+
+The resource dashboard is 300×80 with the satiety row beside the upper part of the cheese plate. The bottom reserved band is 90 base pixels in LoopScene and 1_WelcomeToUniverse so the native 64-pixel plate and panel margins do not cover gameplay. Existing communication frame sizes and animation remain unchanged. Input prompt/button icon sizing is unchanged. No compilation or Play Mode was run; manually inspect at 640×360 and integer multiples.
+
+## Edit-time artwork preview
+
+GameplayHud.uxml includes explicit image sources for the full cheese plate, green cheese, photo and scientist portrait at their native sizes, plus the existing KnowledgeCounterIcon exposed as a UXML element. UI Builder can display and select them without entering Play Mode. The scientist message already contains sample text. At runtime GameplayHudController assigns the actual configured icons and cheese count frame, and ScientistCommentView assigns the current speaker/avatar; no extra preview object is spawned in the scene. Runtime knowledge setup reuses the declared element instead of adding a duplicate.
+
+For artwork used during play, configure the references on the shared Gameplay HUD prefab; for layout edit GameplayHud.uxml/uss in UI Builder. No compilation or Play Mode was run.

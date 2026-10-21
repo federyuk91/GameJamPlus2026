@@ -23,6 +23,8 @@
 .satiety-notches { flex-direction: row; align-items: center; }
 .satiety-notch { width: 14px; height: 7px; flex-shrink: 0; margin-right: 4px; background-color: rgb(255, 201, 76); border-width: 1px; border-color: var(--hud-gold); }
 .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
+.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
+.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
 .resource-counters { flex-grow: 1; min-height: 0; flex-direction: row; align-items: stretch; margin-top: 6px; }
 .counter { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0; padding: 0 4px; flex-direction: row; align-items: center; justify-content: flex-start; background-color: transparent; border-width: 0; }
 .counter-value { flex-grow: 1; min-width: 0; height: 20px; font-size: 10px; margin: 0; padding: 0; -unity-text-align: middle-left; color: var(--hud-gold); }
@@ -124,3 +126,18 @@
 .pause-hint { font-size: 7px; margin: 14px 0 0 0; -unity-text-align: middle-center; white-space: normal; }
 
 .camera-lock-reminder { display: none; position: absolute; left: 15%; right: 15%; top: 50%; height: 90px; padding: 10px; margin: 0; margin-top: -45px; font-size: 12px; white-space: normal; color: var(--hud-gold); background-color: rgba(1, 8, 13, 0.9); -unity-text-align: middle-center; }
+
+/* Sprite dimensions use source pixels; only the shared viewport scale enlarges them. */
+.black-band-bottom { height: 90px; }
+.hud-safe-area { bottom: 90px; }
+.resource-dashboard { bottom: -80px; width: 300px; height: 80px; padding: 8px; }
+.satiety-panel { position: absolute; left: 90px; top: 7px; right: 8px; }
+.satiety-caption { margin-right: 6px; }
+.satiety-notch { width: 12px; margin-right: 3px; }
+.resource-counters { height: 64px; margin-top: 0; align-items: flex-end; }
+.counter { padding: 0; align-items: flex-end; }
+#counter-primary { flex-basis: 90px; flex-grow: 0; }
+.counter-value { margin-bottom: 3px; }
+.counter-icon { width: 32px; height: 32px; }
+.scientist-screen, .scientist-avatar-screen { bottom: -80px; }
+.scientist-avatar { left: 14px; top: 14px; right: auto; bottom: auto; width: 32px; height: 32px; }

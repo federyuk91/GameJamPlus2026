@@ -1,0 +1,407 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2100002200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100002201}
+  - component: {fileID: 2100002202}
+  - component: {fileID: 2100002203}
+  - component: {fileID: 2100003100}
+  - component: {fileID: 2100004700}
+  - component: {fileID: 2100006300}
+  - component: {fileID: 2100006400}
+  - component: {fileID: 2100006500}
+  - component: {fileID: 2100006501}
+  m_Layer: 5
+  m_Name: Gameplay HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100002201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100002202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 2d243199466a400a81c07cfb9c396314, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: fe7fcdb1d2f341d8b2af8f6491333dd9, type: 3}
+  m_SortingOrder: 100
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 640
+  m_WorldSpaceHeight: 360
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &2100002203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a16cf46177014266a1f867826e820102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.GameplayHudController
+  document: {fileID: 2100002202}
+  resourceHud: {fileID: 2100006300}
+  playerInput: {fileID: 0}
+  collectibleCollector: {fileID: 0}
+  interactionAvailability: {fileID: 2100003100}
+  inputPromptIcons: {fileID: 11400000, guid: 4bf11846b94f49ff82f969e958e228b2, type: 2}
+  viewport: {fileID: 0}
+  cameraController: {fileID: 0}
+  scientistPortrait: {fileID: 21300000, guid: 839037457bc2c634a92d2ec8284df8aa, type: 3}
+  scientistSpeech: {fileID: 11400000, guid: 6dfbbcbedb3748ccb4313b5136213a8c, type: 2}
+  scientistVoice: {fileID: 2100006501}
+  typingAudio: {fileID: 2100006400}
+  typingClip: {fileID: 8300000, guid: 02c498f9d9eb4b05a7a4275e5997c3d2, type: 3}
+  typingVolume: 0.25
+  defaultCounterIcon: {fileID: 21300000, guid: 240692197788a4d4685a1288a7cb2bd6, type: 3}
+  counterIcons:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 3c952d4f5499c5f448a05e1f3027d402, type: 3}
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 2cd3480a0d7d41d09c6e67011de237d4, type: 3}
+  cheeseCounterFrames:
+  - {fileID: 1991445489062669798, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -2596072681779512170, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 7104835974339852070, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 6247115559271563280, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 5302245848309580016, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 3718983967030052744, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -7744708632687448639, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -3659307198893522439, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -9167367063461887553, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 591818233427335809, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  showWelcomeOnStart: 1
+  welcomeText: Welcome to Universe-{universe}. Relax and enjoy your stay.
+  welcomePortrait: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+  welcomeDuration: 7
+  pauseWhilePhotoOpen: 1
+--- !u!114 &2100003100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e81da3555695449a998226cc309e47ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.GameplayInteractionAvailability
+  input: {fileID: 0}
+  collector: {fileID: 0}
+  ropeBite: {fileID: 0}
+  digging: {fileID: 0}
+  movement: {fileID: 0}
+  crates: {fileID: 0}
+  buttons: {fileID: 0}
+  wheel: {fileID: 0}
+--- !u!114 &2100004700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ff1db610cd34aec95a603032901bbe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.RopeBiteProgressView
+  document: {fileID: 2100002202}
+  gameplayCamera: {fileID: 0}
+  bite: {fileID: 0}
+  worldOffset: {x: 0.55, y: 1, z: 0}
+  diameter: 24
+  thickness: 3
+  trackColor: {r: 0, g: 0, b: 0, a: 0.7}
+  fillColor: {r: 1, g: 0.9, b: 0.55, a: 1}
+--- !u!114 &2100006300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d662c769be2242e9a022a95926b59270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.SatietyHud
+  document: {fileID: 2100002202}
+  satiety: {fileID: 0}
+  oxygen: {fileID: 0}
+  oxygenBubbles: {fileID: 0}
+  gameplayCamera: {fileID: 0}
+  flashColor: {r: 1, g: 0.85, b: 0.1, a: 0.25}
+  damageFlashColor: {r: 1, g: 0, b: 0, a: 0.25}
+  poisonFlashColor: {r: 0.2509804, g: 0.7882353, b: 0.4666667, a: 0.25}
+  flashDuration: 0.35
+  oxygenFlashColor: {r: 0.8, g: 0.94, b: 1, a: 0.2}
+  oxygenFlashDuration: 0.25
+  shakeDuration: 0.2
+  shakeAmplitude: 0.06
+--- !u!82 &2100006400
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &2100006500
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &2100006501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100002200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e1428dbd8304209ad2cb4b2d43ef49a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.ScientistVoice
+  voiceAudio: {fileID: 2100006500}
+  letterSounds:
+  - letters: A
+    clip: {fileID: 8300000, guid: 6e6ab971251c4adfb5558e01885e497b, type: 3}
+  - letters: E
+    clip: {fileID: 8300000, guid: 9f0cc376458b4b168bdc1d24a07c2770, type: 3}
+  - letters: IY
+    clip: {fileID: 8300000, guid: 4fc0df43e71c45c2b6064f6a0eb8941f, type: 3}
+  - letters: OQW
+    clip: {fileID: 8300000, guid: b468e40e1aa746608db9236fc8f22901, type: 3}
+  - letters: U
+    clip: {fileID: 8300000, guid: 7850280a9bb4491d8f7921d15f272c9b, type: 3}
+  - letters: MN
+    clip: {fileID: 8300000, guid: e552efcf29cc460c9e67f43bc5e6cbdc, type: 3}
+  - letters: BPFV
+    clip: {fileID: 8300000, guid: 9edbbb0b7ed046a89093eab7b72239a7, type: 3}
+  otherLetterClip: {fileID: 8300000, guid: fcacde078bdd4cd2a3d30da6ab0b6eca, type: 3}
+  voiceVolume: 0.103
+  voicePitch: 0.801
+  pitchVariation: 0.1985
+  minimumInterval: 0.085
+  punctuationPause: 0.15
+  testText: Welcome to Universe-10. Relax and enjoy your stay.
+  testCharactersPerSecond: 15

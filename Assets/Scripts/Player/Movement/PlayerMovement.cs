@@ -122,9 +122,9 @@ namespace MousePlatformer
                 Velocity = climbVelocity;
                 if (!ledgeReleased) return;
                 traversalReleased = true;
-                ropeLaunchRemaining = Movement.launchControlTime;
+                ropeLaunchRemaining = body.Grounded ? 0f : Movement.launchControlTime;
                 jumpCut = !jumpPressed;
-                jumpPressed = false;
+                if (!body.Grounded) jumpPressed = false;
             }
             ropeLaunchRemaining = Mathf.Max(0f, ropeLaunchRemaining - dt);
             Vector2 ladderVelocity = Velocity;

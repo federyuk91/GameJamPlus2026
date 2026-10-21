@@ -190,6 +190,7 @@ MonoBehaviour:
   collectionId: 
   photo: {fileID: 0}
   photosToEndTest: 3
+  useSessionTotal: 1
   curiosityEnding: {fileID: 5000004101}
   onContinue:
     m_PersistentCalls:
@@ -228,6 +229,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 5000004100}
   subjectDied: 0
+  flashDurationOverride: -1
   resultMessages:
   - The subject has become too curious after examining three photographs.
   - The subject has exceeded the recommended level of curiosity.

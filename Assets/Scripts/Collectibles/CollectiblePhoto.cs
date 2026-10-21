@@ -13,8 +13,10 @@ namespace MousePlatformer
         private string collectionId;
         [SerializeField, Tooltip("Photo displayed on collection. Leave empty to show a placeholder.")]
         private Texture2D photo;
-        [SerializeField, Min(1), Tooltip("Photos collected by the current subject before curiosity ends the test, after closing the photo.")]
+        [SerializeField, Min(1), Tooltip("Number of collected photos needed to end the trial after closing the photo. Counts quantities independently of collection IDs.")]
         private int photosToEndTest = 3;
+        [SerializeField, Tooltip("Off: counts only this level. On: uses the session total displayed in the HUD.")]
+        private bool useSessionTotal = true;
         [SerializeField] private TestEndEvent curiosityEnding;
         [SerializeField] private UnityEvent onContinue = new UnityEvent();
 
@@ -36,14 +38,21 @@ namespace MousePlatformer
                 Debug.LogWarning("Assign the Gameplay HUD or add the Game Manager to display the photo.", this);
                 return;
             }
-            bool endsTest = GameSession.PhotosCollectedThisTest >= Mathf.Max(1, photosToEndTest);
-            target.ShowPhoto(photo, () => ContinuePhoto(endsTest));
+            target.ShowPhoto(photo, ContinuePhoto);
         }
 
-        private void ContinuePhoto(bool endsTest)
+        private void ContinuePhoto()
         {
             onContinue.Invoke();
-            if (endsTest && curiosityEnding != null) curiosityEnding.EndTest();
+            int count = useSessionTotal ? GameSession.GetCollectibleCount(CollectibleType.Photo)
+                : GameSession.PhotosCollectedThisTest;
+            if (count < Mathf.Max(1, photosToEndTest)) return;
+            if (curiosityEnding == null)
+            {
+                Debug.LogError("Assign Curiosity Ending to end the trial at the photo quantity threshold.", this);
+                return;
+            }
+            curiosityEnding.EndTest();
         }
     }
 }

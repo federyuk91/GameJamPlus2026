@@ -69,6 +69,8 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("water.gravityMultiplier");
         Field("water.maxSinkSpeed");
         Field("water.strokeSpeed");
+        Field("water.surfaceJumpSpeed", "Upward speed for Jump near the surface; underwater strokes still use Stroke Speed.");
+        Field("water.surfaceJumpDepth", "Maximum distance between the top of the player collider and the surface for a surface jump.");
 
         Section("Digging — Shared Bite Input", "PlayerDigging → DiggableTerrain");
         Field("digging.enabled");

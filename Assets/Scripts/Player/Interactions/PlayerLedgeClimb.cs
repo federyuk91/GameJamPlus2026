@@ -225,7 +225,7 @@ namespace MousePlatformer
                 ClimbStarted?.Invoke();
             }
             if ((elapsed += dt) > 2f)
-            { Stop(); released = true; return true; }
+            { Reject("Climb interrupted: traversal timeout"); Stop(); released = true; return true; }
             Vector2 target = support.transform.TransformPoint(localDestination);
             Vector2 start = transform.position;
             Vector2 delta = target - start;
@@ -233,21 +233,25 @@ namespace MousePlatformer
             if (delta.y > 0.001f) raised = false;
             if (!raised)
             {
-                body.Move(Vector2.up * Mathf.Clamp(delta.y, -step, step));
+                body.MovePlayer(Vector2.up * Mathf.Clamp(delta.y, -step, step), 0f, followGround: false);
                 if (body.HitCeiling) { Reject("Climb interrupted: overhead collision"); Stop(); released = true; return true; }
                 raised = Mathf.Abs(transform.position.y - target.y) <= 0.001f;
             }
-            else
+            if (raised)
             {
-                body.Move(Vector2.right * Mathf.Clamp(delta.x, -step, step));
+                // Ground snapping would lower the body before the climb reaches its landing position.
+                body.MovePlayer(Vector2.right * Mathf.Clamp(delta.x, -step, step), 0f, followGround: false);
                 if (body.HitWall) { Reject("Climb interrupted: side collision"); Stop(); released = true; return true; }
                 if (Mathf.Abs(transform.position.x - target.x) <= 0.001f)
                 {
-                    body.Move(Vector2.up * Mathf.Clamp(target.y - transform.position.y, -step, step));
+                    body.MovePlayer(Vector2.up * Mathf.Clamp(target.y - transform.position.y, -step, step), 0f, followGround: false);
                     if (Mathf.Abs(transform.position.y - target.y) <= 0.001f)
                     {
                         body.Move(Vector2.down * (Mathf.Max(body.Skin, Physics2D.defaultContactOffset * 2f) + body.Skin));
+                        velocity = new Vector2((transform.position.x - start.x) / dt, 0f);
+                        lastAttempt = "Climb completed";
                         Stop();
+                        released = true;
                         return true;
                     }
                 }

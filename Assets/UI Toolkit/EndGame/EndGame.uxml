@@ -8,7 +8,7 @@
                     <ui:Label name="ending-title" class="ending-title" />
                     <ui:Label name="ending-description" class="ending-description" />
                 </ui:VisualElement>
-                <ui:Button name="return-to-menu" text="Main Menu" class="terminal-button return-to-menu" />
+                <ui:Button name="show-credits" text="Credits" class="terminal-button return-to-menu" />
             </ui:VisualElement>
             <ui:VisualElement name="final-report-monitor" class="final-report-monitor">
                 <ui:VisualElement name="final-report-content" class="final-report-content">

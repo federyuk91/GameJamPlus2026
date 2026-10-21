@@ -16,6 +16,10 @@ namespace MousePlatformer
         [Min(0f)] public float gravityMultiplier = 7f / 30f;
         [Min(0f)] public float maxSinkSpeed = 3.5f;
         [Min(0f)] public float strokeSpeed = 4.8f;
+        [Tooltip("Upward speed when Jump is pressed near the water surface. Does not affect underwater strokes.")]
+        [Min(0f)] public float surfaceJumpSpeed = 4.8f;
+        [Tooltip("Maximum distance from the top of the player collider to the water surface that allows a surface jump.")]
+        [Min(0f)] public float surfaceJumpDepth = 0.1f;
 
         public float StepHorizontal(float velocity, float horizontal, float dt, float speed, bool strokeControl)
         {
@@ -29,15 +33,16 @@ namespace MousePlatformer
 
         public float GravityAcceleration(float bodyGravity) => Mathf.Max(0f, bodyGravity) * Mathf.Max(0f, gravityMultiplier);
 
-        public Vector2 Step(Vector2 velocity, float horizontal, bool strokePressed, float dt, float bodyGravity, float speed, float waterDrag, bool strokeControl = false)
+        public Vector2 Step(Vector2 velocity, float horizontal, bool strokePressed, float dt, float bodyGravity, float speed, float waterDrag, bool strokeControl = false, bool surfaceJump = false)
         {
             if (dt <= 0f) return velocity;
             // Entering water immediately caps a fast fall or rope launch to swimming speeds.
             velocity.x = StepHorizontal(velocity.x, horizontal, dt, speed, strokePressed || strokeControl);
+            float upwardSpeed = surfaceJump ? surfaceJumpSpeed : strokeSpeed;
             velocity.y = Mathf.Clamp(velocity.y * Mathf.Exp(-Mathf.Max(0f, waterDrag) * dt) - GravityAcceleration(bodyGravity) * dt,
-                -maxSinkSpeed, strokeSpeed);
+                -maxSinkSpeed, upwardSpeed);
             // One press gives one stroke. Resetting upward speed avoids unbounded accumulation.
-            if (strokePressed) velocity.y = strokeSpeed;
+            if (strokePressed) velocity.y = upwardSpeed;
             return velocity;
         }
     }

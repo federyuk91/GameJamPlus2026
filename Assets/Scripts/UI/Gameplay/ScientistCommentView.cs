@@ -9,6 +9,8 @@ namespace GameJamPlus.UI
 {
     public sealed class ScientistCommentView : IDisposable
     {
+        public event Action<char> CharacterRevealed;
+
         private const float ScreenInset = 10f;
         private float displayWidth = 160f;
         private float displayHeight = 46f;
@@ -21,6 +23,9 @@ namespace GameJamPlus.UI
         private readonly VisualElement content;
         private readonly VisualElement powerGlow;
         private readonly Image avatar;
+        private readonly ScientistSpeechSettings speechSettings;
+        private readonly ScientistSpeechAnimator speechAnimator;
+        private bool animatePortrait;
         private readonly VisualElement systemCommands;
         private readonly HashSet<string> systemCommandKeys = new HashSet<string>();
         private readonly Label message;
@@ -59,6 +64,7 @@ namespace GameJamPlus.UI
 
         public bool IsOpen => canAdvance || systemVisible;
         public bool IsVisible => communicationVisible;
+        public bool IsScientistSpeaking => communicationVisible && animatePortrait;
         private bool suspended;
 
         public void SetSuspended(bool value) => suspended = value;
@@ -69,8 +75,10 @@ namespace GameJamPlus.UI
             avatarScreen.style.bottom = inset;
         }
 
-        public ScientistCommentView(VisualElement root, int lowerBorderPixels = 20)
+        public ScientistCommentView(VisualElement root, int lowerBorderPixels = 20, ScientistSpeechSettings speechSettings = null)
         {
+            this.speechSettings = speechSettings;
+            speechAnimator = new ScientistSpeechAnimator(speechSettings);
             screen = root.Q("scientist-screen");
             avatarScreen = root.Q("scientist-avatar-screen");
             displayViewport = root.Q("scientist-display-viewport");
@@ -80,6 +88,7 @@ namespace GameJamPlus.UI
             powerGlow = root.Q("scientist-power-glow");
             avatar = root.Q<Image>("scientist-avatar");
             avatar.scaleMode = ScaleMode.ScaleToFit;
+            avatarScreen.RegisterCallback<GeometryChangedEvent>(OnAvatarGeometryChanged);
             systemCommands = new VisualElement { name = "system-command-keys", pickingMode = PickingMode.Ignore };
             systemCommands.AddToClassList("system-command-keys");
             avatarScreen.Insert(avatarScreen.IndexOf(signal), systemCommands);
@@ -210,7 +219,10 @@ namespace GameJamPlus.UI
             content.AddToClassList("scientist-dialogue");
             advanceButton.style.display = DisplayStyle.Flex;
             signal.AddToClassList("signal-active");
-            avatar.sprite = portrait;
+            speechAnimator.Reset();
+            animatePortrait = speechSettings != null && speechSettings.Recognizes(portrait);
+            avatar.sprite = animatePortrait ? speechSettings.IdlePortrait : portrait;
+            SizeAvatar();
             // Keep the monitor frame visible even before an actual scientist portrait is supplied.
             avatar.style.display = portrait != null ? DisplayStyle.Flex : DisplayStyle.None;
             avatar.style.opacity = 0f;
@@ -231,6 +243,8 @@ namespace GameJamPlus.UI
             for (int page = 0; page < texts.Length; page++)
             {
                 string text = texts[page];
+                speechAnimator.Reset();
+                float charactersPerSecond = speechSettings != null ? speechSettings.TextCharactersPerSecond : CharactersPerSecond;
                 int[] characterStarts = StringInfo.ParseCombiningCharacters(text);
                 int revealedCharacters = 0;
                 float elapsed = 0f;
@@ -249,15 +263,34 @@ namespace GameJamPlus.UI
                     if (suspended) { yield return null; continue; }
                     elapsed += Time.unscaledDeltaTime;
                     int visibleCharacters = completeTypingRequested ? characterStarts.Length
-                        : Mathf.Min(characterStarts.Length, Mathf.FloorToInt(elapsed * CharactersPerSecond));
+                        : Mathf.Min(characterStarts.Length, Mathf.FloorToInt(elapsed * charactersPerSecond));
                     if (visibleCharacters != revealedCharacters)
                     {
+                        int previousCharacters = revealedCharacters;
                         revealedCharacters = visibleCharacters;
                         int endIndex = revealedCharacters < characterStarts.Length
                             ? characterStarts[revealedCharacters] : text.Length;
                         message.text = text.Substring(0, endIndex);
+                        if (!completeTypingRequested)
+                            for (int character = previousCharacters; character < revealedCharacters; character++)
+                                CharacterRevealed?.Invoke(text[characterStarts[character]]);
+                        if (animatePortrait)
+                        {
+                            if (completeTypingRequested) speechAnimator.Reset();
+                            else if (revealedCharacters > 0) speechAnimator.Speak(text[characterStarts[revealedCharacters - 1]]);
+                        }
                     }
                     typing = revealedCharacters < characterStarts.Length;
+                    if (animatePortrait)
+                    {
+                        if (!typing) speechAnimator.RequestRest();
+                        Sprite nextFrame = speechAnimator.Tick(Time.unscaledDeltaTime);
+                        if (avatar.sprite != nextFrame)
+                        {
+                            avatar.sprite = nextFrame;
+                            SizeAvatar();
+                        }
+                    }
                     RefreshAdvanceLabel();
 
                     if (followTyping)
@@ -280,6 +313,8 @@ namespace GameJamPlus.UI
 
         public void Hide()
         {
+            speechAnimator.Reset();
+            animatePortrait = false;
             canAdvance = false;
             typing = false;
             communicationVisible = false;
@@ -299,8 +334,24 @@ namespace GameJamPlus.UI
             powerGlow.style.opacity = 0f;
         }
 
+        private void OnAvatarGeometryChanged(GeometryChangedEvent evt) => SizeAvatar();
+
+        private void SizeAvatar()
+        {
+            if (avatar.sprite == null) return;
+            int width = Mathf.RoundToInt(avatar.sprite.rect.width);
+            int height = Mathf.RoundToInt(avatar.sprite.rect.height);
+            avatar.style.width = width;
+            avatar.style.height = height;
+            avatar.style.right = StyleKeyword.Auto;
+            avatar.style.bottom = StyleKeyword.Auto;
+            avatar.style.left = Mathf.Round((avatarScreen.contentRect.width - width) * 0.5f);
+            avatar.style.top = Mathf.Round((avatarScreen.contentRect.height - height) * 0.5f);
+        }
+
         public void Dispose()
         {
+            avatarScreen.UnregisterCallback<GeometryChangedEvent>(OnAvatarGeometryChanged);
             advanceButton.clicked -= Advance;
             transcript.UnregisterCallback<WheelEvent>(OnManualScroll, TrickleDown.TrickleDown);
             displayViewport.UnregisterCallback<GeometryChangedEvent>(OnDisplayGeometryChanged);

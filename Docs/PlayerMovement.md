@@ -254,3 +254,12 @@ The existing Rope Swing Acceleration remains the maximum input strength; no valu
 Outward pumping now reaches full configured acceleration once tangential speed reaches 10% of sqrt(gravity × grip radius). It fades only near a turning point or stationary deflection, instead of attenuating the whole outward swing. Opposing input still contributes no sustaining force, and existing angular limits still apply.
 
 A directional rope jump now adds Rope Jump Swing Boost to the magnitude of inherited horizontal speed before choosing the requested side. It no longer treats the boost as a minimum: inherited 6 plus boost 4 gives horizontal 10 before the shared body speed limit. Upward impulse and MaxSpeed remain unchanged. Manual Unity checks: early directional release while accelerating, release near either turning point, opposite-direction release and holding one direction through a complete swing. No compilation or Play Mode was run.
+
+### Ledge climb completion handoff
+
+Successful climb completion now reports released=true, allowing PlayerMovement to resume normal movement within the same fixed tick. Horizontal travel during the final climb step is retained; upward climb velocity is not carried into a false airborne launch. A grounded completion does not start reduced post-launch air control and preserves a Jump press received on that completion tick. Vertical and horizontal climb phases may advance within the same tick when vertical alignment is complete, respecting the existing shared movement budget and collision casts. No compilation or Play Mode was run; manually check continued movement and jumping as the climb finishes.
+
+
+### Ledge climb landing clearance
+
+The up/across traversal uses swept movement with ground following disabled until the final downward settle. Ordinary body movement could snap the horizontal phase down to the support, causing the next tick to raise the body again and delaying completion until the two-second timeout. Collision sweeps and the shared movement budget remain active. Last Attempt now distinguishes successful completion from a traversal timeout. No Play Mode checks were run; check continuous movement over a low ledge and climbing from a hanging position.

@@ -7,6 +7,10 @@ namespace MousePlatformer
     public sealed class PlayerRopeInteraction : MonoBehaviour
     {
         [SerializeField] private SimulatedBody2D body;
+        [SerializeField, Tooltip("Optional rope to grab automatically at scene start. Leave empty for normal manual grabbing.")]
+        private RopeSimulation initialRope;
+        [SerializeField, Range(0f, 1f), Tooltip("Initial grip along the assigned rope: 0 near its anchor, 1 at its end.")]
+        private float initialGripFraction = 1f;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
         [SerializeField] private PlayerMovement playerMovement;
         private PlayerMovementSettings LocalMovement => (playerMovement != null
@@ -70,6 +74,16 @@ namespace MousePlatformer
         private void Awake()
         {
             if (body == null) body = GetComponent<SimulatedBody2D>();
+        }
+
+        private void Start()
+        {
+            // Rope chains are initialized in Awake, before any initial player attachment.
+            if (initialRope == null) return;
+            float grip = Mathf.Clamp(Mathf.Lerp(initialRope.ClimbableStart, initialRope.ClimbableLength, initialGripFraction),
+                initialRope.MinimumGripDistance, initialRope.ClimbableLength);
+            if (!AttachTo(initialRope, grip, Vector2.zero))
+                Debug.LogWarning("The assigned Initial Rope is unavailable for the initial grab.", this);
         }
 
         // True means the rope handled this tick, including a possible release velocity.
@@ -169,14 +183,19 @@ namespace MousePlatformer
                 nearest = candidate;
                 grip = along;
             }
-            if (nearest != null && nearest.Attach(this, grip, body.LimitVelocity(incomingVelocity)))
-            {
-                rope = nearest;
-                distance = grip;
-                lastSwingDirection = 0f;
-                previousGrip = nearest.Chain.Point(grip);
-                carrierVelocity = Vector2.zero;
-            }
+            if (nearest != null) AttachTo(nearest, grip, incomingVelocity);
+        }
+
+        private bool AttachTo(RopeSimulation target, float grip, Vector2 incomingVelocity)
+        {
+            if (target == null || !target.Attach(this, grip, body.LimitVelocity(incomingVelocity))) return false;
+            rope = target;
+            distance = grip;
+            cooldown = 0f;
+            lastSwingDirection = 0f;
+            previousGrip = target.Chain.Point(grip);
+            carrierVelocity = Vector2.zero;
+            return true;
         }
 
         public void Detach()

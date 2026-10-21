@@ -72,6 +72,23 @@ namespace MousePlatformer
             }
             else recoveryElapsed = 0f;
             if (changed) Changed?.Invoke(Current, Maximum);
+            CheckOxygenState();
+        }
+
+        public bool ConsumeNotch()
+        {
+            GameManager manager = GameManager.Instance;
+            if (!isActiveAndEnabled || Current <= 0 || manager == null
+                || manager.State != GameManager.LoopState.Playing) return false;
+            Current--;
+            NotchLost?.Invoke();
+            Changed?.Invoke(Current, Maximum);
+            CheckOxygenState();
+            return true;
+        }
+
+        private void CheckOxygenState()
+        {
             if (IsUnderwater && Current > 0 && !warningIssued && SecondsRemaining <= warningSeconds)
             {
                 warningIssued = true;

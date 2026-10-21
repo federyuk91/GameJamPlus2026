@@ -24,6 +24,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private Transform player;
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private MousePlatformer.PlayerRecovery playerRecovery;
+        [SerializeField] private MousePlatformer.PlayerCrushVisual playerCrushVisual;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Scene instances. Random selection among assigned active points. Position denotes the player pivot.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
@@ -31,8 +32,9 @@ namespace GameJamPlus.Gameplay
         [SerializeField, Min(1)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
-        [SerializeField, Min(0f)] private float flashDuration = 0.18f;
-        [SerializeField, TextArea] private string fallbackComment = "Excellent. We can consider this test complete.";
+        [SerializeField, Min(0f), Tooltip("Seconds approaching the tunnel exit until the light fills the screen, before the scientist comment.")]
+        private float flashDuration = 1.5f;
+        [SerializeField, TextArea] private string fallbackComment = "Excellent. We can consider this stage complete.";
         private double completedTime;
         private string completedResult;
         private float previousTimeScale;
@@ -40,6 +42,7 @@ namespace GameJamPlus.Gameplay
         private TestEndEvent animatedOutcome;
         private string pendingComment;
         private Sprite pendingAvatar;
+        private float pendingFlashDuration;
 
         public static GameManager Instance { get; private set; }
         public LoopState State { get; private set; } = LoopState.Playing;
@@ -47,6 +50,7 @@ namespace GameJamPlus.Gameplay
         public GameplayHudController Hud => hud;
         public Collider2D PlayerCollider => playerCollider;
         public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
+        public MousePlatformer.PlayerCrushVisual PlayerCrushVisual => playerCrushVisual;
         public IReadOnlyList<SpawnPoint> SpawnPoints => spawnPoints;
         public void SnapCameraToPlayer() => gameplayCamera?.SnapToTarget();
 
@@ -62,6 +66,8 @@ namespace GameJamPlus.Gameplay
                 return;
             }
             Instance = this;
+            if (playerCrushVisual == null && player != null)
+                player.TryGetComponent(out playerCrushVisual);
             GameSession.EnsureStarted(startingUniverse);
             if (hud == null)
             {
@@ -135,6 +141,8 @@ namespace GameJamPlus.Gameplay
             hud.HidePhoto();
             completedTime = hud.ElapsedSeconds;
             completedResult = outcome.ChooseResult();
+            pendingFlashDuration = outcome.FlashDurationOverride >= 0f
+                ? outcome.FlashDurationOverride : flashDuration;
             GameSession.RecordTestResult(outcome.SubjectDied);
             previousTimeScale = Time.timeScale;
             ownsPause = true;
@@ -154,10 +162,10 @@ namespace GameJamPlus.Gameplay
         private IEnumerator EndSequence(string comment, Sprite avatar)
         {
             float elapsed = 0f;
-            while (elapsed < flashDuration)
+            while (elapsed < pendingFlashDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
-                hud.SetTestCoverOpacity(Mathf.Clamp01(elapsed / flashDuration));
+                hud.SetTestCoverOpacity(Mathf.Clamp01(elapsed / pendingFlashDuration));
                 yield return null;
             }
             hud.SetTestCoverOpacity(1f);
