@@ -58,6 +58,8 @@ namespace GameJamPlus.UI
         private double elapsedSeconds;
         private long displayedSecond = -1;
         private bool timerRunning = true;
+        private bool spawnPresentationActive;
+        private int zoomBeforeSpawn;
         private bool ready;
         private TestResultView testResultView;
         private bool testEnding;
@@ -181,14 +183,43 @@ namespace GameJamPlus.UI
 
         private void Start()
         {
+            if (spawnPresentationActive) return;
+            ShowWelcomeComment();
+        }
+
+        private void ShowWelcomeComment()
+        {
             if (showWelcomeOnStart)
                 ShowScientistComment(welcomeText.Replace("{universe}", universe.ToString()), welcomePortrait, welcomeDuration);
+        }
+
+        public void BeginSpawnPresentation()
+        {
+            if (spawnPresentationActive) return;
+            spawnPresentationActive = true;
+            timerRunning = false;
+            zoomBeforeSpawn = viewport.ZoomLevel;
+            viewport.SetZoomLevel(1);
+            HideScientistComment();
+            RefreshInteractionHints();
+        }
+
+        public void CompleteSpawnPresentation()
+        {
+            if (!spawnPresentationActive) return;
+            spawnPresentationActive = false;
+            viewport.SetZoomLevel(zoomBeforeSpawn);
+            HideScientistComment();
+            timerRunning = true;
+            ShowWelcomeComment();
+            RefreshInteractionHints();
         }
 
         private void Update()
         {
             if (!ready)
                 return;
+            if (GameManager.Instance != null && GameManager.Instance.State == GameManager.LoopState.Spawning) return;
 
             pauseMenu.Tick();
             if (!ready || pauseMenu == null || pauseMenu.IsOpen) return;
@@ -384,6 +415,7 @@ namespace GameJamPlus.UI
 
         private void OnAdvanceScientistComment(InputAction.CallbackContext context)
         {
+            if (GameManager.Instance != null && GameManager.Instance.State == GameManager.LoopState.Spawning) return;
             if (pauseMenu != null && pauseMenu.IsOpen) return;
             if (playerInput != null && playerInput.GameplayActionsLocked && !testEnding) return;
             if ((photoView != null && photoView.IsVisible) || (testResultView != null && testResultView.IsVisible)
@@ -510,6 +542,15 @@ namespace GameJamPlus.UI
         {
             interactionHints.Clear();
             scientistView.ClearSystemCommands();
+            if (spawnPresentationActive)
+            {
+                Label prompt = new Label("Press a button to start") { pickingMode = PickingMode.Ignore };
+                prompt.AddToClassList("interaction-hint-description");
+                interactionHints.Add(prompt);
+                interactionHints.style.display = DisplayStyle.Flex;
+                scientistView.ShowSystemHints(true);
+                return;
+            }
             bool blocked = communicationInProgress || scientistView.IsVisible || testEnding
                 || Time.timeScale <= 0f || photoView.IsVisible || testResultView.IsVisible;
             if (blocked)
@@ -531,15 +572,17 @@ namespace GameJamPlus.UI
             if ((available & AvailableGameplayActions.MoveCrate) != 0)
                 AddInteractionHint(InputPromptAction.MoveCrate, devicePrompts.MoveCrate, "Hold {key} and move to push or pull.");
             if ((available & AvailableGameplayActions.ClimbLedge) != 0)
-                AddInteractionHint(InputPromptAction.Up, devicePrompts.Up,
+                AddInteractionHint(InputPromptAction.Interact, devicePrompts.Interact,
                     "Press {key} to climb up, or " + devicePrompts.Jump + " toward the ledge. Down to drop; "
                     + devicePrompts.Jump + " away to jump off. If blocked, " + devicePrompts.Jump + " + Up to jump upward.");
             if ((available & AvailableGameplayActions.EatCheese) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to eat the cheese.");
+                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.Mouth, "Press {key} to eat the cheese.");
             if ((available & AvailableGameplayActions.EatGreenCheese) != 0)
-                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to eat the green cheese.");
+                AddInteractionHint(InputPromptAction.CutOrDig, devicePrompts.Mouth, "Press {key} to eat the green cheese.");
             if ((available & AvailableGameplayActions.CollectPhoto) != 0)
                 AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to collect the photo.");
+            if ((available & AvailableGameplayActions.CollectItem) != 0)
+                AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to collect the item.");
             if ((available & AvailableGameplayActions.PressButton) != 0)
                 AddInteractionHint(InputPromptAction.Collect, devicePrompts.Collect, "Press {key} to activate the button.");
             if ((available & AvailableGameplayActions.UseWheel) != 0)

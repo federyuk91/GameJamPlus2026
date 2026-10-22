@@ -28,6 +28,7 @@ MonoBehaviour:
   interactions:
     ropeJumpUpSpeed: 8
     ropeJumpSwingBoost: 7
+    ropeReleaseMomentumMultiplier: 0.35
     crateMoveSpeed: 2.5
     ropeClimbSpeed: 3
     ropeSwingAcceleration: 70

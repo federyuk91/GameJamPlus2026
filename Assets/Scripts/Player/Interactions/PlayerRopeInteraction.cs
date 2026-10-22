@@ -20,7 +20,6 @@ namespace MousePlatformer
         private RopeSimulation rope;
         private float distance;
         private float cooldown;
-        private float lastSwingDirection;
         private Vector2 previousGrip;
         private Vector2 carrierVelocity;
         public bool Attached => rope != null;
@@ -28,6 +27,7 @@ namespace MousePlatformer
         public float ClimbSpeed { get; private set; }
         public float GrabRadius => Mathf.Max(0f, LocalMovement.handGrabReach);
         public event Action JumpedFromRope;
+        public event Action<Vector2> JumpLaunched;
 
         public bool TryGetGrip(out RopeSimulation heldRope, out int segment, out Vector2 point)
         {
@@ -115,9 +115,6 @@ namespace MousePlatformer
             carrierVelocity = body.AllowedDisplacement(carrierVelocity * dt) / dt;
             velocity = carrierVelocity;
             Vector2 tangent = rope.Chain.Tangent(distance, rope.ClimbableStart, rope.ClimbableLength);
-            Vector2 swing = new Vector2(-tangent.y, tangent.x);
-            float swingSpeed = Vector2.Dot(velocity, swing);
-            if (Mathf.Abs(swingSpeed) > 0.01f) lastSwingDirection = Mathf.Sign(swingSpeed);
             if (jump)
             {
                 if (Mathf.Abs(horizontal) > 0.1f)
@@ -128,10 +125,12 @@ namespace MousePlatformer
                 }
                 else
                 {
-                    velocity += swing * (lastSwingDirection * Settings.ropeJumpSwingBoost) + Vector2.up * Settings.ropeJumpUpSpeed;
+                    // A neutral release follows the current motion, without adding a launch impulse.
+                    velocity *= Mathf.Clamp01(Settings.ropeReleaseMomentumMultiplier);
                 }
                 velocity = body.LimitVelocity(velocity);
                 Detach();
+                JumpLaunched?.Invoke(velocity);
                 JumpedFromRope?.Invoke();
                 released = true;
                 return true;
@@ -192,7 +191,6 @@ namespace MousePlatformer
             rope = target;
             distance = grip;
             cooldown = 0f;
-            lastSwingDirection = 0f;
             previousGrip = target.Chain.Point(grip);
             carrierVelocity = Vector2.zero;
             return true;
@@ -201,7 +199,6 @@ namespace MousePlatformer
         public void Detach()
         {
             ClimbSpeed = 0f;
-            lastSwingDirection = 0f;
             if (rope != null) rope.Release(this);
             rope = null;
             cooldown = Settings.ropeRegrabDelay;

@@ -49,7 +49,7 @@ namespace MousePlatformer
                 if (digging != null) digging.ReleaseInput();
                 ResetTarget();
                 blockingCollider = null;
-                lastAttempt = "Waiting for F / East";
+                lastAttempt = "Waiting for F / North";
                 return;
             }
             if (consumedHold) return;
@@ -96,7 +96,7 @@ namespace MousePlatformer
             {
                 consumedHold = true;
                 ResetTarget();
-                lastAttempt = "Rope cut: release F / East";
+                lastAttempt = "Rope cut: release F / North";
                 RopeCut?.Invoke();
             }
         }
@@ -106,13 +106,16 @@ namespace MousePlatformer
 
         private bool TryFindCutTarget(out RopeSimulation nearest, out int segment, bool updateDiagnostics)
         {
+            nearest = null;
+            segment = -1;
+            if (body == null) return false;
+            bool supported = body.Grounded || (ropeInteraction != null && ropeInteraction.Attached);
+            if (!supported && !WaterVolume.ContainsPoint(body.Shape.bounds.center)) return false;
             Transform plane = visual != null ? visual : transform;
             float sign = facing == null || facing.FacingRight ? 1f : -1f;
             Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
             Vector2 forward = plane.TransformDirection(Vector2.right * sign);
             Vector2 facingOrigin = body != null ? body.transform.TransformPoint(body.Shape.offset) : transform.position;
-            nearest = null;
-            segment = -1;
             float best = reach * reach;
             // A held rope can be brought to the mouth regardless of the facing direction.
             RopeSimulation heldRope = null;

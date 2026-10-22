@@ -319,6 +319,7 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   ledgeClimb: {fileID: 922162904946277516}
   crateInteraction: {fileID: 7645364035520464402}
+  ropeInteraction: {fileID: 4776370160298788677}
   spriteFacesRight: 1
 --- !u!114 &7645364035520464402
 MonoBehaviour:

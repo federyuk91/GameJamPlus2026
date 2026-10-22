@@ -17,3 +17,26 @@ In both cases repositioning respects solid colliders; an unreachable new grip ca
 Ropes register in OnEnable and unregister in OnDisable, including objects created/reactivated/removed during play. Grab/bite searches do not run FindObjects every frame. Bite progress resets when the target rope changes.
 
 Check multiple nearby ropes, uncuttable ropes, obstructions, ropes created after startup and disabling a rope during a bite in Play Mode.
+
+## Rope jump versus neutral release
+
+Jump with horizontal directional input retains the existing boosted jump: the
+chosen left/right direction redirects horizontal momentum, adds Rope Jump Swing
+Boost and adds Rope Jump Up Speed. Jump without horizontal input detaches with
+only a fraction of the actual current grip velocity, retaining its direction and
+adding no impulse. A stationary rope therefore produces a simple drop.
+
+PhysicsSettings > Rope Movement > Rope Release Momentum Multiplier controls this
+neutral release (default 0.35, retaining 35% of grip velocity). The actual current
+motion is used, not a remembered swing direction, so turning points do not receive
+a stale launch impulse. Existing air control, collision limits and regrab delay
+remain active after detachment.
+
+On a rope jump, MouseFacing receives the final launch velocity and immediately
+faces its horizontal direction, including neutral releases following the swing.
+Vertical/stationary releases keep the previous facing. The collider mirrors through
+the existing facing code. Ordinary directional input resumes normal facing control.
+
+Rope biting now uses the mouth group (F / gamepad North). Targeting is unavailable
+in free air: the mouse must be grounded, holding a rope or underwater. This
+condition also controls the HUD hint. See PlayerActions.md for grouped controls.

@@ -112,9 +112,11 @@ namespace MousePlatformer
             bool inWater = swimming != null && swimming.CheckWater();
             bool traversalReleased = false;
             if (inWater && ledgeClimb != null && ledgeClimb.Active) ledgeClimb.Cancel();
-            if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed,
+            bool ledgeInteractionPressed = input.LedgeInteractionPressed;
+            if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed, ledgeInteractionPressed,
                 out Vector2 climbVelocity, out bool ledgeReleased))
             {
+                if (ledgeInteractionPressed) input.ConsumeInteraction();
                 ResetSurfaceMotion();
                 if (swimming != null) swimming.ResetStrokeControl();
                 if (crateInteraction != null) crateInteraction.Release();

@@ -10,7 +10,8 @@ namespace MousePlatformer
         PressButton = 64,
         ClimbLedge = 128,
         UseWheel = 256,
-        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton | ClimbLedge | UseWheel
+        CollectItem = 512,
+        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton | ClimbLedge | UseWheel | CollectItem
     }
 
     [DefaultExecutionOrder(130), DisallowMultipleComponent]
@@ -85,57 +86,37 @@ namespace MousePlatformer
                 if (movement != null && movement.isActiveAndEnabled && movement.CanInteractWithCrates
                     && crates != null && crates.HasReachableCrate)
                     available |= AvailableGameplayActions.MoveCrate;
-                Collectible collectible = collector != null && collector.isActiveAndEnabled ? collector.InteractionTarget : null;
-                if (collectible != null && collectible.CanBeCollected)
-                {
-                    switch (collectible.Type)
-                    {
-                        case CollectibleType.Cheese:
-                            available |= AvailableGameplayActions.EatCheese;
-                            break;
-                        case CollectibleType.GreenCheese:
-                            available |= AvailableGameplayActions.EatGreenCheese;
-                            break;
-                        case CollectibleType.Photo:
-                            available |= AvailableGameplayActions.CollectPhoto;
-                            break;
-                    }
-                }
-
-                // Cutting takes priority over digging on their shared action, exactly as in PlayerRopeBite.
-                if (ropeBite != null && ropeBite.CanCutRope) available |= AvailableGameplayActions.CutRope;
+                Collectible food = collector != null && collector.isActiveAndEnabled ? collector.FoodTarget : null;
+                if (food != null && food.CanBeCollected)
+                    available |= food.Type == CollectibleType.Cheese ? AvailableGameplayActions.EatCheese : AvailableGameplayActions.EatGreenCheese;
+                else if (ropeBite != null && ropeBite.CanCutRope) available |= AvailableGameplayActions.CutRope;
                 else if (ropeBite != null && ropeBite.CanStartDiggingWithSharedInput && digging != null && digging.CanStartDigging)
                     available |= AvailableGameplayActions.Dig;
             }
-            AvailableGameplayActions collection = available & (AvailableGameplayActions.EatCheese
-                | AvailableGameplayActions.EatGreenCheese | AvailableGameplayActions.CollectPhoto);
+
+            AvailableGameplayActions hands = AvailableGameplayActions.None;
+            float handDistance = float.PositiveInfinity;
+            Collectible item = collector != null && collector.isActiveAndEnabled ? collector.InteractionTarget : null;
+            if (item != null && item.CanBeCollected)
+            {
+                hands = item.Type == CollectibleType.Photo ? AvailableGameplayActions.CollectPhoto : AvailableGameplayActions.CollectItem;
+                handDistance = collector.TargetDistanceSquared;
+            }
             if (buttons != null && buttons.isActiveAndEnabled && buttons.InteractionTarget != null
-                && buttons.InteractionTarget.CanPress
-                && (collection == AvailableGameplayActions.None || buttons.TargetDistanceSquared < collector.TargetDistanceSquared))
+                && buttons.InteractionTarget.CanPress && buttons.TargetDistanceSquared < handDistance)
             {
-                available &= ~collection;
-                available |= AvailableGameplayActions.PressButton;
-                collection = AvailableGameplayActions.PressButton;
+                hands = AvailableGameplayActions.PressButton;
+                handDistance = buttons.TargetDistanceSquared;
             }
-            float selectedDistance = collection == AvailableGameplayActions.PressButton ? buttons.TargetDistanceSquared
-                : collection != AvailableGameplayActions.None ? collector.TargetDistanceSquared : float.PositiveInfinity;
             if (wheel != null && wheel.isActiveAndEnabled && wheel.InteractionTarget != null
-                && wheel.InteractionTarget.CanUse && wheel.TargetDistanceSquared < selectedDistance)
+                && wheel.InteractionTarget.CanUse && wheel.TargetDistanceSquared < handDistance)
+                hands = AvailableGameplayActions.UseWheel;
+            // Front-paw press actions share a key with holding props. Mouth actions are independent.
+            if (hands != AvailableGameplayActions.None)
             {
-                available &= ~(AvailableGameplayActions.EatCheese | AvailableGameplayActions.EatGreenCheese
-                    | AvailableGameplayActions.CollectPhoto | AvailableGameplayActions.PressButton);
-                available |= AvailableGameplayActions.UseWheel;
-                collection = AvailableGameplayActions.UseWheel;
+                available &= ~AvailableGameplayActions.MoveCrate;
+                available |= hands;
             }
-            // Press interactions win F/East; on gamepad this also excludes crate movement.
-            if (collection != AvailableGameplayActions.None)
-            {
-                available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
-                if (usingGamepad) available &= ~AvailableGameplayActions.MoveCrate;
-            }
-            // Crate movement and cutting/digging share East on the gamepad.
-            if (usingGamepad && (available & AvailableGameplayActions.MoveCrate) != 0)
-                available &= ~(AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig);
             input?.SetSelectedInteractions(available, usingGamepad);
             SetAvailable(available);
         }

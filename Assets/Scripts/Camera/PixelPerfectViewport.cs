@@ -39,8 +39,13 @@ namespace MousePlatformer
 
         public void StepZoom(int direction)
         {
-            if (!Application.isPlaying || !isActiveAndEnabled || direction == 0) return;
-            int nextLevel = Mathf.Clamp(zoomLevel + (direction > 0 ? 1 : -1), -1, 1);
+            if (direction != 0) SetZoomLevel(zoomLevel + (direction > 0 ? 1 : -1));
+        }
+
+        public void SetZoomLevel(int level)
+        {
+            if (!Application.isPlaying || !isActiveAndEnabled) return;
+            int nextLevel = Mathf.Clamp(level, -1, 1);
             if (nextLevel < 0 && NormalPixelScale() <= 1) nextLevel = 0;
             if (nextLevel == zoomLevel) return;
             zoomLevel = nextLevel;

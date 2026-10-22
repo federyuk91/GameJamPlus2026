@@ -38,10 +38,12 @@ namespace MousePlatformer
     [Serializable]
     public sealed class PlayerInteractionSettings
     {
-        [Tooltip("Upward velocity added when this animal leaves a rope, in world units/s. This is a launch speed, not gravity.")]
+        [Tooltip("Upward velocity added when jumping from a rope with horizontal directional input, in world units/s. A neutral release does not receive this boost.")]
         [Min(0f)] public float ropeJumpUpSpeed = 7f;
-        [Tooltip("Extra horizontal or tangential speed added to inherited rope momentum on release, in world units/s. Horizontal input chooses the launch side. The final velocity is capped by the body's Max Speed.")]
+        [Tooltip("Extra horizontal speed when jumping from a rope with horizontal input, in world units/s. Input chooses the launch side. A neutral release does not receive this boost.")]
         [Min(0f)] public float ropeJumpSwingBoost = 4f;
+        [Tooltip("Fraction of current rope velocity retained when pressing Jump without horizontal input. 0 drops vertically from rest; 1 retains full momentum. No upward or directional boost is added.")]
+        [Range(0f, 1f)] public float ropeReleaseMomentumMultiplier = 0.35f;
         [Min(0.01f)] public float crateMoveSpeed = 2.5f;
         [Min(0f)] public float ropeClimbSpeed = 2f;
         [Tooltip("Maximum horizontal pumping acceleration on a rope. Suspended ropes accept input with the swing and reduce outward drive as momentum fades, allowing gravity to reverse the pendulum instead of holding it on one side.")]

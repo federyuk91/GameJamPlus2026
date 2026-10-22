@@ -51,6 +51,7 @@ public sealed class PhysicsSettingsEditor : Editor
         Section("Rope Movement", "PlayerRopeInteraction");
         Field("interactions.ropeJumpUpSpeed");
         Field("interactions.ropeJumpSwingBoost");
+        Field("interactions.ropeReleaseMomentumMultiplier", "Momentum retained for Jump without horizontal input; no jump boost or forced launch direction.");
         Field("interactions.ropeClimbSpeed");
         Field("interactions.ropeSwingAcceleration");
         Field("interactions.ropeRegrabDelay");

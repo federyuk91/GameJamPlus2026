@@ -130,10 +130,10 @@ namespace GameJamPlus.UI
             confirmKey = prompts.Confirm;
             cancelKey = prompts.Cancel;
             pauseKey = prompts.Pause;
-            controlsText.text = $"{prompts.Move}: Move / climb\n{prompts.Jump}: Jump / swim stroke\n{prompts.Up}: Grab rope / climb ledge\n"
+            controlsText.text = $"{prompts.Move}: Move / climb\n{prompts.Up}: Grab rope / climb ledge\n"
                 + $"{prompts.Jump} + toward ledge: Climb\nDown: Drop; {prompts.Jump} + away: Jump off\n"
-                + $"{prompts.Collect}: Collect / button / wheel\nHold {prompts.MoveCrate} + direction: Move crate\n"
-                + $"Hold {prompts.CutOrDig}: Cut; + direction: Dig\n{prompts.Advance}: Reveal / next / close\n{prompts.ScrollMessages}: Scroll text\n"
+                + $"Mouth - {prompts.Mouth}: Eat; hold to cut / dig\nFront paws - {prompts.Interact}: Collect / button / wheel / climb ledge\nHold {prompts.MoveCrate} + direction: Move crate\n"
+                + $"Hind paws - {prompts.Jump}: Jump / swim\n{prompts.Advance}: Reveal / next / close\n{prompts.ScrollMessages}: Scroll text\n"
                 + $"{prompts.CameraHeightLock}: Camera lock\n{pauseKey}: Pause";
             RefreshHint();
         }

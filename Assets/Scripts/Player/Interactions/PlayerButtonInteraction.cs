@@ -29,7 +29,7 @@ namespace MousePlatformer
             InteractableButton selected = InteractionTarget;
             if (selected == null || body == null) return;
             Physics2D.SyncTransforms();
-            if (!selected.Contains(body.Shape) || !HasLineOfSight(selected.InteractionPoint)) return;
+            if (!selected.Contains(body.Shape) || !HasLineOfSight(selected)) return;
             // Claim the shared press before invoking an event that may pause or change the scene.
             input.ConsumeInteraction();
             if (selected.TryPress())
@@ -53,14 +53,15 @@ namespace MousePlatformer
                 InteractableButton button = InteractableButton.ActiveButtons[index];
                 if (!button.Contains(body.Shape)) continue;
                 float squared = (button.InteractionPoint - center).sqrMagnitude;
-                if (squared >= best || !HasLineOfSight(button.InteractionPoint)) continue;
+                if (squared >= best || !HasLineOfSight(button)) continue;
                 best = squared;
                 InteractionTarget = button;
             }
         }
 
-        private bool HasLineOfSight(Vector2 point)
+        private bool HasLineOfSight(InteractableButton button)
         {
+            Vector2 point = button.InteractionPoint;
             Vector2 origin = body.Shape.bounds.center;
             Vector2 offset = point - origin;
             float distance = offset.magnitude;
@@ -70,6 +71,7 @@ namespace MousePlatformer
             {
                 Collider2D obstacle = obstacles[index].collider;
                 if (obstacle == body.Shape || obstacle.transform.IsChildOf(transform)) continue;
+                if (obstacle.transform.IsChildOf(button.transform)) continue;
                 if (obstacles[index].distance < distance - 0.01f) return false;
             }
             return true;

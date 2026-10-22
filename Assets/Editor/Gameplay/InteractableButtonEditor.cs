@@ -5,6 +5,12 @@ using UnityEngine;
 [CustomEditor(typeof(InteractableButton)), CanEditMultipleObjects]
 public sealed class InteractableButtonEditor : Editor
 {
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+        EditorGUILayout.HelpBox("Input and weight always work together. On Pressed fires once at the bottom; On Release fires when fully raised. The button stays down while a simulated body rests on the surface. Single Use stays locked down until ActivateButton.", MessageType.Info);
+    }
+
     private void OnSceneGUI()
     {
         InteractableButton button = (InteractableButton)target;

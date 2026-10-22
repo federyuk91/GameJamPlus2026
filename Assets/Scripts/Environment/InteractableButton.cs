@@ -11,6 +11,7 @@ namespace MousePlatformer
         private static readonly List<InteractableButton> activeButtons = new List<InteractableButton>();
         internal static IReadOnlyList<InteractableButton> ActiveButtons => activeButtons;
         [SerializeField] private BoxCollider2D interactionArea;
+        [SerializeField] private ButtonPressurePlate pressurePlate;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Sprite releasedSprite;
         [SerializeField] private Sprite halfwaySprite;
@@ -21,7 +22,9 @@ namespace MousePlatformer
         [SerializeField, Tooltip("Starts pressed and unavailable until ActivateButton is called. Activation preserves Single Use and On Pressed settings.")]
         private bool startsLocked;
         [SerializeField] private bool showGizmos = true;
+        // Keep the serialized name so existing prefab and scene event bindings remain intact.
         [SerializeField] private UnityEvent onPressed = new UnityEvent();
+        [SerializeField] private UnityEvent onRelease = new UnityEvent();
         [Header("Spawn")]
         [SerializeField, Tooltip("Objects available to Spawn(int index). List indices start at zero.")]
         private List<GameObject> spawnPrefabs = new List<GameObject>();
@@ -36,10 +39,15 @@ namespace MousePlatformer
         private bool used;
         private bool initialized;
         private bool locked;
+        private bool weightHeld;
+        private bool fullyPressed;
+        private bool pressedSignal;
+        private int animationVersion;
         private float visualBottom;
         public bool IsLocked => initialized ? locked : startsLocked;
-        public bool CanPress => isActiveAndEnabled && !IsLocked && !busy && (!singleUse || !used)
+        private bool CanStartPress => isActiveAndEnabled && !IsLocked && !busy && (!singleUse || !used)
             && interactionArea != null && interactionArea.enabled;
+        public bool CanPress => CanStartPress && !fullyPressed;
         public Vector2 InteractionPoint => visual != null ? visual.bounds.center : transform.position;
         public bool ShowGizmos => showGizmos;
         public Vector3 SpawnPosition => transform.TransformPoint(spawnOffset);
@@ -56,10 +64,12 @@ namespace MousePlatformer
             initialized = true;
             locked = startsLocked;
             if (interactionArea == null) interactionArea = GetComponent<BoxCollider2D>();
+            if (pressurePlate == null) pressurePlate = GetComponent<ButtonPressurePlate>();
             interactionArea.isTrigger = true;
             if (visual != null)
                 visualBottom = visual.transform.localPosition.y + (visual.sprite != null ? visual.sprite.bounds.min.y * visual.transform.localScale.y : 0f);
             SetSprite(locked ? pressedSprite : releasedSprite);
+            fullyPressed = locked;
         }
 
         public void ActivateButton()
@@ -68,21 +78,28 @@ namespace MousePlatformer
             if (!locked && !(singleUse && used)) return;
             // A new activation must not be overwritten by an unfinished press animation.
             if (animationRoutine != null) StopCoroutine(animationRoutine);
+            animationVersion++;
             animationRoutine = null;
             busy = false;
             locked = false;
             used = false;
             SetSprite(releasedSprite);
+            fullyPressed = false;
+            NotifyRelease();
         }
 
         public void LockButton()
         {
             Initialize();
+            bool wasPressing = busy;
             locked = true;
             if (animationRoutine != null) StopCoroutine(animationRoutine);
+            animationVersion++;
             animationRoutine = null;
             busy = false;
             SetSprite(pressedSprite);
+            fullyPressed = true;
+            if (wasPressing) NotifyPressed();
         }
 
         private void OnEnable()
@@ -100,12 +117,27 @@ namespace MousePlatformer
         public bool TryPress()
         {
             if (!CanPress) return false;
+            BeginPress(false);
+            return true;
+        }
+
+        public void UpdateWeight(bool hasWeight)
+        {
+            weightHeld = hasWeight;
+            if (hasWeight && CanStartPress && !fullyPressed) BeginPress(true);
+            else if (!hasWeight && fullyPressed && !locked && !busy)
+            {
+                busy = true;
+                animationRoutine = StartCoroutine(AnimateRelease(++animationVersion));
+            }
+        }
+
+        private void BeginPress(bool fromWeight)
+        {
             used = true;
             if (singleUse) locked = true;
             busy = true;
-            animationRoutine = StartCoroutine(AnimatePress());
-            onPressed.Invoke();
-            return true;
+            animationRoutine = StartCoroutine(AnimatePress(fromWeight, ++animationVersion));
         }
 
         public void Spawn(int index)
@@ -134,20 +166,62 @@ namespace MousePlatformer
             if (advanceSpawnIndex) nextSpawnIndex++;
         }
 
-        private IEnumerator AnimatePress()
+        private IEnumerator AnimatePress(bool fromWeight, int version)
         {
             SetSprite(halfwaySprite);
             yield return new WaitForSeconds(animationStepDuration);
-            SetSprite(pressedSprite);
-            yield return new WaitForSeconds(animationStepDuration);
-            if (!singleUse)
+            if (fromWeight && !weightHeld && !singleUse)
             {
-                SetSprite(halfwaySprite);
-                yield return new WaitForSeconds(animationStepDuration);
-                SetSprite(releasedSprite);
+                yield return AnimateRelease(version);
+                yield break;
             }
+            SetSprite(pressedSprite);
+            fullyPressed = true;
+            NotifyPressed();
+            if (version != animationVersion) yield break;
+            yield return new WaitForSeconds(animationStepDuration);
+            if (locked || singleUse || weightHeld)
+            {
+                busy = false;
+                animationRoutine = null;
+                yield break;
+            }
+            yield return AnimateRelease(version);
+        }
+
+        private IEnumerator AnimateRelease(int version)
+        {
+            SetSprite(halfwaySprite);
+            yield return new WaitForSeconds(animationStepDuration);
+            if (version != animationVersion) yield break;
+            if (weightHeld && !locked)
+            {
+                SetSprite(pressedSprite);
+                fullyPressed = true;
+                busy = false;
+                animationRoutine = null;
+                NotifyPressed();
+                yield break;
+            }
+            SetSprite(releasedSprite);
+            fullyPressed = false;
             busy = false;
             animationRoutine = null;
+            NotifyRelease();
+        }
+
+        private void NotifyPressed()
+        {
+            if (pressedSignal) return;
+            pressedSignal = true;
+            onPressed.Invoke();
+        }
+
+        private void NotifyRelease()
+        {
+            if (!pressedSignal) return;
+            pressedSignal = false;
+            onRelease.Invoke();
         }
 
         private void SetSprite(Sprite sprite)
@@ -157,15 +231,19 @@ namespace MousePlatformer
             Vector3 position = visual.transform.localPosition;
             position.y = visualBottom - sprite.bounds.min.y * visual.transform.localScale.y;
             visual.transform.localPosition = position;
+            pressurePlate?.MatchVisual(visual);
         }
 
         private void OnDisable()
         {
             activeButtons.Remove(this);
             if (animationRoutine != null) StopCoroutine(animationRoutine);
+            animationVersion++;
             animationRoutine = null;
             busy = false;
             SetSprite(IsLocked || (singleUse && used) ? pressedSprite : releasedSprite);
+            fullyPressed = IsLocked || (singleUse && used);
+            if (!fullyPressed) pressedSignal = false;
         }
 
         private void Reset()

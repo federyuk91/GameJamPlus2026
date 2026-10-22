@@ -16,7 +16,8 @@ namespace GameJamPlus.Gameplay
             ScientistComment,
             Results,
             Loading,
-            DeathAnimation
+            DeathAnimation,
+            Spawning
         }
 
         [SerializeField] private GameplayHudController hud;
@@ -28,6 +29,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Scene instances. Random selection among assigned active points. Position denotes the player pivot.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
+        [SerializeField] private HandReleaseIntro handReleaseIntro;
         [Header("Game loop")]
         [SerializeField, Min(1)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
@@ -69,6 +71,7 @@ namespace GameJamPlus.Gameplay
             if (playerCrushVisual == null && player != null)
                 player.TryGetComponent(out playerCrushVisual);
             GameSession.EnsureStarted(startingUniverse);
+            GameSession.EnterGameplayScene(gameObject.scene.path);
             if (hud == null)
             {
                 Debug.LogError("Assign the Gameplay HUD to the Game Manager.", this);
@@ -76,6 +79,9 @@ namespace GameJamPlus.Gameplay
                 return;
             }
             SpawnPlayer();
+            // The hand's OnEnable may not have run yet at the manager's earlier execution order.
+            if (handReleaseIntro != null && handReleaseIntro.enabled && handReleaseIntro.gameObject.activeInHierarchy)
+                State = LoopState.Spawning;
         }
 
         private void OnEnable()
@@ -89,6 +95,18 @@ namespace GameJamPlus.Gameplay
         {
             hud.SetUniverse(Universe);
             if (gameplayCamera != null) gameplayCamera.SnapToTarget();
+            if (State == LoopState.Spawning)
+            {
+                if (handReleaseIntro.Begin(player, CompleteSpawnIntro)) hud.BeginSpawnPresentation();
+                else State = LoopState.Playing;
+            }
+        }
+
+        private void CompleteSpawnIntro()
+        {
+            if (State != LoopState.Spawning) return;
+            State = LoopState.Playing;
+            hud.CompleteSpawnPresentation();
         }
 
         private void SpawnPlayer()
@@ -96,6 +114,12 @@ namespace GameJamPlus.Gameplay
             if (player == null)
             {
                 Debug.LogWarning("Assign the Player to the Game Manager to use Spawn Points.", this);
+                return;
+            }
+            if (GameSession.TryGetCheckpoint(out string checkpointScene, out bool hasPosition, out Vector2 checkpointPosition)
+                && hasPosition && checkpointScene == gameObject.scene.path)
+            {
+                ApplySpawnPosition(checkpointPosition);
                 return;
             }
             int validCount = 0;
@@ -113,10 +137,15 @@ namespace GameJamPlus.Gameplay
                 if (point == null || !point.CanSpawn) continue;
                 if (selected-- != 0) continue;
                 Vector2 position = point.Position;
-                player.position = new Vector3(position.x, position.y, player.position.z);
-                Physics2D.SyncTransforms();
+                ApplySpawnPosition(position);
                 return;
             }
+        }
+
+        private void ApplySpawnPosition(Vector2 position)
+        {
+            player.position = new Vector3(position.x, position.y, player.position.z);
+            Physics2D.SyncTransforms();
         }
 
         public void EndTest(TestEndEvent outcome)
@@ -184,6 +213,8 @@ namespace GameJamPlus.Gameplay
         {
             if (State != LoopState.Results) return;
             string scene = Universe <= 1 ? endGameSceneName : gameplaySceneName;
+            if (Universe > 1 && GameSession.TryGetCheckpoint(out string checkpointScene, out _, out _))
+                scene = checkpointScene;
             if (string.IsNullOrWhiteSpace(scene) || !Application.CanStreamedLevelBeLoaded(scene))
             {
                 Debug.LogError("The next test or ending scene is not included in Build Profiles: " + scene, this);

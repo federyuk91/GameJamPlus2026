@@ -19,6 +19,40 @@ namespace GameJamPlus.Gameplay
         public static int RecoveredSubjects => SubjectsUsed - DeceasedSubjects;
         private static bool active;
         private static TestObservation testObservations;
+        private static string checkpointScenePath;
+        private static string checkpointSourceScenePath;
+        private static bool checkpointHasPosition;
+        private static Vector2 checkpointPosition;
+
+        public static void SetCheckpoint(string sourceScenePath, string scenePath, bool hasPosition, Vector2 position)
+        {
+            checkpointSourceScenePath = sourceScenePath;
+            checkpointScenePath = scenePath;
+            checkpointHasPosition = hasPosition;
+            checkpointPosition = position;
+        }
+
+        public static void EnterGameplayScene(string scenePath)
+        {
+            if (!string.IsNullOrEmpty(checkpointScenePath) && checkpointSourceScenePath != scenePath)
+                ClearCheckpoint();
+        }
+
+        public static bool TryGetCheckpoint(out string scenePath, out bool hasPosition, out Vector2 position)
+        {
+            scenePath = checkpointScenePath;
+            hasPosition = checkpointHasPosition;
+            position = checkpointPosition;
+            return !string.IsNullOrEmpty(scenePath);
+        }
+
+        private static void ClearCheckpoint()
+        {
+            checkpointScenePath = null;
+            checkpointSourceScenePath = null;
+            checkpointHasPosition = false;
+            checkpointPosition = Vector2.zero;
+        }
 
         public static void RecordObservation(TestObservation observation)
         {
@@ -39,6 +73,7 @@ namespace GameJamPlus.Gameplay
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Reset()
         {
+            ClearCheckpoint();
             Universe = 0;
             TotalTests = 0;
             CompletedTests = 0;
@@ -55,6 +90,7 @@ namespace GameJamPlus.Gameplay
         public static void EnsureStarted(int startingUniverse)
         {
             if (active && Universe > 0) return;
+            ClearCheckpoint();
             Universe = Mathf.Max(1, startingUniverse);
             collectibleCounts.Clear();
             collectedPhotoIds.Clear();

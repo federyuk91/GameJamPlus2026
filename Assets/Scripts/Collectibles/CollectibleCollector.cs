@@ -15,10 +15,11 @@ namespace MousePlatformer
 
         public event Action<CollectibleType, int> CountChanged;
         public Collectible InteractionTarget { get; private set; }
+        public Collectible FoodTarget { get; private set; }
         public float TargetDistanceSquared => InteractionTarget != null && collectionArea != null
             ? ((InteractionTarget.PickupArea != null ? InteractionTarget.PickupArea.bounds.center : InteractionTarget.transform.position)
                 - collectionArea.bounds.center).sqrMagnitude : float.PositiveInfinity;
-        public void ConsumeInteractionInput() => input?.ConsumeCollectibleInteraction();
+        public void ConsumeInteractionInput() => input?.ConsumeAllInteractions();
 
         public int GetCount(CollectibleType type)
         {
@@ -53,13 +54,13 @@ namespace MousePlatformer
 
         private void Update()
         {
-            if (Time.timeScale > 0f && input != null && input.isActiveAndEnabled && input.InteractionPressed)
-                CollectSelectedTarget();
+            if (Time.timeScale <= 0f || input == null || !input.isActiveAndEnabled) return;
+            if (input.EatPressed) CollectSelectedTarget(FoodTarget);
+            if (isActiveAndEnabled && Time.timeScale > 0f && input.InteractionPressed) CollectSelectedTarget(InteractionTarget);
         }
 
-        private void CollectSelectedTarget()
+        private void CollectSelectedTarget(Collectible selected)
         {
-            Collectible selected = InteractionTarget;
             if (selected == null || !selected.CanBeCollected || collectionArea == null || !collectionArea.enabled) return;
             Physics2D.SyncTransforms();
             overlaps.Clear();
@@ -70,8 +71,9 @@ namespace MousePlatformer
                 if (selected.PickupArea != null && candidate != selected.PickupArea) continue;
                 if (selected.TryCollect(this, true))
                 {
-                    input.ConsumeCollectibleInteraction();
-                    InteractionTarget = null;
+                    input.ConsumeCollectibleInteraction(selected.Type);
+                    if (selected == FoodTarget) FoodTarget = null;
+                    if (selected == InteractionTarget) InteractionTarget = null;
                 }
                 return;
             }
@@ -82,6 +84,7 @@ namespace MousePlatformer
         private void CollectOverlapping(bool collectAutomatic = true)
         {
             InteractionTarget = null;
+            FoodTarget = null;
             if (collectionArea == null || !collectionArea.enabled) return;
 
             // The player moves its Transform directly and automatic physics synchronization is disabled.
@@ -89,7 +92,9 @@ namespace MousePlatformer
             overlaps.Clear();
             collectionArea.Overlap(filter, overlaps);
             Collectible nearest = null;
+            Collectible nearestFood = null;
             float nearestDistance = float.PositiveInfinity;
+            float nearestFoodDistance = float.PositiveInfinity;
             foreach (Collider2D candidate in overlaps)
             {
                 if (candidate != null && candidate.TryGetComponent(out Collectible collectible)
@@ -103,7 +108,13 @@ namespace MousePlatformer
                     else
                     {
                         float distance = (candidate.bounds.center - collectionArea.bounds.center).sqrMagnitude;
-                        if (distance < nearestDistance)
+                        bool food = collectible.Type == CollectibleType.Cheese || collectible.Type == CollectibleType.GreenCheese;
+                        if (food && distance < nearestFoodDistance)
+                        {
+                            nearestFood = collectible;
+                            nearestFoodDistance = distance;
+                        }
+                        else if (!food && distance < nearestDistance)
                         {
                             nearest = collectible;
                             nearestDistance = distance;
@@ -113,6 +124,7 @@ namespace MousePlatformer
                 if (!isActiveAndEnabled || Time.timeScale <= 0f) return;
             }
             InteractionTarget = nearest;
+            FoodTarget = nearestFood;
         }
 
         private void Reset()
