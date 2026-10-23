@@ -16,8 +16,8 @@ namespace MousePlatformer
         {
             if (viewport == null) viewport = GetComponent<PixelPerfectViewport>();
             scroll = new InputAction("CameraZoomScroll", InputActionType.Value, "<Mouse>/scroll/y");
-            zoomIn = new InputAction("CameraZoomIn", InputActionType.Button, "<Gamepad>/rightShoulder");
-            zoomOut = new InputAction("CameraZoomOut", InputActionType.Button, "<Gamepad>/leftShoulder");
+            zoomIn = new InputAction("CameraZoomIn", InputActionType.Button, "<Gamepad>/leftShoulder");
+            zoomOut = new InputAction("CameraZoomOut", InputActionType.Button, "<Gamepad>/leftTrigger");
         }
 
         private void OnEnable()

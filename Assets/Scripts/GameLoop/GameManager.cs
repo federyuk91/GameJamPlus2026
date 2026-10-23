@@ -26,15 +26,17 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private MousePlatformer.PlayerRecovery playerRecovery;
         [SerializeField] private MousePlatformer.PlayerCrushVisual playerCrushVisual;
+        [SerializeField] private MousePlatformer.PlayerHealth playerHealth;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
-        [SerializeField, Tooltip("Scene instances. Random selection among assigned active points. Position denotes the player pivot.")]
+        [SerializeField, Tooltip("Assigned active spawn points are shuffled without replacement across retries. All are used before a new cycle, avoiding immediate repetition between cycles.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
         [SerializeField] private HandReleaseIntro handReleaseIntro;
         [Header("Game loop")]
-        [SerializeField, Min(1)] private int startingUniverse = 10;
+        [SerializeField] private UniverseCampaign campaign;
+        [SerializeField, Range(1, 10)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
-        [SerializeField, Min(0f), Tooltip("Seconds approaching the tunnel exit until the light fills the screen, before the scientist comment.")]
+        [SerializeField, InspectorName("Transition Duration"), Min(0f), Tooltip("Default duration in seconds for endings without the exit image, before the scientist comment.")]
         private float flashDuration = 1.5f;
         [SerializeField, TextArea] private string fallbackComment = "Excellent. We can consider this stage complete.";
         private double completedTime;
@@ -45,10 +47,13 @@ namespace GameJamPlus.Gameplay
         private string pendingComment;
         private Sprite pendingAvatar;
         private float pendingFlashDuration;
+        public TestEndEvent EndingOutcome { get; private set; }
 
         public static GameManager Instance { get; private set; }
         public LoopState State { get; private set; } = LoopState.Playing;
         public int Universe => GameSession.Universe;
+        public string SubjectId => GameSession.SubjectId;
+        public int Attempt => GameSession.Attempt;
         public GameplayHudController Hud => hud;
         public Collider2D PlayerCollider => playerCollider;
         public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
@@ -70,7 +75,10 @@ namespace GameJamPlus.Gameplay
             Instance = this;
             if (playerCrushVisual == null && player != null)
                 player.TryGetComponent(out playerCrushVisual);
-            GameSession.EnsureStarted(startingUniverse);
+            if (playerHealth == null && player != null) player.TryGetComponent(out playerHealth);
+            GameSession.EnsureStarted(startingUniverse, campaign != null ? campaign.AttemptsPerUniverse : 10,
+                campaign != null ? campaign.MaximumDeaths : 100);
+            if (playerHealth != null) playerHealth.SetHealth(GameSession.SubjectHealth);
             GameSession.EnterGameplayScene(gameObject.scene.path);
             if (hud == null)
             {
@@ -94,6 +102,7 @@ namespace GameJamPlus.Gameplay
         private void Start()
         {
             hud.SetUniverse(Universe);
+            hud.SetSubjectIdentity(SubjectId, Attempt, GameSession.AttemptsPerUniverse);
             if (gameplayCamera != null) gameplayCamera.SnapToTarget();
             if (State == LoopState.Spawning)
             {
@@ -116,30 +125,23 @@ namespace GameJamPlus.Gameplay
                 Debug.LogWarning("Assign the Player to the Game Manager to use Spawn Points.", this);
                 return;
             }
-            if (GameSession.TryGetCheckpoint(out string checkpointScene, out bool hasPosition, out Vector2 checkpointPosition)
+            if (campaign == null && GameSession.TryGetCheckpoint(out string checkpointScene, out bool hasPosition, out Vector2 checkpointPosition)
                 && hasPosition && checkpointScene == gameObject.scene.path)
             {
                 ApplySpawnPosition(checkpointPosition);
                 return;
             }
-            int validCount = 0;
-            foreach (SpawnPoint point in spawnPoints ?? System.Array.Empty<SpawnPoint>())
-                if (point != null && point.CanSpawn) validCount++;
-            if (validCount == 0)
+            List<int> available = new List<int>();
+            for (int index = 0; spawnPoints != null && index < spawnPoints.Length; index++)
+                if (spawnPoints[index] != null && spawnPoints[index].CanSpawn) available.Add(index);
+            if (available.Count == 0)
             {
                 Debug.LogWarning("No active Spawn Point assigned: the player keeps the scene position.", this);
                 return;
             }
 
-            int selected = Random.Range(0, validCount);
-            foreach (SpawnPoint point in spawnPoints)
-            {
-                if (point == null || !point.CanSpawn) continue;
-                if (selected-- != 0) continue;
-                Vector2 position = point.Position;
-                ApplySpawnPosition(position);
-                return;
-            }
+            int selected = GameSession.SelectSpawn(gameObject.scene.path, available);
+            ApplySpawnPosition(spawnPoints[selected].Position);
         }
 
         private void ApplySpawnPosition(Vector2 position)
@@ -166,23 +168,28 @@ namespace GameJamPlus.Gameplay
         private bool PrepareTestEnding(TestEndEvent outcome, bool waitForAnimation)
         {
             if (!isActiveAndEnabled || State != LoopState.Playing || outcome == null) return false;
+            EndingOutcome = outcome;
             State = waitForAnimation ? LoopState.DeathAnimation : LoopState.Flash;
             hud.HidePhoto();
             completedTime = hud.ElapsedSeconds;
             completedResult = outcome.ChooseResult();
             pendingFlashDuration = outcome.FlashDurationOverride >= 0f
-                ? outcome.FlashDurationOverride : flashDuration;
-            GameSession.RecordTestResult(outcome.SubjectDied);
+                ? outcome.FlashDurationOverride : outcome.UseExitImage ? hud.ExitTransitionDuration : flashDuration;
+            GameSession.RecordTestResult(outcome.SubjectDied, completedTime,
+                playerHealth != null ? playerHealth.Current : MousePlatformer.PlayerHealth.Maximum);
             previousTimeScale = Time.timeScale;
             ownsPause = true;
             Time.timeScale = 0f;
-            hud.BeginTestEnding();
+            hud.BeginTestEnding(outcome.UseExitImage);
 
             DialogueMessagePlayer dialogue = outcome.ScientistComment;
             string comment = dialogue != null ? dialogue.ChooseMessage() : string.Empty;
             Sprite avatar = dialogue != null ? dialogue.Avatar : null;
             pendingComment = string.IsNullOrWhiteSpace(comment) ? fallbackComment : comment;
             pendingAvatar = avatar;
+            Debug.Log($"Stage ending: {outcome.name} (scene: {outcome.gameObject.scene.name}, "
+                + $"subject died: {outcome.SubjectDied}, cheese: {GameSession.GetCollectibleCount(MousePlatformer.CollectibleType.Cheese)}). "
+                + $"Scientist comment: {pendingComment}", outcome);
             if (waitForAnimation) animatedOutcome = outcome;
             else StartCoroutine(EndSequence(pendingComment, pendingAvatar));
             return true;
@@ -212,8 +219,14 @@ namespace GameJamPlus.Gameplay
         private void OnTestContinueRequested()
         {
             if (State != LoopState.Results) return;
-            string scene = Universe <= 1 ? endGameSceneName : gameplaySceneName;
-            if (Universe > 1 && GameSession.TryGetCheckpoint(out string checkpointScene, out _, out _))
+            string scene;
+            if (campaign != null)
+            {
+                int nextUniverse = Universe - (GameSession.WillAdvanceUniverse ? 1 : 0);
+                scene = GameSession.WillEndCampaign ? campaign.EndGameScene : campaign.SceneForUniverse(nextUniverse);
+            }
+            else scene = Universe <= 1 ? endGameSceneName : gameplaySceneName;
+            if (campaign == null && Universe > 1 && GameSession.TryGetCheckpoint(out string checkpointScene, out _, out _))
                 scene = checkpointScene;
             if (string.IsNullOrWhiteSpace(scene) || !Application.CanStreamedLevelBeLoaded(scene))
             {
@@ -221,7 +234,7 @@ namespace GameJamPlus.Gameplay
                 return;
             }
             State = LoopState.Loading;
-            GameSession.Advance();
+            GameSession.Advance(campaign != null);
             RestoreTimeScale();
             SceneManager.LoadScene(scene);
         }

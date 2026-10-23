@@ -183,6 +183,12 @@ namespace MousePlatformer
             supportLocalPoint = carriedBy.transform.InverseTransformPoint(supportWorldPoint);
         }
 
+        public void EnableStacking()
+        {
+            followSupport = false;
+            carriedBy = null;
+        }
+
         private bool ActiveBuoyancy => buoyancy != null && buoyancy.isActiveAndEnabled;
 
         private float VerticalForce(float verticalWind)
@@ -360,11 +366,11 @@ namespace MousePlatformer
                 Vector2 scale = member.transform.lossyScale;
                 Vector2 size = Vector2.Scale(shape.size, new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
                 int count = Physics2D.BoxCast(member.transform.TransformPoint(shape.offset), size,
-                    member.transform.eulerAngles.z, direction, member.body.SolidFilter, stackHits, allowed + member.body.Skin);
+                    member.transform.eulerAngles.z, direction, member.body.MotionFilter, stackHits, allowed + member.body.Skin);
                 for (int index = 0; index < count; index++)
                 {
                     RaycastHit2D hit = stackHits[index];
-                    if (hit.collider == null || stackShapes.Contains(hit.collider) || hit.collider.transform.IsChildOf(member.transform)
+                    if (!member.body.IsMotionObstacle(hit.collider) || stackShapes.Contains(hit.collider) || hit.collider.transform.IsChildOf(member.transform)
                         || (member.passenger != null && hit.collider == member.passenger.Shape)
                         || Vector2.Dot(hit.normal, direction) >= -0.01f) continue;
                     float gap = Mathf.Max(0f, hit.distance - member.body.Skin);
@@ -469,7 +475,7 @@ namespace MousePlatformer
             {
                 displacement.y = LiftSupportedBody(displacement.y, ignored);
             }
-            if (pushable != null)
+            if (pushable != null && pushable.isActiveAndEnabled)
             {
                 float startY = transform.position.y;
                 pushable.MoveHorizontal(displacement.x, excluded);

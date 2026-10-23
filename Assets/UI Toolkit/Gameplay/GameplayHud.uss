@@ -1,52 +1,67 @@
-.gameplay-hud { --scientist-green: rgb(92, 255, 123); --hud-gold: rgb(255, 226, 164); --hud-cyan: rgb(151, 202, 214); flex-grow: 1; color: var(--hud-gold); font-size: 12px; -unity-font: url("../../Art/UI/Gameplay/Fonts/Silkscreen-Regular.ttf"); }
+@import url("InputPrompts.uss");
+.gameplay-hud { --scientist-green: rgb(92, 255, 123); --hud-gold: rgb(255, 226, 164); flex-grow: 1; color: var(--hud-gold); font-size: 12px; -unity-font: url("../../Art/UI/Gameplay/Fonts/Silkscreen-Regular.ttf"); }
 .hud-frame { position: absolute; width: 640px; height: 360px; left: 0; top: 0; }
 .black-band { position: absolute; left: 0; right: 0; background-color: rgb(1, 8, 13); }
-.black-band-top { top: 0; height: 20px; }
-.black-band-bottom { bottom: 0; height: 80px; }
-.hud-safe-area { position: absolute; left: 0; right: 0; top: 20px; bottom: 80px; overflow: visible; }
 .interaction-hints { display: none; flex-direction: column; background-color: transparent; padding: 0; margin: 0; border-width: 0; }
-.interaction-hint-row { flex-direction: row; align-items: flex-start; min-height: 14px; margin-bottom: 3px; }
+.interaction-hints-anchor { position: absolute; left: 0; right: 0; bottom: 8px;
+    align-items: center; }
+.interaction-hints-panel { min-width: 110px; max-width: 46%; padding: 5px 8px;
+    background-color: rgba(10, 26, 37, 0.92);
+    border-width: 1px; border-color: rgb(240, 229, 202); border-radius: 3px;
+    color: rgb(240, 229, 202); }
+.interaction-hints-panel .interaction-hint-description { flex-basis: auto; }
+.interaction-hint-row { flex-direction: row; align-items: center; min-height: 18px; flex-shrink: 0; margin-bottom: 1px; }
+.interaction-hint-inputs { flex-direction: row; align-items: center; width: 52px; flex-shrink: 0; }
+.interaction-hint-plus { width: 8px; flex-shrink: 0; font-size: 10px; margin: 0; padding: 0; -unity-text-align: middle-center; }
 .input-key-icon { width: 20px; height: 20px; margin-right: 6px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--scientist-green); }
-.input-key-fallback { color: var(--scientist-green); margin: 0 6px 0 0; }
-.interaction-hint-description { font-size: 9px; min-height: 14px; margin: 0; padding: 0; white-space: normal; -unity-text-align: upper-left; flex-grow: 1; flex-shrink: 1; }
+.interaction-hint-description { font-size: 10px; min-height: 14px; min-width: 0; margin: 0; padding: 0; white-space: normal; -unity-text-align: middle-left; flex-grow: 1; flex-shrink: 1; flex-basis: 0; }
 .scientist-advance, .test-next { flex-direction: row; align-items: center; justify-content: center; }
 .scientist-advance .input-key-icon { width: 12px; height: 12px; margin-right: 3px; }
 .scientist-advance-label { color: var(--hud-gold); font-size: 8px; margin: 0; }
-.test-next-label { margin: 0; }
+.test-next-label { margin: 0; padding: 0; }
 .timer-anchor { position: absolute; top: -19px; left: 12px; align-items: flex-start; }
-.timer-panel { width: 80px; height: 18px; flex-shrink: 0; padding: 1px 8px 2px 8px; background-image: url("../../Art/UI/Gameplay/Frames/StayTimer_Frame.png"); -unity-background-scale-mode: stretch-to-fill; }
+.timer-panel { width: 80px; height: 18px; flex-shrink: 0; padding: 1px 8px 2px 8px; background-image: url("../../Art/UI/Gameplay/Frames/StayTimer_Frame.png"); -unity-background-scale-mode: stretch-to-fill; -unity-slice-left: 6; -unity-slice-right: 6; -unity-slice-top: 3; -unity-slice-bottom: 3; -unity-slice-scale: 1; -unity-slice-type: sliced; }
 .timer-caption { height: 6px; flex-shrink: 0; font-size: 5px; color: var(--hud-gold); margin: 0; padding: 0; -unity-text-align: middle-center; }
 .elapsed-time { height: 9px; flex-shrink: 0; font-size: 7px; margin: 0; padding: 0; -unity-text-align: middle-center; color: var(--hud-gold); }
-.resource-dashboard { position: absolute; left: 10px; bottom: -70px; width: 280px; height: 60px; padding: 7px 8px; background-image: url("../../Art/UI/Gameplay/Frames/CommunicationTerminal_Background.png"); -unity-background-scale-mode: stretch-to-fill; }
-.satiety-panel { height: 12px; flex-shrink: 0; flex-direction: row; align-items: center; padding: 0; margin: 0; }
-.satiety-caption { height: 12px; font-size: 8px; color: var(--hud-gold); margin: 0 12px 0 0; padding: 0; -unity-text-align: middle-left; }
 .satiety-notches { flex-direction: row; align-items: center; }
-.satiety-notch { width: 14px; height: 7px; flex-shrink: 0; margin-right: 4px; background-color: rgb(255, 201, 76); border-width: 1px; border-color: var(--hud-gold); }
-.satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
-.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
-.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
-.resource-counters { flex-grow: 1; min-height: 0; flex-direction: row; align-items: stretch; margin-top: 6px; }
-.counter { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0; padding: 0 4px; flex-direction: row; align-items: center; justify-content: flex-start; background-color: transparent; border-width: 0; }
-.counter-value { flex-grow: 1; min-width: 0; height: 20px; font-size: 10px; margin: 0; padding: 0; -unity-text-align: middle-left; color: var(--hud-gold); }
-.counter-icon { width: 20px; height: 20px; margin-right: 6px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
-.scientist-screen { position: absolute; bottom: -70px; right: 77px; width: 176px; height: 60px; overflow: hidden; background-image: url("../../Art/UI/Gameplay/Frames/CommunicationTerminal_Background.png"); -unity-background-scale-mode: stretch-to-fill; color: var(--scientist-green); }
+.scientist-screen { position: absolute; bottom: 8px; right: auto; width: 240px; height: 60px; overflow: hidden; background-image: url("../../Art/UI/Gameplay/Frames/CommunicationTerminal_Background.png"); -unity-background-scale-mode: stretch-to-fill; color: var(--scientist-green); -unity-slice-left: 6; -unity-slice-right: 6; -unity-slice-top: 6; -unity-slice-bottom: 6; -unity-slice-scale: 1; -unity-slice-type: sliced; left: 8px; }
 .scientist-content { position: absolute; left: 0; top: 0; width: 100%; height: 100%; flex-direction: column; opacity: 1; }
-.scientist-avatar { position: absolute; left: 4px; right: 4px; top: 4px; bottom: 12px; width: auto; height: auto; -unity-background-scale-mode: scale-to-fit; }
-.system-command-keys { position: absolute; left: 6px; right: 6px; top: 6px; bottom: 12px; flex-direction: row; align-items: center; justify-content: center; }
-.system-command-key { width: 40px; height: 40px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--scientist-green); margin: 0; padding: 0; }
-.system-commands-multiple .system-command-key { width: 22px; height: 32px; margin: 0 1px; }
-.system-command-fallback { color: var(--scientist-green); font-size: 16px; -unity-font-style: bold; -unity-text-align: middle-center; white-space: normal; }
-.system-commands-multiple .system-command-fallback { font-size: 10px; }
 .scientist-display-viewport { position: absolute; left: 8px; right: 8px; top: 7px; bottom: 7px; overflow: hidden; }
 .scientist-display { display: flex; position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
 .scientist-signal { position: absolute; left: 27px; bottom: 7px; width: 5px; height: 5px; border-radius: 3px; background-color: rgb(225, 66, 56); }
 .scientist-signal.signal-active { background-color: var(--scientist-green); }
-.scientist-transcript { flex-grow: 1; flex-basis: 0; min-height: 0; min-width: 0; margin: 0; padding: 0; }
-.scientist-text { font-size: 10px; color: var(--scientist-green); white-space: normal; margin: 0; padding: 0; }
-.scientist-content.scientist-dialogue .scientist-transcript { margin-bottom: 16px; }
+.scientist-transcript { flex-grow: 1; flex-basis: 0; min-height: 0; min-width: 0; margin: 0; padding: 0; overflow: visible; }
+.scientist-text { font-size: 14px; color: var(--scientist-green); white-space: normal; margin: 0; padding: 0; }
 .scientist-advance { position: absolute; bottom: 4px; right: 2px; height: 12px; min-height: 12px; min-width: 48px; padding: 0 2px; margin: 0; font-size: 8px; color: var(--hud-gold); background-color: rgb(2, 16, 26); border-width: 0; border-radius: 1px; }
 .scientist-advance:hover { background-color: rgb(19, 39, 45); }
 .scientist-advance:active { background-color: rgb(29, 54, 58); }
+.scientist-ending .scientist-display-viewport { left: 16px; right: 16px; top: 14px; bottom: 14px; }
+.scientist-ending .scientist-content {
+    left: 40px; right: 24px; top: 28px; bottom: 60px;
+    width: auto; height: auto;
+}
+.scientist-ending .scientist-avatar {
+    left: -6px; right: auto; top: auto; bottom: -8px;
+    width: 64px; height: 64px;
+}
+.scientist-ending .scientist-transcript {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    width: 100%; height: auto; margin-bottom: 0;
+}
+.scientist-ending .scientist-text { font-size: 18px; }
+.scientist-ending-footer {
+    display: none; position: absolute; left: 12.5%; right: 12.5%; top: 86%; height: 28px;
+    align-items: flex-end;
+}
+.scientist-ending-advance {
+    position: relative; left: auto; right: 0; top: auto; bottom: auto;
+    width: auto; min-width: 80px; max-width: none;
+    height: 24px; min-height: 24px; max-height: 24px;
+    justify-content: center;
+}
+.scientist-ending-advance .scientist-advance-label { font-size: 12px; }
+.scientist-ending-advance .input-key-icon { width: 16px; height: 16px; margin-right: 6px; }
+.scientist-ending-footer, .scientist-ending-footer * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
 .scientist-power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(207, 255, 218); opacity: 0; }
 .test-white-cover { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: white; opacity: 0; }
 .test-result { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(16, 27, 34); color: rgb(30, 50, 62); align-items: center; justify-content: center; padding: 16px; }
@@ -72,38 +87,23 @@
 .test-result-message { flex-shrink: 0; font-size: 10px; white-space: normal; color: rgb(113, 94, 70); margin: 7px 0 0 0; padding: 0; }
 .test-next { align-self: flex-end; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: center; height: 24px; margin: 7px 0 0 0; padding: 2px 12px; font-size: 10px; color: rgb(242, 230, 199); background-color: rgb(30, 50, 62); border-width: 1px; border-color: rgb(30, 50, 62); border-radius: 0; }
 .test-next .input-key-icon { -unity-background-image-tint-color: rgb(242, 230, 199); }
-.test-next-label { margin: 0; padding: 0; }
 .test-next:hover { background-color: rgb(58, 82, 91); }
-
 .photo-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 12px; background-color: rgba(0, 0, 0, 0.94); align-items: stretch; }
 .photo-content { position: relative; flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; overflow: hidden; align-items: stretch; justify-content: center; }
 .collected-photo { position: absolute; flex-grow: 0; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
 .photo-placeholder { flex-grow: 1; -unity-text-align: middle-center; color: rgb(180, 190, 185); background-color: rgb(20, 25, 23); }
 .photo-close { height: 26px; flex-shrink: 0; align-self: center; margin-top: 8px; padding: 2px 16px; background-color: rgb(12, 25, 17); color: rgb(92, 255, 123); border-width: 1px; border-color: rgb(47, 151, 72); border-radius: 0; }
 .photo-close:hover { background-color: rgb(25, 50, 33); }
-
-.scientist-avatar-screen { position: absolute; bottom: -70px; right: 4px; width: 60px; height: 60px; background-image: url("../../Art/UI/Gameplay/Frames/CommunicationTerminal_Background.png"); -unity-background-scale-mode: stretch-to-fill; }
-.communication-speaker { display: none; height: 9px; flex-shrink: 0; margin: 0 0 3px 0; padding: 0; font-size: 7px; -unity-text-align: upper-left; color: var(--hud-gold); }
-.interaction-hints .input-key-icon { width: 12px; height: 12px; margin: 1px 5px 0 0; }
-.interaction-hints .input-key-fallback { width: 12px; min-height: 14px; flex-shrink: 0; margin: 0 5px 0 0; font-size: 9px; -unity-text-align: upper-center; }
-.resource-dashboard, .scientist-screen, .scientist-avatar-screen {
-    -unity-slice-left: 6;
-    -unity-slice-right: 6;
-    -unity-slice-top: 6;
-    -unity-slice-bottom: 6;
-    -unity-slice-scale: 1;
-    -unity-slice-type: sliced;
-}
-.timer-panel { -unity-slice-left: 6; -unity-slice-right: 6; -unity-slice-top: 3; -unity-slice-bottom: 3; -unity-slice-scale: 1; -unity-slice-type: sliced; }
-.scientist-transcript .unity-scroll-view__content-viewport { min-width: 0; }
+.scientist-transcript .unity-scroll-view__content-viewport { min-width: 0; overflow: visible; }
+.scientist-ending .scientist-transcript,
+.scientist-ending .scientist-transcript .unity-scroll-view__content-viewport { overflow: hidden; }
 .scientist-transcript .unity-scroll-view__content-container { width: 100%; flex-grow: 1; }
 .scientist-text, .interaction-hints { flex-shrink: 0; }
-
 .camera-height-lock { display: none; position: absolute; top: 4px; right: 8px; max-width: 420px; margin: 0; padding: 2px 5px; font-size: 7px; color: var(--hud-gold); background-color: rgba(1, 8, 13, 0.85); -unity-text-align: middle-right; }
-
 .oxygen-notches .satiety-notch { background-color: rgb(85, 211, 243); border-color: rgb(181, 239, 255); }
 .oxygen-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
-
+.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
+.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
 .pause-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(1, 8, 13, 0.82); align-items: center; justify-content: center; }
 .pause-card { width: 240px; min-height: 244px; padding: 12px 18px; border-width: 1px; border-color: rgb(231, 232, 222); border-radius: 3px; background-color: rgb(10, 20, 26); color: rgb(231, 232, 222); }
 .pause-kicker { font-size: 8px; margin: 0; -unity-text-align: middle-center; letter-spacing: 1px; }
@@ -113,9 +113,6 @@
 .pause-button { height: 22px; margin: 0; padding: 0 12px; font-size: 10px; color: rgb(231, 232, 222); background-color: transparent; border-width: 1px; border-color: transparent; border-radius: 0; -unity-text-align: middle-left; }
 .pause-button:hover, .pause-selected { background-color: rgba(247, 237, 211, 0.1); border-color: var(--hud-gold); }
 .pause-section { font-size: 9px; margin: 0 0 6px 0; color: var(--hud-gold); }
-.pause-controls-text { font-size: 8px; white-space: normal; margin: 0 0 6px 0; }
-.pause-controls-scroll { height: 154px; flex-shrink: 0; margin-bottom: 6px; }
-.pause-controls-scroll .unity-scroll-view__content-container { flex-grow: 0; flex-shrink: 0; padding-right: 4px; }
 .pause-slider { height: 25px; margin: 0; border-width: 1px; border-color: transparent; }
 .pause-toggle { height: 23px; margin: 0; border-width: 1px; border-color: transparent; }
 .pause-slider.pause-selected, .pause-toggle.pause-selected { border-color: var(--hud-gold); background-color: rgba(247, 237, 211, 0.1); }
@@ -124,20 +121,50 @@
 .pause-slider .unity-base-slider__dragger { background-color: var(--hud-gold); width: 10px; height: 10px; border-radius: 0; }
 .pause-status { font-size: 8px; margin: 4px 0 0 0; color: rgb(225, 100, 80); white-space: normal; }
 .pause-hint { font-size: 7px; margin: 14px 0 0 0; -unity-text-align: middle-center; white-space: normal; }
-
 .camera-lock-reminder { display: none; position: absolute; left: 15%; right: 15%; top: 50%; height: 90px; padding: 10px; margin: 0; margin-top: -45px; font-size: 12px; white-space: normal; color: var(--hud-gold); background-color: rgba(1, 8, 13, 0.9); -unity-text-align: middle-center; }
+.hud-safe-area { position: absolute; left: 0; right: 0; top: 20px; overflow: visible; bottom: 90px; }
+.status-effect-icon { width: 12px; height: 12px; margin-right: 3px; flex-shrink: 0; }
+.status-electricity-icons { flex-direction: row; align-items: center; }
+.satiety-notch { width: 12px; margin-right: 3px; height: 7px; flex-shrink: 0; background-color: rgb(255, 201, 76); border-width: 1px; border-color: var(--hud-gold); }
+.satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
+.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
+.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
+.counter { flex-direction: row; justify-content: flex-start; background-color: transparent; border-width: 0; margin: 0; }
+.counter-value { flex-grow: 1; min-width: 0; padding: 0; -unity-text-align: middle-left; }
+.counter-icon { flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.scientist-screen, .scientist-screen *,
+.test-result, .test-result * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
+.pause-overlay, .pause-overlay *, .pause-card, .pause-card * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); }
+.black-band-bottom { bottom: 0; height: 90px; background-color: transparent; }
+.resource-dashboard { position: absolute; left: auto; right: 10px; bottom: 8px; width: 164px; height: auto;
+    padding: 5px 7px; background-image: none; background-color: rgb(20, 43, 58);
+    border-width: 1px; border-color: rgb(240, 229, 202); border-radius: 3px;
+    flex-direction: column; justify-content: center; }
+.health-panel, .satiety-panel, .status-panel, .oxygen-panel { position: relative; left: auto; right: auto; top: auto; height: 14px; flex-shrink: 0; flex-direction: row; align-items: center; margin: 0; padding: 0; }
+.satiety-caption { color: var(--hud-gold); }
+.vital-caption, .satiety-caption { width: 56px; height: 14px; flex-shrink: 0; font-size: 7px; margin: 0 5px 0 0; padding: 0; -unity-text-align: middle-left; }
+.health-hearts { flex-direction: row; align-items: center; }
+.health-heart { width: 12px; height: 12px; margin-right: 3px; flex-shrink: 0; }
+.health-heart-empty { opacity: 0.2; }
+.resource-dashboard .status-panel { display: none; justify-content: flex-end; height: 16px; }
+.resource-dashboard .status-electricity-icons { display: none; }
+.resource-counters.collectibles-panel { min-height: 0; display: flex; position: absolute; top: 2px; right: 10px;
+    width: 236px; height: 22px; margin: 0; padding: 2px 6px;
+    flex-direction: row; flex-grow: 0; align-items: center;
+    background-color: rgb(20, 43, 58); color: rgb(240, 229, 202);
+    border-width: 1px; border-color: rgb(240, 229, 202); border-radius: 2px; }
+.collectibles-panel .counter { flex-basis: 0; flex-grow: 1; min-width: 0; height: 18px; padding: 0 2px;
+    align-items: center; border-radius: 2px; }
+.collectibles-panel .counter-icon { width: 18px; height: 18px; margin: 0 3px 0 0; }
+.collectibles-panel .counter-value { height: 16px; margin: 0; font-size: 9px; color: rgb(240, 229, 202); }
+.collectibles-panel .counter-collected { background-color: rgba(240, 229, 202, 0.2); }
+.collectibles-panel .counter-collected .counter-icon { scale: 1.15 1.15; }
+.collectibles-panel .counter-collected .counter-value { color: rgb(92, 255, 123); }
+.scientist-avatar { position: absolute; left: 14px; top: 14px; right: auto; bottom: auto; width: 32px; height: 32px; -unity-background-scale-mode: scale-to-fit; scale: -1 1; }
+#scientist-transcript { width: 100%; padding-right: 0; }
+#scientist-text { min-height: 0; max-height: none; width: 100%; padding: 2px 0; }
+.oxygen-panel { display: none; }
 
-/* Sprite dimensions use source pixels; only the shared viewport scale enlarges them. */
-.black-band-bottom { height: 90px; }
-.hud-safe-area { bottom: 90px; }
-.resource-dashboard { bottom: -80px; width: 300px; height: 80px; padding: 8px; }
-.satiety-panel { position: absolute; left: 90px; top: 7px; right: 8px; }
-.satiety-caption { margin-right: 6px; }
-.satiety-notch { width: 12px; margin-right: 3px; }
-.resource-counters { height: 64px; margin-top: 0; align-items: flex-end; }
-.counter { padding: 0; align-items: flex-end; }
-#counter-primary { flex-basis: 90px; flex-grow: 0; }
-.counter-value { margin-bottom: 3px; }
-.counter-icon { width: 32px; height: 32px; }
-.scientist-screen, .scientist-avatar-screen { bottom: -80px; }
-.scientist-avatar { left: 14px; top: 14px; right: auto; bottom: auto; width: 32px; height: 32px; }
+.campaign-readout { position: absolute; top: 24px; left: 12px; padding: 2px 4px; background-color: rgba(20, 43, 58, 0.9); }
+.campaign-readout > Label { margin: 0; padding: 0; font-size: 7px; color: rgb(240, 229, 202); }
+.test-subject { font-size: 8px; margin: 0 0 4px 0; padding: 0; color: rgb(30, 50, 62); flex-shrink: 0; }

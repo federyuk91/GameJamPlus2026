@@ -88,6 +88,16 @@ namespace MousePlatformer
         private void FixedUpdate()
         {
             body.BeginMovementStep(Time.fixedDeltaTime);
+            if (input.IsParalyzed)
+            {
+                input.ConsumeJump();
+                Velocity = Vector2.zero;
+                coyoteRemaining = bufferRemaining = ropeLaunchRemaining = 0f;
+                CanInteractWithCrates = IsMovingOnGround = false;
+                if (crateInteraction != null) crateInteraction.Release();
+                ResetSurfaceMotion();
+                return;
+            }
             if (cameraControlActive)
             {
                 input.ConsumeJump();

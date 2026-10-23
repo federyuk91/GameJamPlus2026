@@ -5,7 +5,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(PlayerMovement), typeof(SimulatedBody2D))]
     public sealed class PlayerAnimation : MonoBehaviour
     {
-        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging }
+        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging, Shocked }
 
         [SerializeField] private Animator animator;
         [SerializeField] private PlayerMovement movement;
@@ -17,6 +17,8 @@ namespace MousePlatformer
         [SerializeField] private PlayerCrateInteraction crateInteraction;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private PlayerButtonInteraction buttonInteraction;
+        [SerializeField] private PlayerElectricity electricity;
+        [SerializeField, Min(0.01f)] private float shockedAnimationSpeed = 1.5f;
         [SerializeField] private AnimationClip pressButtonClip;
         [SerializeField, Min(0.01f)] private float pressButtonAnimationSpeed = 1f;
         private float buttonPressRemaining;
@@ -40,6 +42,7 @@ namespace MousePlatformer
         private static readonly int ClimbUpSpeed = Animator.StringToHash("ClimbUpSpeed");
         private static readonly int PressButtonSpeed = Animator.StringToHash("PressButtonSpeed");
         private static readonly int PressButtonState = Animator.StringToHash("Base Layer.PressButton");
+        private static readonly int ShockedSpeed = Animator.StringToHash("ShockedSpeed");
 
         private void OnEnable()
         {
@@ -49,6 +52,7 @@ namespace MousePlatformer
         private void OnButtonPressed()
         {
             if (animator == null || pressButtonClip == null) return;
+            if (electricity != null && electricity.IsParalyzed) return;
             buttonPressRemaining = pressButtonClip.length / Mathf.Max(0.01f, pressButtonAnimationSpeed);
             animator.SetFloat(PressButtonSpeed, pressButtonAnimationSpeed);
             animator.SetInteger(MotionState, (int)Motion.PressButton);
@@ -66,6 +70,7 @@ namespace MousePlatformer
             if (digging == null) digging = GetComponent<PlayerDigging>();
             if (crateInteraction == null) crateInteraction = GetComponent<PlayerCrateInteraction>();
             if (ropeInteraction == null) ropeInteraction = GetComponent<PlayerRopeInteraction>();
+            if (electricity == null) electricity = GetComponent<PlayerElectricity>();
         }
 
         private void Update()
@@ -73,6 +78,7 @@ namespace MousePlatformer
             if (animator == null || movement == null || body == null) return;
             buttonPressRemaining = Mathf.Max(0f, buttonPressRemaining - Time.deltaTime);
             animator.SetFloat(PressButtonSpeed, pressButtonAnimationSpeed);
+            animator.SetFloat(ShockedSpeed, shockedAnimationSpeed);
             bool ledgeActive = ledgeClimb != null && ledgeClimb.Active;
             bool onLadder = !ledgeActive && ladderInteraction != null && ladderInteraction.Attached;
             bool inWater = !ledgeActive && !onLadder && swimming != null && swimming.isActiveAndEnabled && swimming.InWater;
@@ -92,6 +98,7 @@ namespace MousePlatformer
 
         private Motion ChooseMotion(bool ledgeActive, bool onLadder, bool inWater, bool climbingRope)
         {
+            if (electricity != null && electricity.IsParalyzed) return Motion.Shocked;
             if (ledgeActive)
                 return ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging ? Motion.WallHanging : Motion.ClimbUp;
             if (onLadder) return Motion.LadderClimb;

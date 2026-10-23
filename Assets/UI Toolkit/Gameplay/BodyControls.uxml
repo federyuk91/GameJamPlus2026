@@ -1,0 +1,71 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="Overview" src="BodyControlsOverview.uxml" />
+    <ui:Template name="Head" src="BodyControlsHead.uxml" />
+    <ui:Template name="FrontPaws" src="BodyControlsFrontPaws.uxml" />
+    <ui:Template name="HindPaws" src="BodyControlsHindPaws.uxml" />
+    <ui:Template name="Tail" src="BodyControlsTail.uxml" />
+    <ui:Template name="BindingDialog" src="BodyControlsBindingDialog.uxml" />
+    <Style src="GameplayHud.uss" />
+    <Style src="BodyControls.uss" />
+    <ui:VisualElement class="body-controls-shared">
+        <ui:Label name="body-title" text="CONTROLS" class="body-title" />
+        <ui:VisualElement class="body-pages">
+            <ui:VisualElement name="body-page-0" class="body-page-slot">
+                <ui:Instance template="Overview" />
+            </ui:VisualElement>
+            <ui:VisualElement name="body-page-1" class="body-page-slot" style="display: none;">
+                <ui:Instance template="Head" />
+            </ui:VisualElement>
+            <ui:VisualElement name="body-page-2" class="body-page-slot" style="display: none;">
+                <ui:Instance template="FrontPaws" />
+            </ui:VisualElement>
+            <ui:VisualElement name="body-page-3" class="body-page-slot" style="display: none;">
+                <ui:Instance template="HindPaws" />
+            </ui:VisualElement>
+            <ui:VisualElement name="body-page-4" class="body-page-slot" style="display: none;">
+                <ui:Instance template="Tail" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="body-feedback" class="body-feedback" />
+        <ui:VisualElement class="body-navigation">
+            <ui:Button name="body-previous" text="&lt;" class="pause-button body-arrow" />
+            <ui:Button name="body-tab-0" class="pause-button body-tab body-tab-active">
+                <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
+                <ui:Label text="Overview" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="body-tab-1" class="pause-button body-tab">
+                <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
+                <ui:Label text="Head" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="body-tab-2" class="pause-button body-tab">
+                <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
+                <ui:Label text="Front paws" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="body-tab-3" class="pause-button body-tab">
+                <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
+                <ui:Label text="Hind paws" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="body-tab-4" class="pause-button body-tab">
+                <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
+                <ui:Label text="Tail" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="body-next" text="&gt;" class="pause-button body-arrow" />
+        </ui:VisualElement>
+        <ui:VisualElement class="body-tools">
+            <ui:Button name="body-reset" text="Reset bindings" class="pause-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="body-help" class="body-help input-prompt-row">
+            <game:InputPromptElement binding="horizontal" preview-path="horizontal" preview-label="Left / Right" />
+            <ui:Label text="Page" picking-mode="Ignore" />
+            <game:InputPromptElement binding="vertical" preview-path="vertical" preview-label="Up / Down" />
+            <ui:Label text="Select" picking-mode="Ignore" />
+            <game:InputPromptElement binding="confirm" preview-path="&lt;Keyboard&gt;/space" preview-label="Space" />
+            <ui:Label text="Confirm" picking-mode="Ignore" />
+            <game:InputPromptElement binding="cancel" preview-path="&lt;Keyboard&gt;/escape" preview-label="Esc" />
+            <ui:Label text="Back" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="body-binding-modal" class="body-binding-modal">
+            <ui:Instance template="BindingDialog" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

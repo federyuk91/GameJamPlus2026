@@ -79,10 +79,18 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   collectibleCollector: {fileID: 0}
   interactionAvailability: {fileID: 2100003100}
-  inputPromptIcons: {fileID: 11400000, guid: 4bf11846b94f49ff82f969e958e228b2, type: 2}
+  controlsSettings: {fileID: 11400000, guid: b6170aea18814f6cacadbdbd476e7592, type: 2}
   viewport: {fileID: 0}
   cameraController: {fileID: 0}
   scientistPortrait: {fileID: 21300000, guid: 839037457bc2c634a92d2ec8284df8aa, type: 3}
+  exitTunnel:
+    image: {fileID: 2800000, guid: c3add9690907094488df76be82ece24e, type: 3}
+    shader: {fileID: 4800000, guid: 9375809018ee45f6a3937fca03680ed2, type: 3}
+    duration: 4
+    finalZoom: 5
+    exposureStops: 1
+    whiteoutStart: 0.88
+    lightStrength: 1.25
   scientistSpeech: {fileID: 11400000, guid: 6dfbbcbedb3748ccb4313b5136213a8c, type: 2}
   scientistVoice: {fileID: 2100006501}
   typingAudio: {fileID: 2100006400}
@@ -94,22 +102,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3c952d4f5499c5f448a05e1f3027d402, type: 3}
   - {fileID: 0}
   - {fileID: 21300000, guid: 2cd3480a0d7d41d09c6e67011de237d4, type: 3}
-  cheeseCounterFrames:
-  - {fileID: 1991445489062669798, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: -2596072681779512170, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: 7104835974339852070, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: 6247115559271563280, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: 5302245848309580016, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: 3718983967030052744, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: -7744708632687448639, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: -3659307198893522439, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: -9167367063461887553, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
-  - {fileID: 591818233427335809, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
   showWelcomeOnStart: 1
   welcomeText: Welcome to Universe-{universe}. Relax and enjoy your stay.
   welcomePortrait: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
   welcomeDuration: 7
   pauseWhilePhotoOpen: 1
+  shockLowFrequencyMotor: 0.45
+  shockHighFrequencyMotor: 0.75
 --- !u!114 &2100003100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,6 +164,8 @@ MonoBehaviour:
   document: {fileID: 2100002202}
   satiety: {fileID: 0}
   oxygen: {fileID: 0}
+  electricity: {fileID: 0}
+  health: {fileID: 0}
   oxygenBubbles: {fileID: 0}
   gameplayCamera: {fileID: 0}
   flashColor: {r: 1, g: 0.85, b: 0.1, a: 0.25}
@@ -172,6 +173,7 @@ MonoBehaviour:
   poisonFlashColor: {r: 0.2509804, g: 0.7882353, b: 0.4666667, a: 0.25}
   flashDuration: 0.35
   oxygenFlashColor: {r: 0.8, g: 0.94, b: 1, a: 0.2}
+  shockFlashColor: {r: 0.55, g: 0.85, b: 1, a: 0.3}
   oxygenFlashDuration: 0.25
   shakeDuration: 0.2
   shakeAmplitude: 0.06

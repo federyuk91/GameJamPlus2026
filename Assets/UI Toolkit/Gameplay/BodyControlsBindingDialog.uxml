@@ -1,0 +1,32 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="GameplayHud.uss" />
+    <Style src="BodyControls.uss" />
+    <ui:VisualElement class="body-binding-card">
+        <ui:Label name="body-binding-title" text="Listening new button for {part}..." class="body-binding-title" />
+        <ui:Label name="body-confirm-title" text="Confirm &quot;{button}&quot; for {part}?" class="body-binding-title" style="display: none;" />
+        <game:InputPromptElement name="body-confirm-glyph" class="input-prompt-confirm-icon" style="display: none;" />
+        <ui:VisualElement name="body-keyboard-hint" class="input-prompt-row">
+            <ui:Label text="Press a key." />
+            <game:InputPromptElement binding="listenCancel" preview-path="&lt;Keyboard&gt;/escape" preview-label="Esc" />
+            <ui:Label text="Cancel" />
+        </ui:VisualElement>
+        <ui:VisualElement name="body-gamepad-hint" class="input-prompt-row" style="display: none;">
+            <ui:Label text="Press a gamepad button." />
+            <game:InputPromptElement binding="listenCancel" preview-path="&lt;Keyboard&gt;/escape" preview-label="Esc" />
+            <ui:Label text="Cancel" />
+        </ui:VisualElement>
+        <ui:Label name="body-confirm-hint" text="Yes: apply    No: choose another button    Cancel: keep current binding" class="body-description" style="display: none;" />
+        <ui:Label name="body-binding-error" class="body-feedback" />
+        <ui:VisualElement class="input-prompt-row">
+            <game:InputPromptElement binding="confirm" preview-path="&lt;Keyboard&gt;/space" preview-label="Space" />
+            <ui:Label text="Confirm" />
+            <game:InputPromptElement binding="cancel" preview-path="&lt;Keyboard&gt;/escape" preview-label="Esc" />
+            <ui:Label text="Cancel" />
+        </ui:VisualElement>
+        <ui:VisualElement name="body-binding-choices" class="body-binding-choices">
+            <ui:Button name="body-binding-yes" text="Yes" class="pause-button" />
+            <ui:Button name="body-binding-no" text="No" class="pause-button" />
+            <ui:Button name="body-binding-cancel" text="Cancel" class="pause-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

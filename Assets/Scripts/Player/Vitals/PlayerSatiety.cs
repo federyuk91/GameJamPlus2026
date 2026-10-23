@@ -9,6 +9,9 @@ namespace MousePlatformer
     {
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private CollectibleCollector collector;
+        [SerializeField] private PlayerHealth health;
+        [SerializeField, Tooltip("Outcome if the immediate poison damage consumes the last heart. Uses Starvation Outcome when unassigned.")]
+        private TestEndEvent poisonOutcome;
         [SerializeField] private TestEndEvent starvationOutcome;
         [SerializeField] private PlayerWheelInteraction wheel;
         [SerializeField, Min(1)] private int maximumNotches = 5;
@@ -33,6 +36,7 @@ namespace MousePlatformer
         {
             if (playerCollider == null) playerCollider = GetComponent<Collider2D>();
             if (collector == null) collector = GetComponent<CollectibleCollector>();
+            if (health == null) health = GetComponent<PlayerHealth>();
             Current = Maximum;
         }
 
@@ -112,6 +116,11 @@ namespace MousePlatformer
             poisonTicksRemaining = Mathf.Max(1, poisonTicks);
             poisonElapsed = 0f;
             Refill();
+            if (health != null && health.ApplyDamage(1) && health.IsDead)
+            {
+                TestEndEvent outcome = poisonOutcome != null ? poisonOutcome : starvationOutcome;
+                if (outcome != null) outcome.EndTest();
+            }
         }
 
         private void Refill()

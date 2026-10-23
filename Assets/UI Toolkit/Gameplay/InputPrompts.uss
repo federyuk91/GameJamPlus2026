@@ -1,0 +1,13 @@
+.input-prompt { position: relative; width: 20px; height: 20px; flex-shrink: 0; }
+.input-prompt-glyph { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: rgb(240, 229, 202); }
+.input-prompt-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; margin: 0; padding: 0 2px; color: rgb(240, 229, 202); -unity-text-align: middle-center; font-size: 8px; white-space: normal; }
+.body-callout.input-prompt { width: 28px; height: 28px; padding: 0; border-width: 0; background-color: transparent; }
+.body-callout.input-prompt.input-prompt-fallback { min-width: 32px; }
+.input-prompt-row { flex-direction: row; align-items: center; justify-content: center; }
+.input-prompt-row > Label { font-size: 7px; margin: 0 3px; color: rgb(240, 229, 202); white-space: normal; }
+.input-prompt-row .input-prompt { width: 16px; height: 16px; }
+.input-prompt-hint-icon { margin-right: 4px; width: 16px; height: 16px; }
+.input-prompt-camera { position: absolute; flex-direction: column; border-width: 1px; border-color: rgb(240, 229, 202); background-color: rgb(20, 43, 58); border-radius: 3px; padding: 2px; }
+.input-prompt-camera .input-prompt-row { justify-content: flex-start; }
+.input-prompt-confirm-icon { align-self: center; width: 32px; height: 32px; margin: 8px 0; }
+.input-prompt-long { min-width: 36px; }

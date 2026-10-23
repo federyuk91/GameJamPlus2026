@@ -6,6 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class PlayerInputReader : MonoBehaviour
     {
+        [SerializeField] private PlayerElectricity electricity;
         private InputAction move;
         private InputAction jump;
         private InputAction bite;
@@ -17,7 +18,8 @@ namespace MousePlatformer
         private bool gameplayLocked;
         private bool waitingForInteractionRelease;
         private bool cameraControlsLocked;
-        public bool ExternalGameplayActionsLocked => gameplayLocked || waitingForInteractionRelease;
+        public bool IsParalyzed => electricity != null && electricity.IsParalyzed;
+        public bool ExternalGameplayActionsLocked => gameplayLocked || waitingForInteractionRelease || IsParalyzed;
         public bool GameplayActionsLocked => ExternalGameplayActionsLocked || cameraControlsLocked;
         public Vector2 CameraMove => move != null ? move.ReadValue<Vector2>() : Vector2.zero;
         public bool CameraJumpPressed => jump != null && jump.WasPressedThisFrame();
@@ -28,7 +30,7 @@ namespace MousePlatformer
             jumpQueued = false;
             ConsumeAllInteractions();
         }
-        public bool WheelInteractionPressed => collect != null && collect.WasPressedThisFrame() && !collectionConsumed
+        public bool WheelInteractionPressed => !IsParalyzed && collect != null && collect.WasPressedThisFrame() && !collectionConsumed
             && (selectedInteractions & AvailableGameplayActions.UseWheel) != 0;
 
         public void SetGameplayActionsLocked(bool locked)
@@ -59,6 +61,20 @@ namespace MousePlatformer
 
         public bool IsInteractionSelected(AvailableGameplayActions action) => (selectedInteractions & action) != 0;
 
+        public bool HasAvailableInteractionOnControl(InputControl control, AvailableGameplayActions available)
+        {
+            if (!isActiveAndEnabled || GameplayActionsLocked || control == null) return false;
+            bool gamepad = control.device is Gamepad;
+            if (!gamepad && !(control.device is Keyboard)) return false;
+            AvailableGameplayActions mouthActions = EatActions | AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig;
+            AvailableGameplayActions frontPawActions = CollectActions | AvailableGameplayActions.MoveCrate
+                | AvailableGameplayActions.PressButton | AvailableGameplayActions.ClimbLedge | AvailableGameplayActions.UseWheel;
+            return ((available & mouthActions) != 0
+                    && InputControlPath.Matches(PlayerControlBindings.Path(PlayerBodyAction.Mouth, gamepad), control))
+                || ((available & frontPawActions) != 0
+                    && InputControlPath.Matches(PlayerControlBindings.Path(PlayerBodyAction.FrontPaws, gamepad), control));
+        }
+
         public void SetSelectedInteractions(AvailableGameplayActions actions, bool usingGamepad = false)
         {
             selectedInteractions = actions;
@@ -66,6 +82,7 @@ namespace MousePlatformer
 
         private void Awake()
         {
+            if (electricity == null) electricity = GetComponent<PlayerElectricity>();
             move = new InputAction("Move", InputActionType.Value, expectedControlType: "Vector2");
             move.AddBinding("<Gamepad>/leftStick").WithProcessor("stickDeadzone");
             move.AddBinding("<Gamepad>/dpad");
@@ -75,8 +92,8 @@ namespace MousePlatformer
                 .With("Left", "<Keyboard>/a").With("Right", "<Keyboard>/d")
                 .With("Left", "<Keyboard>/leftArrow").With("Right", "<Keyboard>/rightArrow");
             jump = new InputAction("Jump", InputActionType.Button);
-            jump.AddBinding("<Gamepad>/buttonSouth");
             jump.AddBinding("<Keyboard>/space");
+            jump.AddBinding("<Gamepad>/buttonSouth");
             jump.performed += QueueJump;
             collect = new InputAction("FrontPaws", InputActionType.Button);
             collect.AddBinding("<Keyboard>/e");
@@ -84,6 +101,15 @@ namespace MousePlatformer
             bite = new InputAction("Mouth", InputActionType.Button);
             bite.AddBinding("<Keyboard>/f");
             bite.AddBinding("<Gamepad>/buttonNorth");
+            ApplyBindings();
+            PlayerControlBindings.Changed += ApplyBindings;
+        }
+        private void ApplyBindings()
+        {
+            PlayerControlBindings.Apply(jump, PlayerBodyAction.HindPaws);
+            PlayerControlBindings.Apply(collect, PlayerBodyAction.FrontPaws);
+            PlayerControlBindings.Apply(bite, PlayerBodyAction.Mouth);
+            jumpQueued = false;
         }
         private void QueueJump(InputAction.CallbackContext context) { if (!GameplayActionsLocked) jumpQueued = true; }
         public void ConsumeCollectibleInteraction(CollectibleType type)
@@ -120,6 +146,6 @@ namespace MousePlatformer
         }
         private void OnEnable() { move.Enable(); jump.Enable(); bite.Enable(); collect.Enable(); }
         private void OnDisable() { move.Disable(); jump.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; collectionConsumed = false; mouthConsumed = false; }
-        private void OnDestroy() { move.Dispose(); jump.Dispose(); bite.Dispose(); collect.Dispose(); }
+        private void OnDestroy() { PlayerControlBindings.Changed -= ApplyBindings; move.Dispose(); jump.Dispose(); bite.Dispose(); collect.Dispose(); }
     }
 }

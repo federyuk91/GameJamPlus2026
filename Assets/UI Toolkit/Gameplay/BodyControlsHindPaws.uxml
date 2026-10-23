@@ -1,0 +1,15 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls" />
+    <ui:VisualElement class="body-page body-page-HindPaws">
+        <ui:VisualElement name="body-diagram" class="body-diagram">
+            <ui:VisualElement name="body-image" picking-mode="Ignore" class="body-image" style="background-image: url(&quot;project://database/Assets/Art/UI/Gameplay/Button%20Scheme-Sheet.png?fileID=3015798036337294089&amp;guid=97bbe0555ce045b46ad67245c2b9f1d2&amp;type=3#Button Scheme-Sheet_3&quot;);">
+                <ui:VisualElement name="body-anchor-2" picking-mode="Ignore" class="body-anchor" style="left: 123px; top: 112px; height: 3px; width: 6px;" />
+            </ui:VisualElement>
+            <game:BodyControlsConnectors name="body-connectors" picking-mode="Ignore" class="body-connectors" style="top: 0; bottom: 1px; right: 1px; left: 0;" />
+            <game:InputPromptElement name="body-callout-2" class="body-callout body-callout-2" style="bottom: 28px; left: 97px;" binding="hind" preview-path="&lt;Keyboard&gt;/space" preview-label="Space" />
+        </ui:VisualElement>
+        <ui:VisualElement class="body-details">
+            <ui:Label name="body-description" text="Jump, swim and jump off ropes. At a ledge, jump toward it to climb or away to jump off." class="body-description" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

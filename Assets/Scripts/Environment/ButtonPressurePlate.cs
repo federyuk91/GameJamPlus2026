@@ -27,7 +27,13 @@ namespace MousePlatformer
         {
             if (button == null || !button.isActiveAndEnabled) return;
             CollectPassengers();
-            HasWeight = passengers.Count > 0;
+            HasWeight = false;
+            foreach (SimulatedBody2D passenger in passengers)
+            {
+                if (!passenger.CanPressButtons) continue;
+                HasWeight = true;
+                break;
+            }
             button.UpdateWeight(HasWeight);
         }
 

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c476dafe583b4fd284169011eb6aab55, type: 3}
+  m_Name: UniverseCampaign
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.UniverseCampaign
+  attemptsPerUniverse: 10
+  maximumDeaths: 100
+  endGameScene: EndGame
+  universes:
+  - number: 10
+    sceneName: Universo_10
+  - number: 9
+    sceneName: Universo_9
+  - number: 8
+    sceneName: Universo_8
+  - number: 7
+    sceneName: Universo_7
+  - number: 6
+    sceneName: Universo_6
+  - number: 5
+    sceneName: Universo_5
+  - number: 4
+    sceneName: Universo_4
+  - number: 3
+    sceneName: Universo_3
+  - number: 2
+    sceneName: Universo_2
+  - number: 1
+    sceneName: Universo_1

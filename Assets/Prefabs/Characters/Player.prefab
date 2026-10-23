@@ -159,6 +159,8 @@ GameObject:
   - component: {fileID: 5709383898159029810}
   - component: {fileID: 9700001000}
   - component: {fileID: 9800091001}
+  - component: {fileID: 9800099001}
+  - component: {fileID: 9800100001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -241,6 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ab36126d664a8cb773c652bbf3e46a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  electricity: {fileID: 9800099001}
 --- !u!114 &4027669037393712695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,6 +351,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
+  initialRope: {fileID: 0}
+  initialGripFraction: 1
   playerMovement: {fileID: 3818418520059698947}
 --- !u!114 &7210179708085743803
 MonoBehaviour:
@@ -364,6 +369,7 @@ MonoBehaviour:
   body: {fileID: 4027669037393712695}
   playerMovement: {fileID: 3818418520059698947}
   swimSpeedMultiplier: 1
+  poolObservationDuration: 20
 --- !u!114 &4717284519982122627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,6 +422,8 @@ MonoBehaviour:
   crateInteraction: {fileID: 7645364035520464402}
   ropeInteraction: {fileID: 4776370160298788677}
   buttonInteraction: {fileID: 5709383898159029700}
+  electricity: {fileID: 9800099001}
+  shockedAnimationSpeed: 1.5
   pressButtonClip: {fileID: 7400000, guid: c3bb1be247514b5e80639d7b0a6a7d60, type: 2}
   pressButtonAnimationSpeed: 1
   swimmingAnimationSpeed: 1
@@ -472,8 +480,8 @@ MonoBehaviour:
   visual: {fileID: 6152871682746685960}
   digging: {fileID: 7072776503502995229}
   ropeInteraction: {fileID: 4776370160298788677}
-  mouthOffset: {x: 0.45, y: -0.1}
-  reach: 0.4
+  mouthOffset: {x: 0.2, y: -0.1}
+  reach: 0.45
   holdDuration: 0.6
   lastAttempt: 
   biteProgress: 0
@@ -645,6 +653,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
   playerCollider: {fileID: 5067529301207272031}
+  health: {fileID: 9800100001}
+  poisonOutcome: {fileID: 0}
   collector: {fileID: 5709383898159029123}
   starvationOutcome: {fileID: 5709383898159029302}
   wheel: {fileID: 5709383898159029810}
@@ -1225,6 +1235,20 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   crushDuration: 0.25
   crushedHoldDuration: 0.1
+--- !u!114 &9800099001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
+  lethalCharges: 3
+  decayInterval: 60
 --- !u!1 &2059410933207641600
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,3 +1370,17 @@ Transform:
   - {fileID: 6152871682746685960}
   m_Father: {fileID: 887508910703741189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
+--- !u!114 &9800100001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e83a4d1da9340ce94f2c890fdfba3c1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  current: 5

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,14 +10,14 @@ namespace GameJamPlus.UI
     {
         public event Action<char> CharacterRevealed;
 
-        private const float ScreenInset = 10f;
+        private const float CharactersPerSecond = 30f;
         private float displayWidth = 160f;
         private float displayHeight = 46f;
-        private const float CharactersPerSecond = 30f;
         private readonly VisualElement screen;
-        private readonly VisualElement avatarScreen;
+        private readonly ScientistEndingLayout endingLayout;
         private readonly VisualElement displayViewport;
         private readonly VisualElement display;
+        private readonly VisualElement displayAperture;
         private readonly VisualElement signal;
         private readonly VisualElement content;
         private readonly VisualElement powerGlow;
@@ -26,76 +25,67 @@ namespace GameJamPlus.UI
         private readonly ScientistSpeechSettings speechSettings;
         private readonly ScientistSpeechAnimator speechAnimator;
         private bool animatePortrait;
-        private readonly VisualElement systemCommands;
-        private readonly HashSet<string> systemCommandKeys = new HashSet<string>();
         private readonly Label message;
-        private readonly Label speaker;
-        private readonly VisualElement hints;
         private readonly ScrollView transcript;
         private readonly Button advanceButton;
-        private readonly VisualElement advanceIcon;
+        private readonly InputPromptElement advanceIcon;
         private readonly Label advanceAction;
-        private Sprite advanceSprite;
         private bool canAdvance;
         private bool typing;
         private bool completeTypingRequested;
         private bool nextMessageRequested;
         private bool followTyping;
-        private string advanceKey = "F";
         private bool hasFollowingMessage;
         private bool communicationVisible;
-        private bool systemVisible;
 
-        public void SetAdvanceKey(string key, Sprite sprite = null)
+        public void SetAdvanceKey(InputPromptBinding binding)
         {
-            advanceKey = key;
-            advanceSprite = sprite;
-            advanceIcon.style.display = sprite != null ? DisplayStyle.Flex : DisplayStyle.None;
-            advanceIcon.style.backgroundImage = sprite != null ? new StyleBackground(sprite) : new StyleBackground(StyleKeyword.None);
-            advanceButton.tooltip = key;
+            advanceIcon.SetPrompt(binding);
+            advanceIcon.style.display = DisplayStyle.Flex;
+            advanceButton.tooltip = binding.Label;
             RefreshAdvanceLabel();
         }
 
         private void RefreshAdvanceLabel()
         {
             string action = typing ? "Reveal" : hasFollowingMessage ? "Next" : "Close";
-            advanceAction.text = advanceSprite != null ? action : advanceKey + " " + action;
+            advanceAction.text = action;
         }
 
-        public bool IsOpen => canAdvance || systemVisible;
+        public bool IsOpen => canAdvance;
         public bool IsVisible => communicationVisible;
         public bool IsScientistSpeaking => communicationVisible && animatePortrait;
         private bool suspended;
 
         public void SetSuspended(bool value) => suspended = value;
 
-        public void SetBottomInset(float inset)
-        {
-            screen.style.bottom = inset;
-            avatarScreen.style.bottom = inset;
-        }
+        public void SetEndingPresentation(bool value) => endingLayout.SetActive(value);
 
-        public ScientistCommentView(VisualElement root, int lowerBorderPixels = 20, ScientistSpeechSettings speechSettings = null)
+        public ScientistCommentView(VisualElement root, ScientistSpeechSettings speechSettings = null)
         {
             this.speechSettings = speechSettings;
             speechAnimator = new ScientistSpeechAnimator(speechSettings);
             screen = root.Q("scientist-screen");
-            avatarScreen = root.Q("scientist-avatar-screen");
+            endingLayout = new ScientistEndingLayout(root, screen);
             displayViewport = root.Q("scientist-display-viewport");
             display = root.Q("scientist-display");
+            displayAperture = root.Q("scientist-display-aperture")
+                ?? new VisualElement { name = "scientist-display-aperture", pickingMode = PickingMode.Ignore };
+            displayAperture.style.position = Position.Absolute;
+            displayAperture.style.overflow = Overflow.Hidden;
+            if (display.parent != displayAperture)
+            {
+                VisualElement displayParent = display.parent;
+                int displayIndex = displayParent.IndexOf(display);
+                displayParent.Insert(displayIndex, displayAperture);
+                displayAperture.Add(display);
+            }
             signal = root.Q("scientist-signal");
             content = root.Q("scientist-content");
             powerGlow = root.Q("scientist-power-glow");
             avatar = root.Q<Image>("scientist-avatar");
             avatar.scaleMode = ScaleMode.ScaleToFit;
-            avatarScreen.RegisterCallback<GeometryChangedEvent>(OnAvatarGeometryChanged);
-            systemCommands = new VisualElement { name = "system-command-keys", pickingMode = PickingMode.Ignore };
-            systemCommands.AddToClassList("system-command-keys");
-            avatarScreen.Insert(avatarScreen.IndexOf(signal), systemCommands);
-            systemCommands.style.display = DisplayStyle.None;
             message = root.Q<Label>("scientist-text");
-            speaker = root.Q<Label>("communication-speaker");
-            hints = root.Q("interaction-hints");
             transcript = root.Q<ScrollView>("scientist-transcript");
             transcript.pickingMode = PickingMode.Position;
             transcript.contentViewport.pickingMode = PickingMode.Position;
@@ -103,7 +93,7 @@ namespace GameJamPlus.UI
             transcript.RegisterCallback<WheelEvent>(OnManualScroll, TrickleDown.TrickleDown);
             advanceButton = root.Q<Button>("scientist-advance");
             advanceButton.text = string.Empty;
-            advanceIcon = new VisualElement { pickingMode = PickingMode.Ignore };
+            advanceIcon = new InputPromptElement();
             advanceIcon.AddToClassList("input-key-icon");
             advanceIcon.style.display = DisplayStyle.None;
             advanceAction = new Label { pickingMode = PickingMode.Ignore };
@@ -114,7 +104,6 @@ namespace GameJamPlus.UI
             advanceButton.focusable = false;
             advanceButton.clicked += Advance;
             displayViewport.RegisterCallback<GeometryChangedEvent>(OnDisplayGeometryChanged);
-            SetBottomInset(ScreenInset - lowerBorderPixels);
             Hide();
         }
 
@@ -123,61 +112,9 @@ namespace GameJamPlus.UI
             if (geometryEvent.newRect.width <= 0f || geometryEvent.newRect.height <= 0f) return;
             displayWidth = Mathf.Round(geometryEvent.newRect.width);
             displayHeight = Mathf.Round(geometryEvent.newRect.height);
-            content.style.width = displayWidth;
-            content.style.height = displayHeight;
-            if (systemVisible || canAdvance) SetDisplaySize(displayWidth, displayHeight);
-        }
-
-        public void ClearSystemCommands()
-        {
-            systemCommands.Clear();
-            systemCommandKeys.Clear();
-        }
-
-        public void AddSystemCommand(string key, Sprite sprite)
-        {
-            if (!systemCommandKeys.Add(key)) return;
-            VisualElement command;
-            if (sprite != null)
-            {
-                command = new VisualElement { pickingMode = PickingMode.Ignore, tooltip = key };
-                command.style.backgroundImage = new StyleBackground(sprite);
-            }
-            else
-            {
-                command = new Label(key) { pickingMode = PickingMode.Ignore };
-                command.AddToClassList("system-command-fallback");
-            }
-            command.AddToClassList("system-command-key");
-            systemCommands.Add(command);
-            systemCommands.EnableInClassList("system-commands-multiple", systemCommandKeys.Count > 1);
-        }
-
-        public void ShowSystemHints(bool visible)
-        {
-            if (communicationVisible) return;
-            if (!visible)
-            {
-                if (systemVisible) Hide();
-                return;
-            }
-            if (!systemVisible) transcript.scrollOffset = Vector2.zero;
-            systemVisible = true;
-            speaker.text = "SYSTEM";
-            speaker.style.display = DisplayStyle.Flex;
-            message.style.display = DisplayStyle.None;
-            hints.style.display = DisplayStyle.Flex;
-            content.RemoveFromClassList("scientist-dialogue");
-            advanceButton.style.display = DisplayStyle.None;
-            avatar.sprite = null;
-            avatar.style.display = DisplayStyle.None;
-            avatar.style.opacity = 0f;
-            systemCommands.style.display = DisplayStyle.Flex;
-            signal.AddToClassList("signal-active");
-            display.style.display = DisplayStyle.Flex;
-            content.style.opacity = 1f;
-            powerGlow.style.opacity = 0f;
-            SetDisplaySize(displayWidth, displayHeight);
+            display.style.width = displayWidth;
+            display.style.height = displayHeight;
+            if (canAdvance) SetDisplaySize(displayWidth, displayHeight);
         }
 
         public void Advance()
@@ -208,21 +145,16 @@ namespace GameJamPlus.UI
                 yield break;
             }
 
+            // Let UI Toolkit measure the enlarged viewport before starting the CRT aperture animation.
+            if (endingLayout.IsActive) yield return null;
+
             communicationVisible = true;
-            systemVisible = false;
-            systemCommands.style.display = DisplayStyle.None;
-            ClearSystemCommands();
-            hints.Clear();
-            speaker.style.display = DisplayStyle.None;
             message.style.display = DisplayStyle.Flex;
-            hints.style.display = DisplayStyle.None;
-            content.AddToClassList("scientist-dialogue");
             advanceButton.style.display = DisplayStyle.Flex;
             signal.AddToClassList("signal-active");
             speechAnimator.Reset();
             animatePortrait = speechSettings != null && speechSettings.Recognizes(portrait);
             avatar.sprite = animatePortrait ? speechSettings.IdlePortrait : portrait;
-            SizeAvatar();
             // Keep the monitor frame visible even before an actual scientist portrait is supplied.
             avatar.style.display = portrait != null ? DisplayStyle.Flex : DisplayStyle.None;
             avatar.style.opacity = 0f;
@@ -285,11 +217,7 @@ namespace GameJamPlus.UI
                     {
                         if (!typing) speechAnimator.RequestRest();
                         Sprite nextFrame = speechAnimator.Tick(Time.unscaledDeltaTime);
-                        if (avatar.sprite != nextFrame)
-                        {
-                            avatar.sprite = nextFrame;
-                            SizeAvatar();
-                        }
+                        if (avatar.sprite != nextFrame) avatar.sprite = nextFrame;
                     }
                     RefreshAdvanceLabel();
 
@@ -318,44 +246,26 @@ namespace GameJamPlus.UI
             canAdvance = false;
             typing = false;
             communicationVisible = false;
-            systemVisible = false;
             signal.RemoveFromClassList("signal-active");
-            screen.style.display = DisplayStyle.Flex;
+            screen.style.display = DisplayStyle.None;
             display.style.display = DisplayStyle.None;
             message.text = string.Empty;
             avatar.sprite = null;
-            systemCommands.style.display = DisplayStyle.None;
-            ClearSystemCommands();
-            hints.Clear();
-            hints.style.display = DisplayStyle.None;
             avatar.style.opacity = 0f;
             advanceButton.SetEnabled(false);
             content.style.opacity = 0f;
             powerGlow.style.opacity = 0f;
-        }
-
-        private void OnAvatarGeometryChanged(GeometryChangedEvent evt) => SizeAvatar();
-
-        private void SizeAvatar()
-        {
-            if (avatar.sprite == null) return;
-            int width = Mathf.RoundToInt(avatar.sprite.rect.width);
-            int height = Mathf.RoundToInt(avatar.sprite.rect.height);
-            avatar.style.width = width;
-            avatar.style.height = height;
-            avatar.style.right = StyleKeyword.Auto;
-            avatar.style.bottom = StyleKeyword.Auto;
-            avatar.style.left = Mathf.Round((avatarScreen.contentRect.width - width) * 0.5f);
-            avatar.style.top = Mathf.Round((avatarScreen.contentRect.height - height) * 0.5f);
+            if (endingLayout.IsActive) endingLayout.SetActive(false);
         }
 
         public void Dispose()
         {
-            avatarScreen.UnregisterCallback<GeometryChangedEvent>(OnAvatarGeometryChanged);
             advanceButton.clicked -= Advance;
             transcript.UnregisterCallback<WheelEvent>(OnManualScroll, TrickleDown.TrickleDown);
             displayViewport.UnregisterCallback<GeometryChangedEvent>(OnDisplayGeometryChanged);
             Hide();
+            advanceIcon.RemoveFromHierarchy();
+            advanceAction.RemoveFromHierarchy();
         }
 
         private IEnumerator AnimateSize(float fromWidth, float toWidth, float fromHeight, float toHeight, float duration)
@@ -379,15 +289,15 @@ namespace GameJamPlus.UI
             height = Mathf.Round(height);
             float left = Mathf.Floor((displayWidth - width) * 0.5f);
             float top = Mathf.Floor((displayHeight - height) * 0.5f);
-            content.style.width = displayWidth;
-            content.style.height = displayHeight;
-            display.style.width = width;
-            display.style.height = height;
-            display.style.left = left;
-            display.style.top = top;
-            // Reveal the fixed-size content through a centred CRT aperture without reflowing the text.
-            content.style.left = -left;
-            content.style.top = -top;
+            displayAperture.style.width = width;
+            displayAperture.style.height = height;
+            displayAperture.style.left = left;
+            displayAperture.style.top = top;
+            // Animate only the clipping window; the authored text and portrait layout stays intact.
+            display.style.width = displayWidth;
+            display.style.height = displayHeight;
+            display.style.left = -left;
+            display.style.top = -top;
         }
 
         private IEnumerator AnimatePowerGlow(float from, float to, float duration, bool revealContent)

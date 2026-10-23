@@ -32,6 +32,12 @@ namespace MousePlatformer
         private Vector3 spawnOffset = Vector3.up;
         [SerializeField, Tooltip("Off: each call repeats the supplied index. On: the supplied index starts a sequence that advances after each successful spawn and stops after the last entry. Passing a different starting index starts a new sequence.")]
         private bool advanceSpawnIndex;
+        [SerializeField] private ButtonSpawnPositionMode spawnPositionMode = ButtonSpawnPositionMode.Fixed;
+        [SerializeField, Tooltip("Optional world-space markers for Sequential or Shuffle. Empty entries are ignored; without valid points the fixed spawn offset is used.")]
+        private List<Transform> spawnPoints = new List<Transform>();
+        [SerializeField, Tooltip("Repeat the position cycle. Off: Spawn stops after every point has been used once. Independent of the prefab sequence.")]
+        private bool repeatSpawnPoints = true;
+        private readonly ButtonSpawnPositionSequence spawnPositionSequence = new ButtonSpawnPositionSequence();
         private int sequenceStartIndex = -1;
         private int nextSpawnIndex = -1;
         private Coroutine animationRoutine;
@@ -50,8 +56,28 @@ namespace MousePlatformer
         public bool CanPress => CanStartPress && !fullyPressed;
         public Vector2 InteractionPoint => visual != null ? visual.bounds.center : transform.position;
         public bool ShowGizmos => showGizmos;
+        public ButtonSpawnPositionMode SpawnPositionMode => spawnPositionMode;
+        public IReadOnlyList<Transform> SpawnPoints => spawnPoints;
+        public bool UsesFixedSpawnPosition
+        {
+            get
+            {
+                if (spawnPositionMode == ButtonSpawnPositionMode.Fixed) return true;
+                for (int index = 0; index < spawnPoints.Count; index++)
+                    if (spawnPoints[index] != null) return false;
+                return true;
+            }
+        }
         public Vector3 SpawnPosition => transform.TransformPoint(spawnOffset);
         public void SetSpawnPosition(Vector3 worldPosition) => spawnOffset = transform.InverseTransformPoint(worldPosition);
+
+        public void SetSpawnPositionFrom(Transform point)
+        {
+            if (point == null) return;
+            SetSpawnPosition(point.position);
+        }
+
+        public void ResetSpawnPositions() => spawnPositionSequence.Reset();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetRegistry() => activeButtons.Clear();
@@ -162,7 +188,16 @@ namespace MousePlatformer
                 return;
             }
 
-            Instantiate(prefab, SpawnPosition, prefab.transform.rotation);
+            Vector3 position = SpawnPosition;
+            spawnPositionSequence.Configure(spawnPoints, spawnPositionMode);
+            bool usePointSequence = spawnPositionMode != ButtonSpawnPositionMode.Fixed && spawnPositionSequence.HasPoints;
+            if (usePointSequence)
+            {
+                if (!spawnPositionSequence.TryGetNext(repeatSpawnPoints, out Transform point)) return;
+                position = point.position;
+            }
+            Instantiate(prefab, position, prefab.transform.rotation);
+            if (usePointSequence) spawnPositionSequence.Advance();
             if (advanceSpawnIndex) nextSpawnIndex++;
         }
 
@@ -274,8 +309,21 @@ namespace MousePlatformer
             if (!showGizmos) return;
             Color previousColor = Gizmos.color;
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, SpawnPosition);
-            Gizmos.DrawWireSphere(SpawnPosition, 0.12f);
+            if (UsesFixedSpawnPosition)
+            {
+                Gizmos.DrawLine(transform.position, SpawnPosition);
+                Gizmos.DrawWireSphere(SpawnPosition, 0.12f);
+            }
+            else
+            {
+                for (int index = 0; index < spawnPoints.Count; index++)
+                {
+                    Transform point = spawnPoints[index];
+                    if (point == null) continue;
+                    Gizmos.DrawLine(transform.position, point.position);
+                    Gizmos.DrawWireSphere(point.position, 0.12f);
+                }
+            }
             Gizmos.color = previousColor;
         }
     }

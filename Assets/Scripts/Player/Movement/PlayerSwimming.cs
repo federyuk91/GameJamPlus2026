@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using GameJamPlus.Gameplay;
 
 namespace MousePlatformer
 {
@@ -11,6 +12,8 @@ namespace MousePlatformer
         [SerializeField] private PlayerMovement playerMovement;
         [Tooltip("Multiplies this animal's Move Speed to determine horizontal swimming speed. 1 uses normal movement speed; 0.5 halves it. The body's Max Speed still limits motion.")]
         [SerializeField, Min(0f)] private float swimSpeedMultiplier = 1f;
+        [SerializeField, Min(0.1f)] private float poolObservationDuration = 20f;
+        private float consecutiveWaterTime;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         public bool InWater { get; private set; }
@@ -28,6 +31,21 @@ namespace MousePlatformer
         }
         public void UpdateControlTimers(float dt) => strokeControlRemaining = Mathf.Max(0f, strokeControlRemaining - dt);
         public void ResetStrokeControl() => strokeControlRemaining = 0f;
+
+        private void FixedUpdate()
+        {
+            GameManager manager = GameManager.Instance;
+            if (manager == null || manager.State != GameManager.LoopState.Playing || body == null || !body.Shape.enabled) return;
+            if (!WaterVolume.ContainsPoint(body.Shape.bounds.center))
+            {
+                consecutiveWaterTime = 0f;
+                return;
+            }
+            float duration = Mathf.Max(0.1f, poolObservationDuration);
+            if (consecutiveWaterTime >= duration) return;
+            consecutiveWaterTime += Time.fixedDeltaTime;
+            if (consecutiveWaterTime >= duration) GameSession.RecordObservation(TestObservation.LovesPool);
+        }
 
         public bool CheckWater()
         {
@@ -70,6 +88,6 @@ namespace MousePlatformer
         public float SurfaceHorizontal(float velocity, float horizontal, float dt)
             => Settings.StepHorizontal(velocity, horizontal, dt, SwimSpeed, HasStrokeControl);
 
-        private void OnDisable() { InWater = false; nearSurface = surfaceJumpActive = false; ResetStrokeControl(); }
+        private void OnDisable() { consecutiveWaterTime = 0f; InWater = false; nearSurface = surfaceJumpActive = false; ResetStrokeControl(); }
     }
 }

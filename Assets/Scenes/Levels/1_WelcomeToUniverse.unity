@@ -2623,7 +2623,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2001, guid: 0120891ae9b247a8b6992f63ef48f508, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.3066425
+      value: 2.23
       objectReference: {fileID: 0}
     - target: {fileID: 2001, guid: 0120891ae9b247a8b6992f63ef48f508, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4065,7 +4065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2001, guid: ed6c640273e3471594b5b2396a03201a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.3318582
+      value: 2.2552156
       objectReference: {fileID: 0}
     - target: {fileID: 2001, guid: ed6c640273e3471594b5b2396a03201a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4106,6 +4106,10 @@ PrefabInstance:
     - target: {fileID: 2003, guid: ed6c640273e3471594b5b2396a03201a, type: 3}
       propertyPath: startsLocked
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003, guid: ed6c640273e3471594b5b2396a03201a, type: 3}
+      propertyPath: spawnOffset.y
+      value: 0.96832085
       objectReference: {fileID: 0}
     - target: {fileID: 2003, guid: ed6c640273e3471594b5b2396a03201a, type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.size
@@ -12613,6 +12617,10 @@ PrefabInstance:
       propertyPath: gameplayCamera
       value: 
       objectReference: {fileID: 188667629}
+    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
+      propertyPath: electricity
+      value:
+      objectReference: {fileID: 9800099002}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14970,6 +14978,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 144475741569323959, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
   m_PrefabInstance: {fileID: 8723459750760128347}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9800099002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9800099001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+  m_PrefabInstance: {fileID: 1579771679}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

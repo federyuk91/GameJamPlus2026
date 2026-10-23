@@ -10,7 +10,8 @@ namespace GameJamPlus.Gameplay
         Exercises = 2,
         LovesPool = 4,
         ExtendedStay = 8,
-        EnjoysGardening = 16,
-        VeryCurious = 32
+        LittleMechanic = 16,
+        VeryCurious = 32,
+        Electrician = 64
     }
 }

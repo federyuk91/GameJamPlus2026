@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -15,6 +16,7 @@ namespace MousePlatformer
         private float MaximumPushWeight => Mathf.Max(0f, LocalMovement.maximumPushWeight);
         private Pushable held;
         private bool interactionStarted;
+        private readonly List<RaycastHit2D> triggerHits = new List<RaycastHit2D>(8);
         public event Action InteractionStarted;
         public Pushable HeldCrate => held;
         public float GrabReach => Mathf.Max(0f, LocalMovement.horizontalHandInteraction);
@@ -76,10 +78,41 @@ namespace MousePlatformer
 
         private Pushable NearbyCrate(float direction, float reach, out float distance)
         {
-            Collider2D hit = body.Probe(Vector2.right * direction, reach, out distance);
-            Pushable crate = hit != null ? hit.GetComponent<Pushable>() : null;
-            return crate != null && crate.isActiveAndEnabled && crate.Body.Grounded
-                && crate.StackWeight < MaximumPushWeight ? crate : null;
+            Vector2 axis = Vector2.right * direction;
+            Collider2D hit = body.Probe(axis, reach, out distance);
+            Pushable nearest = GetReachablePushable(hit);
+            BoxCollider2D shape = body.Shape;
+            Vector2 scale = shape.transform.lossyScale;
+            Vector2 size = Vector2.Scale(shape.size, new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            ContactFilter2D filter = body.SolidFilter;
+            filter.useTriggers = true;
+            triggerHits.Clear();
+            Physics2D.BoxCast(shape.transform.TransformPoint(shape.offset), size,
+                shape.transform.eulerAngles.z, axis, filter, triggerHits, reach);
+            Bounds playerBounds = shape.bounds;
+            foreach (RaycastHit2D candidateHit in triggerHits)
+            {
+                Collider2D candidateShape = candidateHit.collider;
+                if (candidateShape == null || !candidateShape.isTrigger) continue;
+                Pushable candidate = GetReachablePushable(candidateShape);
+                if (candidate == null || candidateShape != candidate.Body.Shape) continue;
+                Bounds bounds = candidateShape.bounds;
+                float gap = Mathf.Max(0f, direction > 0f
+                    ? bounds.min.x - playerBounds.max.x : playerBounds.min.x - bounds.max.x);
+                // Solid casts still bound reach, preventing grabs through walls or other crates.
+                if (gap > distance || (nearest != null && gap >= distance)) continue;
+                nearest = candidate;
+                distance = gap;
+            }
+            return nearest;
+        }
+
+        private Pushable GetReachablePushable(Collider2D shape)
+        {
+            if (shape == null || !shape.TryGetComponent(out Pushable pushable)
+                || !pushable.isActiveAndEnabled || !pushable.Body.Grounded
+                || pushable.StackWeight >= MaximumPushWeight) return null;
+            return pushable;
         }
 
         private bool CanReach(Pushable crate)

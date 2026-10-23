@@ -1,0 +1,15 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls" />
+    <ui:VisualElement class="body-page body-page-Head">
+        <ui:VisualElement name="body-diagram" class="body-diagram">
+            <ui:VisualElement name="body-image" picking-mode="Ignore" class="body-image" style="background-image: url(&quot;project://database/Assets/Art/UI/Gameplay/Button%20Scheme-Sheet.png?fileID=5012008669687049668&amp;guid=97bbe0555ce045b46ad67245c2b9f1d2&amp;type=3#Button Scheme-Sheet_1&quot;);">
+                <ui:VisualElement name="body-anchor-0" picking-mode="Ignore" class="body-anchor" style="left: 32px; top: 63px; height: 1px; width: 4px;" />
+            </ui:VisualElement>
+            <game:BodyControlsConnectors name="body-connectors" picking-mode="Ignore" class="body-connectors" style="top: 0; bottom: 1px; right: 1px; left: 0;" />
+            <game:InputPromptElement name="body-callout-0" class="body-callout body-callout-0" style="top: 49px; left: 49px;" binding="mouth" preview-path="&lt;Keyboard&gt;/f" preview-label="F" />
+        </ui:VisualElement>
+        <ui:VisualElement class="body-details">
+            <ui:Label name="body-description" text="Eat cheese. Hold to gnaw ropes or dig." class="body-description" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

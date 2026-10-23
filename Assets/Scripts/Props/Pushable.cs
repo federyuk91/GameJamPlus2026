@@ -39,6 +39,8 @@ namespace MousePlatformer
         }
         public bool ShowGizmos => showGizmos;
 
+        public void EnableStacking() => Motion.EnableStacking();
+
         public float MoveHorizontal(float amount, Collider2D ignored = null)
         {
             if (Mathf.Approximately(amount, 0f)) return 0f;
@@ -71,9 +73,10 @@ namespace MousePlatformer
                 float tolerance = supportBody.Skin * 4f;
                 Vector2 center = new Vector2(bounds.center.x, bounds.max.y + tolerance * 0.5f);
                 Vector2 size = new Vector2(bounds.size.x, tolerance);
-                Physics2D.OverlapBox(center, size, 0f, supportBody.SolidFilter, overlaps);
+                Physics2D.OverlapBox(center, size, 0f, supportBody.MotionFilter, overlaps);
                 foreach (Collider2D hit in overlaps)
                 {
+                    if (!supportBody.IsMotionObstacle(hit)) continue;
                     if (!hit.TryGetComponent(out Pushable candidate) || !candidate.gameObject.activeInHierarchy
                         || (!includeDisabled && !candidate.enabled)
                         || carriedCrates.Contains(candidate) || hit != candidate.Body.Shape) continue;

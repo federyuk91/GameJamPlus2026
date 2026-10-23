@@ -99,6 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cea8f7363f004df18f59ce1e979198e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.MouseTrap
+  playerHealth: {fileID: 0}
+  damage: 3
   contactArea: {fileID: 1002}
   playerCollider: {fileID: 0}
   visual: {fileID: 1102}

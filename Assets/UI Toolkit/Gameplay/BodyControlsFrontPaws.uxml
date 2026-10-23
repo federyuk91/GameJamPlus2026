@@ -1,0 +1,15 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="BodyControls.uss" />
+    <ui:VisualElement class="body-page body-page-FrontPaws">
+        <ui:VisualElement name="body-diagram" class="body-diagram">
+            <ui:VisualElement name="body-image" class="body-image" picking-mode="Ignore" style="background-image: url('project://database/Assets/Art/UI/Gameplay/Button%20Scheme-Sheet.png?fileID=1161612402853650643&amp;guid=97bbe0555ce045b46ad67245c2b9f1d2&amp;type=3#Button%20Scheme-Sheet_2');">
+                <ui:VisualElement name="body-anchor-1" class="body-anchor" picking-mode="Ignore" style="left: 70px; top: 105px; height: 5px; width: 4px;" />
+            </ui:VisualElement>
+            <game:BodyControlsConnectors name="body-connectors" class="body-connectors" picking-mode="Ignore" style="top: 0; bottom: 1px; right: 1px; left: 0;" />
+            <game:InputPromptElement name="body-callout-1" class="body-callout body-callout-1" style="top: 90px; left: 51px;" binding="front" preview-path="&lt;Keyboard&gt;/e" preview-label="E" />
+        </ui:VisualElement>
+        <ui:VisualElement class="body-details">
+            <ui:Label name="body-description" text="Collect objects, press buttons, use wheels and climb ledges. Hold with a direction to push or pull crates." class="body-description" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

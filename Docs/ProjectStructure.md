@@ -1,5 +1,22 @@
 # Project structure
 
+## Follow-up organization — 23 October 2026
+
+Moved 38 recently added or misplaced art assets into existing folders, together with their original `.meta` files. No folders were created or removed. Asset and metadata file hashes were checked before and after the moves; content and GUIDs were preserved.
+
+| Existing folder | Assets organized |
+| --- | --- |
+| `Assets/Art/Cinematics` | Busto, Mano destra, mano sinistra and Scienziata artwork |
+| `Assets/Art/UI/Gameplay` | Button Scheme sources/sheets, Poison and both Saetta icons |
+| `Assets/Art/Tiles` | Full TileSet Aseprite source |
+| `Assets/Art/Pixel Art/Props` | Electric effect sheet, Faretto source, Materassino source and seven images, additional Goal image |
+| `Assets/Art/Pixel Art/Characters` | Piranha Aseprite source |
+| `Assets/Art/Pixel Art/Characters/Scientist` | Scientist_Idle, Scientist_QWO and Scientist1–Scientist13 images |
+
+The second Saetta icon is named `Saetta_Icon_Alternate.png`; the additional Goal image is named `Goal_Alternate.png` to preserve both assets without overwriting the existing files. No duplicates were deleted or merged.
+
+Updated explicit artwork URLs in the five BodyControls pages and GameplayHud.uxml. Serialized GUID references remain unchanged. Artwork moved within Pixel Art stays under its existing import rules; UI/cinematic artwork stays outside that automatic importer. No Unity compilation, build or Play Mode checks were run.
+
 Assets are grouped by responsibility. File names, GUIDs and serialized gameplay values are preserved; every existing asset was moved with its original `.meta`. Explicit paths in scripts and documents follow the new locations.
 
 | Folder | Contents |

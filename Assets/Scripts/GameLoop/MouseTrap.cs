@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using GameJamPlus.UI;
+using MousePlatformer;
 
 namespace GameJamPlus.Gameplay
 {
@@ -9,6 +10,8 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private BoxCollider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
+        [SerializeField] private PlayerHealth playerHealth;
+        [SerializeField, Min(1)] private int damage = 3;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Sprite[] closingFrames;
         [SerializeField] private TestEndEvent testEnd;
@@ -20,6 +23,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private bool showGizmos = true;
         private bool triggered;
         private bool completed;
+        private bool endingStage;
         private Coroutine animationRoutine;
 
         private void Awake()
@@ -62,10 +66,16 @@ namespace GameJamPlus.Gameplay
                 || !contactArea.enabled || testEnd == null) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
+            if (playerHealth == null) playerCollider.TryGetComponent(out playerHealth);
+            if (playerHealth == null || playerHealth.IsDead) return;
             Physics2D.SyncTransforms();
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
-            if (!contact.isValid || contact.distance > 0f || !testEnd.BeginAnimatedEnd()) return;
+            if (!contact.isValid || contact.distance > 0f) return;
             triggered = true;
+            contactArea.enabled = false;
+            GameSession.RecordObservation(TestObservation.LittleMechanic);
+            playerHealth.ApplyDamage(Mathf.Max(1, damage));
+            endingStage = playerHealth.IsDead && testEnd.BeginAnimatedEnd();
             PlayGoreSound();
             animationRoutine = StartCoroutine(PlayClosingAnimation());
         }
@@ -81,7 +91,8 @@ namespace GameJamPlus.Gameplay
             if (closedHoldDuration > 0f) yield return new WaitForSecondsRealtime(closedHoldDuration);
             completed = true;
             animationRoutine = null;
-            testEnd.CompleteAnimatedEnd();
+            if (endingStage) testEnd.CompleteAnimatedEnd();
+            gameObject.SetActive(false);
         }
 
         private void OnDisable()
@@ -91,7 +102,7 @@ namespace GameJamPlus.Gameplay
             if (animationRoutine != null) StopCoroutine(animationRoutine);
             animationRoutine = null;
             // A despawned trap must not leave the game paused while awaiting animation completion.
-            if (triggered && !completed && testEnd != null)
+            if (endingStage && !completed && testEnd != null)
             {
                 completed = true;
                 testEnd.CompleteAnimatedEnd();

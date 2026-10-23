@@ -9,40 +9,50 @@ namespace GameJamPlus.UI
     {
         private readonly VisualElement cover;
         private readonly TestEndingTunnel tunnel;
+        private readonly ExitTunnelImage exitImage;
+        private readonly VisualElement root;
+        private bool useExitImage;
         private readonly VisualElement resultScreen;
         private readonly VisualElement counters;
         private readonly VisualElement timer;
         private readonly Label elapsed;
         private readonly Label result;
         private readonly Label universe;
+        private readonly Label subject;
         private readonly Button next;
         private readonly Action continueRequested;
-        private readonly VisualElement advanceIcon;
+        private readonly InputPromptElement advanceIcon;
         private readonly Label advanceLabel;
         private readonly VisualElement[] observationRows;
         private readonly ScrollView notes;
         private static readonly TestObservation[] ObservationFlags =
         {
             TestObservation.EnjoysFood, TestObservation.Exercises, TestObservation.LovesPool,
-            TestObservation.ExtendedStay, TestObservation.EnjoysGardening, TestObservation.VeryCurious
+            TestObservation.ExtendedStay, TestObservation.LittleMechanic, TestObservation.VeryCurious,
+            TestObservation.Electrician
         };
 
         public bool IsVisible => resultScreen.style.display.value == DisplayStyle.Flex;
-        public void SetAdvanceKey(string key, Sprite sprite = null)
+        public void SetAdvanceKey(InputPromptBinding binding)
         {
-            advanceIcon.style.display = sprite != null ? DisplayStyle.Flex : DisplayStyle.None;
-            advanceIcon.style.backgroundImage = sprite != null ? new StyleBackground(sprite) : new StyleBackground(StyleKeyword.None);
-            advanceLabel.text = sprite != null ? "Next" : key + " · Next";
-            next.tooltip = key;
+            advanceIcon.SetPrompt(binding);
+            advanceIcon.style.display = DisplayStyle.Flex;
+            advanceLabel.text = "Next";
+            next.tooltip = binding.Label;
         }
 
-        public TestResultView(VisualElement root, Action continueRequested)
+        public TestResultView(VisualElement root, Action continueRequested, ExitTunnelSettings exitSettings)
         {
+            this.root = root;
             this.continueRequested = continueRequested;
             cover = root.Q("test-white-cover");
             cover.style.backgroundColor = Color.clear;
             tunnel = new TestEndingTunnel();
             cover.Add(tunnel);
+            exitImage = new ExitTunnelImage(exitSettings);
+            cover.Add(exitImage);
+            root.RegisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
+            cover.parent.RegisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
             resultScreen = root.Q("test-result");
             counters = root.Q("resource-counters");
             timer = root.Q(className: "timer-anchor");
@@ -56,12 +66,13 @@ namespace GameJamPlus.UI
             notes.pickingMode = PickingMode.Position;
             notes.Query<VisualElement>().ForEach(element => element.pickingMode = PickingMode.Position);
             universe = root.Q<Label>("test-universe");
+            subject = root.Q<Label>("test-subject");
             observationRows = new VisualElement[ObservationFlags.Length];
             for (int index = 0; index < observationRows.Length; index++)
                 observationRows[index] = root.Q("test-observation-" + index);
             next = root.Q<Button>("test-next");
             next.text = string.Empty;
-            advanceIcon = new VisualElement { pickingMode = PickingMode.Ignore };
+            advanceIcon = new InputPromptElement();
             advanceIcon.AddToClassList("input-key-icon");
             advanceIcon.style.display = DisplayStyle.None;
             advanceLabel = new Label { pickingMode = PickingMode.Ignore };
@@ -74,15 +85,38 @@ namespace GameJamPlus.UI
             resultScreen.style.display = DisplayStyle.None;
         }
 
-        public void Begin()
+        public void Begin(bool showExitImage)
         {
+            useExitImage = showExitImage && exitImage.IsAvailable;
+            if (showExitImage && !useExitImage)
+                Debug.LogWarning("Assign the Exit Tunnel image and shader on Gameplay HUD to show the goal transition.");
+            cover.BringToFront();
+            if (useExitImage) FitCoverToScreen();
             counters.style.display = DisplayStyle.None;
             timer.style.display = DisplayStyle.None;
-            cover.style.opacity = 0f;
+            cover.style.opacity = useExitImage ? 1f : 0f;
             cover.style.backgroundColor = Color.clear;
-            tunnel.style.display = DisplayStyle.Flex;
+            tunnel.style.display = useExitImage ? DisplayStyle.None : DisplayStyle.Flex;
             tunnel.SetProgress(0f);
+            exitImage.style.display = useExitImage ? DisplayStyle.Flex : DisplayStyle.None;
+            if (useExitImage) exitImage.SetProgress(0f);
             cover.style.display = DisplayStyle.Flex;
+        }
+
+        private void OnRootGeometryChanged(GeometryChangedEvent change)
+        {
+            if (useExitImage) FitCoverToScreen();
+        }
+
+        private void FitCoverToScreen()
+        {
+            // Extend beyond the pixel-perfect frame to include letterbox/pillarbox borders.
+            Rect screen = root.ChangeCoordinatesTo(cover.parent, root.contentRect);
+            cover.style.left = screen.x;
+            cover.style.top = screen.y;
+            cover.style.right = cover.style.bottom = StyleKeyword.Auto;
+            cover.style.width = screen.width;
+            cover.style.height = screen.height;
         }
 
         public void SetCoverOpacity(float opacity)
@@ -91,8 +125,10 @@ namespace GameJamPlus.UI
             float progress = Mathf.Clamp01(opacity);
             bool complete = progress >= 1f;
             cover.style.backgroundColor = complete ? Color.white : Color.clear;
-            tunnel.style.display = complete ? DisplayStyle.None : DisplayStyle.Flex;
-            tunnel.SetProgress(progress);
+            tunnel.style.display = complete || useExitImage ? DisplayStyle.None : DisplayStyle.Flex;
+            exitImage.style.display = !complete && useExitImage ? DisplayStyle.Flex : DisplayStyle.None;
+            if (useExitImage) exitImage.SetProgress(progress);
+            else tunnel.SetProgress(progress);
         }
 
         public void Show(int universeNumber, double elapsedSeconds, string resultMessage)
@@ -104,7 +140,9 @@ namespace GameJamPlus.UI
             SetObservations(GameSession.GetTestObservations(elapsedSeconds));
             notes.scrollOffset = Vector2.zero;
             universe.text = "Universe-" + universeNumber;
+            if (subject != null) subject.text = $"Subject: {GameSession.SubjectId} / Attempt {GameSession.Attempt}/{GameSession.AttemptsPerUniverse}";
             resultScreen.style.display = DisplayStyle.Flex;
+            resultScreen.BringToFront();
         }
 
         public void SetObservations(TestObservation observations)
@@ -130,7 +168,12 @@ namespace GameJamPlus.UI
         public void Dispose()
         {
             next.clicked -= Continue;
+            root.UnregisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
+            cover.parent.UnregisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
+            exitImage.Dispose();
             tunnel.RemoveFromHierarchy();
+            advanceIcon.RemoveFromHierarchy();
+            advanceLabel.RemoveFromHierarchy();
         }
     }
 }

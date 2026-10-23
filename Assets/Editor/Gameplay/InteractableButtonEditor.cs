@@ -15,6 +15,11 @@ public sealed class InteractableButtonEditor : Editor
     {
         InteractableButton button = (InteractableButton)target;
         if (button == null || !button.ShowGizmos) return;
+        if (!button.UsesFixedSpawnPosition)
+        {
+            DrawSpawnPoints(button);
+            return;
+        }
         Vector3 position = button.SpawnPosition;
         Handles.Label(position + Vector3.up * 0.15f, "Spawn Point");
         EditorGUI.BeginChangeCheck();
@@ -26,5 +31,22 @@ public sealed class InteractableButtonEditor : Editor
         if (PrefabUtility.IsPartOfPrefabInstance(button))
             PrefabUtility.RecordPrefabInstancePropertyModifications(button);
         EditorUtility.SetDirty(button);
+    }
+
+    private static void DrawSpawnPoints(InteractableButton button)
+    {
+        for (int index = 0; index < button.SpawnPoints.Count; index++)
+        {
+            Transform point = button.SpawnPoints[index];
+            if (point == null) continue;
+            Handles.Label(point.position + Vector3.up * 0.15f, "Spawn " + (index + 1));
+            EditorGUI.BeginChangeCheck();
+            Vector3 position = Handles.PositionHandle(point.position, Quaternion.identity);
+            if (!EditorGUI.EndChangeCheck()) continue;
+            Undo.RecordObject(point, "Move button spawn point");
+            point.position = position;
+            if (PrefabUtility.IsPartOfPrefabInstance(point)) PrefabUtility.RecordPrefabInstancePropertyModifications(point);
+            EditorUtility.SetDirty(point);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using MousePlatformer;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,6 +11,8 @@ namespace GameJamPlus.UI
         [SerializeField] private UIDocument document;
         [SerializeField] private PlayerSatiety satiety;
         [SerializeField] private PlayerOxygen oxygen;
+        [SerializeField] private PlayerElectricity electricity;
+        [SerializeField] private PlayerHealth health;
         [SerializeField] private PlayerOxygenBubbles oxygenBubbles;
         [SerializeField] private PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Screen tint when a satiety notch is lost and hunger increases.")]
@@ -21,11 +24,16 @@ namespace GameJamPlus.UI
         [SerializeField, Min(0.01f)] private float flashDuration = 0.35f;
         [SerializeField, Tooltip("White and pale-blue screen tint when an oxygen notch is consumed.")]
         private Color oxygenFlashColor = new Color(0.8f, 0.94f, 1f, 0.2f);
+        [SerializeField, Tooltip("Pale-blue screen flash on electrical impact, separate from oxygen bubble feedback.")]
+        private Color shockFlashColor = new Color(0.55f, 0.85f, 1f, 0.3f);
         [SerializeField, Min(0.01f)] private float oxygenFlashDuration = 0.25f;
         [SerializeField, Min(0f)] private float shakeDuration = 0.2f;
         [SerializeField, Min(0f)] private float shakeAmplitude = 0.06f;
         private VisualElement root;
         private VisualElement notches;
+        private VisualElement oxygenNotches;
+        private VisualElement oxygenPanel;
+        private VisualElement hearts;
         private Label caption;
         private VisualElement flash;
         private float flashRemaining;
@@ -33,11 +41,27 @@ namespace GameJamPlus.UI
         private float oxygenFlashRemaining;
         private bool oxygenBubblesPending;
         private Color activeFlashColor;
+        private VisualElement poisonStatus;
+        private VisualElement statusPanel;
+        private bool lowHealth;
+        private bool lowSatiety;
+        private bool lowOxygen;
+        private int previousElectricity;
+        private VisualElement electricityStatusHost;
+        private readonly List<StatusEffectIcon> electricityIcons = new List<StatusEffectIcon>(3);
 
         private void OnEnable()
         {
             activeFlashColor = flashColor;
             if (document == null) document = GetComponent<UIDocument>();
+            if (electricity == null && satiety != null) satiety.TryGetComponent(out electricity);
+            if (health == null && satiety != null) satiety.TryGetComponent(out health);
+            if (health != null)
+            {
+                health.Changed += RefreshHealth;
+                health.Damaged += PlayDamageFlash;
+            }
+            previousElectricity = electricity != null ? electricity.Current : 0;
             if (satiety != null)
             {
                 satiety.Changed += OnResourceChanged;
@@ -48,6 +72,7 @@ namespace GameJamPlus.UI
                 oxygen.Changed += OnResourceChanged;
                 oxygen.NotchLost += OnOxygenNotchLost;
             }
+            if (electricity != null) electricity.Changed += OnElectricityChanged;
         }
 
         private void LateUpdate()
@@ -59,7 +84,16 @@ namespace GameJamPlus.UI
                 oxygenFlash?.RemoveFromHierarchy();
                 root = currentRoot;
                 notches = root?.Q("satiety-notches");
+                oxygenNotches = root?.Q("oxygen-notches");
+                oxygenPanel = root?.Q("oxygen-panel");
+                hearts = root?.Q("health-hearts");
                 caption = root?.Q<Label>("satiety-caption");
+                poisonStatus = root?.Q("status-poison");
+                statusPanel = root?.Q("status-panel");
+                electricityStatusHost = root?.Q("status-electricity-icons");
+                electricityIcons.Clear();
+                if (electricityStatusHost != null)
+                    electricityStatusHost.Query<StatusEffectIcon>().ForEach(icon => electricityIcons.Add(icon));
                 if (root != null)
                 {
                     flash = CreateFlash("satiety-flash", activeFlashColor);
@@ -67,6 +101,10 @@ namespace GameJamPlus.UI
                     RefreshResources();
                 }
             }
+            float warningOpacity = Mathf.Lerp(0.55f, 1f, (Mathf.Sin(Time.unscaledTime * 4f) + 1f) * 0.5f);
+            if (hearts != null) hearts.style.opacity = lowHealth ? warningOpacity : 1f;
+            if (notches != null) notches.style.opacity = lowSatiety ? warningOpacity : 1f;
+            if (oxygenNotches != null) oxygenNotches.style.opacity = lowOxygen ? warningOpacity : 1f;
             if (flash == null) return;
             flash.style.display = flashRemaining > 0f ? DisplayStyle.Flex : DisplayStyle.None;
             flash.style.opacity = Mathf.Clamp01(flashRemaining / Mathf.Max(0.01f, flashDuration));
@@ -98,33 +136,72 @@ namespace GameJamPlus.UI
             oxygenBubblesPending = true;
         }
 
-        private void RefreshNotches(int current, int maximum)
+        private void RefreshNotches(VisualElement host, int current, int maximum)
         {
-            if (notches == null) return;
-            if (notches.childCount != maximum)
+            if (host == null) return;
+            if (host.childCount != maximum)
             {
-                notches.Clear();
+                host.Clear();
                 for (int index = 0; index < maximum; index++)
                 {
                     VisualElement notch = new VisualElement { pickingMode = PickingMode.Ignore };
                     notch.AddToClassList("satiety-notch");
-                    notches.Add(notch);
+                    host.Add(notch);
                 }
             }
-            for (int index = 0; index < notches.childCount; index++)
-                notches[index].EnableInClassList("satiety-notch-empty", index >= current);
+            for (int index = 0; index < host.childCount; index++)
+                host[index].EnableInClassList("satiety-notch-empty", index >= current);
         }
 
         private void OnResourceChanged(int current, int maximum) => RefreshResources();
 
         private void RefreshResources()
         {
-            bool showOxygen = oxygen != null && oxygen.IsUnderwater;
-            if (caption != null) caption.text = showOxygen ? "OXYGEN" : "SATIETY";
-            if (showOxygen) RefreshNotches(oxygen.Current, oxygen.Maximum);
-            else if (satiety != null) RefreshNotches(satiety.Current, satiety.Maximum);
-            notches?.EnableInClassList("oxygen-notches", showOxygen);
-            notches?.EnableInClassList("poisoned-notches", !showOxygen && satiety != null && satiety.IsPoisoned);
+            bool showOxygen = oxygen != null && (oxygen.IsUnderwater || oxygen.Current < oxygen.Maximum);
+            lowSatiety = satiety != null && satiety.Current == 1;
+            lowOxygen = showOxygen && oxygen.Current == 1;
+            if (caption != null) caption.text = "SATIETY";
+            if (satiety != null) RefreshNotches(notches, satiety.Current, satiety.Maximum);
+            if (oxygenPanel != null) oxygenPanel.style.display = showOxygen ? DisplayStyle.Flex : DisplayStyle.None;
+            if (showOxygen) RefreshNotches(oxygenNotches, oxygen.Current, oxygen.Maximum);
+            RefreshHealth();
+            RefreshStatus();
+        }
+
+        private void RefreshHealth()
+        {
+            if (hearts == null) return;
+            int current = health != null ? health.Current : PlayerHealth.Maximum;
+            lowHealth = current == 1;
+            for (int index = 0; index < hearts.childCount; index++)
+                hearts[index].EnableInClassList("health-heart-empty", index >= current);
+        }
+
+        private void RefreshStatus()
+        {
+            bool poisoned = satiety != null && satiety.IsPoisoned;
+            notches?.EnableInClassList("poisoned-notches", poisoned);
+            if (poisonStatus != null)
+                poisonStatus.style.display = poisoned ? DisplayStyle.Flex : DisplayStyle.None;
+            int charges = electricity != null ? electricity.Current : 0;
+            if (statusPanel != null) statusPanel.style.display = poisoned || charges > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            if (electricityStatusHost != null) electricityStatusHost.style.display = charges > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            while (electricityStatusHost != null && electricityIcons.Count < charges)
+            {
+                StatusEffectIcon icon = new StatusEffectIcon { Effect = StatusEffectIcon.EffectKind.Electricity };
+                icon.AddToClassList("status-effect-icon");
+                electricityStatusHost.Add(icon);
+                electricityIcons.Add(icon);
+            }
+            for (int index = 0; index < electricityIcons.Count; index++)
+                electricityIcons[index].style.display = index < charges ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void OnElectricityChanged(int charges)
+        {
+            RefreshStatus();
+            if (charges > previousElectricity) PlayFlash(shockFlashColor);
+            previousElectricity = charges;
         }
 
         private void OnNotchLost()
@@ -154,6 +231,12 @@ namespace GameJamPlus.UI
                 oxygen.Changed -= OnResourceChanged;
                 oxygen.NotchLost -= OnOxygenNotchLost;
             }
+            if (electricity != null) electricity.Changed -= OnElectricityChanged;
+            if (health != null)
+            {
+                health.Changed -= RefreshHealth;
+                health.Damaged -= PlayDamageFlash;
+            }
             flash?.RemoveFromHierarchy();
             oxygenFlash?.RemoveFromHierarchy();
             root = notches = flash = null;
@@ -162,6 +245,10 @@ namespace GameJamPlus.UI
             oxygenFlash = null;
             oxygenFlashRemaining = 0f;
             oxygenBubblesPending = false;
+            poisonStatus = electricityStatusHost = statusPanel = null;
+            lowHealth = lowSatiety = lowOxygen = false;
+            electricityIcons.Clear();
+            hearts = oxygenNotches = oxygenPanel = null;
         }
     }
 }

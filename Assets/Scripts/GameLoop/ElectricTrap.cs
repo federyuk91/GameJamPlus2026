@@ -10,10 +10,14 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
+        [SerializeField] private PlayerElectricity playerElectricity;
         [SerializeField] private TestEndEvent testEnd;
+        [SerializeField, Min(1), Tooltip("Lightning charges applied to the player once per activation. A value of 2 applies two charges; reaching the player's lethal charge count ends the life.")]
+        private int electricityAmount = 1;
         [SerializeField] private bool automaticActivation = true;
         [SerializeField, Min(0.01f)] private float activationDuration = 3f;
         [SerializeField] private Light2D electricLight;
+        [SerializeField] private GameObject dischargeVisual;
         [SerializeField, Min(0.1f)] private float flickerFrequency = 18f;
         [SerializeField, Min(0f)] private float minimumLightIntensity = 0.15f;
         [SerializeField, Min(0f)] private float maximumLightIntensity = 2f;
@@ -21,7 +25,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private AudioClip[] dischargeClips;
         [SerializeField, Range(0f, 1f)] private float dischargeVolume = 0.65f;
         [SerializeField] private bool showGizmos = true;
-        private bool triggered;
+        private bool playerShocked;
         private float remainingDuration;
 
         public bool AutomaticActivation => automaticActivation;
@@ -47,19 +51,15 @@ namespace GameJamPlus.Gameplay
         {
             GameManager manager = GameManager.Instance;
             if (!IsActivated || manager == null || manager.State != GameManager.LoopState.Playing) return;
-            remainingDuration = Mathf.Max(0f, remainingDuration - Time.fixedDeltaTime);
-            if (!IsActivated)
-            {
-                Deactivate();
-                return;
-            }
             ApplyDischarge();
         }
 
         public void Activate()
         {
-            if (!isActiveAndEnabled || triggered) return;
+            if (!isActiveAndEnabled || IsActivated) return;
+            playerShocked = false;
             remainingDuration = Mathf.Max(0.01f, activationDuration);
+            UpdateDischargeVisual();
             PlayDischargeSound();
             UpdateLight();
             ApplyDischarge();
@@ -68,15 +68,17 @@ namespace GameJamPlus.Gameplay
         public void Deactivate()
         {
             remainingDuration = 0f;
+            if (playerElectricity != null) playerElectricity.EndShock(this);
             automaticActivation = false;
             if (audioSource != null) audioSource.Stop();
+            UpdateDischargeVisual();
             UpdateLight();
         }
 
         private void ApplyDischarge()
         {
             GameManager manager = GameManager.Instance;
-            if (!isActiveAndEnabled || triggered || manager == null
+            if (!isActiveAndEnabled || manager == null
                 || manager.State != GameManager.LoopState.Playing || testEnd == null
                 || contactArea == null || !contactArea.enabled || !contactArea.gameObject.activeInHierarchy) return;
             // The player uses custom movement without a Rigidbody2D, so trigger callbacks are insufficient.
@@ -88,12 +90,17 @@ namespace GameJamPlus.Gameplay
                 if (fishContact.isValid && fishContact.distance <= 0f) piranha.Die();
             }
 
+            if (playerShocked) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
+            if (playerElectricity == null) playerCollider.TryGetComponent(out playerElectricity);
+            if (playerElectricity == null) return;
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f) return;
-            triggered = true;
-            testEnd.EndTest();
+            if (!playerElectricity.ReceiveShock(Mathf.Max(1, electricityAmount))) return;
+            playerShocked = true;
+            playerElectricity.BeginShock(this);
+            if (playerElectricity.IsLethal) testEnd.EndTest();
         }
 
         public void EnableAutomaticActivation() => SetAutomaticActivation(true);
@@ -111,7 +118,11 @@ namespace GameJamPlus.Gameplay
             GameAudioSettings.EffectsVolumeChanged += ApplyEffectsVolume;
             ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
             if (automaticActivation) Activate();
-            else UpdateLight();
+            else
+            {
+                UpdateDischargeVisual();
+                UpdateLight();
+            }
         }
 
         private void OnDisable()
@@ -119,10 +130,32 @@ namespace GameJamPlus.Gameplay
             GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
             if (audioSource != null) audioSource.Stop();
             remainingDuration = 0f;
+            if (playerElectricity != null) playerElectricity.EndShock(this);
+            UpdateDischargeVisual();
             if (electricLight != null) electricLight.enabled = false;
         }
 
-        private void Update() => UpdateLight();
+        private void Update()
+        {
+            GameManager manager = GameManager.Instance;
+            if (IsActivated && manager != null && manager.State != GameManager.LoopState.Playing
+                && manager.State != GameManager.LoopState.Spawning)
+                Deactivate();
+            if (IsActivated && manager != null && manager.State == GameManager.LoopState.Playing)
+            {
+                remainingDuration = Mathf.Max(0f, remainingDuration - Time.deltaTime);
+                if (!IsActivated) Deactivate();
+            }
+            UpdateDischargeVisual();
+            UpdateLight();
+        }
+
+        private void UpdateDischargeVisual()
+        {
+            if (dischargeVisual == null) return;
+            bool visible = isActiveAndEnabled && IsActivated;
+            if (dischargeVisual.activeSelf != visible) dischargeVisual.SetActive(visible);
+        }
 
         private void PlayDischargeSound()
         {

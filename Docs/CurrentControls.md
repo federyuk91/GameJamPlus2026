@@ -26,6 +26,6 @@ On a shared interaction key, the nearest collectible/button/wheel is selected fi
 
 The controls page follows device names and scrolls with the right stick, Page Up/Down or mouse wheel so the expanded instructions fit at 640 × 360. Direction hints use W / D-pad-up sprites from the existing white icon set, tinted green.
 
-InputPromptIcons assigns each action explicitly per device: Interact, Collect, CutOrDig and Advance use F/East; MoveCrate uses E/East; Up uses W/D-pad up. There is no hidden Collect/MoveCrate remapping. The PlayStation Up reference uses a full D-pad slice added to the original texture metadata, preserving its existing four partial sprites and their IDs. LoopScene's HUD references the same InputPromptIcons asset.
+Current input glyphs come from `Assets/Resources/InputPrompts.asset` through InputPromptCatalog. InputPromptElement resolves the active device and configured binding; the old InputPromptIcons ScriptableObject and partial-sprite mappings have been removed. See ControlsUI.md for current body-action bindings and editable control views.
 
 This replaces the previous E / West rope grab, West collection, F / West ledge climb and right-stick-click camera lock. Ledge climb no longer triggers by merely releasing and reapplying the horizontal direction. Review shared East actions, rope entry and ledge jump directions in Unity; no compilation or Play Mode tests were run.

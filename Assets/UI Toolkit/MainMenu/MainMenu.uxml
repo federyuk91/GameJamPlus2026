@@ -84,6 +84,7 @@
                                             <ui:VisualElement name="thanks-igda-italy" tooltip="IGDA Italy" picking-mode="Ignore" class="thanks-logo thanks-igda-italy" />
                                             <ui:VisualElement name="thanks-sgs" tooltip="SGS" picking-mode="Ignore" class="thanks-logo thanks-sgs" />
                                         </ui:VisualElement>
+                                        <ui:Label text="m5x7 &amp; m6x11 fonts by Daniel Linssen" tooltip="https://managore.itch.io/m5x7 · https://managore.itch.io/m6x11" class="font-credit" />
                                     </ui:VisualElement>
                                     <ui:VisualElement name="quit-panel" class="context-card hidden">
                                         <ui:Label text="Leave the laboratory?" class="dialog-title" />

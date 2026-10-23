@@ -10,7 +10,9 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private DialogueMessagePlayer scientistComment;
         [SerializeField, Tooltip("Disable for a test that ends with the subject still alive.")]
         private bool subjectDied = true;
-        [SerializeField, Min(-1f), Tooltip("Tunnel transition duration for this ending in seconds. A negative value uses the Game Manager's Flash Duration.")]
+        [SerializeField, Tooltip("Show the full-screen exit image with zoom and exposure before the scientist comment.")]
+        private bool useExitImage;
+        [SerializeField, InspectorName("Transition Duration Override"), Min(-1f), Tooltip("Duration in seconds for this ending. Negative: use Gameplay HUD / Exit Tunnel / Duration for the exit image, or Game Manager / Transition Duration for other endings.")]
         private float flashDurationOverride = -1f;
         [SerializeField, TextArea(2, 6)] private string[] resultMessages =
         {
@@ -19,6 +21,7 @@ namespace GameJamPlus.Gameplay
 
         public DialogueMessagePlayer ScientistComment => scientistComment;
         public bool SubjectDied => subjectDied;
+        public bool UseExitImage => useExitImage;
         public float FlashDurationOverride => flashDurationOverride;
 
         public void EndTest()

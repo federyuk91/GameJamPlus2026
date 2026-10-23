@@ -1,61 +1,96 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:game="GameJamPlus.UI" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/GameplayHud.uss?fileID=7433441132597879392&amp;guid=e3953661930f48a484f21a438b7da774&amp;type=3#GameplayHud"/>
+    <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls"/>
     <ui:VisualElement name="gameplay-hud" picking-mode="Ignore" class="gameplay-hud" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
         <ui:VisualElement name="hud-frame" picking-mode="Ignore" class="hud-frame">
-            <ui:VisualElement picking-mode="Ignore" class="black-band black-band-top"/>
-            <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom"/>
+            <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom">
+                <ui:VisualElement name="scientist-screen" picking-mode="Ignore" class="scientist-screen" style="bottom: 8px; left: 8px;">
+                    <ui:VisualElement name="scientist-display-viewport" picking-mode="Ignore" class="scientist-display-viewport">
+                        <ui:VisualElement name="scientist-display" picking-mode="Ignore" class="scientist-display">
+                            <ui:Image name="scientist-avatar" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Characters/Scientist/Scientist_QWO.png?fileID=21300000&amp;guid=d43949e9434a9b34ebb39592a7ac0cb6&amp;type=3#Scientist_QWO" scale-mode="ScaleToFit" class="scientist-avatar" style="width: 64px; height: 64px; left: -8px; top: auto; right: auto; bottom: -10px;"/>
+                            <ui:VisualElement name="scientist-content" picking-mode="Ignore" class="scientist-content" style="width: 171px; left: 53px;">
+                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript" style="width: 168px; top: 3%; bottom: 3%; left: 0%; right: 0;">
+                                    <ui:Label name="scientist-text" text="Welcome to Universe-10.&#10;Relax and enjoy your stay." enable-rich-text="false" picking-mode="Ignore" class="scientist-text"/>
+                                </ui:ScrollView>
+                                <ui:Button name="scientist-advance" text="F Close" focusable="false" class="scientist-advance" style="bottom: 4px; height: auto; right: 0; justify-content: flex-start; width: 20px; min-width: 20px; align-self: flex-end; min-height: 10px; max-width: 50px; max-height: 15px;"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow" style="top: 0; bottom: 0; right: 0; left: 1px;"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active" style="left: auto; bottom: auto; top: 4px; right: 4px;"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard">
+                <ui:VisualElement class="health-panel">
+                    <ui:Label text="HEALTH" class="vital-caption"/>
+                    <ui:VisualElement name="health-hearts" class="health-hearts">
+                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
+                    <ui:Label name="satiety-caption" text="SATIETY" picking-mode="Ignore" class="satiety-caption vital-caption"/>
+                    <ui:VisualElement name="satiety-notches" picking-mode="Ignore" class="satiety-notches">
+                        <ui:VisualElement class="satiety-notch"/>
+                        <ui:VisualElement class="satiety-notch"/>
+                        <ui:VisualElement class="satiety-notch"/>
+                        <ui:VisualElement class="satiety-notch"/>
+                        <ui:VisualElement class="satiety-notch"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="oxygen-panel" class="oxygen-panel">
+                    <ui:Label text="OXYGEN" class="vital-caption"/>
+                    <ui:VisualElement name="oxygen-notches" class="satiety-notches oxygen-notches"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="status-panel" picking-mode="Ignore" class="status-panel">
+                    <ui:Image name="status-poison" picking-mode="Ignore" source="project://database/Assets/Art/UI/Gameplay/Poison.png?fileID=21300000&amp;guid=ce69cbc433aa362418951c52dff316e9&amp;type=3#Poison_0" scale-mode="ScaleToFit" tooltip="Poisoned" class="status-effect-icon" style="width: 13px; height: 13px;"/>
+                    <ui:VisualElement name="status-electricity-icons" picking-mode="Ignore" class="status-electricity-icons">
+                        <game:StatusEffectIcon effect="Electricity" tooltip="Electric charge" class="status-effect-icon"/>
+                        <game:StatusEffectIcon effect="Electricity" tooltip="Electric charge" class="status-effect-icon"/>
+                        <game:StatusEffectIcon effect="Electricity" tooltip="Electric charge" class="status-effect-icon"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="resource-counters" picking-mode="Ignore" class="resource-counters collectibles-panel">
+                <ui:VisualElement name="counter-primary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
+                    <ui:Image name="counter-primary-icon" picking-mode="Ignore" source="project://database/Assets/Art/UI/Gameplay/Cheese-Sheet.png?fileID=1991445489062669798&amp;guid=9acc4aff0ae55884a9b04b44eaf25ee3&amp;type=3#Cheese-Sheet_0" scale-mode="ScaleToFit" class="counter-icon"/>
+                    <ui:Label name="counter-primary-value" text="× 0" picking-mode="Ignore" class="counter-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="counter-secondary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+                    <ui:Image name="counter-secondary-icon" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Props/PoisonCheese.png?fileID=21300000&amp;guid=3c952d4f5499c5f448a05e1f3027d402&amp;type=3#PoisonCheese" scale-mode="ScaleToFit" class="counter-icon"/>
+                    <ui:Label name="counter-secondary-value" text="× 0" picking-mode="Ignore" class="counter-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="counter-tertiary" tooltip="Research / Knowledge" picking-mode="Ignore" class="counter" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+                    <ui:Image name="counter-tertiary-icon" picking-mode="Ignore" class="counter-icon">
+                        <game:KnowledgeCounterIcon name="knowledge-icon-preview" picking-mode="Ignore"/>
+                    </ui:Image>
+                    <ui:Label name="counter-tertiary-value" text="× 0" picking-mode="Ignore" class="counter-value" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="counter-quaternary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
+                    <ui:Image name="counter-quaternary-icon" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Props/PhotoCollectible.png?fileID=21300000&amp;guid=2cd3480a0d7d41d09c6e67011de237d4&amp;type=3#PhotoCollectible" scale-mode="ScaleToFit" class="counter-icon"/>
+                    <ui:Label name="counter-quaternary-value" text="× 0" picking-mode="Ignore" class="counter-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="interaction-hints-anchor" picking-mode="Ignore" class="interaction-hints-anchor">
+                <ui:VisualElement name="interaction-hints" picking-mode="Ignore" class="interaction-hints interaction-hints-panel"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="campaign-readout" picking-mode="Ignore" class="campaign-readout">
+                <ui:Label name="campaign-progress" text="UNIVERSE 10 / ATTEMPT 1/10"/>
+                <ui:Label name="subject-identity" text="SUBJECT U10-R0-G0"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="scientist-ending-footer" picking-mode="Ignore" class="scientist-ending-footer"/>
             <ui:Label name="camera-height-lock" text="CAMERA HEIGHT LOCKED — C TO UNLOCK" picking-mode="Ignore" class="camera-height-lock"/>
             <ui:Label name="camera-lock-reminder" picking-mode="Ignore" class="camera-lock-reminder"/>
             <ui:VisualElement name="test-white-cover" picking-mode="Ignore" class="test-white-cover"/>
-            <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area">
+            <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area" style="bottom: 73px; top: 22px;">
                 <ui:VisualElement picking-mode="Ignore" class="timer-anchor">
                     <ui:VisualElement picking-mode="Ignore" class="timer-panel">
                         <ui:Label text="TIME ELAPSED" picking-mode="Ignore" class="timer-caption" style="-unity-text-align: lower-center; padding-top: 0; margin-top: 2px;"/>
                         <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-center; height: 7px; bottom: 1px;"/>
                     </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard">
-                    <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
-                        <ui:Label name="satiety-caption" text="SATIETY" picking-mode="Ignore" class="satiety-caption" style="padding-left: 3px; padding-top: 3px;"/>
-                        <ui:VisualElement name="satiety-notches" picking-mode="Ignore" class="satiety-notches"/>
-                    </ui:VisualElement>
-                    <ui:VisualElement name="resource-counters" picking-mode="Ignore" class="resource-counters">
-                        <ui:VisualElement name="counter-primary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
-                            <ui:Image name="counter-primary-icon" picking-mode="Ignore" source="project://database/Assets/Art/UI/Gameplay/Cheese-Sheet.png?fileID=1991445489062669798&amp;guid=9acc4aff0ae55884a9b04b44eaf25ee3&amp;type=3#Cheese-Sheet_0" scale-mode="ScaleToFit" class="counter-icon" style="width: 64px; height: 64px;"/>
-                            <ui:Label name="counter-primary-value" text="0×" picking-mode="Ignore" class="counter-value"/>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="counter-secondary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
-                            <ui:Image name="counter-secondary-icon" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Props/PoisonCheese.png?fileID=21300000&amp;guid=3c952d4f5499c5f448a05e1f3027d402&amp;type=3#PoisonCheese" scale-mode="ScaleToFit" class="counter-icon" style="width: 31px; height: 21px;"/>
-                            <ui:Label name="counter-secondary-value" text="0×" picking-mode="Ignore" class="counter-value"/>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="counter-tertiary" tooltip="Research / Knowledge" picking-mode="Ignore" class="counter" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
-                            <ui:Image name="counter-tertiary-icon" picking-mode="Ignore" class="counter-icon" style="width: 16px; height: 16px;"><game:KnowledgeCounterIcon name="knowledge-icon-preview" picking-mode="Ignore"/></ui:Image>
-                            <ui:Label name="counter-tertiary-value" text="0×" picking-mode="Ignore" class="counter-value" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="counter-quaternary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
-                            <ui:Image name="counter-quaternary-icon" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Props/PhotoCollectible.png?fileID=21300000&amp;guid=2cd3480a0d7d41d09c6e67011de237d4&amp;type=3#PhotoCollectible" scale-mode="ScaleToFit" class="counter-icon" style="width: 32px; height: 32px;"/>
-                            <ui:Label name="counter-quaternary-value" text="0×" picking-mode="Ignore" class="counter-value"/>
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement name="scientist-screen" picking-mode="Ignore" class="scientist-screen">
-                    <ui:VisualElement name="scientist-display-viewport" picking-mode="Ignore" class="scientist-display-viewport">
-                        <ui:VisualElement name="scientist-display" picking-mode="Ignore" class="scientist-display">
-                            <ui:VisualElement name="scientist-content" picking-mode="Ignore" class="scientist-content scientist-dialogue">
-                                <ui:Label name="communication-speaker" text="SCIENTIST" picking-mode="Ignore" class="communication-speaker"/>
-                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript" style="width: 157px; margin-bottom: 0; padding-right: 10px; margin-right: 0;">
-                                    <ui:Label name="scientist-text" text="Welcome to Universe-10.&#10;Relax and enjoy your stay." enable-rich-text="false" picking-mode="Ignore" class="scientist-text" style="-unity-text-align: upper-left; width: auto; font-size: 10px; -unity-paragraph-spacing: 0; min-height: 100%; max-height: 100%; justify-content: center; align-items: center; align-self: flex-start; margin-top: 0; margin-bottom: 0; padding-bottom: 5px; padding-top: 5px; min-width: 90%; max-width: 100%; padding-left: 5px;"/>
-                                    <ui:VisualElement name="interaction-hints" picking-mode="Ignore" class="interaction-hints"/>
-                                </ui:ScrollView>
-                                <ui:Button name="scientist-advance" text="F Close" focusable="false" class="scientist-advance" style="bottom: 4px; height: auto; right: 2px; justify-content: flex-start; width: auto; min-width: 32px; align-self: flex-end; min-height: 10px; max-width: 50px; max-height: 15px;"/>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow" style="top: 0;"/>
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement name="scientist-avatar-screen" picking-mode="Ignore" class="scientist-avatar-screen" style="bottom: -80px; justify-content: center; align-self: flex-end; align-content: auto; right: 6px;">
-                    <ui:Image name="scientist-avatar" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Characters/Scientist.png?fileID=21300000&amp;guid=d43949e9434a9b34ebb39592a7ac0cb6&amp;type=3#Scientist" scale-mode="ScaleToFit" class="scientist-avatar" style="width: 32px; height: 32px; left: 14px; top: 14px; right: auto; bottom: auto;"/>
-                    <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active" style="left: 10px; bottom: 10px;"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="test-result" picking-mode="Ignore" class="test-result">
@@ -68,11 +103,12 @@
                         <ui:VisualElement class="notebook-hole"/>
                     </ui:VisualElement>
                     <ui:Label text="Stage Passed" class="test-title"/>
-                    <ui:Label text="Outcome: Success" class="test-outcome"/>
+                    <ui:Label text="Outcome: Success" name="Label" class="test-outcome"/>
                     <ui:VisualElement class="test-metadata">
                         <ui:Label name="test-universe" text="Universe-10" class="test-universe"/>
                         <ui:Label name="test-elapsed" text="Stay: 00:00:00" class="test-elapsed"/>
                     </ui:VisualElement>
+                    <ui:Label name="test-subject" text="Subject: U10-R0-G0 / Attempt 1/10" class="test-subject"/>
                     <ui:ScrollView name="test-notes" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" class="test-notes">
                         <ui:Label text="OBSERVATION NOTES" class="test-notes-heading"/>
                         <ui:VisualElement name="test-observation-0" class="test-observation">
@@ -103,13 +139,19 @@
                             <ui:VisualElement class="observation-box">
                                 <ui:Label text="X" class="observation-mark"/>
                             </ui:VisualElement>
-                            <ui:Label text="Enjoys gardening" class="observation-text"/>
+                            <ui:Label text="Little mechanic" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-5" class="test-observation">
                             <ui:VisualElement class="observation-box">
                                 <ui:Label text="X" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Very curious" class="observation-text"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="test-observation-6" class="test-observation">
+                            <ui:VisualElement class="observation-box">
+                                <ui:Label text="X" class="observation-mark"/>
+                            </ui:VisualElement>
+                            <ui:Label text="Electrician" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:Label name="test-result-message" text="" enable-rich-text="false" class="test-result-message"/>
                     </ui:ScrollView>
@@ -135,10 +177,7 @@
                         <ui:Button name="pause-quit" text="Quit Game" class="pause-button"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="pause-controls" class="pause-page pause-subpage">
-                        <ui:Label text="CONTROLS" class="pause-section"/>
-                        <ui:ScrollView name="pause-controls-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" class="pause-controls-scroll">
-                            <ui:Label name="pause-controls-text" class="pause-controls-text"/>
-                        </ui:ScrollView>
+                        <ui:VisualElement name="pause-controls-content" class="body-controls"/>
                         <ui:Button name="pause-controls-back" text="Back" class="pause-button"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="pause-options" class="pause-page pause-subpage">

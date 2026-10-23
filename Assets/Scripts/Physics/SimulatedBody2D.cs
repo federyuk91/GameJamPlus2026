@@ -31,11 +31,16 @@ namespace MousePlatformer
         private BoxCollider2D shape;
         [SerializeField, Tooltip("Ignore player colliders in this body's movement queries, so non-blocking props cannot land on or be stopped by the player.")]
         private bool ignorePlayerColliders;
+        [SerializeField, Tooltip("The trigger shape supports other simulated props while remaining pass-through for the player. Pickup triggers are not affected.")]
+        private bool blocksOtherProps;
+        [SerializeField, Tooltip("Whether this body counts as weight on pressure buttons. Does not change physical mass or collisions.")]
+        private bool canPressButtons = true;
         [SerializeField] private LayerMask solidLayers = 1;
         [SerializeField, Min(0.001f)] private float skin = 0.005f;
         [SerializeField, Min(0.001f), Tooltip("Dry body mass in kilograms. Shared by pushing, flotation, rope loads and balloon balance.")]
         private float weight = 1f;
         private readonly List<RaycastHit2D> hits = new List<RaycastHit2D>(32);
+        private PropsMotion propMotion;
         private double movementStepTime = double.NegativeInfinity;
         private float movementRemaining;
         private float RemainingMovementDistance => movementStepTime == Time.fixedTimeAsDouble
@@ -43,6 +48,8 @@ namespace MousePlatformer
         public BoxCollider2D Shape => shape != null ? shape : shape = GetComponent<BoxCollider2D>();
         public float Skin => skin;
         public float Weight => Mathf.Max(0.001f, weight);
+        public bool CanPressButtons => canPressButtons;
+        public void SetCanPressButtons(bool value) => canPressButtons = value;
         public PhysicsSettings Settings => physicsSettings;
         public float AirDrag => Mathf.Max(0f, airDrag);
         public float WaterDrag => Mathf.Max(0f, waterDrag);
@@ -66,6 +73,27 @@ namespace MousePlatformer
             }
         }
         public bool Grounded => GroundContact.IsWalkable;
+        public ContactFilter2D MotionFilter
+        {
+            get
+            {
+                ContactFilter2D filter = SolidFilter;
+                filter.useTriggers = propMotion != null;
+                return filter;
+            }
+        }
+
+        public bool IsMotionObstacle(Collider2D candidate)
+        {
+            if (candidate == null) return false;
+            if (!candidate.isTrigger) return true;
+            if (propMotion == null) return false;
+            if (candidate.TryGetComponent(out SimulatedBody2D other) && other.isActiveAndEnabled
+                && other.blocksOtherProps && candidate == other.Shape) return true;
+            // Empty plates block other props, while remaining pass-through for the animal.
+            return candidate.TryGetComponent(out Pushable pushable)
+                && pushable.isActiveAndEnabled && candidate == pushable.Body.Shape;
+        }
         public bool HitCeiling { get; private set; }
         public bool HitWall { get; private set; }
         public bool OnSteepSlope => GroundContact.IsSteep;
@@ -77,6 +105,7 @@ namespace MousePlatformer
         private void Awake()
         {
             if (shape == null) shape = GetComponent<BoxCollider2D>();
+            propMotion = GetComponent<PropsMotion>();
         }
 
         public void RefreshGround(bool canGround = true, Collider2D ignored = null)
@@ -304,7 +333,7 @@ namespace MousePlatformer
             size -= Vector2.one * (inset * 2f);
             Vector2 right = transform.right;
             Vector2 up = transform.up;
-            ContactFilter2D filter = SolidFilter;
+            ContactFilter2D filter = MotionFilter;
             const float minimumApproach = 0.01f;
             float queryDistance = distance + inset * Mathf.Sqrt(2f) / minimumApproach;
             int count = Physics2D.BoxCast(center, size, transform.eulerAngles.z, direction, filter, hits, queryDistance);
@@ -315,6 +344,7 @@ namespace MousePlatformer
             for (int i = 0; i < count; i++)
             {
                 RaycastHit2D hit = hits[i];
+                if (!IsMotionObstacle(hit.collider)) continue;
                 if (hit.collider == shape || hit.collider == ignored || hit.collider.transform.IsChildOf(transform)) continue;
                 if (ignorePlayerColliders && hit.collider.GetComponentInParent<PlayerMovement>() != null) continue;
                 // Ignore surfaces parallel to this axis (floor while moving horizontally).

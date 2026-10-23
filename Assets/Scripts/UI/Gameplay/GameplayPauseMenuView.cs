@@ -14,7 +14,8 @@ namespace GameJamPlus.UI
         private readonly VisualElement mainPage;
         private readonly VisualElement controlsPage;
         private readonly VisualElement optionsPage;
-        private readonly Label controlsText;
+        private readonly BodyControlsView controlsView;
+        private readonly VisualElement card;
         private readonly Label hint;
         private readonly Label status;
         private readonly Slider master;
@@ -27,8 +28,6 @@ namespace GameJamPlus.UI
         private readonly InputAction navigate;
         private readonly InputAction confirm;
         private readonly InputAction cancel;
-        private readonly InputAction scrollControls;
-        private readonly ScrollView controlsScroll;
         private readonly List<VisualElement> selection = new List<VisualElement>();
         private readonly Dictionary<Button, Action> buttonActions = new Dictionary<Button, Action>();
         private readonly List<VisualElement> interactiveElements = new List<VisualElement>();
@@ -43,14 +42,15 @@ namespace GameJamPlus.UI
         public bool IsOpen { get; private set; }
         public event Action<bool> Changed;
 
-        public GameplayPauseMenuView(VisualElement root, PlayerInputReader input, Func<bool> canOpen)
+        public GameplayPauseMenuView(VisualElement root, PlayerInputReader input, Func<bool> canOpen, BodyControlsSettings controlsSettings)
         {
             overlay = root.Q("pause-overlay");
             mainPage = root.Q("pause-main");
             controlsPage = root.Q("pause-controls");
             optionsPage = root.Q("pause-options");
-            controlsText = root.Q<Label>("pause-controls-text");
-            controlsScroll = root.Q<ScrollView>("pause-controls-scroll");
+            card = overlay.Q(className: "pause-card");
+            controlsView = new BodyControlsView(root.Q("pause-controls-content"), controlsSettings);
+            controlsView.PageChanged += RefreshControlsSelection;
             hint = root.Q<Label>("pause-hint");
             status = root.Q<Label>("pause-status");
             master = root.Q<Slider>("pause-master");
@@ -75,6 +75,7 @@ namespace GameJamPlus.UI
             Bind(root.Q<Button>("pause-quit"), QuitGame);
             Bind(root.Q<Button>("pause-controls-back"), ShowMain);
             Bind(root.Q<Button>("pause-options-back"), ShowMain);
+            foreach (Button button in controlsView.AllButtons) RegisterHover(button);
             foreach (VisualElement element in new VisualElement[] { master, music, effects, fullscreen }) RegisterHover(element);
             master.RegisterValueChangedCallback(OnMasterChanged);
             music.RegisterValueChangedCallback(OnMusicChanged);
@@ -97,10 +98,6 @@ namespace GameJamPlus.UI
             confirm.AddBinding("<Gamepad>/buttonSouth");
             cancel = new InputAction("Pause Back", InputActionType.Button);
             cancel.AddBinding("<Gamepad>/buttonEast");
-            scrollControls = new InputAction("Scroll Controls", InputActionType.Value, expectedControlType: "Axis");
-            scrollControls.AddBinding("<Gamepad>/rightStick/y").WithProcessor("axisDeadzone");
-            scrollControls.AddCompositeBinding("1DAxis")
-                .With("Positive", "<Keyboard>/pageUp").With("Negative", "<Keyboard>/pageDown");
             pause.Enable();
             overlay.style.display = DisplayStyle.None;
         }
@@ -130,16 +127,15 @@ namespace GameJamPlus.UI
             confirmKey = prompts.Confirm;
             cancelKey = prompts.Cancel;
             pauseKey = prompts.Pause;
-            controlsText.text = $"{prompts.Move}: Move / climb\n{prompts.Up}: Grab rope / climb ledge\n"
-                + $"{prompts.Jump} + toward ledge: Climb\nDown: Drop; {prompts.Jump} + away: Jump off\n"
-                + $"Mouth - {prompts.Mouth}: Eat; hold to cut / dig\nFront paws - {prompts.Interact}: Collect / button / wheel / climb ledge\nHold {prompts.MoveCrate} + direction: Move crate\n"
-                + $"Hind paws - {prompts.Jump}: Jump / swim\n{prompts.Advance}: Reveal / next / close\n{prompts.ScrollMessages}: Scroll text\n"
-                + $"{prompts.CameraHeightLock}: Camera lock\n{pauseKey}: Pause";
+            controlsView.SetDevice(prompts);
             RefreshHint();
         }
 
         public void Tick()
         {
+            if (IsOpen && controlsPage.style.display.value != DisplayStyle.None
+                && controlsView.HandleModalInput(navigate.ReadValue<Vector2>(), confirm.WasPressedThisFrame(),
+                    cancel.WasPressedThisFrame() || pause.WasPressedThisFrame())) return;
             if (pause.WasPressedThisFrame())
             {
                 if (!IsOpen) Open();
@@ -149,13 +145,6 @@ namespace GameJamPlus.UI
                 return;
             }
             if (!IsOpen) return;
-            if (controlsPage.style.display.value != DisplayStyle.None)
-            {
-                float scroll = scrollControls.ReadValue<float>();
-                if (Mathf.Abs(scroll) > 0.01f)
-                    controlsScroll.scrollOffset = new Vector2(0f, Mathf.Clamp(controlsScroll.scrollOffset.y
-                        - scroll * 80f * Time.unscaledDeltaTime, 0f, Mathf.Max(0f, controlsScroll.verticalScroller.highValue)));
-            }
             if (cancel.WasPressedThisFrame())
             {
                 if (mainPage.style.display.value == DisplayStyle.None) ShowMain();
@@ -168,13 +157,23 @@ namespace GameJamPlus.UI
             {
                 nextNavigationTime = Time.unscaledTime + 0.18f;
                 if (Mathf.Abs(direction.y) > 0.5f)
-                    Select((selectedIndex + (direction.y > 0f ? -1 : 1) + selection.Count) % selection.Count);
+                    Select(controlsPage.style.display.value != DisplayStyle.None
+                        ? controlsView.FindVerticalSelection(selection, selectedIndex, direction.y)
+                        : (selectedIndex + (direction.y > 0f ? -1 : 1) + selection.Count) % selection.Count);
+                else if (controlsPage.style.display.value != DisplayStyle.None)
+                {
+                    if (controlsView.IsPageNavigation(selection[selectedIndex])) controlsView.Step(direction.x > 0f ? 1 : -1);
+                }
                 else if (selection[selectedIndex] is Slider slider)
                     slider.value = Mathf.Clamp01(slider.value + Mathf.Sign(direction.x) * 0.05f);
             }
             if (!confirm.WasPressedThisFrame()) return;
             VisualElement selected = selection[selectedIndex];
-            if (selected is Button button) buttonActions[button]();
+            if (selected is Button button)
+            {
+                if (buttonActions.TryGetValue(button, out Action action)) action();
+                else controlsView.Activate(button);
+            }
             else if (selected is Toggle toggle) toggle.value = !toggle.value;
         }
 
@@ -188,7 +187,7 @@ namespace GameJamPlus.UI
             Time.timeScale = 0f;
             overlay.style.display = DisplayStyle.Flex;
             status.text = string.Empty;
-            navigate.Enable(); confirm.Enable(); cancel.Enable(); scrollControls.Enable();
+            navigate.Enable(); confirm.Enable(); cancel.Enable();
             ShowMain();
             Changed?.Invoke(true);
         }
@@ -196,9 +195,10 @@ namespace GameJamPlus.UI
         public void Resume()
         {
             if (!IsOpen) return;
+            controlsView.CancelCapture();
             IsOpen = false;
             overlay.style.display = DisplayStyle.None;
-            navigate.Disable(); confirm.Disable(); cancel.Disable(); scrollControls.Disable();
+            navigate.Disable(); confirm.Disable(); cancel.Disable();
             if (playerInputWasEnabled && playerInput != null) playerInput.enabled = true;
             Time.timeScale = previousTimeScale;
             PlayerPrefs.Save();
@@ -217,8 +217,17 @@ namespace GameJamPlus.UI
         private void ShowControls()
         {
             ShowPage(controlsPage);
-            controlsScroll.scrollOffset = Vector2.zero;
-            SetSelection(controlsPage.Q<Button>("pause-controls-back"));
+            controlsView.Show();
+            RefreshControlsSelection();
+        }
+
+        private void RefreshControlsSelection()
+        {
+            List<VisualElement> buttons = controlsView.VisibleButtons();
+            buttons.Add(controlsPage.Q<Button>("pause-controls-back"));
+            float navigationTime = nextNavigationTime;
+            SetSelection(buttons.ToArray());
+            nextNavigationTime = navigationTime;
         }
 
         private void ShowOptions()
@@ -233,6 +242,8 @@ namespace GameJamPlus.UI
 
         private void ShowPage(VisualElement page)
         {
+            if (page != controlsPage) controlsView.CancelCapture();
+            card.EnableInClassList("controls-open", page == controlsPage);
             mainPage.style.display = page == mainPage ? DisplayStyle.Flex : DisplayStyle.None;
             controlsPage.style.display = page == controlsPage ? DisplayStyle.Flex : DisplayStyle.None;
             optionsPage.style.display = page == optionsPage ? DisplayStyle.Flex : DisplayStyle.None;
@@ -296,7 +307,9 @@ namespace GameJamPlus.UI
         public void Dispose()
         {
             Resume();
-            pause.Dispose(); navigate.Dispose(); confirm.Dispose(); cancel.Dispose(); scrollControls.Dispose();
+            controlsView.PageChanged -= RefreshControlsSelection;
+            controlsView.Dispose();
+            pause.Dispose(); navigate.Dispose(); confirm.Dispose(); cancel.Dispose();
             foreach (KeyValuePair<Button, Action> entry in buttonActions) entry.Key.clicked -= entry.Value;
             foreach (VisualElement element in interactiveElements) element.UnregisterCallback<PointerEnterEvent>(OnHover);
             master.UnregisterValueChangedCallback(OnMasterChanged);

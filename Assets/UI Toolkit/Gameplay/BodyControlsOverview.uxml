@@ -1,0 +1,52 @@
+<ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls"/>
+    <ui:VisualElement class="body-page body-page-Overview">
+        <ui:VisualElement name="body-diagram" class="body-diagram">
+            <ui:VisualElement name="body-image" picking-mode="Ignore" class="body-image" style="background-image: url(&quot;project://database/Assets/Art/UI/Gameplay/Button%20Scheme_normal.png?fileID=2800000&amp;guid=d1861f94779ec6a41b714e7584009566&amp;type=3#Button Scheme_normal&quot;);">
+                <game:BodyControlsScanner name="body-scanner" scan-angle="-90" scan-sprite="project://database/Assets/Art/UI/Gameplay/Button%20Scheme-Sheet.png?fileID=6657085508841006994&amp;guid=97bbe0555ce045b46ad67245c2b9f1d2&amp;type=3#Button Scheme-Sheet_0" pixel-offset="300" scan-duration="5" pause-duration="1.5" band-width="0.5" line-width="0.01" line-color="rgba(136, 235, 255, 0.7)" language-direction="Inherit" class="body-scanner"/>
+                <ui:VisualElement name="body-anchor-0" picking-mode="Ignore" class="body-anchor" style="left: 32px; top: 63px; height: 1px; width: 4px;"/>
+                <ui:VisualElement name="body-anchor-1" picking-mode="Ignore" class="body-anchor" style="left: 70px; top: 105px; height: 5px; width: 4px;"/>
+                <ui:VisualElement name="body-anchor-2" picking-mode="Ignore" class="body-anchor" style="left: 123px; top: 112px; height: 3px; width: 6px;"/>
+                <ui:VisualElement name="body-anchor-3" picking-mode="Ignore" class="body-anchor" style="left: 147px; top: 125px; height: 3px; width: 4px;"/>
+                <ui:VisualElement name="body-camera-anchor" picking-mode="Ignore" class="body-anchor" style="left: 49px; top: 41px; height: 3px; width: 3px;"/>
+            </ui:VisualElement>
+            <game:BodyControlsConnectors name="body-connectors" picking-mode="Ignore" class="body-connectors" style="top: 0; bottom: 1px; right: 1px; left: 0;"/>
+            <game:InputPromptElement name="body-callout-0" binding="mouth" preview-path="&lt;Keyboard&gt;/f" preview-label="F" class="body-callout body-callout-0" style="top: 49px; left: 49px;"/>
+            <game:InputPromptElement name="body-callout-1" binding="front" preview-path="&lt;Keyboard&gt;/e" preview-label="E" class="body-callout body-callout-1" style="top: 90px; left: 51px;"/>
+            <game:InputPromptElement name="body-callout-2" binding="hind" preview-path="&lt;Keyboard&gt;/space" preview-label="Space" class="body-callout body-callout-2" style="bottom: 28px; left: 97px;"/>
+            <game:InputPromptElement name="body-callout-3" binding="tail" preview-path="" preview-label="—" class="body-callout body-callout-3" style="top: 77px; right: 16px;"/>
+            <ui:VisualElement name="body-camera-callout" class="body-callout body-camera-callout input-prompt-camera" style="width: 135px; flex-grow: 0; max-width: 200%; min-width: 50px; height: auto; min-height: 8px; top: 2px; right: 15px;">
+                <ui:VisualElement class="input-prompt-row">
+                    <ui:Label text="Lock / recenter" picking-mode="Ignore"/>
+                    <game:InputPromptElement binding="cameraLock" preview-path="&lt;Keyboard&gt;/v" preview-label="V"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="input-prompt-row">
+                    <ui:Label text="Zoom" picking-mode="Ignore"/>
+                    <game:InputPromptElement binding="zoomIn" preview-path="&lt;Mouse&gt;/scroll/up" preview-label="Scroll up"/>
+                    <game:InputPromptElement binding="zoomOut" preview-path="&lt;Mouse&gt;/scroll/down" preview-label="Scroll down"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="body-camera-callout1" class="body-callout body-camera-callout input-prompt-camera" style="width: 135px; flex-grow: 0; max-width: 200%; top: 3px; right: 166px; height: auto; min-height: 8px; min-width: 50px;">
+                <ui:VisualElement class="input-prompt-row">
+                    <ui:Label text="Hold" picking-mode="Ignore"/>
+                    <game:InputPromptElement binding="camera" preview-path="&lt;Keyboard&gt;/c" preview-label="C"/>
+                    <ui:Label text="+" picking-mode="Ignore"/>
+                    <game:InputPromptElement binding="directions" preview-path="directions" preview-label="Directions"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="input-prompt-row">
+                    <ui:Label text="Pan camera" picking-mode="Ignore"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="body-details">
+            <ui:VisualElement class="input-prompt-row">
+                <game:InputPromptElement binding="directions" preview-path="directions" preview-label="Directions"/>
+                <ui:Label text="Move" picking-mode="Ignore"/>
+                <game:InputPromptElement binding="pause" preview-path="&lt;Keyboard&gt;/escape" preview-label="Esc"/>
+                <ui:Label text="Pause" picking-mode="Ignore"/>
+                <game:InputPromptElement binding="advance" preview-path="&lt;Keyboard&gt;/f" preview-label="F"/>
+                <ui:Label text="Messages" picking-mode="Ignore"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

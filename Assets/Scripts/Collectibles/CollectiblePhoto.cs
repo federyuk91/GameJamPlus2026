@@ -13,12 +13,13 @@ namespace MousePlatformer
         private string collectionId;
         [SerializeField, Tooltip("Photo displayed on collection. Leave empty to show a placeholder.")]
         private Texture2D photo;
-        [SerializeField, Min(1), Tooltip("Number of collected photos needed to end the trial after closing the photo. Counts quantities independently of collection IDs.")]
+        [SerializeField, Min(1), Tooltip("End the trial after closing every Nth collected photo: with 3, totals 3, 6, 9, etc. Counts quantities independently of collection IDs.")]
         private int photosToEndTest = 3;
         [SerializeField, Tooltip("Off: counts only this level. On: uses the session total displayed in the HUD.")]
         private bool useSessionTotal = true;
         [SerializeField] private TestEndEvent curiosityEnding;
         [SerializeField] private UnityEvent onContinue = new UnityEvent();
+        private bool continued;
 
         private void Start()
         {
@@ -43,10 +44,13 @@ namespace MousePlatformer
 
         private void ContinuePhoto()
         {
+            if (continued) return;
+            continued = true;
             onContinue.Invoke();
             int count = useSessionTotal ? GameSession.GetCollectibleCount(CollectibleType.Photo)
                 : GameSession.PhotosCollectedThisTest;
-            if (count < Mathf.Max(1, photosToEndTest)) return;
+            int interval = Mathf.Max(1, photosToEndTest);
+            if (count <= 0 || count % interval != 0) return;
             if (curiosityEnding == null)
             {
                 Debug.LogError("Assign Curiosity Ending to end the trial at the photo quantity threshold.", this);

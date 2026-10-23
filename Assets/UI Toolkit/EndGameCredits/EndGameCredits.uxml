@@ -18,6 +18,7 @@
                     <ui:VisualElement tooltip="IGDA Italy" class="thanks-logo igda"/>
                     <ui:VisualElement tooltip="SGS" class="thanks-logo sgs"/>
                 </ui:VisualElement>
+                <ui:Label text="m5x7 &amp; m6x11 fonts by Daniel Linssen" tooltip="https://managore.itch.io/m5x7 · https://managore.itch.io/m6x11" class="font-credit typed"/>
                 <ui:VisualElement class="monitor-footer">
                     <ui:VisualElement class="transmission-line">
                         <ui:Label text="END OF TRANSMISSION" class="transmission typed"/>

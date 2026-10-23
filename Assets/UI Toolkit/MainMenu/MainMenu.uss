@@ -1,8 +1,7 @@
 .display-frame {
     flex-grow: 1;
-    background-color: black;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 .menu-root {
     --menu-background: rgb(240, 229, 202);
@@ -20,7 +19,7 @@
     flex-grow: 1;
     background-color: var(--menu-background);
     color: var(--menu-text);
-    -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Regular.ttf");
+    -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf");
     font-size: 14px;
 }
 .background { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-image: url("../../Art/UI/MainMenu/Backgrounds/WelcomeProgram_Paper.png"); -unity-background-scale-mode: scale-and-crop; }
@@ -28,8 +27,8 @@
 .menu-column { width: 244px; flex-shrink: 0; }
 .program-heading { font-size: 10px; letter-spacing: 2px; color: var(--menu-accent); margin: 0 0 5px 0; }
 .title-logo { width: 244px; height: 82px; flex-shrink: 0; background-image: url("../../Art/UI/MainMenu/Branding/Universe10_TitleLogo.png"); -unity-background-scale-mode: scale-to-fit; }
-.subtitle { font-size: 16px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); color: var(--menu-subtitle); margin: 0 0 16px 0; }
-.menu-button { height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: flex-start; margin: 0; padding: 0 10px; background-color: transparent; color: var(--menu-text); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); font-size: 20px; border-width: 0; border-bottom-width: 1px; border-color: var(--menu-border); border-radius: 0; }
+.subtitle { font-size: 16px; -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); color: var(--menu-subtitle); margin: 0 0 16px 0; }
+.menu-button { height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: flex-start; margin: 0; padding: 0 10px; background-color: transparent; color: var(--menu-text); -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); font-size: 20px; border-width: 0; border-bottom-width: 1px; border-color: var(--menu-border); border-radius: 0; }
 .menu-button > Label { margin: 0; }
 .menu-button .menu-pointer { width: 22px; flex-shrink: 0; font-size: 12px; visibility: hidden; }
 .menu-button:hover, .menu-button:focus { background-color: var(--menu-hover); border-color: var(--menu-hover); color: var(--menu-on-control); border-radius: 4px; }
@@ -48,10 +47,10 @@
 .key-art { width: 100%; height: 186px; flex-shrink: 0; background-image: url("../../Art/UI/MainMenu/Illustrations/WelcomeRoom_Mouse.png"); -unity-background-scale-mode: scale-to-fit; }
 .room-status { width: 100%; height: 24px; margin-top: 4px; flex-direction: row; align-items: center; justify-content: center; border-width: 1px; border-color: var(--menu-border); border-radius: 4px; }
 .art-caption { margin: 0 0 0 10px; font-size: 11px; letter-spacing: 2px; color: var(--menu-on-control); }
-.welcome-note { margin: 5px 0 0 0; color: var(--menu-text); font-size: 15px; letter-spacing: 1px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-text-align: middle-center; }
+.welcome-note { margin: 5px 0 0 0; color: var(--menu-text); font-size: 15px; letter-spacing: 1px; -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); -unity-text-align: middle-center; }
 .footer { height: 24px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 16px; background-color: var(--menu-surface); color: var(--menu-on-control); font-size: 11px; }
 .footer > Label { margin: 0; }
-.dialog-title { font-size: 20px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); white-space: normal; margin: 0 0 8px 0; }
+.dialog-title { font-size: 20px; -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); white-space: normal; margin: 0 0 8px 0; }
 .dialog-button { height: 30px; margin: 8px 0 0 0; background-color: var(--menu-surface); color: var(--menu-on-control); font-size: 16px; border-width: 1px; border-color: var(--menu-border); border-radius: 3px; }
 .dialog-button:hover, .dialog-button:focus { background-color: var(--menu-hover); border-color: var(--menu-on-control); }
 .dialog-button:active { background-color: var(--menu-active); }
@@ -69,21 +68,21 @@
 /* Settings and staff cards share the welcome-room monitor frame. */
 
 .panel-header { height: 30px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-items: center; padding: 0 10px; background-color: var(--menu-surface); border-width: 1px; border-color: var(--menu-border); border-radius: 3px; }
-.panel-title { margin: 0; color: var(--menu-on-control); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); font-size: 18px; letter-spacing: 2px; }
+.panel-title { margin: 0; color: var(--menu-on-control); -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); font-size: 18px; letter-spacing: 2px; }
 .panel-stamp { margin: 0; color: var(--menu-on-control); font-size: 10px; letter-spacing: 1px; }
 .section-heading { margin: 6px 0 3px 0; color: var(--menu-accent); font-size: 10px; letter-spacing: 1px; }
 .credit-row { height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; border-bottom-width: 1px; border-bottom-color: var(--menu-border); }
 .credit-details { flex-grow: 1; flex-direction: row; align-items: center; justify-content: flex-start; }
-.credit-role { width: 184px; flex-shrink: 0; margin: 0 8px 0 0; font-size: 14px; -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-font-style: bold; color: var(--menu-text); }
+.credit-role { width: 184px; flex-shrink: 0; margin: 0 8px 0 0; font-size: 14px; -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); -unity-font-style: bold; color: var(--menu-text); }
 .credit-name { margin: 0; font-size: 14px; color: var(--menu-subtitle); }
-.special-thanks-title { margin: 6px 0 2px 0; font-size: 14px; color: var(--menu-accent); -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); -unity-text-align: middle-center; }
+.special-thanks-title { margin: 6px 0 2px 0; font-size: 14px; color: var(--menu-accent); -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); -unity-text-align: middle-center; }
 .special-thanks-logos { height: 44px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-around; }
 .thanks-logo { width: 110px; height: 44px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
 .thanks-gamejamplus { background-image: url("../../Art/UI/Branding/GameJamPlus_Icon.png"); }
 .thanks-igda-italy { background-image: url("../../Art/UI/MainMenu/Branding/IGDAItaly_Logo.png"); }
 .thanks-sgs { background-image: url("../../Art/UI/MainMenu/Branding/SGS_Logo.png"); }
 #options-panel .audio-slider { height: 32px; margin: 0; border-radius: 3px; }
-#options-panel .unity-base-field__label { -unity-font: url("../../Art/UI/MainMenu/Fonts/Cardo-Bold.ttf"); }
+#options-panel .unity-base-field__label { -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); }
 .audio-slider:hover, #fullscreen:hover { background-color: rgba(174, 73, 47, 0.08); }
 .audio-slider:focus, #fullscreen:focus { background-color: rgba(174, 73, 47, 0.12); }
 .audio-slider .unity-base-slider__tracker { height: 4px; border-radius: 0; }
@@ -116,7 +115,7 @@
 .context-card .credit-role { font-size: 11px; color: var(--menu-on-control); }
 .context-card .credit-name { font-size: 12px; color: var(--menu-on-control); }
 .context-card .special-thanks-title { height: 16px; font-size: 12px; margin: 4px 0 2px 0; color: var(--menu-on-control); }
-.context-card .special-thanks-logos { height: 34px; }
+.context-card .special-thanks-logos { height: 30px; }
 .context-card .thanks-logo { width: 84px; height: 30px; background-color: transparent; }
 .context-card .audio-slider { height: 25px; }
 #options-panel .audio-slider { height: 25px; }
@@ -125,3 +124,11 @@
 .context-card .dialog-button { height: 24px; min-height: 24px; margin-top: 4px; font-size: 14px; }
 #options-back { margin-top: auto; }
 .context-card .dialog-title { color: var(--menu-on-control); font-size: 18px; }
+
+.context-card .font-credit { height: 10px; min-height: 10px; flex-shrink: 0; font-size: 8px; margin: 0; -unity-text-align: middle-center; color: var(--menu-on-control); }
+
+/* Clear inherited TextCore font assets so the selected TTF takes effect. */
+.menu-root, .menu-root * {
+    -unity-font-definition: none;
+    -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf");
+}

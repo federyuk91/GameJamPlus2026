@@ -1,6 +1,8 @@
 # Collectible quantities and persistence IDs
 
-The cheese goal lives under Player > Cheese Collection Goal, with a CollectibleTestGoal wired to the player's CollectibleCollector and a non-lethal TestEndEvent. Required Count is 10. It listens to quantity changes and finishes in LateUpdate, after ordinary pickup events, to avoid an ordinary cheese dialogue replacing the ending.
+The cheese goal lives under Player > Cheese Collection Goal, with a CollectibleTestGoal wired to the player's CollectibleCollector and a non-lethal TestEndEvent. Required Count is 10. It commits the ending immediately during the quantity callback, before subsequent pickup events can release buttons or activate other hazards. GameplayHudController suppresses ordinary pickup dialogue after an ending starts.
+
+GameManager.EndingOutcome identifies the accepted ending event. A single `Stage ending:` Console log records its source, scene, lethal flag, cheese quantity and chosen scientist comment. Prior non-lethal shocks do not select a different dialogue; a lethal shock accepted before the cheese threshold remains a death ending.
 
 Photo Collectible > CollectiblePhoto checks Photos To End Test (3) after closing the photograph. It reads the quantity directly from GameSession. Collection IDs only track which placed photos remain collected between universes; they never determine whether the threshold is reached. Missing Curiosity Ending now emits an explicit error instead of silently doing nothing.
 

@@ -2203,6 +2203,7 @@ GameObject:
   - component: {fileID: 9100000100}
   - component: {fileID: 2110030000}
   - component: {fileID: 9700001004}
+  - component: {fileID: 9800095001}
   m_Layer: 0
   m_Name: Cheese (1)
   m_TagString: Untagged
@@ -6849,6 +6850,7 @@ GameObject:
   - component: {fileID: 9100000102}
   - component: {fileID: 2110030001}
   - component: {fileID: 9700001005}
+  - component: {fileID: 9800095002}
   m_Layer: 0
   m_Name: Cheese (3)
   m_TagString: Untagged
@@ -7979,6 +7981,7 @@ GameObject:
   - component: {fileID: 9100000106}
   - component: {fileID: 2110030003}
   - component: {fileID: 9700001007}
+  - component: {fileID: 9800095004}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Untagged
@@ -75940,6 +75943,7 @@ GameObject:
   - component: {fileID: 9100000104}
   - component: {fileID: 2110030002}
   - component: {fileID: 9700001006}
+  - component: {fileID: 9800095003}
   m_Layer: 0
   m_Name: Cheese (4)
   m_TagString: Untagged
@@ -83119,6 +83123,10 @@ MonoBehaviour:
   collectionId: LoopScene.Cheese.378103383
   visual: {fileID: 378103388}
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
+  consumedPushable: {fileID: 9800095001}
+  body: {fileID: 9100000100}
+  consumedShapeSize: {x: 0.90625, y: 0.25}
+  consumedShapeOffset: {x: 0.015625, y: -0.375}
 --- !u!114 &2110020001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83134,6 +83142,10 @@ MonoBehaviour:
   collectionId: LoopScene.Cheese.1052615328
   visual: {fileID: 1052615333}
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
+  consumedPushable: {fileID: 9800095002}
+  body: {fileID: 9100000102}
+  consumedShapeSize: {x: 0.90625, y: 0.25}
+  consumedShapeOffset: {x: 0.015625, y: -0.375}
 --- !u!114 &2110020002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83149,6 +83161,10 @@ MonoBehaviour:
   collectionId: LoopScene.Cheese.2029483284
   visual: {fileID: 2029483289}
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
+  consumedPushable: {fileID: 9800095003}
+  body: {fileID: 9100000104}
+  consumedShapeSize: {x: 0.90625, y: 0.25}
+  consumedShapeOffset: {x: 0.015625, y: -0.375}
 --- !u!114 &2110020003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83164,6 +83180,10 @@ MonoBehaviour:
   collectionId: LoopScene.Cheese.1235535439
   visual: {fileID: 1235535440}
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
+  consumedPushable: {fileID: 9800095004}
+  body: {fileID: 9100000106}
+  consumedShapeSize: {x: 0.90625, y: 0.25}
+  consumedShapeOffset: {x: 0.015625, y: -0.375}
 --- !u!114 &2110030000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83179,7 +83199,7 @@ MonoBehaviour:
   body: {fileID: 9100000100}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
-  pushable: {fileID: 0}
+  pushable: {fileID: 9800095001}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
   followSupport: 1
@@ -83198,7 +83218,7 @@ MonoBehaviour:
   body: {fileID: 9100000102}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
-  pushable: {fileID: 0}
+  pushable: {fileID: 9800095002}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
   followSupport: 1
@@ -83217,7 +83237,7 @@ MonoBehaviour:
   body: {fileID: 9100000104}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
-  pushable: {fileID: 0}
+  pushable: {fileID: 9800095003}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
   followSupport: 1
@@ -83236,7 +83256,7 @@ MonoBehaviour:
   body: {fileID: 9100000106}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
-  pushable: {fileID: 0}
+  pushable: {fileID: 9800095004}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
   followSupport: 1
@@ -83311,6 +83331,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 9100000101}
   ignorePlayerColliders: 1
+  blocksOtherProps: 1
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -83350,7 +83372,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.375}
+  m_Offset: {x: 0.015625, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -83360,7 +83382,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.25}
+  m_Size: {x: 0.90625, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9100000102
 MonoBehaviour:
@@ -83384,6 +83406,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 9100000103}
   ignorePlayerColliders: 1
+  blocksOtherProps: 1
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -83423,7 +83447,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.375}
+  m_Offset: {x: 0.015625, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -83433,7 +83457,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.25}
+  m_Size: {x: 0.90625, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9100000104
 MonoBehaviour:
@@ -83457,6 +83481,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 9100000105}
   ignorePlayerColliders: 1
+  blocksOtherProps: 1
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -83496,7 +83522,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.375}
+  m_Offset: {x: 0.015625, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -83506,7 +83532,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.25}
+  m_Size: {x: 0.90625, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9100000106
 MonoBehaviour:
@@ -83530,6 +83556,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 9100000107}
   ignorePlayerColliders: 1
+  blocksOtherProps: 1
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -83569,7 +83597,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.375}
+  m_Offset: {x: 0.015625, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -83579,7 +83607,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.25}
+  m_Size: {x: 0.90625, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9700001000
 MonoBehaviour:
@@ -84422,6 +84450,10 @@ PrefabInstance:
       propertyPath: gameplayCamera
       value: 
       objectReference: {fileID: 519420034}
+    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
+      propertyPath: electricity
+      value:
+      objectReference: {fileID: 9800099002}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -86014,6 +86046,81 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+--- !u!114 &9800095001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378103383}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
+  body: {fileID: 9100000100}
+  motion: {fileID: 2110030000}
+  ropeAttachment: {fileID: 0}
+  showGizmos: 1
+--- !u!114 &9800095002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052615328}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
+  body: {fileID: 9100000102}
+  motion: {fileID: 2110030001}
+  ropeAttachment: {fileID: 0}
+  showGizmos: 1
+--- !u!114 &9800095003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029483284}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
+  body: {fileID: 9100000104}
+  motion: {fileID: 2110030002}
+  ropeAttachment: {fileID: 0}
+  showGizmos: 1
+--- !u!114 &9800095004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235535439}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
+  body: {fileID: 9100000106}
+  motion: {fileID: 2110030003}
+  ropeAttachment: {fileID: 0}
+  showGizmos: 1
+--- !u!114 &9800099002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9800099001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+  m_PrefabInstance: {fileID: 7666400714346116476}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

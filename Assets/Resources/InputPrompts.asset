@@ -1,0 +1,488 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73115234271262c4b85c141d10c194a8, type: 3}
+  m_Name: InputPrompts
+  m_EditorClassIdentifier:
+  entries:
+  - family: 0
+    control: "a"
+    icon: {fileID: 2800000, guid: 221b926cd71d017488b43c4e720dada5, type: 3}
+  - family: 0
+    control: "b"
+    icon: {fileID: 2800000, guid: aa3775808ed803f43b614b68a94acf19, type: 3}
+  - family: 0
+    control: "c"
+    icon: {fileID: 2800000, guid: 7a87deda83a05c842a2d8083e46d7d8b, type: 3}
+  - family: 0
+    control: "d"
+    icon: {fileID: 2800000, guid: 834accb4212a1034eb5f411883780924, type: 3}
+  - family: 0
+    control: "e"
+    icon: {fileID: 2800000, guid: 973697f9be1618a4790bee573c89cc16, type: 3}
+  - family: 0
+    control: "f"
+    icon: {fileID: 2800000, guid: f1082326cc1fc3f418770e721d5ac558, type: 3}
+  - family: 0
+    control: "g"
+    icon: {fileID: 2800000, guid: a03d4edb261f9a6448c1fb89e7078e80, type: 3}
+  - family: 0
+    control: "h"
+    icon: {fileID: 2800000, guid: f78802a18527f9d4aad848df521292f7, type: 3}
+  - family: 0
+    control: "i"
+    icon: {fileID: 2800000, guid: 5a787c50183572a40982ea8fe7ad3995, type: 3}
+  - family: 0
+    control: "j"
+    icon: {fileID: 2800000, guid: 89074d11eae582f4aa3ef6a4a30405dc, type: 3}
+  - family: 0
+    control: "k"
+    icon: {fileID: 2800000, guid: d73d7941656481342a8b684868d46dab, type: 3}
+  - family: 0
+    control: "l"
+    icon: {fileID: 2800000, guid: 394736d3abe503f46b81913f4e18a8b0, type: 3}
+  - family: 0
+    control: "m"
+    icon: {fileID: 2800000, guid: 588b7a5a83ef4e54fb43de3638514884, type: 3}
+  - family: 0
+    control: "n"
+    icon: {fileID: 2800000, guid: 1eebfdcbc9e820b439502201ac3ed51a, type: 3}
+  - family: 0
+    control: "o"
+    icon: {fileID: 2800000, guid: a06d1f4ac35db4749b31352e088450b9, type: 3}
+  - family: 0
+    control: "p"
+    icon: {fileID: 2800000, guid: 66a3a6c8e1312914aa3167f0da3bd5ba, type: 3}
+  - family: 0
+    control: "q"
+    icon: {fileID: 2800000, guid: 8888c20084dc12349bdf61ad556732fd, type: 3}
+  - family: 0
+    control: "r"
+    icon: {fileID: 2800000, guid: f1117fad21073b34a8a4176e283aae1f, type: 3}
+  - family: 0
+    control: "s"
+    icon: {fileID: 2800000, guid: a9cd2142733caf04bae1b1b4a109b4ca, type: 3}
+  - family: 0
+    control: "t"
+    icon: {fileID: 2800000, guid: 73221810f921c624299ff0edcef651a6, type: 3}
+  - family: 0
+    control: "u"
+    icon: {fileID: 2800000, guid: d0f18f01d7b13c3408cac85bf8836c5e, type: 3}
+  - family: 0
+    control: "v"
+    icon: {fileID: 2800000, guid: b509daebd6e0ba946975981e1d172b5c, type: 3}
+  - family: 0
+    control: "w"
+    icon: {fileID: 2800000, guid: 6be1ec0c11f0edf4c9c88b09c9bf80f6, type: 3}
+  - family: 0
+    control: "x"
+    icon: {fileID: 2800000, guid: a8772c76325f7c24b990253d6c626f4b, type: 3}
+  - family: 0
+    control: "y"
+    icon: {fileID: 2800000, guid: 1c622573d4e617e4c91e9e7fca7a1748, type: 3}
+  - family: 0
+    control: "z"
+    icon: {fileID: 2800000, guid: 6be74d5f47b506a4ca884f62088b6e2c, type: 3}
+  - family: 0
+    control: "0"
+    icon: {fileID: 2800000, guid: 8c25f7d5a2dc2ca4bb24541a0b8cc477, type: 3}
+  - family: 0
+    control: "1"
+    icon: {fileID: 2800000, guid: 214f01d57a3d0f14f9f136bef6382b91, type: 3}
+  - family: 0
+    control: "2"
+    icon: {fileID: 2800000, guid: ffb4040cab47b294a9103a09faff69f8, type: 3}
+  - family: 0
+    control: "3"
+    icon: {fileID: 2800000, guid: 071954b8c3a0ca544bba70e15871e8f5, type: 3}
+  - family: 0
+    control: "4"
+    icon: {fileID: 2800000, guid: 639a8f89ef0a65346b24e7aec33620b1, type: 3}
+  - family: 0
+    control: "5"
+    icon: {fileID: 2800000, guid: 46a48d1c142e67344a01b60bcc25012a, type: 3}
+  - family: 0
+    control: "6"
+    icon: {fileID: 2800000, guid: 955020cce7d7656408322ed0e9580b3f, type: 3}
+  - family: 0
+    control: "7"
+    icon: {fileID: 2800000, guid: 6c8ea483f60cfc84e976570897e5ebdf, type: 3}
+  - family: 0
+    control: "8"
+    icon: {fileID: 2800000, guid: b646324cc668ca14dbd9fa79f6ff7600, type: 3}
+  - family: 0
+    control: "9"
+    icon: {fileID: 2800000, guid: abd0679e0e9e5e643a4e00b85218e0d7, type: 3}
+  - family: 0
+    control: "f1"
+    icon: {fileID: 2800000, guid: a5dcdfab3634e154aa3aed8c7fb87917, type: 3}
+  - family: 0
+    control: "f2"
+    icon: {fileID: 2800000, guid: 1e9b8916d3f3163499f4b034b78b0e2e, type: 3}
+  - family: 0
+    control: "f3"
+    icon: {fileID: 2800000, guid: c8d62091542a5a74a8aa11fee4c3dc0c, type: 3}
+  - family: 0
+    control: "f4"
+    icon: {fileID: 2800000, guid: 7b14a6c03056067479d41b72794a1d70, type: 3}
+  - family: 0
+    control: "f5"
+    icon: {fileID: 2800000, guid: cfea4da9dc02d224fbea5dbfb6cecf36, type: 3}
+  - family: 0
+    control: "f6"
+    icon: {fileID: 2800000, guid: 6fdb3dffbb4c91c469fa33859f872168, type: 3}
+  - family: 0
+    control: "f7"
+    icon: {fileID: 2800000, guid: 62b77653ceb16c64daa62e00e0b32d60, type: 3}
+  - family: 0
+    control: "f8"
+    icon: {fileID: 2800000, guid: cc339031ca141e24a9e835bf858c1352, type: 3}
+  - family: 0
+    control: "f9"
+    icon: {fileID: 2800000, guid: f8d70e4a37a0027498d93987ecea8e66, type: 3}
+  - family: 0
+    control: "f10"
+    icon: {fileID: 2800000, guid: 0e68ee6a3334d0046b5c33ff8e71bb1f, type: 3}
+  - family: 0
+    control: "f11"
+    icon: {fileID: 2800000, guid: adfd6c1349244324eb960f8341f48f0e, type: 3}
+  - family: 0
+    control: "f12"
+    icon: {fileID: 2800000, guid: 96a30e3ea810d3a4fbd43f420f762f2d, type: 3}
+  - family: 0
+    control: "space"
+    icon: {fileID: 2800000, guid: df9395a51417e8040aee7335bcd64210, type: 3}
+  - family: 0
+    control: "enter"
+    icon: {fileID: 2800000, guid: 138e4f2f85f5b01448e523cc4a1d0c9b, type: 3}
+  - family: 0
+    control: "numpadEnter"
+    icon: {fileID: 2800000, guid: ca42caff114ddc34cb4ad8038193a88a, type: 3}
+  - family: 0
+    control: "escape"
+    icon: {fileID: 2800000, guid: fb6ce12c439b28c4a935105ff0de4446, type: 3}
+  - family: 0
+    control: "tab"
+    icon: {fileID: 2800000, guid: b7d0159de5a1ac4409737a74b61653d0, type: 3}
+  - family: 0
+    control: "backspace"
+    icon: {fileID: 2800000, guid: bf280109667a281468f798f0d3598d13, type: 3}
+  - family: 0
+    control: "delete"
+    icon: {fileID: 2800000, guid: bf080c51600ab2d46b62d9d2b1e982a6, type: 3}
+  - family: 0
+    control: "insert"
+    icon: {fileID: 2800000, guid: 6776f9fe8ff2cfb4284cf9b7211db60e, type: 3}
+  - family: 0
+    control: "home"
+    icon: {fileID: 2800000, guid: efac70bcf18738248a04f42fa12ee9ef, type: 3}
+  - family: 0
+    control: "end"
+    icon: {fileID: 2800000, guid: e13e6e5001d99b841bd09fa407ef9c9d, type: 3}
+  - family: 0
+    control: "pageUp"
+    icon: {fileID: 2800000, guid: 7cd1717c655d200489a7cce5395d511e, type: 3}
+  - family: 0
+    control: "pageDown"
+    icon: {fileID: 2800000, guid: 211b41e5b8fe91e4abc8a49fd94d9825, type: 3}
+  - family: 0
+    control: "leftShift"
+    icon: {fileID: 2800000, guid: 078ceb3c394665947aae028178569c48, type: 3}
+  - family: 0
+    control: "rightShift"
+    icon: {fileID: 2800000, guid: 078ceb3c394665947aae028178569c48, type: 3}
+  - family: 0
+    control: "leftCtrl"
+    icon: {fileID: 2800000, guid: 36d95f73a2b4b7c4aa187aa50d9abc65, type: 3}
+  - family: 0
+    control: "rightCtrl"
+    icon: {fileID: 2800000, guid: 36d95f73a2b4b7c4aa187aa50d9abc65, type: 3}
+  - family: 0
+    control: "leftAlt"
+    icon: {fileID: 2800000, guid: aa87c7cc6feec2e439cc47ddddd65bb8, type: 3}
+  - family: 0
+    control: "rightAlt"
+    icon: {fileID: 2800000, guid: aa87c7cc6feec2e439cc47ddddd65bb8, type: 3}
+  - family: 0
+    control: "leftMeta"
+    icon: {fileID: 2800000, guid: 9ff0faefb5345e64a94bfb8f1c8b080a, type: 3}
+  - family: 0
+    control: "rightMeta"
+    icon: {fileID: 2800000, guid: 9ff0faefb5345e64a94bfb8f1c8b080a, type: 3}
+  - family: 0
+    control: "capsLock"
+    icon: {fileID: 2800000, guid: f8496c908c1536a40aa72bb013fa9339, type: 3}
+  - family: 0
+    control: "numLock"
+    icon: {fileID: 2800000, guid: 4578e1540d1512145bb007eb76185c2c, type: 3}
+  - family: 0
+    control: "pause"
+    icon: {fileID: 2800000, guid: cf6b5a4f89640f448b7f5798e0370435, type: 3}
+  - family: 0
+    control: "backquote"
+    icon: {fileID: 2800000, guid: ba9608c329feae74bb64485ed4de5822, type: 3}
+  - family: 0
+    control: "minus"
+    icon: {fileID: 2800000, guid: 5ff1f640e8039014fa0347b078f18002, type: 3}
+  - family: 0
+    control: "equals"
+    icon: {fileID: 2800000, guid: 65fbcd6653ce67045892d6540c83fc62, type: 3}
+  - family: 0
+    control: "leftBracket"
+    icon: {fileID: 2800000, guid: 96171226eef757e4b917ef39734e4c5b, type: 3}
+  - family: 0
+    control: "rightBracket"
+    icon: {fileID: 2800000, guid: cc5402c97432e814192ccaebe2ffc8c1, type: 3}
+  - family: 0
+    control: "backslash"
+    icon: {fileID: 2800000, guid: 416f8782122970948af083ad246becd7, type: 3}
+  - family: 0
+    control: "semicolon"
+    icon: {fileID: 2800000, guid: a48387a54961aec4683b9f2ffedaed67, type: 3}
+  - family: 0
+    control: "quote"
+    icon: {fileID: 2800000, guid: dad7c451b45f56240b88eadb82504f61, type: 3}
+  - family: 0
+    control: "comma"
+    icon: {fileID: 2800000, guid: a55a9451b13e95c4ebd21f366c39a436, type: 3}
+  - family: 0
+    control: "period"
+    icon: {fileID: 2800000, guid: 1a41c980852637a49ac064c585043752, type: 3}
+  - family: 0
+    control: "slash"
+    icon: {fileID: 2800000, guid: 55b23c0c30d95774e9ad0735e53bb346, type: 3}
+  - family: 0
+    control: "upArrow"
+    icon: {fileID: 2800000, guid: 90fc81af0bcdb6a4db22606ea210b740, type: 3}
+  - family: 0
+    control: "downArrow"
+    icon: {fileID: 2800000, guid: 227282e3ee4ccc84c8bf90f35926c790, type: 3}
+  - family: 0
+    control: "leftArrow"
+    icon: {fileID: 2800000, guid: 6e7cfbc6b13288344ad0086c76209c2f, type: 3}
+  - family: 0
+    control: "rightArrow"
+    icon: {fileID: 2800000, guid: 54a360ff712da2447acc73e617ad452b, type: 3}
+  - family: 0
+    control: "horizontal"
+    icon: {fileID: 2800000, guid: 3828ffea59ddca74c82b71c60f56ccc2, type: 3}
+  - family: 0
+    control: "vertical"
+    icon: {fileID: 2800000, guid: 49255816d3fc7664f9f3d509c42471bc, type: 3}
+  - family: 0
+    control: "scroll/up"
+    icon: {fileID: 2800000, guid: 4f35df2a4d4377c43a0f5d5757c7d9e1, type: 3}
+  - family: 0
+    control: "scroll/down"
+    icon: {fileID: 2800000, guid: dc0ab0b4b45dea849812569adee4a56c, type: 3}
+  - family: 1
+    control: "buttonNorth"
+    icon: {fileID: 2800000, guid: b2f3308ec6cc51649ba15ed1eceae95a, type: 3}
+  - family: 1
+    control: "buttonWest"
+    icon: {fileID: 2800000, guid: e1f96ad47edb3c44fac1721698c0682d, type: 3}
+  - family: 1
+    control: "buttonSouth"
+    icon: {fileID: 2800000, guid: c61a8d974c395654ab2ccc386dfbc7be, type: 3}
+  - family: 1
+    control: "buttonEast"
+    icon: {fileID: 2800000, guid: 0dac63446ca5b4d4fbca14e7d4af7ab1, type: 3}
+  - family: 1
+    control: "leftShoulder"
+    icon: {fileID: 2800000, guid: 075fbb00270d1e442a92b1fb421e91a0, type: 3}
+  - family: 1
+    control: "rightShoulder"
+    icon: {fileID: 2800000, guid: 125e9bc694af55c4dae70c61c48c2bbb, type: 3}
+  - family: 1
+    control: "leftTrigger"
+    icon: {fileID: 2800000, guid: e3ee9c8a5c890dc49920085d6c3d9813, type: 3}
+  - family: 1
+    control: "rightTrigger"
+    icon: {fileID: 2800000, guid: 36e4da039eac47a4d8b0e73d82dc709f, type: 3}
+  - family: 1
+    control: "start"
+    icon: {fileID: 2800000, guid: 024df08e5fe36454792ae3146585a738, type: 3}
+  - family: 1
+    control: "select"
+    icon: {fileID: 2800000, guid: 0dfc21d316f8f2242807bf20ad599979, type: 3}
+  - family: 1
+    control: "leftStick"
+    icon: {fileID: 2800000, guid: b55d024f310b15943b6ef5c2aabe8a40, type: 3}
+  - family: 1
+    control: "leftStickPress"
+    icon: {fileID: 2800000, guid: 49df995a4a6a9624c99f29d1bc5f67bb, type: 3}
+  - family: 1
+    control: "rightStick"
+    icon: {fileID: 2800000, guid: 898de461558cce04b819149e695a02bf, type: 3}
+  - family: 1
+    control: "rightStickPress"
+    icon: {fileID: 2800000, guid: b334f30827077b641958e1722622c8f2, type: 3}
+  - family: 1
+    control: "dpad/up"
+    icon: {fileID: 2800000, guid: 7658bcb482b3c144092fe263f0302fe9, type: 3}
+  - family: 1
+    control: "dpad/down"
+    icon: {fileID: 2800000, guid: 30a6c94da245cd046b755a46c8d96ddc, type: 3}
+  - family: 1
+    control: "dpad/left"
+    icon: {fileID: 2800000, guid: c90412457bfbcdd46b16187b93e5cc7f, type: 3}
+  - family: 1
+    control: "dpad/right"
+    icon: {fileID: 2800000, guid: 3bc0eaa577bba464fb86c270b25b9b99, type: 3}
+  - family: 1
+    control: "directions"
+    icon: {fileID: 2800000, guid: 80038b83b29251146bd612ef1caaf5ca, type: 3}
+  - family: 1
+    control: "horizontal"
+    icon: {fileID: 2800000, guid: 1ec1fc693689ae14fb9ab23980e49ae9, type: 3}
+  - family: 1
+    control: "vertical"
+    icon: {fileID: 2800000, guid: 48336419cee681b40b565e5c022838b3, type: 3}
+  - family: 2
+    control: "buttonNorth"
+    icon: {fileID: 2800000, guid: 9ef586b280c52ea4e97ba5e388e2b9fb, type: 3}
+  - family: 2
+    control: "buttonWest"
+    icon: {fileID: 2800000, guid: 1dbc25327d016594f9f5b24ffda4da85, type: 3}
+  - family: 2
+    control: "buttonSouth"
+    icon: {fileID: 2800000, guid: 7cc50c869712b264c95968271958daa2, type: 3}
+  - family: 2
+    control: "buttonEast"
+    icon: {fileID: 2800000, guid: af0ad620701cfbe48b74cc8cc490f374, type: 3}
+  - family: 2
+    control: "leftShoulder"
+    icon: {fileID: 2800000, guid: 78d22a600dca1ea4ba97d026ccb1497f, type: 3}
+  - family: 2
+    control: "rightShoulder"
+    icon: {fileID: 2800000, guid: 07e192dab5cf3044fa8a413f726d87d6, type: 3}
+  - family: 2
+    control: "leftTrigger"
+    icon: {fileID: 2800000, guid: 215ddef1631176544ad8297948c9fb2a, type: 3}
+  - family: 2
+    control: "rightTrigger"
+    icon: {fileID: 2800000, guid: 810193249c5385f43af1450960fdcfff, type: 3}
+  - family: 2
+    control: "start"
+    icon: {fileID: 2800000, guid: a76c9c5dd906bdc48913a8536143a340, type: 3}
+  - family: 2
+    control: "select"
+    icon: {fileID: 2800000, guid: c0473cc86c7383742b739191b68528a8, type: 3}
+  - family: 2
+    control: "leftStick"
+    icon: {fileID: 2800000, guid: a3983a8ec3e0f16408332cf14f4bfd8e, type: 3}
+  - family: 2
+    control: "leftStickPress"
+    icon: {fileID: 2800000, guid: c371894d8fdbca44685bc345f87519c0, type: 3}
+  - family: 2
+    control: "rightStick"
+    icon: {fileID: 2800000, guid: 9a5f62b804c13d2468d768c72882fee8, type: 3}
+  - family: 2
+    control: "rightStickPress"
+    icon: {fileID: 2800000, guid: e2779a8cc7a71b3449675a33ae605453, type: 3}
+  - family: 2
+    control: "dpad/up"
+    icon: {fileID: 2800000, guid: 30df9d653ed09f14788b0479c2addc65, type: 3}
+  - family: 2
+    control: "dpad/down"
+    icon: {fileID: 2800000, guid: 05e2078f1dbfe9241a44c48af7567ab6, type: 3}
+  - family: 2
+    control: "dpad/left"
+    icon: {fileID: 2800000, guid: 63c21b132ce39624d953469cc51b964a, type: 3}
+  - family: 2
+    control: "dpad/right"
+    icon: {fileID: 2800000, guid: fb0ab04169dc4c64eb984112e1d8c0f1, type: 3}
+  - family: 2
+    control: "directions"
+    icon: {fileID: 2800000, guid: f0f86d8315f14664088006518aa612b2, type: 3}
+  - family: 2
+    control: "horizontal"
+    icon: {fileID: 2800000, guid: 6bba26b6d03d7c64e97416af6169b239, type: 3}
+  - family: 2
+    control: "vertical"
+    icon: {fileID: 2800000, guid: ac1711df95ffe9e4c82acd747b30e1fb, type: 3}
+  - family: 3
+    control: "buttonNorth"
+    icon: {fileID: 2800000, guid: 2161753936b6f9044beb1677ddaedf6d, type: 3}
+  - family: 3
+    control: "buttonWest"
+    icon: {fileID: 2800000, guid: f873bc99deebef147a29964121d63c39, type: 3}
+  - family: 3
+    control: "buttonSouth"
+    icon: {fileID: 2800000, guid: d51790d3fe18f8c498536526eaa9c05f, type: 3}
+  - family: 3
+    control: "buttonEast"
+    icon: {fileID: 2800000, guid: 92311c77765cb2a45831bc2ac5468db9, type: 3}
+  - family: 3
+    control: "leftShoulder"
+    icon: {fileID: 2800000, guid: ff64d86ea0f4e674ab2e7828304e5bd4, type: 3}
+  - family: 3
+    control: "rightShoulder"
+    icon: {fileID: 2800000, guid: 2ca05b2ef58ee6745bf8284e666a0dc1, type: 3}
+  - family: 3
+    control: "leftTrigger"
+    icon: {fileID: 2800000, guid: fcfa776137b21cf4b905f4d02a35d34d, type: 3}
+  - family: 3
+    control: "rightTrigger"
+    icon: {fileID: 2800000, guid: 19984a413250f034c8538a4b67918a38, type: 3}
+  - family: 3
+    control: "start"
+    icon: {fileID: 2800000, guid: ca429c13122c66541b6fdac348906013, type: 3}
+  - family: 3
+    control: "select"
+    icon: {fileID: 2800000, guid: 515084fb214e1bf46bf7431392c9f905, type: 3}
+  - family: 3
+    control: "leftStick"
+    icon: {fileID: 2800000, guid: eb60218d7e2179445ad2202aa016feec, type: 3}
+  - family: 3
+    control: "leftStickPress"
+    icon: {fileID: 2800000, guid: 1267c727496d31546b6fcee964c3e66a, type: 3}
+  - family: 3
+    control: "rightStick"
+    icon: {fileID: 2800000, guid: 3f80011efafcc2b43bf1cfe36f934eb8, type: 3}
+  - family: 3
+    control: "rightStickPress"
+    icon: {fileID: 2800000, guid: 4bf93d8d47bcedf4f97d211aa7e52d75, type: 3}
+  - family: 3
+    control: "dpad/up"
+    icon: {fileID: 2800000, guid: 5a7ff9953836a334bb491a6559a49f1d, type: 3}
+  - family: 3
+    control: "dpad/down"
+    icon: {fileID: 2800000, guid: 2887ffd622f5aa74ca4cc76244869fb4, type: 3}
+  - family: 3
+    control: "dpad/left"
+    icon: {fileID: 2800000, guid: 460c8f7b45ea19b4a9707b3100f6e9bf, type: 3}
+  - family: 3
+    control: "dpad/right"
+    icon: {fileID: 2800000, guid: 97ed08a95f2cd764698cba95f8987cae, type: 3}
+  - family: 3
+    control: "directions"
+    icon: {fileID: 2800000, guid: 952630cac0c87a64e9ea3dd43cc1b33e, type: 3}
+  - family: 3
+    control: "horizontal"
+    icon: {fileID: 2800000, guid: f77a5a3b4877a1842905873962fc8753, type: 3}
+  - family: 3
+    control: "vertical"
+    icon: {fileID: 2800000, guid: 9fd844b577c077846884058af2f0f1f6, type: 3}
+  - family: 4
+    control: "directions"
+    icon: {fileID: 2800000, guid: 4ee53fc2f28b5bc468a0a5a4ca7a45a2, type: 3}
+  - family: 4
+    control: "horizontal"
+    icon: {fileID: 2800000, guid: 6390c60e2b6643845a96d299e675062d, type: 3}
+  - family: 4
+    control: "vertical"
+    icon: {fileID: 2800000, guid: 5572956db28b3b94e818c90d7ca1088f, type: 3}
+  - family: 0
+    control: "directions"
+    icon: {fileID: 2800000, guid: 4a5638ab435c18e46a294fc1638cb9f1, type: 3}
+  keyboardFallback: {fileID: 2800000, guid: 35298e0ec31e445499fd9001b74835e7, type: 3}
+  controllerFallback: {fileID: 2800000, guid: 833727eb813eb1946a19de2d5be5d77f, type: 3}

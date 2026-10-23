@@ -10,6 +10,12 @@ Button Surface, just like a crate or another active SimulatedBody2D. Side proxim
 and pickup triggers do not count as weight. A crate resting on it at startup
 presses it normally. No Rigidbody2D or tags are required.
 
+SimulatedBody2D / Can Press Buttons controls whether a supported body supplies
+pressure, independently of its collision or physical mass. Empty cheese plates
+disable it when consumed. They can still move with the button surface but do not
+hold it down. Reusable buttons release when the last pressing body is removed
+or loses this flag. Single Use retains its explicit lock until ActivateButton.
+
 ## Events and animation
 
 On Pressed is the single shared UnityEvent for input and weight. Previous button
@@ -47,6 +53,33 @@ Spawn Prefabs supplies the zero-based list for Spawn(int index). Add Spawn(0), f
 example, to On Pressed. Spawn Offset and the green Spawn Point handle position the
 spawn relative to the button. Each object uses its prefab rotation and no parent.
 
+Spawn Position Mode selects positions independently of the prefab index:
+
+- Fixed (default): always uses Spawn Offset, preserving existing buttons.
+- Sequential: uses the assigned Spawn Points transforms in Inspector order.
+- Shuffle: uses each assigned point once in random order. Between repeated
+  cycles, avoids immediately reusing the previous point when at least two exist.
+
+Create Empty objects at the desired positions and assign them to Spawn Points.
+Green gizmos and numbered Scene handles show and edit their world positions.
+Null references and duplicate references to the same Transform are ignored.
+Without any valid points, all modes use the original fixed Spawn Offset.
+Position markers supply only position; spawned objects retain prefab rotation.
+
+Repeat Spawn Points on repeats position cycles. Off stops spawning once all
+valid points have been used. It does not lock the button or suppress other
+On Pressed actions. With only one valid point, repeating naturally reuses it.
+Position progress advances only after a successful spawn. ActivateButton,
+LockButton, disabling/re-enabling and changing the requested prefab index do
+not reset it. Changing the point list or selection mode restarts its cycle.
+ResetSpawnPositions is available to UnityEvents to restart positions explicitly;
+it does not reset the prefab sequence. Reloading the scene resets both sequences.
+
+SetSpawnPositionFrom(Transform) is also callable from UnityEvents: assign an
+Empty to update the fixed spawn offset using its current world position.
+This samples the position at the time of the call and does not follow the marker.
+It affects Fixed mode (and the fallback when no points are assigned).
+
 Advance Spawn Index off repeats the supplied index. When enabled, that index
 starts a sequence advancing after each successful spawn, stopping after the last
 entry. A different starting index resets the sequence. Invalid indices or empty
@@ -55,6 +88,10 @@ entries warn without advancing. ActivateButton and LockButton preserve the curso
 For externally rearmed spawns, start locked and enable Advance Spawn Index. On
 Pressed calls Spawn(0) and LockButton; another button calls ActivateButton before
 each use. Single Use may replace the self-lock action.
+
+For the same crate at three different points, leave Advance Spawn Index off,
+choose Sequential, assign three Spawn Points and call Spawn(0). Disable Repeat
+Spawn Points to stop after the third crate, or leave it enabled to repeat.
 
 Existing scene prefab instances inherit the solid surface. No gameplay scenes
 were edited or reloaded. Check mouse descent, crate removal, door events,

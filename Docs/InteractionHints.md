@@ -20,7 +20,7 @@ Multiple hints may coexist, such as Eat cheese and Cut rope. Cutting and digging
 
 InputDevicePrompts listens to Input System events without scene-object scans. Keyboard, mouse clicks/wheel select desktop prompts; sufficiently active gamepad buttons/sticks select controller prompts. Plain mouse motion/noisy controls are ignored. Disconnecting the active controller restores keyboard prompts. Layout-derived names show Square/Circle/Triangle on PlayStation rather than X/B/Y. Devices must be recognized as Gamepad.
 
-White Kenney sprites in Assets/UI Toolkit/MainMenu/InputKenny are assigned through Assets/UI Toolkit/Gameplay/InputPromptIcons.asset to GameplayHudController. The catalog includes keyboard E/F/Enter, Xbox X/B/Y, PlayStation Square/Circle/Triangle and Switch Y/A/X. Hints use separate icon/text rows. Scientist/test-result buttons also show current icons. Source images stay white; USS applies --scientist-green = rgb(92, 255, 123) using -unity-background-image-tint-color. Missing sprites fall back to textual input names. The catalog uses white variants without color suffixes.
+Kenney input prompts use `Assets/Resources/InputPrompts.asset` through InputPromptCatalog and InputPromptElement. The active device and current bindings determine each glyph; missing artwork uses a text fallback. InputPrompts.uss defines shared glyph presentation. The obsolete InputPromptIcons asset is no longer used.
 
 Dialogue buttons display Reveal, Next or Close. Device switching updates open dialogue without restarting typing or timeout. Narrative messages come from assigned dialogue data.
 
@@ -32,24 +32,13 @@ Crate hints reuse PlayerCrateInteraction checks and require grounded, dry, non-s
 
 Communications later changed from Enter to F, including photos/results. UI consumes the press so it cannot simultaneously collect or start bite/dig; release F before a new interaction. Controller communications/photos/results later changed from North to West, matching collectibles (Xbox X, PlayStation Square, Switch Y). Icons and input consumption reflect that update.
 
-## SYSTEM communications and shared selection
+## Separate contextual hints
 
-Hints now occupy the text terminal under SYSTEM using existing input icons. They persist while available, without timeout/Close. The separate avatar terminal is empty for system hints. Scientist communications retain precedence, arrays, typing, timeout and Reveal/Next/Close; valid hints return afterward.
+`interaction-hints` is an independent HUD panel under `interaction-hints-anchor`, centered at the bottom with an 8-pixel margin. Its minimum width is 110 logical pixels and it expands for longer hints up to 46% of the frame width, then wraps. Input combinations and descriptions occupy separate columns. No duplicate command icons are rendered in the scientist portrait area.
 
-GameplayInteractionAvailability.Current exposes selected actions for actual shared bindings rather than every competing action. Selection is also applied to PlayerInputReader and action components:
+Hints are rebuilt from current availability, without a queue. Ordinary scientist communications do not suppress them. Pause, photos and stage-ending screens still hide them. Availability callbacks are rechecked before rendering in case they opened a blocking overlay.
 
-- Keyboard: F collects the selected target, excluding bite/dig on that F while a collectible is selected. E crate movement remains independent.
-- Controller: West collects or presses buttons. East held with direction pushes/pulls crates. A reachable crate has priority over cut/dig on East. Rope grabbing remains on West.
-- Cutting has priority over digging on their shared input.
-- Nearest collectibles win. The press validates/collects the exact InteractionTarget used for the hint; an unreachable target is not unexpectedly replaced during the press.
-
-Prompt device changes update selection. Without active GameplayInteractionAvailability, PlayerInputReader enables all actions for compatibility with other scenes. Manually check collectible/photo overlap, collectible/rope with F, collectible/crate on controller, simultaneous separate bindings, device changes and hints returning after dialogue.
-
-### Priority without buffering
-
-Communications reserve the terminal immediately on request, before coroutine/animation startup. Until CRT closing finishes, availability updates discard/clear SYSTEM hints instead of building hidden rows or queued tooltips. Completion recalculates overlaps/current actions without collecting during reading; only still-valid hints appear. Additional guarding handles callbacks starting another communication during recalculation.
-
-Manually check same-frame communication/proximity, leaving an area during dialogue, staying nearby until completion and approaching another interactable before completion. No tests or Play Mode were run.
+GameplayInteractionAvailability remains responsible for selecting valid targets and resolving shared-input conflicts; this presentation change does not change interaction rules. Actual bindings are resolved through PlayerControlBindings and InputDevicePrompts rather than the historical hardcoded keys listed in earlier revisions.
 
 ## Ledge climb confirmation
 

@@ -1,15 +1,15 @@
-.final-root { flex-grow: 1; background-color: rgb(4, 7, 9); color: rgb(217, 224, 215); -unity-font: url("../../Art/UI/Gameplay/Fonts/Silkscreen-Regular.ttf"); }
+.final-root { flex-grow: 1; background-color: rgb(4, 7, 9); color: rgb(217, 224, 215); -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
 .final-monitor { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(4, 7, 9); border-width: 2px; border-color: rgb(94, 114, 111); border-radius: 4px; overflow: hidden; }
 .monitor-content { flex-grow: 1; padding: 12px 22px 8px 22px; }
 .monitor-header { height: 42px; min-height: 42px; flex-shrink: 0; flex-direction: row; align-items: center; border-width: 1px; border-color: rgb(104, 113, 98); border-radius: 3px; padding: 0 9px; margin-bottom: 6px; }
-.team-heading { flex-grow: 1; margin: 0; font-size: 21px; -unity-font-style: bold; color: rgb(219, 213, 185); }
+.team-heading { flex-grow: 1; margin: 0; font-size: 27px; -unity-font-style: bold; color: rgb(219, 213, 185); }
 .status-led { position: absolute; top: 32px; right: 34px; width: 6px; height: 6px; border-radius: 3px; background-color: rgb(201, 64, 64); }
 .status-led.is-powered { background-color: rgb(64, 201, 119); }
 .team-rows { flex-shrink: 0; }
 .team-row { height: 32px; min-height: 32px; flex-shrink: 0; flex-direction: row; align-items: center; border-bottom-width: 1px; border-bottom-color: rgb(55, 73, 76); }
-.team-role { width: 56%; flex-shrink: 0; font-size: 12px; -unity-font-style: bold; margin: 0; color: rgb(208, 211, 187); }
-.team-name { flex-grow: 1; font-size: 12px; margin: 0; color: rgb(167, 193, 182); }
-.thanks-heading { height: 23px; min-height: 23px; flex-shrink: 0; font-size: 12px; -unity-text-align: middle-center; margin: 3px 0 0 0; }
+.team-role { width: 56%; flex-shrink: 0; font-size: 18px; -unity-font-style: bold; margin: 0; color: rgb(208, 211, 187); }
+.team-name { flex-grow: 1; font-size: 18px; margin: 0; color: rgb(167, 193, 182); }
+.thanks-heading { height: 23px; min-height: 23px; flex-shrink: 0; font-size: 18px; -unity-text-align: middle-center; margin: 3px 0 0 0; }
 .thanks-logos { height: 52px; min-height: 52px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-around; margin: 0 32px; }
 .thanks-logo { width: 90px; height: 44px; -unity-background-scale-mode: scale-to-fit; }
 .gjplus { background-image: url("../../Art/UI/Branding/GameJamPlus_Icon.png"); }
@@ -17,10 +17,17 @@
 .sgs { background-image: url("../../Art/UI/MainMenu/Branding/SGS_Logo.png"); }
 .unity-splash { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgb(4, 7, 9); visibility: hidden; }
 .unity-logo { width: 70%; height: 50%; background-image: url("../../Art/UI/Branding/MadeWithUnity_White.png"); background-color: transparent; -unity-background-scale-mode: scale-to-fit; }
-.thank-you-message { position: absolute; left: 0; right: 0; top: 77%; margin: 0; font-size: 16px; color: rgb(255, 255, 255); -unity-text-align: middle-center; }
+.thank-you-message { position: absolute; left: 0; right: 0; top: 77%; margin: 0; font-size: 22px; color: rgb(255, 255, 255); -unity-text-align: middle-center; }
 .monitor-footer { flex-grow: 1; min-height: 26px; flex-direction: row; align-items: flex-end; justify-content: space-between; border-top-width: 1px; border-top-color: rgb(43, 60, 63); padding-top: 3px; }
 .transmission-line { flex-direction: row; align-items: baseline; margin-bottom: 4px; }
-.transmission { font-size: 7px; margin: 0; padding: 0; color: rgb(64, 201, 119); }
-.menu-button { height: 23px; min-width: 110px; margin: 0; border-width: 1px; border-color: rgb(83, 109, 100); background-color: rgb(10, 26, 30); color: rgb(202, 220, 201); font-size: 10px; }
+.transmission { font-size: 13px; margin: 0; padding: 0; color: rgb(64, 201, 119); }
+.menu-button { height: 23px; min-width: 110px; margin: 0; border-width: 1px; border-color: rgb(83, 109, 100); background-color: rgb(10, 26, 30); color: rgb(202, 220, 201); font-size: 16px; }
 .menu-button:hover, .menu-button:focus { background-color: rgb(29, 52, 49); border-color: rgb(135, 171, 135); }
 .power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(153, 164, 161); opacity: 0; }
+
+.font-credit { height: 20px; min-height: 20px; flex-shrink: 0; font-size: 16px; margin: 0; -unity-text-align: middle-center; color: rgb(167, 193, 182); }
+
+.final-root, .final-root * {
+    -unity-font-definition: none;
+    -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf");
+}

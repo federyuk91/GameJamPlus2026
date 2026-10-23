@@ -56,7 +56,7 @@ namespace GameJamPlus.UI
         {
             bool hasSessionResults = GameSession.CompletedTests > 0;
             int total = hasSessionResults ? GameSession.TotalTests : 10;
-            int completed = hasSessionResults ? GameSession.CompletedTests : 10;
+            int completed = hasSessionResults ? GameSession.CompletedUniverses : 10;
             int used = hasSessionResults ? GameSession.SubjectsUsed : 10;
             deceasedSubjects = hasSessionResults ? GameSession.DeceasedSubjects : previewDeceasedSubjects;
             recoveredSubjects = hasSessionResults ? GameSession.RecoveredSubjects : used - deceasedSubjects;

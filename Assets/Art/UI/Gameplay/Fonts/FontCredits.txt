@@ -1,0 +1,23 @@
+Additional pixel fonts imported on 2026-10-23
+
+m5x7 by Daniel Linssen (managore)
+https://managore.itch.io/m5x7
+CC0; attribution appreciated. See m5x7-License.txt.
+
+m6x11 by Daniel Linssen (managore)
+https://managore.itch.io/m6x11
+Free to use with attribution. See m6x11-Permission.txt.
+
+Pixelify Sans by Stefie Justprince / Typecalism Foundryline
+Copyright 2021 The Pixelify Sans Project Authors
+https://github.com/eifetx/Pixelify-Sans
+SIL Open Font License 1.1. See PixelifySans-OFL.txt.
+
+When these fonts are used in a distributed game, include the m6x11 credit
+in its acknowledgements and make the Pixelify Sans copyright and full OFL
+notice available with the distribution. Files stored under Assets alone
+are not guaranteed to be available as readable license files in a Unity build.
+
+m5x7 is applied to communication terminals, trial results, EndGame and final
+credits. m6x11 is applied to the main/pause menus and shared control pages.
+Daniel Linssen is acknowledged in both the main menu credits and final credits.

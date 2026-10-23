@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 9100000100}
   - component: {fileID: 8300000002}
   - component: {fileID: 9700001000}
+  - component: {fileID: 9800095001}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Untagged
@@ -212,6 +213,10 @@ MonoBehaviour:
   collectionId: 
   visual: {fileID: 628417424879978943}
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
+  consumedPushable: {fileID: 9800095001}
+  body: {fileID: 9100000100}
+  consumedShapeSize: {x: 0.90625, y: 0.25}
+  consumedShapeOffset: {x: 0.015625, y: -0.375}
 --- !u!61 &9100000101
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -246,7 +251,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.375}
+  m_Offset: {x: 0.015625, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -256,7 +261,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.25}
+  m_Size: {x: 0.90625, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9100000100
 MonoBehaviour:
@@ -280,6 +285,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 9100000101}
   ignorePlayerColliders: 1
+  blocksOtherProps: 1
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -300,7 +307,7 @@ MonoBehaviour:
   body: {fileID: 9100000100}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
-  pushable: {fileID: 0}
+  pushable: {fileID: 9800095001}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
   followSupport: 1
@@ -317,3 +324,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 9100000100}
+--- !u!114 &9800095001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539735911339432288}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
+  body: {fileID: 9100000100}
+  motion: {fileID: 8300000002}
+  ropeAttachment: {fileID: 0}
+  showGizmos: 1
