@@ -73,6 +73,7 @@ namespace MousePlatformer
         private float groundSpeed;
         private float slopeVelocity;
         private bool followingGround;
+        private bool jumpedFromSupport;
         private void Awake()
         {
             if (input == null) input = GetComponent<PlayerInputReader>();
@@ -104,12 +105,17 @@ namespace MousePlatformer
                 return;
             }
             if (platformRide != null) platformRide.Carry();
+            jumpedFromSupport = false;
             TickMovement();
             bool canRide = (ropeInteraction == null || !ropeInteraction.Attached)
                 && (ladderInteraction == null || !ladderInteraction.Attached)
                 && (ledgeClimb == null || !ledgeClimb.Active)
                 && (digging == null || !digging.InputClaimed);
-            if (platformRide != null) platformRide.UpdateSupport(canRide);
+            if (platformRide != null)
+            {
+                bool inheritSupportMotion = canRide && !jumpedFromSupport && (swimming == null || !swimming.InWater);
+                Velocity += platformRide.UpdateSupport(canRide, inheritSupportMotion);
+            }
         }
 
         private void TickMovement()
@@ -255,6 +261,7 @@ namespace MousePlatformer
                 if (platformRide != null && platformRide.HasSupport)
                 {
                     velocity += platformRide.SupportVelocity;
+                    jumpedFromSupport = true;
                     ropeLaunchRemaining = Movement.launchControlTime;
                 }
                 bufferRemaining = coyoteRemaining = 0f;
@@ -286,6 +293,7 @@ namespace MousePlatformer
             bool groundedApproach = surfaceMotion && body.Grounded;
             body.MovePlayer(displacement, Movement.maxStepHeight, heldShape, surfaceMotion);
             followingGround = surfaceMotion && body.HasGroundContact;
+            if (!body.Grounded && crateInteraction != null) crateInteraction.Release();
             if (surfaceMotion) velocity = ((Vector2)transform.position - start) / dt;
             if (TryStartLedgeClimb(groundedApproach, velocity.x)) return;
             if (body.HitWall && !surfaceMotion) velocity.x = 0f;
@@ -298,6 +306,8 @@ namespace MousePlatformer
         }
         private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
         {
+            if (crateInteraction != null && crateInteraction.SuppressAutomaticClimb && input.CrateGrabHeld) return false;
+            fromGround = fromGround && body.Grounded;
             if ((!fromGround && body.OnSteepSlope) || input.Vertical < -0.1f || ledgeClimb == null) return false;
             // Recheck after moving: this tick may have crossed the water surface.
             if (swimming != null && swimming.CheckWater()) return false;

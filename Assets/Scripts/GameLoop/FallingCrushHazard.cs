@@ -6,11 +6,12 @@ using GameJamPlus.UI;
 namespace GameJamPlus.Gameplay
 {
     [DefaultExecutionOrder(250), DisallowMultipleComponent]
-    [RequireComponent(typeof(PropsMotion), typeof(TestEndEvent), typeof(AudioSource))]
+    [RequireComponent(typeof(PropsMotion), typeof(AudioSource))]
     public sealed class FallingCrushHazard : MonoBehaviour
     {
         [SerializeField] private PropsMotion motion;
-        [SerializeField] private TestEndEvent testEnd;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase ending = StageEndCase.Crushing;
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip impactClip;
         [SerializeField, Range(0f, 1f), Tooltip("Crushing impact volume before Effects and Master volume settings.")]
@@ -28,11 +29,12 @@ namespace GameJamPlus.Gameplay
         private bool triggered;
         private bool completed;
         private Coroutine animationRoutine;
+        private StageEndRequest animationRequest;
 
         private void Awake()
         {
             if (motion == null) motion = GetComponent<PropsMotion>();
-            if (testEnd == null) testEnd = GetComponent<TestEndEvent>();
+
             if (audioSource == null) audioSource = GetComponent<AudioSource>();
             audioSource.playOnAwake = false;
             audioSource.loop = false;
@@ -65,7 +67,7 @@ namespace GameJamPlus.Gameplay
                 && manager != null && manager.State == GameManager.LoopState.Playing
                 && Mathf.Max(previousFallSpeed, fallSpeed) >= minimumFallSpeed
                 && HitsHead(previousBounds, currentBounds, manager.PlayerCollider)
-                && testEnd.BeginAnimatedEnd())
+                && StageEndManager.TryBeginAnimated(ending, this, out animationRequest))
             {
                 triggered = true;
                 if (impactClip != null)
@@ -99,7 +101,7 @@ namespace GameJamPlus.Gameplay
             else Debug.LogError("Assign Player Crush Visual on the Game Manager and the Player prefab to animate crushing.", this);
             completed = true;
             animationRoutine = null;
-            testEnd.CompleteAnimatedEnd();
+            animationRequest.Complete();
         }
 
         private void FollowCrushedHead(float headHeight)
@@ -134,10 +136,10 @@ namespace GameJamPlus.Gameplay
             if (audioSource != null) audioSource.Stop();
             if (animationRoutine != null) StopCoroutine(animationRoutine);
             animationRoutine = null;
-            if (triggered && !completed && testEnd != null)
+            if (triggered && !completed)
             {
                 completed = true;
-                testEnd.CompleteAnimatedEnd();
+                animationRequest.Complete();
             }
         }
     }

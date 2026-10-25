@@ -3137,14 +3137,6 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 2295011373493329530, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3247254178557939207, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3354982396404189761, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -3193,14 +3185,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029301, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029302, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5709383898159029400, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -3220,14 +3204,6 @@ PrefabInstance:
     - target: {fileID: 5709383898159029800, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: m_Enabled
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029801, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029802, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5709383898159029803, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: m_Enabled
@@ -3250,10 +3226,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5709383898159029810, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6451300830759829362, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}

@@ -52,7 +52,7 @@ namespace MousePlatformer
 
         private void OnEnable()
         {
-            if (collector != null) collector.CountChanged += OnCollected;
+            if (collector != null) collector.Collected += OnCollected;
             if (ropeBite != null) ropeBite.RopeCut += OnRopeCut;
             if (ropeInteraction != null) ropeInteraction.JumpedFromRope += OnRopeJumped;
             if (crateInteraction != null) crateInteraction.InteractionStarted += OnCrateStarted;
@@ -96,8 +96,9 @@ namespace MousePlatformer
             diggingVoiceRemaining = Random.Range(minimum, Mathf.Max(minimum, diggingVoiceMaxInterval));
         }
 
-        private void OnCollected(CollectibleType type, int count)
+        private void OnCollected(Collectible collectible)
         {
+            CollectibleType type = collectible.Type;
             if (type != CollectibleType.Cheese || source == null) return;
             if (cheeseRoutine != null) StopCoroutine(cheeseRoutine);
             cheeseRoutine = StartCoroutine(PlayCheeseSequence());
@@ -127,7 +128,7 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
-            if (collector != null) collector.CountChanged -= OnCollected;
+            if (collector != null) collector.Collected -= OnCollected;
             if (ropeBite != null) ropeBite.RopeCut -= OnRopeCut;
             if (ropeInteraction != null) ropeInteraction.JumpedFromRope -= OnRopeJumped;
             if (crateInteraction != null) crateInteraction.InteractionStarted -= OnCrateStarted;

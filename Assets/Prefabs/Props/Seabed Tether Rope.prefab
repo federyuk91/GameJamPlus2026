@@ -487,7 +487,6 @@ GameObject:
   - component: {fileID: 2820653659869076026}
   - component: {fileID: 9700001000}
   - component: {fileID: 9800007101}
-  - component: {fileID: 9800007102}
   - component: {fileID: 9800007103}
   m_Layer: 0
   m_Name: 03 Seabed Tethered Crate
@@ -634,6 +633,7 @@ MonoBehaviour:
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001000}
+  overrideMaxSpeed: 0
   maxSpeed: 2
   gravityScale: 2.2
   shape: {fileID: 872056609812719817}
@@ -738,31 +738,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motion: {fileID: 8374615834934791349}
-  testEnd: {fileID: 9800007102}
+  ending: 4
   audioSource: {fileID: 9800007103}
   impactClip: {fileID: 8300000, guid: 29d68da1d8bf477c9adff7bac9763144, type: 3}
   impactVolume: 0.8
   minimumFallSpeed: 0.5
   contactTolerance: 0.02
---- !u!114 &9800007102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4764985215127358793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 0}
-  subjectDied: 1
-  useExitImage: 0
-  flashDurationOverride: -1
-  resultMessages:
-  - The subject has completed the pressure stage.
 --- !u!82 &9800007103
 AudioSource:
   m_ObjectHideFlags: 0

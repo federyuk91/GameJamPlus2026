@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 1001}
   - component: {fileID: 1002}
   - component: {fileID: 1003}
-  - component: {fileID: 1004}
-  - component: {fileID: 1005}
   - component: {fileID: 1006}
   - component: {fileID: 686878820994986200}
   m_Layer: 0
@@ -101,7 +99,7 @@ MonoBehaviour:
   contactArea: {fileID: 1002}
   playerCollider: {fileID: 0}
   playerElectricity: {fileID: 0}
-  testEnd: {fileID: 1005}
+  ending: 5
   electricityAmount: 1
   automaticActivation: 1
   activationDuration: 3
@@ -118,42 +116,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 55f6d92da5e2e184b8c0765f6a17319a, type: 3}
   dischargeVolume: 0.65
   showGizmos: 1
---- !u!114 &1004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
-  hud: {fileID: 0}
-  avatar: {fileID: 0}
-  messages:
-  - A little shock to keep you alert. Let us take a break now.
-  duration: 7
---- !u!114 &1005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.TestEndEvent
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 1004}
-  subjectDied: 1
-  useExitImage: 0
-  flashDurationOverride: -1
-  resultMessages:
-  - The subject has demonstrated outstanding conductivity.
 --- !u!82 &1006
 AudioSource:
   m_ObjectHideFlags: 0

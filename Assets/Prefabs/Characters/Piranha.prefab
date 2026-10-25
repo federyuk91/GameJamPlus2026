@@ -15,8 +15,6 @@ GameObject:
   - component: {fileID: 7972442162392002557}
   - component: {fileID: 6326247046255604221}
   - component: {fileID: 4706726384842075749}
-  - component: {fileID: 2521859256895114778}
-  - component: {fileID: 3489158560104624151}
   - component: {fileID: 407488142064766398}
   - component: {fileID: 732327564472501584}
   - component: {fileID: 793098272634803150}
@@ -232,46 +230,9 @@ MonoBehaviour:
   playerCollider: {fileID: 0}
   playerOxygen: {fileID: 0}
   playerHealth: {fileID: 0}
-  biteOutcome: {fileID: 3489158560104624151}
+  biteEnding: 11
   biteInterval: 1
   showGizmos: 0
---- !u!114 &2521859256895114778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4142468269563670406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hud: {fileID: 0}
-  avatar: {fileID: 0}
-  messages:
-  - How sociable! You have already made friends with the fish. Let us take a break
-    now.
-  - I see you have found some new aquatic friends. I would say you have socialized
-    enough for today!
-  duration: 7
---- !u!114 &3489158560104624151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4142468269563670406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 2521859256895114778}
-  subjectDied: 1
-  resultMessages:
-  - The subject is attracted to fish.
 --- !u!114 &407488142064766398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,6 +270,7 @@ MonoBehaviour:
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 6910685692764264916}
+  overrideMaxSpeed: 0
   maxSpeed: 2
   gravityScale: 2.2
   shape: {fileID: 0}

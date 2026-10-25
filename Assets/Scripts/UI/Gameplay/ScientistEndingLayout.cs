@@ -134,6 +134,13 @@ namespace GameJamPlus.UI
             transcriptLayout.UseStylesheet();
             messageLayout.UseStylesheet();
             advanceLayout.UseStylesheet();
+            // Opposing edge insets size the text area without inheriting the compact UXML widths.
+            content.style.left = content.style.right = content.style.top = 20f;
+            content.style.bottom = 60f;
+            content.style.width = content.style.height = StyleKeyword.Auto;
+            transcript.style.left = transcript.style.right = transcript.style.top = transcript.style.bottom = 0f;
+            transcript.style.width = transcript.style.height = StyleKeyword.Auto;
+            message.style.width = new Length(100f, LengthUnit.Percent);
             footer.Add(advance);
             advance.AddToClassList("scientist-ending-advance");
             footer.style.display = DisplayStyle.Flex;

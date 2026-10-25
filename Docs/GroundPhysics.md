@@ -3,7 +3,7 @@
 ## Responsibilities
 
 - `GroundContact2D` detects the support using its assigned body's shape, skin and collision filter. It owns contact, normal, point, collider, angle and walkable/steep state. It is explicitly refreshed by the movement driver and after body moves, rather than running a second independent physics tick.
-- `SimulatedBody2D` owns Max Slope Angle, Ground Friction, Weight and Max Speed, forwards contact state for existing consumers, and performs collision-constrained movement. It requires a ground detector; authored bodies reference it through the Inspector.
+- `SimulatedBody2D` owns Max Slope Angle, Ground Friction, Weight and the optional Max Speed override (otherwise using the shared PhysicsSettings.maxSpeed), forwards contact state for existing consumers, and performs collision-constrained movement. It requires a ground detector; authored bodies reference it through the Inspector.
 - `GroundMotion` is a stateless shared calculation. It integrates tangential force and friction without depending on a MonoBehaviour or settings asset.
 - `PlayerMovement` supplies animal gravity and requested movement. `PropsMotion` supplies prop gravity, loads and environmental forces. Both use the same ground calculation instead of separate sliding coefficients.
 

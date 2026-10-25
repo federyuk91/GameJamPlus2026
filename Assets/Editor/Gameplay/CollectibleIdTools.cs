@@ -20,7 +20,7 @@ public static class CollectibleIdTools
 
     private static void OnSceneSaving(Scene scene, string path)
     {
-        if (!path.Contains("/Recovered/")) RepairScene(scene, new HashSet<string>(), null);
+        if (!path.Contains("/Recovered/") && !path.Contains("/_Recovery/")) RepairScene(scene, new HashSet<string>(), null);
     }
 
     private static void ProcessRequest()
@@ -70,24 +70,10 @@ public static class CollectibleIdTools
         int changes = 0;
         foreach (GameObject root in scene.GetRootGameObjects())
         {
-            foreach (CollectibleTestGoal goal in root.GetComponentsInChildren<CollectibleTestGoal>(true))
-            {
-                SerializedObject goalSettings = new SerializedObject(goal);
-                SerializedProperty scope = goalSettings.FindProperty("useSessionTotal");
-                if (!scope.boolValue)
-                {
-                    Undo.RecordObject(goal, "Use HUD collection quantity");
-                    scope.boolValue = true;
-                    goalSettings.ApplyModifiedProperties();
-                    if (PrefabUtility.IsPartOfPrefabInstance(goal)) PrefabUtility.RecordPrefabInstancePropertyModifications(goal);
-                    changes++;
-                }
-            }
-            foreach (CollectibleRemains remains in root.GetComponentsInChildren<CollectibleRemains>(true))
-                changes += RepairId(remains, scene, ids, report);
+            foreach (Collectible collectible in root.GetComponentsInChildren<Collectible>(true))
+                changes += RepairId(collectible, scene, ids, report);
             foreach (CollectiblePhoto photo in root.GetComponentsInChildren<CollectiblePhoto>(true))
             {
-                changes += RepairId(photo, scene, ids, report);
                 changes += CollectibleGoalSetup.RepairPhoto(photo);
             }
         }

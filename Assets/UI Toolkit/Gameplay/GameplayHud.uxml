@@ -149,6 +149,12 @@
                             </ui:VisualElement>
                             <ui:Label text="Electrician" class="observation-text"/>
                         </ui:VisualElement>
+                        <ui:VisualElement name="test-observation-7" class="test-observation">
+                            <ui:VisualElement class="observation-box">
+                                <ui:Label text="X" class="observation-mark"/>
+                            </ui:VisualElement>
+                            <ui:Label text="Sense of direction" class="observation-text"/>
+                        </ui:VisualElement>
                         <ui:Label name="test-result-message" text="" enable-rich-text="false" class="test-result-message"/>
                     </ui:ScrollView>
                     <ui:Button name="test-next" text="F · Next" focusable="false" class="test-next"/>

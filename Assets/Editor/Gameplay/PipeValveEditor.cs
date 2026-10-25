@@ -36,6 +36,7 @@ public sealed class PipeValveEditor : Editor
         SynchronizeLinkBinding(valve);
         RefreshCandidates();
         if (valve.AutoWaterConnection) GetNearestWaterConnection(valve);
+        UpdateAutomaticName(valve);
         EditorApplication.update += TrackMovement;
     }
 
@@ -52,9 +53,10 @@ public sealed class PipeValveEditor : Editor
             Repaint();
             SceneView.RepaintAll();
         }
-        if (!valve.AutoWaterConnection || EditorApplication.timeSinceStartup < nextConnectionRefresh) return;
+        if (EditorApplication.timeSinceStartup < nextConnectionRefresh) return;
         nextConnectionRefresh = EditorApplication.timeSinceStartup + 0.5d;
-        GetNearestWaterConnection(valve);
+        if (valve.AutoWaterConnection) GetNearestWaterConnection(valve);
+        UpdateAutomaticName(valve);
     }
 
     public override void OnInspectorGUI()
@@ -235,11 +237,13 @@ public sealed class PipeValveEditor : Editor
         PrefabUtility.RecordPrefabInstancePropertyModifications(target);
         PipeValve valve = (PipeValve)target;
         if (valve.AutoWaterConnection) GetNearestWaterConnection(valve);
+        UpdateAutomaticName(valve);
         SceneView.RepaintAll();
     }
 
     private void SynchronizeLinkBinding(PipeValve valve)
     {
+        UpdateAutomaticName(valve);
         if (previousConnection == valve.Connection) return;
         if (previousConnection != null)
         {
@@ -257,18 +261,103 @@ public sealed class PipeValveEditor : Editor
         PrefabUtility.RecordPrefabInstancePropertyModifications(valve.Connection);
     }
 
+    internal static void UpdateAutomaticName(PipeValve valve)
+    {
+        if (valve == null || EditorApplication.isPlayingOrWillChangePlaymode || EditorUtility.IsPersistent(valve)
+            || !valve.gameObject.scene.IsValid() || !valve.HasBinding) return;
+        string name = "Pipe Valve (" + valve.TargetCell.x + "," + valve.TargetCell.y + ")";
+        if (valve.Connection != null)
+        {
+            string label = valve.Connection.name;
+            if (label.StartsWith("Link ", System.StringComparison.Ordinal)) label = label.Substring(5);
+            else
+            {
+                SerializedObject link = new SerializedObject(valve.Connection);
+                WaterBasin first = link.FindProperty("first").objectReferenceValue as WaterBasin;
+                WaterBasin second = link.FindProperty("second").objectReferenceValue as WaterBasin;
+                label = BasinLabel(first) + "-" + BasinLabel(second);
+            }
+            name += " " + label;
+        }
+        if (valve.name == name) return;
+        Undo.RecordObject(valve.gameObject, "Update pipe valve name");
+        valve.gameObject.name = name;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(valve.gameObject);
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(valve.gameObject.scene);
+    }
+
+    private static string BasinLabel(WaterBasin basin)
+    {
+        if (basin == null) return "B?";
+        return basin.name.StartsWith("Basin ", System.StringComparison.Ordinal) ? "B" + basin.name.Substring(6) : basin.name;
+    }
+
     private void OnSceneGUI()
     {
+        if (!PipeValveSceneIcons.IsEnabled) return;
         PipeValve valve = (PipeValve)target;
         if (!valve.HasBinding) return;
         Vector3 point = valve.TargetTilemap.GetCellCenterWorld(valve.TargetCell);
         Handles.Label(point + Vector3.up * 0.25f, "Pipe Valve " + valve.TargetCell);
     }
 
-    [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Pickable)]
-    private static void DrawValveIcon(PipeValve valve, GizmoType gizmoType)
+}
+
+[InitializeOnLoad]
+internal static class PipeValveSceneIcons
+{
+    private static PipeValve[] valves;
+    private static Texture2D icon;
+    private static bool renameQueued;
+
+    // PipeValve.OnDrawGizmosSelected registers the component in Unity's native Gizmos menu.
+    internal static bool IsEnabled => !GizmoUtility.TryGetGizmoInfo(typeof(PipeValve), out GizmoInfo info) || info.gizmoEnabled;
+
+    static PipeValveSceneIcons()
     {
-        if (!valve.gameObject.activeInHierarchy) return;
-        Gizmos.DrawIcon(valve.transform.position, "PipeValve.png", false);
+        SceneView.duringSceneGui += DrawIcons;
+        EditorApplication.hierarchyChanged += InvalidateCache;
+        InvalidateCache();
+    }
+
+    private static void InvalidateCache()
+    {
+        valves = null;
+        if (renameQueued) return;
+        renameQueued = true;
+        EditorApplication.delayCall += UpdateNames;
+    }
+
+    private static void UpdateNames()
+    {
+        renameQueued = false;
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        valves = UnityEngine.Object.FindObjectsByType<PipeValve>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (PipeValve valve in valves) PipeValveEditor.UpdateAutomaticName(valve);
+    }
+
+    private static void DrawIcons(SceneView sceneView)
+    {
+        if (!sceneView.drawGizmos || !IsEnabled || sceneView.camera == null) return;
+        if (icon == null) icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Gizmos/PipeValve.png");
+        if (icon == null) return;
+        if (valves == null) valves = UnityEngine.Object.FindObjectsByType<PipeValve>(FindObjectsSortMode.None);
+        Handles.BeginGUI();
+        foreach (PipeValve valve in valves)
+        {
+            if (valve == null || !valve.gameObject.activeInHierarchy
+                || sceneView.camera.WorldToViewportPoint(valve.transform.position).z <= 0f) continue;
+            Vector2 center = HandleUtility.WorldToGUIPoint(valve.transform.position);
+            float size = 32f * valve.GizmoSize;
+            center.y += size * 0.5f + 12f;
+            Rect rectangle = new Rect(center.x - size * 0.5f, center.y - size * 0.5f, size, size);
+            GUI.DrawTexture(rectangle, icon, ScaleMode.ScaleToFit, true);
+            // Selected valves must leave all mouse input to Unity's transform tools.
+            if (Selection.Contains(valve.gameObject)) continue;
+            if (!GUI.Button(rectangle, new GUIContent(string.Empty, valve.name), GUIStyle.none)) continue;
+            Selection.activeGameObject = valve.gameObject;
+            sceneView.Repaint();
+        }
+        Handles.EndGUI();
     }
 }

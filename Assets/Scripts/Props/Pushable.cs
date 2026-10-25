@@ -12,6 +12,8 @@ namespace MousePlatformer
         [SerializeField] private PropsMotion motion;
         [SerializeField] private RopeAttachment ropeAttachment;
         [SerializeField] private bool showGizmos = true;
+        [SerializeField, Min(0f), Tooltip("Maximum small step climbed only during player push/pull. 0 disables stepping; 0.0625 units = 2 pixels at 32 PPU. Requires ground contact and a clear up/across/down route.")]
+        private float maxPushStepHeight = 0.0625f;
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         private readonly List<Pushable> carriedCrates = new List<Pushable>(8);
         private readonly List<int> supportIndices = new List<int>(8);
@@ -41,25 +43,28 @@ namespace MousePlatformer
 
         public void EnableStacking() => Motion.EnableStacking();
 
+        public float AllowedHorizontalByPlayer(float amount, Collider2D ignored)
+            => Body.AllowedHorizontal(amount, ignored, Mathf.Max(0f, maxPushStepHeight));
+
         public float MoveHorizontalByPlayer(float amount, Collider2D ignored)
         {
             BalloonLift balloon = ropeAttachment != null ? ropeAttachment.LiftingBalloon : null;
             if (balloon == null || !balloon.PayloadTaut || Mathf.Approximately(amount, 0f))
-                return MoveHorizontal(amount, ignored);
-            float allowed = Body.AllowedHorizontal(amount, ignored);
+                return MoveHorizontal(amount, ignored, Mathf.Max(0f, maxPushStepHeight));
+            float allowed = AllowedHorizontalByPlayer(amount, ignored);
             // Let the free anchor follow first, rather than stretching the rope and lifting the crate off its support.
             float followed = balloon.Motion.FollowPushedPayload(allowed, Body.Shape);
             float followedAlongPush = Mathf.Max(0f, Mathf.Sign(amount) * followed);
             float shared = Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(allowed), followedAlongPush);
-            return MoveHorizontal(shared, ignored);
+            return MoveHorizontal(shared, ignored, Mathf.Max(0f, maxPushStepHeight));
         }
 
-        public float MoveHorizontal(float amount, Collider2D ignored = null)
+        public float MoveHorizontal(float amount, Collider2D ignored = null, float maxStepHeight = 0f)
         {
             if (Mathf.Approximately(amount, 0f)) return 0f;
             CollectCarriedCrates();
             displacements.Clear();
-            float moved = Body.MoveHorizontal(amount, ignored);
+            float moved = Body.MoveHorizontal(amount, ignored, maxStepHeight);
             displacements.Add(moved);
             for (int i = 1; i < carriedCrates.Count; i++)
             {

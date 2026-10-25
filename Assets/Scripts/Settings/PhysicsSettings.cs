@@ -8,6 +8,9 @@ namespace MousePlatformer
         [Tooltip("Positive world gravity acceleration in world units/s². Bodies and ropes apply their own Gravity Scale; swimmer response applies its separate multiplier.")]
         [Min(0.001f)] public float gravityAcceleration = DefaultGravityAcceleration;
         public static float DefaultGravityAcceleration => 30f;
+        [Tooltip("Shared maximum total speed in world units/s for all SimulatedBody2D components, unless a body explicitly enables its local override.")]
+        [Min(0.01f)] public float maxSpeed = DefaultMaxSpeed;
+        public static float DefaultMaxSpeed => 26f;
         [Header("Shared simulation rules")]
         [Tooltip("Substeps per fixed tick for props and their coordinated vertical groups. Higher values improve precision at a higher CPU cost.")]
         [Min(1)] public int simulationSubsteps = DefaultSimulationSubsteps;

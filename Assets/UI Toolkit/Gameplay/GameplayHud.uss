@@ -37,8 +37,8 @@
 .scientist-advance:active { background-color: rgb(29, 54, 58); }
 .scientist-ending .scientist-display-viewport { left: 16px; right: 16px; top: 14px; bottom: 14px; }
 .scientist-ending .scientist-content {
-    left: 40px; right: 24px; top: 28px; bottom: 60px;
-    width: auto; height: auto;
+    left: 20px; right: 20px; top: 20px; bottom: 60px;
+    width: auto; height: auto; padding: 0;
 }
 .scientist-ending .scientist-avatar {
     left: -6px; right: auto; top: auto; bottom: -8px;
@@ -46,9 +46,12 @@
 }
 .scientist-ending .scientist-transcript {
     position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-    width: 100%; height: auto; margin-bottom: 0;
+    width: auto; height: auto; margin-bottom: 0;
 }
-.scientist-ending .scientist-text { font-size: 18px; }
+.scientist-ending .scientist-text { font-size: 22px; }
+.scientist-ending .scientist-transcript .unity-scroll-view__content-viewport {
+    width: 100%; flex-grow: 1;
+}
 .scientist-ending-footer {
     display: none; position: absolute; left: 12.5%; right: 12.5%; top: 86%; height: 28px;
     align-items: flex-end;

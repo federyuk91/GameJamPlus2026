@@ -9,6 +9,7 @@ Inventario dell'implementazione presente nel progetto. Le rientranze indicano co
 ```text
 PhysicsSettings : ScriptableObject
 ├─ gravityAcceleration
+├─ maxSpeed (26 units/s condiviso)
 ├─ simulationSubsteps
 ├─ ropeSimulationSubsteps
 ├─ ropeConstraintIterations
@@ -98,7 +99,8 @@ GameObject fisico
 │  ├─ waterDrag
 │  ├─ groundFriction
 │  ├─ maxSlopeAngle
-│  ├─ maxSpeed
+│  ├─ overrideMaxSpeed (false di default)
+│  ├─ maxSpeed (valore locale, usato solo con override attivo)
 │  ├─ gravityScale
 │  ├─ shape → BoxCollider2D usato dai cast
 │  ├─ ignorePlayerColliders
@@ -277,3 +279,12 @@ Scala e risalita del bordo condividono PlayerMovementSettings.ClimbSpeed = Move 
 - Vertical gravity, sink limit and stroke impulses are unchanged. Surface control after leaving water uses the player's control settings without water drag.
 - Simulated Body 2D → Water Drag Multiplier controls the body's response to shared water resistance. Player is 1; existing props were converted from their old coefficient 5 to multiplier 3.33333333, preserving effective drag 5 with shared drag 1.5. Raising shared drag affects props as well.
 - Serialized assets were migrated from body waterDrag to waterDragMultiplier; control fields were removed from shared Water settings and assigned on the Player prefab. Custom code calling SwimMotion.Step / StepHorizontal must pass SwimControlSettings.
+
+
+## Limite di velocità condiviso
+
+Physics Settings > Shared Speed Limit > Max Speed è 26 unità/s e viene usato da tutti i SimulatedBody2D. Il limite resta sulla magnitudine totale del vettore e sul budget di movimento per tick, in aria e in acqua. Le velocità richieste da camminata, nuoto, spinta e arrampicata restano indipendenti e possono essere inferiori.
+
+Ogni corpo espone Override Max Speed, disattivato di default, e Override Max Speed Value, modificabile solo attivando il flag. I vecchi valori locali dei prefab sono conservati ma ignorati finché il flag è spento. Effective Max Speed mostra il limite effettivo nell'Inspector. Tutti i prefab esistenti e i corpi dichiarati nelle scene hanno l'override spento; le istanze ereditano lo stesso stato. I corpi senza asset assegnato usano il fallback 26; al corpo di LoopScene che mancava del riferimento è stato assegnato l'asset condiviso.
+
+La variazione porta anche casse, palloncini, collezionabili e piattaforme al tetto comune: i vecchi limiti specifici dei prefab non sono più attivi. Attivare l'override solo dove si desidera un'eccezione. Compilazione runtime ed Editor verificata; nessun Play Mode automatico eseguito.

@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 4009141}
   - component: {fileID: 4009140}
   - component: {fileID: 4009143}
-  - component: {fileID: 4009144}
-  - component: {fileID: 4009145}
   - component: {fileID: 7180237285578528847}
   m_Layer: 0
   m_Name: Goal
@@ -109,47 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   contactArea: {fileID: 7180237285578528847}
   playerCollider: {fileID: 0}
-  outcome: {fileID: 4009144}
---- !u!114 &4009144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4009139}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 4009145}
-  subjectDied: 0
-  useExitImage: 1
-  flashDurationOverride: -1
-  resultMessages:
-  - The subject has escaped the maze and completed the trial.
-  - The subject has successfully reached the exit and has been recovered alive.
---- !u!114 &4009145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4009139}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hud: {fileID: 0}
-  avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
-  messages:
-  - You found the way out! Excellent navigation. Your trial is complete; enjoy a
-    well-deserved rest.
-  - Splendid! Another successful journey through the maze. We can conclude this trial
-    here.
-  duration: 7
+  ending: 8
 --- !u!58 &7180237285578528847
 CircleCollider2D:
   m_ObjectHideFlags: 0

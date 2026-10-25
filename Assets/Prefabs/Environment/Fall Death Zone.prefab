@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 1001}
   - component: {fileID: 1002}
   - component: {fileID: 1003}
-  - component: {fileID: 1004}
-  - component: {fileID: 1005}
   m_Layer: 0
   m_Name: Fall Death Zone
   m_TagString: Untagged
@@ -95,42 +93,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.LethalContact
   contactArea: {fileID: 1002}
   playerCollider: {fileID: 0}
-  testEnd: {fileID: 1005}
+  ending: 7
   showGizmos: 1
---- !u!114 &1004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueMessagePlayer
-  hud: {fileID: 0}
-  avatar: {fileID: 0}
-  messages:
-  - "Interesting. The subject has decided to explore gravity personally."
-  - "A very convincing descent. I would say we have earned a break."
-  - "Excellent, the descent stage is complete too. Let us rest for a moment."
-  duration: 7
---- !u!114 &1005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.TestEndEvent
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 1004}
-  subjectDied: 1
-  resultMessages:
-  - "The subject has investigated how gravity works."
-  - "The subject has completed the descent with remarkable determination."

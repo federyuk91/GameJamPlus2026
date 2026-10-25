@@ -7,7 +7,8 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private TestEndEvent outcome;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase ending = StageEndCase.Goal;
         private bool triggered;
 
         private void FixedUpdate()
@@ -16,7 +17,7 @@ namespace GameJamPlus.Gameplay
             // Prefab assets cannot reference the player in a scene.
             if (playerCollider == null && manager != null) playerCollider = manager.PlayerCollider;
             if (triggered || manager == null || manager.State != GameManager.LoopState.Playing
-                || outcome == null || contactArea == null || playerCollider == null
+                || ending == StageEndCase.None || contactArea == null || playerCollider == null
                 || !contactArea.enabled || !contactArea.gameObject.activeInHierarchy
                 || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
 
@@ -26,13 +27,13 @@ namespace GameJamPlus.Gameplay
             if (!contact.isValid || contact.distance > 0f) return;
 
             triggered = true;
-            outcome.EndTest();
+            StageEndManager.Request(ending, this);
         }
 
         private void Reset()
         {
             contactArea = GetComponent<Collider2D>();
-            outcome = GetComponent<TestEndEvent>();
+
             if (contactArea != null) contactArea.isTrigger = true;
         }
 

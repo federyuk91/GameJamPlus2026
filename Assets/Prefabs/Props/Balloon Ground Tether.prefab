@@ -197,6 +197,7 @@ MonoBehaviour:
   weight: 1
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 2.5
+  overrideMaxSpeed: 0
   maxSpeed: 1.5
   groundFriction: 1
   maxSlopeAngle: 89

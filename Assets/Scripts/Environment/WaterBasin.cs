@@ -15,7 +15,8 @@ namespace MousePlatformer
 
         [SerializeField, Tooltip("Non-overlapping rectangular sections, relative to this basin. Keep the basin unrotated and unscaled.")]
         private Section[] sections = Array.Empty<Section>();
-        [SerializeField, Tooltip("Initial surface height relative to this basin, in world units.")]
+        // Keep the serialized pivot-relative height so existing scene and prefab levels remain unchanged.
+        [SerializeField, HideInInspector]
         private float initialSurfaceHeight;
         [SerializeField] private bool showGizmos = true;
         [SerializeField] private bool showSectionBounds;
@@ -31,6 +32,8 @@ namespace MousePlatformer
         public WaterBasinModel Model => model;
         public bool IsSimulationPreviewActive { get; set; }
         public float SurfaceHeight => Application.isPlaying && model != null ? model.Surface : transform.position.y + initialSurfaceHeight;
+        public float MaximumWaterDepth => GeometryBounds.height;
+        public float InitialWaterDepth => Mathf.Clamp(transform.position.y + initialSurfaceHeight - GeometryBounds.yMin, 0f, MaximumWaterDepth);
 
         public Rect GeometryBounds
         {

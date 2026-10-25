@@ -263,3 +263,26 @@ Successful climb completion now reports released=true, allowing PlayerMovement t
 ### Ledge climb landing clearance
 
 The up/across traversal uses swept movement with ground following disabled until the final downward settle. Ordinary body movement could snap the horizontal phase down to the support, causing the next tick to raise the body again and delaying completion until the two-second timeout. Collision sweeps and the shared movement budget remain active. Last Attempt now distinguishes successful completion from a traversal timeout. No Play Mode checks were run; check continuous movement over a low ledge and climbing from a hanging position.
+
+
+## Stepping off a moving crate while pushing
+
+Player ground velocity is relative to its moving support: PlayerPlatformRide.Carry applies the carrier displacement separately. UpdateSupport now returns the carrier's FrameVelocity when a normal ground-to-air detachment occurs. PlayerMovement adds it to airborne velocity, preserving downward motion instead of starting another fall near zero. Support jumps already include carrier velocity explicitly, so that path is excluded from the new inheritance. Swimming and attached traversal also do not inherit through this path.
+
+PlayerCrateInteraction releases immediately after movement loses walkable ground, including the same tick that pushing crosses an edge. A crate supporting the player's feet cannot be reacquired as a side-push target. This avoids mixing riding and pushing the same support. The shared Max Speed remains unchanged at 26. Runtime and Editor compilation checked; verify pushing off an edge, stepping off a falling crate, jumping from moving supports and landing on a crate in Unity.
+
+
+## Push/fall accidentally entering WallClimbUp
+
+TryStartLedgeClimb now rechecks current grounded state after movement instead of starting a ground climb using stale pre-move contact. While pushing, PlayerCrateInteraction retains push intent through loss of support until the grab button is released; automatic ledge acquisition cannot take over that held input during the fall. Releasing the button restores normal automatic climbing.
+
+A legitimate ledge climb on a moving collider follows the same support-local destination's world displacement before applying relative climb motion. Climb Speed limits the climb relative to its support, rather than throttling descent to the climb speed while chasing a falling destination. The completion velocity retains the support's vertical carrier velocity. Carry uses collision casts and the normal movement budget; blocked carry interrupts the climb.
+
+Runtime and Editor compilation checked. In Unity, check pushing a crate over an edge while keeping grab held (no unintended WallClimbUp), ordinary static ledge climb, and intentional hanging/climbing on a moving crate.
+
+
+## Maintaining push/pull across small steps
+
+The shared horizontal clearance calculation now includes the player's own PhysicsSettings.player.maxStepHeight as well as the crate's independent Pushable.maxPushStepHeight. Both must allow the movement: a crate blocked by a taller edge limits the shared horizontal displacement, so the player does not keep pulling away while the crate remains stuck.
+
+While grounded and holding a crate, MovePlayer uses the normal swept step handling rather than the old axis-only special case that skipped stepping. It also follows a walkable step down within the player's threshold, avoiding a transient airborne state and unnecessary Release. Crates use the same ground-follow route during player push/pull, with their own smaller threshold. Snapping starts only from actual ground contact, observes collision/budget checks, and cannot bridge a drop beyond the permitted descent. Larger falls, jumping, releasing grab and moving out of reach retain normal release behavior. Automatic climb suppression during held push input is unchanged.

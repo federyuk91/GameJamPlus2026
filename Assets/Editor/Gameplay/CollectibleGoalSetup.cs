@@ -1,6 +1,5 @@
 using System.IO;
 using GameJamPlus.Gameplay;
-using GameJamPlus.UI;
 using MousePlatformer;
 using UnityEditor;
 using UnityEngine;
@@ -21,43 +20,29 @@ public static class CollectibleGoalSetup
     [MenuItem("Tools/Gameplay/Repair Collectible Goal Prefabs")]
     private static void Configure()
     {
-        const string path = "Assets/Prefabs/Characters/Player.prefab";
+        const string path = "Assets/Prefabs/GameLoop/Universe Rig.prefab";
         GameObject root = PrefabUtility.LoadPrefabContents(path);
         try
         {
-            CollectibleCollector collector = root.GetComponent<CollectibleCollector>();
-            Transform goalTransform = root.transform.Find("Cheese Collection Goal");
-            GameObject owner = goalTransform != null ? goalTransform.gameObject : new GameObject("Cheese Collection Goal");
-            owner.transform.SetParent(root.transform, false);
-            TestEndEvent ending = owner.GetComponent<TestEndEvent>();
-            if (ending == null) ending = owner.AddComponent<TestEndEvent>();
-            DialogueMessagePlayer dialogue = owner.GetComponent<DialogueMessagePlayer>();
-            if (dialogue == null) dialogue = owner.AddComponent<DialogueMessagePlayer>();
-            SerializedObject messages = new SerializedObject(dialogue);
-            SerializedProperty text = messages.FindProperty("messages");
-            if (text.arraySize == 0)
+            GameManager manager = root.GetComponentInChildren<GameManager>(true);
+            if (manager == null) return;
+            CollectionGoalController controller = manager.GetComponent<CollectionGoalController>();
+            if (controller == null) controller = manager.gameObject.AddComponent<CollectionGoalController>();
+            SerializedObject settings = new SerializedObject(controller);
+            settings.FindProperty("gameManager").objectReferenceValue = manager;
+            SerializedProperty rules = settings.FindProperty("rules");
+            if (rules.arraySize == 0)
             {
-                text.arraySize = 2;
-                text.GetArrayElementAtIndex(0).stringValue = "Excellent appetite! That is enough cheese for this trial. Time for a well-earned rest.";
-                text.GetArrayElementAtIndex(1).stringValue = "Ten portions already! What a healthy appetite. We can conclude this trial here.";
+                rules.arraySize = 2;
+                ConfigureRule(rules.GetArrayElementAtIndex(0), CollectibleType.Cheese, 10,
+                    CollectionGoalMatch.Threshold, CollectionGoalTiming.Collected, StageEndCase.CheeseGoal);
+                ConfigureRule(rules.GetArrayElementAtIndex(1), CollectibleType.Photo, 3,
+                    CollectionGoalMatch.EveryMultiple, CollectionGoalTiming.PhotoClosed, StageEndCase.PhotoGoal);
             }
-            messages.ApplyModifiedPropertiesWithoutUndo();
-            SerializedObject outcome = new SerializedObject(ending);
-            outcome.FindProperty("subjectDied").boolValue = false;
-            outcome.FindProperty("scientistComment").objectReferenceValue = dialogue;
-            SerializedProperty results = outcome.FindProperty("resultMessages");
-            results.arraySize = 1;
-            results.GetArrayElementAtIndex(0).stringValue = "The subject has enjoyed ten portions of cheese and completed the trial in good health.";
-            outcome.ApplyModifiedPropertiesWithoutUndo();
-            CollectibleTestGoal goal = owner.GetComponent<CollectibleTestGoal>();
-            if (goal == null) goal = owner.AddComponent<CollectibleTestGoal>();
-            SerializedObject settings = new SerializedObject(goal);
-            settings.FindProperty("collector").objectReferenceValue = collector;
-            settings.FindProperty("type").enumValueIndex = (int)CollectibleType.Cheese;
-            settings.FindProperty("requiredCount").intValue = 10;
-            settings.FindProperty("useSessionTotal").boolValue = true;
-            settings.FindProperty("outcome").objectReferenceValue = ending;
             settings.ApplyModifiedPropertiesWithoutUndo();
+            SerializedObject owner = new SerializedObject(manager);
+            owner.FindProperty("collectionGoals").objectReferenceValue = controller;
+            owner.ApplyModifiedPropertiesWithoutUndo();
             PrefabUtility.SaveAsPrefabAsset(root, path);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }
@@ -70,26 +55,34 @@ public static class CollectibleGoalSetup
             PrefabUtility.SaveAsPrefabAsset(root, photoPath);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }
-        File.WriteAllText("Temp/CollectibleGoalSetup-report.txt", "Player prefab: cheese quantity goal wired, Required Count=10, non-lethal outcome. Photo prefab: Photo type and Play event verified, quantity threshold=3. Both use the HUD session total. IDs remain separate from quantity checks.");
-        EditorApplication.delayCall += CollectibleSceneAudit.Run;
+        File.WriteAllText("Temp/CollectibleGoalSetup-report.txt", "Central collection goals wired in Universe Rig. Existing rules preserved; defaults supplied only for an empty list. Photo references and Play event repaired.");
+    }
+
+    private static void ConfigureRule(SerializedProperty rule, CollectibleType type, int count,
+        CollectionGoalMatch match, CollectionGoalTiming timing, StageEndCase ending)
+    {
+        rule.FindPropertyRelative("enabled").boolValue = true;
+        rule.FindPropertyRelative("type").enumValueIndex = (int)type;
+        rule.FindPropertyRelative("requiredCount").intValue = count;
+        rule.FindPropertyRelative("useSessionTotal").boolValue = true;
+        rule.FindPropertyRelative("match").enumValueIndex = (int)match;
+        rule.FindPropertyRelative("timing").enumValueIndex = (int)timing;
+        rule.FindPropertyRelative("ending").enumValueIndex = (int)ending;
     }
 
     public static int RepairPhoto(CollectiblePhoto photo)
     {
         if (photo == null) return 0;
+        Collectible collectible = photo.GetComponent<Collectible>();
+        if (collectible == null) return 0;
         int changed = 0;
         SerializedObject settings = new SerializedObject(photo);
-        SerializedProperty total = settings.FindProperty("useSessionTotal");
-        if (!total.boolValue) { total.boolValue = true; changed++; }
-        SerializedProperty ending = settings.FindProperty("curiosityEnding");
-        if (ending.objectReferenceValue == null)
+        SerializedProperty owner = settings.FindProperty("collectible");
+        if (owner.objectReferenceValue != collectible)
         {
-            TestEndEvent localEnding = photo.GetComponent<TestEndEvent>();
-            if (localEnding != null) { ending.objectReferenceValue = localEnding; changed++; }
+            owner.objectReferenceValue = collectible;
+            if (settings.ApplyModifiedProperties()) { changed++; EditorUtility.SetDirty(photo); }
         }
-        if (settings.ApplyModifiedProperties()) EditorUtility.SetDirty(photo);
-        Collectible collectible = photo.GetComponent<Collectible>();
-        if (collectible == null) return changed;
         SerializedObject pickup = new SerializedObject(collectible);
         SerializedProperty type = pickup.FindProperty("type");
         if (type.enumValueIndex != (int)CollectibleType.Photo) { type.enumValueIndex = (int)CollectibleType.Photo; changed++; }

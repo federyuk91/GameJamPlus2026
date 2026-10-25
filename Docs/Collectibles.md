@@ -54,8 +54,6 @@ Customize Photo, DialogueMessagePlayer.Messages/Avatar and TestEndEvent.Result M
 
 Portrait, square and panoramic textures are centered and enlarged to fit without cropping/distortion. Layout updates on resolution changes, reserving space for Next.
 
-## Five-cheese completion
+## Collection goals and persistence
 
-LoopScene's Game Manager has a CollectibleTestGoal wired to the player collector and a dedicated TestEndEvent. Collecting five normal Cheese items during the current test completes it with an enthusiastic scientist comment. Subject Died is disabled: the mouse is counted as recovered. GreenCheese is a separate type and keeps its existing outcome. Required Count defaults to 5 and can be edited on the scene component.
-
-GameSession tracks per-test counts separately from cumulative HUD totals. Advancing to the next subject resets per-test progress. The existing HUD blocks ordinary pickup dialogue during test ending, so the fifth cheese does not replace the completion comment. Check in Unity that cheeses one through four keep gameplay active, the fifth ends exactly once, and a new subject starts at zero progress.
+Collection IDs live on Collectible. CollectibleRemains only manages the plate's presentation and physical shape; CollectiblePhoto only manages photo presentation and closure. CollectionGoalController in Universe Rig evaluates ten total cheeses and every third photo after closing, using serializable rules. Both cheese variants share the Cheese counter while preserving their different food effects. See CollectibleGoals.md for the current flow and migration details.

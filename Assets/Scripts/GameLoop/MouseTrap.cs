@@ -5,7 +5,7 @@ using MousePlatformer;
 
 namespace GameJamPlus.Gameplay
 {
-    [DefaultExecutionOrder(250), DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D), typeof(TestEndEvent))]
+    [DefaultExecutionOrder(250), DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D))]
     public sealed class MouseTrap : MonoBehaviour
     {
         [SerializeField] private BoxCollider2D contactArea;
@@ -14,7 +14,8 @@ namespace GameJamPlus.Gameplay
         [SerializeField, Min(1)] private int damage = 3;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Sprite[] closingFrames;
-        [SerializeField] private TestEndEvent testEnd;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase ending = StageEndCase.MouseTrap;
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip goreClip;
         [SerializeField, Range(0f, 1f)] private float goreVolume = 0.8f;
@@ -25,11 +26,12 @@ namespace GameJamPlus.Gameplay
         private bool completed;
         private bool endingStage;
         private Coroutine animationRoutine;
+        private StageEndRequest animationRequest;
 
         private void Awake()
         {
             if (contactArea == null) contactArea = GetComponent<BoxCollider2D>();
-            if (testEnd == null) testEnd = GetComponent<TestEndEvent>();
+
             contactArea.isTrigger = true;
             if (audioSource != null)
             {
@@ -63,7 +65,7 @@ namespace GameJamPlus.Gameplay
         {
             GameManager manager = GameManager.Instance;
             if (triggered || manager == null || manager.State != GameManager.LoopState.Playing
-                || !contactArea.enabled || testEnd == null) return;
+                || !contactArea.enabled || ending == StageEndCase.None) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
             if (playerHealth == null) playerCollider.TryGetComponent(out playerHealth);
@@ -75,7 +77,7 @@ namespace GameJamPlus.Gameplay
             contactArea.enabled = false;
             GameSession.RecordObservation(TestObservation.LittleMechanic);
             playerHealth.ApplyDamage(Mathf.Max(1, damage));
-            endingStage = playerHealth.IsDead && testEnd.BeginAnimatedEnd();
+            endingStage = playerHealth.IsDead && StageEndManager.TryBeginAnimated(ending, this, out animationRequest);
             PlayGoreSound();
             animationRoutine = StartCoroutine(PlayClosingAnimation());
         }
@@ -91,7 +93,7 @@ namespace GameJamPlus.Gameplay
             if (closedHoldDuration > 0f) yield return new WaitForSecondsRealtime(closedHoldDuration);
             completed = true;
             animationRoutine = null;
-            if (endingStage) testEnd.CompleteAnimatedEnd();
+            if (endingStage) animationRequest.Complete();
             gameObject.SetActive(false);
         }
 
@@ -102,17 +104,17 @@ namespace GameJamPlus.Gameplay
             if (animationRoutine != null) StopCoroutine(animationRoutine);
             animationRoutine = null;
             // A despawned trap must not leave the game paused while awaiting animation completion.
-            if (endingStage && !completed && testEnd != null)
+            if (endingStage && !completed)
             {
                 completed = true;
-                testEnd.CompleteAnimatedEnd();
+                animationRequest.Complete();
             }
         }
 
         private void Reset()
         {
             contactArea = GetComponent<BoxCollider2D>();
-            testEnd = GetComponent<TestEndEvent>();
+
             contactArea.isTrigger = true;
         }
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using GameJamPlus.UI;
 using UnityEngine;
@@ -21,6 +20,9 @@ namespace GameJamPlus.Gameplay
         }
 
         [SerializeField] private GameplayHudController hud;
+        [SerializeField] private DialogueManager dialogues;
+        [SerializeField] private StageEndManager stageEnds;
+        [SerializeField] private MousePlatformer.CollectionGoalController collectionGoals;
         [Header("Player spawn")]
         [SerializeField] private Transform player;
         [SerializeField] private Collider2D playerCollider;
@@ -36,29 +38,23 @@ namespace GameJamPlus.Gameplay
         [SerializeField, Range(1, 10)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
-        [SerializeField, InspectorName("Transition Duration"), Min(0f), Tooltip("Default duration in seconds for endings without the exit image, before the scientist comment.")]
-        private float flashDuration = 1.5f;
-        [SerializeField, TextArea] private string fallbackComment = "Excellent. We can consider this stage complete.";
-        private double completedTime;
-        private string completedResult;
-        private float previousTimeScale;
-        private bool ownsPause;
-        private TestEndEvent animatedOutcome;
-        private string pendingComment;
-        private Sprite pendingAvatar;
-        private float pendingFlashDuration;
-        public TestEndEvent EndingOutcome { get; private set; }
-
         public static GameManager Instance { get; private set; }
         public LoopState State { get; private set; } = LoopState.Playing;
         public int Universe => GameSession.Universe;
         public string SubjectId => GameSession.SubjectId;
         public int Attempt => GameSession.Attempt;
         public GameplayHudController Hud => hud;
+        public DialogueManager Dialogues => dialogues;
+        public StageEndManager StageEnds => stageEnds;
+        public MousePlatformer.CollectionGoalController CollectionGoals => collectionGoals;
+        public StageEndDefinition EndingOutcome => stageEnds != null ? stageEnds.Outcome : null;
+        public int SurvivingHealth => playerHealth != null ? playerHealth.Current : MousePlatformer.PlayerHealth.Maximum;
+        internal void SetStageState(LoopState state) => State = state;
         public Collider2D PlayerCollider => playerCollider;
         public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
         public MousePlatformer.PlayerCrushVisual PlayerCrushVisual => playerCrushVisual;
         public IReadOnlyList<SpawnPoint> SpawnPoints => spawnPoints;
+        public Vector2 SpawnPosition { get; private set; }
         public void SnapCameraToPlayer() => gameplayCamera?.SnapToTarget();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -92,13 +88,6 @@ namespace GameJamPlus.Gameplay
                 State = LoopState.Spawning;
         }
 
-        private void OnEnable()
-        {
-            if (hud == null) return;
-            hud.TestCommentCompleted += OnTestCommentCompleted;
-            hud.TestContinueRequested += OnTestContinueRequested;
-        }
-
         private void Start()
         {
             hud.SetUniverse(Universe);
@@ -125,6 +114,7 @@ namespace GameJamPlus.Gameplay
                 Debug.LogWarning("Assign the Player to the Game Manager to use Spawn Points.", this);
                 return;
             }
+            SpawnPosition = player.position;
             if (campaign == null && GameSession.TryGetCheckpoint(out string checkpointScene, out bool hasPosition, out Vector2 checkpointPosition)
                 && hasPosition && checkpointScene == gameObject.scene.path)
             {
@@ -146,77 +136,12 @@ namespace GameJamPlus.Gameplay
 
         private void ApplySpawnPosition(Vector2 position)
         {
+            SpawnPosition = position;
             player.position = new Vector3(position.x, position.y, player.position.z);
             Physics2D.SyncTransforms();
         }
 
-        public void EndTest(TestEndEvent outcome)
-        {
-            PrepareTestEnding(outcome, false);
-        }
-
-        public bool BeginTestAnimation(TestEndEvent outcome) => PrepareTestEnding(outcome, true);
-
-        public void CompleteTestAnimation(TestEndEvent outcome)
-        {
-            if (!isActiveAndEnabled || State != LoopState.DeathAnimation || animatedOutcome != outcome) return;
-            animatedOutcome = null;
-            State = LoopState.Flash;
-            StartCoroutine(EndSequence(pendingComment, pendingAvatar));
-        }
-
-        private bool PrepareTestEnding(TestEndEvent outcome, bool waitForAnimation)
-        {
-            if (!isActiveAndEnabled || State != LoopState.Playing || outcome == null) return false;
-            EndingOutcome = outcome;
-            State = waitForAnimation ? LoopState.DeathAnimation : LoopState.Flash;
-            hud.HidePhoto();
-            completedTime = hud.ElapsedSeconds;
-            completedResult = outcome.ChooseResult();
-            pendingFlashDuration = outcome.FlashDurationOverride >= 0f
-                ? outcome.FlashDurationOverride : outcome.UseExitImage ? hud.ExitTransitionDuration : flashDuration;
-            GameSession.RecordTestResult(outcome.SubjectDied, completedTime,
-                playerHealth != null ? playerHealth.Current : MousePlatformer.PlayerHealth.Maximum);
-            previousTimeScale = Time.timeScale;
-            ownsPause = true;
-            Time.timeScale = 0f;
-            hud.BeginTestEnding(outcome.UseExitImage);
-
-            DialogueMessagePlayer dialogue = outcome.ScientistComment;
-            string comment = dialogue != null ? dialogue.ChooseMessage() : string.Empty;
-            Sprite avatar = dialogue != null ? dialogue.Avatar : null;
-            pendingComment = string.IsNullOrWhiteSpace(comment) ? fallbackComment : comment;
-            pendingAvatar = avatar;
-            Debug.Log($"Stage ending: {outcome.name} (scene: {outcome.gameObject.scene.name}, "
-                + $"subject died: {outcome.SubjectDied}, cheese: {GameSession.GetCollectibleCount(MousePlatformer.CollectibleType.Cheese)}). "
-                + $"Scientist comment: {pendingComment}", outcome);
-            if (waitForAnimation) animatedOutcome = outcome;
-            else StartCoroutine(EndSequence(pendingComment, pendingAvatar));
-            return true;
-        }
-
-        private IEnumerator EndSequence(string comment, Sprite avatar)
-        {
-            float elapsed = 0f;
-            while (elapsed < pendingFlashDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                hud.SetTestCoverOpacity(Mathf.Clamp01(elapsed / pendingFlashDuration));
-                yield return null;
-            }
-            hud.SetTestCoverOpacity(1f);
-            State = LoopState.ScientistComment;
-            hud.ShowTestComment(comment, avatar);
-        }
-
-        private void OnTestCommentCompleted()
-        {
-            if (State != LoopState.ScientistComment) return;
-            State = LoopState.Results;
-            hud.ShowTestResult(Universe, completedTime, completedResult);
-        }
-
-        private void OnTestContinueRequested()
+        internal void ContinueAfterStage()
         {
             if (State != LoopState.Results) return;
             string scene;
@@ -235,27 +160,11 @@ namespace GameJamPlus.Gameplay
             }
             State = LoopState.Loading;
             GameSession.Advance(campaign != null);
-            RestoreTimeScale();
+            stageEnds?.ReleasePause();
             SceneManager.LoadScene(scene);
         }
 
-        private void RestoreTimeScale()
-        {
-            if (!ownsPause) return;
-            Time.timeScale = previousTimeScale;
-            ownsPause = false;
-        }
-
-        private void OnDisable()
-        {
-            if (hud != null)
-            {
-                hud.TestCommentCompleted -= OnTestCommentCompleted;
-                hud.TestContinueRequested -= OnTestContinueRequested;
-            }
-            StopAllCoroutines();
-            RestoreTimeScale();
-        }
+        private void OnDisable() => stageEnds?.Cancel();
 
         private void OnDestroy()
         {

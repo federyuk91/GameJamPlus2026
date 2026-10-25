@@ -29,7 +29,7 @@ namespace GameJamPlus.UI
         {
             TestObservation.EnjoysFood, TestObservation.Exercises, TestObservation.LovesPool,
             TestObservation.ExtendedStay, TestObservation.LittleMechanic, TestObservation.VeryCurious,
-            TestObservation.Electrician
+            TestObservation.Electrician, TestObservation.SenseOfDirection
         };
 
         public bool IsVisible => resultScreen.style.display.value == DisplayStyle.Flex;

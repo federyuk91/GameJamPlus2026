@@ -5,13 +5,14 @@ using GameJamPlus.UI;
 
 namespace GameJamPlus.Gameplay
 {
-    [DefaultExecutionOrder(240), DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D), typeof(TestEndEvent))]
+    [DefaultExecutionOrder(240), DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D))]
     public sealed class ElectricTrap : MonoBehaviour
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private PlayerElectricity playerElectricity;
-        [SerializeField] private TestEndEvent testEnd;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase ending = StageEndCase.ElectricShock;
         [SerializeField, Min(1), Tooltip("Lightning charges applied to the player once per activation. A value of 2 applies two charges; reaching the player's lethal charge count ends the life.")]
         private int electricityAmount = 1;
         [SerializeField] private bool automaticActivation = true;
@@ -36,7 +37,7 @@ namespace GameJamPlus.Gameplay
         private void Awake()
         {
             if (contactArea == null) contactArea = GetComponent<Collider2D>();
-            if (testEnd == null) testEnd = GetComponent<TestEndEvent>();
+
             contactArea.isTrigger = true;
             if (audioSource == null) audioSource = GetComponent<AudioSource>();
             if (audioSource != null)
@@ -79,7 +80,7 @@ namespace GameJamPlus.Gameplay
         {
             GameManager manager = GameManager.Instance;
             if (!isActiveAndEnabled || manager == null
-                || manager.State != GameManager.LoopState.Playing || testEnd == null
+                || manager.State != GameManager.LoopState.Playing || ending == StageEndCase.None
                 || contactArea == null || !contactArea.enabled || !contactArea.gameObject.activeInHierarchy) return;
             // The player uses custom movement without a Rigidbody2D, so trigger callbacks are insufficient.
             Physics2D.SyncTransforms();
@@ -100,7 +101,7 @@ namespace GameJamPlus.Gameplay
             if (!playerElectricity.ReceiveShock(Mathf.Max(1, electricityAmount))) return;
             playerShocked = true;
             playerElectricity.BeginShock(this);
-            if (playerElectricity.IsLethal) testEnd.EndTest();
+            if (playerElectricity.IsLethal) StageEndManager.Request(ending, this);
         }
 
         public void EnableAutomaticActivation() => SetAutomaticActivation(true);
@@ -187,7 +188,7 @@ namespace GameJamPlus.Gameplay
         private void Reset()
         {
             contactArea = GetComponent<Collider2D>();
-            testEnd = GetComponent<TestEndEvent>();
+
             if (contactArea != null) contactArea.isTrigger = true;
         }
 

@@ -22,6 +22,8 @@ namespace MousePlatformer
         [SerializeField] private WaterConnection waterConnection;
         [SerializeField, Tooltip("Automatically assign the nearest water link in the editor. Disable to assign Water Connection manually.")]
         private bool autoWaterConnection = true;
+        [SerializeField, Min(0.25f), Tooltip("Scene View icon scale. 1 = 32 screen pixels, 2 = 64 screen pixels.")]
+        private float gizmoSize = 2f;
         [SerializeField] private UnityEvent onOpened = new UnityEvent();
         [SerializeField] private UnityEvent onClosed = new UnityEvent();
         [SerializeField, HideInInspector] private Tilemap targetTilemap;
@@ -45,6 +47,7 @@ namespace MousePlatformer
         public bool HasBinding => hasBinding && targetTilemap != null;
         public WaterConnection Connection => waterConnection;
         public bool AutoWaterConnection => autoWaterConnection;
+        public float GizmoSize => Mathf.Max(0.25f, gizmoSize);
         public bool IsOpen => initialized && isActiveAndEnabled && frameIndex == 0 && targetOpen;
         public bool InitiallyOpen => initialState == InitialState.Open || (initialState == InitialState.PaintedTile
             && HasBinding && FrameIndex(targetTilemap.GetTile(targetCell)) == 0);

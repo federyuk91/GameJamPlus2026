@@ -10,7 +10,8 @@ namespace MousePlatformer
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private PlayerOxygen playerOxygen;
         [SerializeField] private PlayerHealth playerHealth;
-        [SerializeField] private TestEndEvent biteOutcome;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase biteEnding = StageEndCase.Piranha;
         [SerializeField, Min(0.1f), Tooltip("Minimum seconds between bites while this piranha remains in contact with the player. Each bite removes one health point and one oxygen notch.")]
         private float biteInterval = 1f;
         [SerializeField] private bool showGizmos;
@@ -19,7 +20,7 @@ namespace MousePlatformer
         private void Awake()
         {
             if (contactArea == null) contactArea = GetComponent<Collider2D>();
-            if (biteOutcome == null) biteOutcome = GetComponent<TestEndEvent>();
+
         }
 
         private void OnEnable() => nextBiteTime = 0d;
@@ -46,7 +47,7 @@ namespace MousePlatformer
             nextBiteTime = Time.timeAsDouble + Mathf.Max(0.1f, biteInterval);
             playerHealth.ApplyDamage(1);
             playerOxygen.ConsumeNotch();
-            if (playerHealth.IsDead && biteOutcome != null) biteOutcome.EndTest();
+            if (playerHealth.IsDead && biteEnding != StageEndCase.None) StageEndManager.Request(biteEnding, this);
         }
 
         private void OnDrawGizmos()

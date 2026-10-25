@@ -34,10 +34,6 @@ namespace GameJamPlus.UI
         [SerializeField, Tooltip("Cheese counter frames in collected-count order, from 0 to 9. Victory thresholds are configured separately on the collectible goal.")]
         private Sprite[] cheeseCountFrames = new Sprite[10];
         [SerializeField] private bool showWelcomeOnStart = true;
-        [SerializeField, TextArea] private string welcomeText =
-            "Welcome to Universe-10. Relax and enjoy your stay.";
-        [SerializeField] private Sprite welcomePortrait;
-        [SerializeField, Range(1f, 30f)] private float welcomeDuration = 7f;
         [SerializeField] private bool pauseWhilePhotoOpen = true;
         [SerializeField, Range(0f, 1f)] private float shockLowFrequencyMotor = 0.45f;
         [SerializeField, Range(0f, 1f)] private float shockHighFrequencyMotor = 0.75f;
@@ -208,7 +204,7 @@ namespace GameJamPlus.UI
         private void ShowWelcomeComment()
         {
             if (showWelcomeOnStart)
-                ShowScientistComment(welcomeText.Replace("{universe}", universe.ToString()), welcomePortrait, welcomeDuration);
+                GameManager.Instance?.Dialogues?.Play(DialogueCase.Welcome);
         }
 
         public void BeginSpawnPresentation()
@@ -354,13 +350,13 @@ namespace GameJamPlus.UI
 
         public void PlayDamageFlash() => resourceHud?.PlayDamageFlash();
 
-        public void ShowTestComment(string text, Sprite portrait)
+        public void ShowTestComment(string text, Sprite portrait, float duration = 7f)
         {
             if (portrait == null) portrait = scientistPortrait;
             HideScientistComment();
             scientistView.SetEndingPresentation(true);
             communicationInProgress = true;
-            scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, 7f, true));
+            scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, duration, true));
         }
 
         public void ShowTestResult(int universeNumber, double elapsed, string result)

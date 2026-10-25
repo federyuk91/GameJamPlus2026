@@ -26,19 +26,10 @@ public static class CollectibleSceneAudit
                 foreach (Collectible collectible in root.GetComponentsInChildren<Collectible>(true))
                 {
                     report.AppendLine("COLLECTIBLE " + PathOf(collectible.transform) + " type=" + collectible.Type + " active=" + collectible.gameObject.activeInHierarchy);
-                    CollectibleRemains remains = collectible.GetComponent<CollectibleRemains>();
-                    CollectiblePhoto photo = collectible.GetComponent<CollectiblePhoto>();
-                    Object persistence = photo != null ? (Object)photo : remains;
-                    if (persistence != null)
-                    {
-                        SerializedObject settings = new SerializedObject(persistence);
-                        string id = settings.FindProperty("collectionId").stringValue;
-                        report.AppendLine("  ID=" + id + " global=" + GlobalObjectId.GetGlobalObjectIdSlow(persistence));
-                        if (!ids.ContainsKey(id)) ids[id] = 0;
-                        ids[id]++;
-                        if (photo != null)
-                            report.AppendLine("  photoThreshold=" + settings.FindProperty("photosToEndTest").intValue + " ending=" + settings.FindProperty("curiosityEnding").objectReferenceValue);
-                    }
+                    string id = collectible.CollectionId ?? string.Empty;
+                    report.AppendLine("  ID=" + id + " global=" + GlobalObjectId.GetGlobalObjectIdSlow(collectible));
+                    if (!ids.ContainsKey(id)) ids[id] = 0;
+                    ids[id]++;
                     SerializedObject data = new SerializedObject(collectible);
                     SerializedProperty calls = data.FindProperty("onCollected.m_PersistentCalls.m_Calls");
                     for (int call = 0; call < calls.arraySize; call++)
@@ -47,10 +38,11 @@ public static class CollectibleSceneAudit
                         report.AppendLine("  EVENT " + entry.FindPropertyRelative("m_MethodName").stringValue + " target=" + entry.FindPropertyRelative("m_Target").objectReferenceValue + " state=" + entry.FindPropertyRelative("m_CallState").intValue);
                     }
                 }
-                foreach (CollectibleTestGoal goal in root.GetComponentsInChildren<CollectibleTestGoal>(true))
+                foreach (CollectionGoalController controller in root.GetComponentsInChildren<CollectionGoalController>(true))
                 {
-                    SerializedObject settings = new SerializedObject(goal);
-                    report.AppendLine("GOAL " + PathOf(goal.transform) + " count=" + settings.FindProperty("requiredCount").intValue + " collector=" + settings.FindProperty("collector").objectReferenceValue + " outcome=" + settings.FindProperty("outcome").objectReferenceValue);
+                    SerializedObject settings = new SerializedObject(controller);
+                    SerializedProperty rules = settings.FindProperty("rules");
+                    report.AppendLine("GOALS " + PathOf(controller.transform) + " rules=" + rules.arraySize);
                 }
             }
             foreach (KeyValuePair<string, int> entry in ids)

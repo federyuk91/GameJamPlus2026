@@ -14,6 +14,10 @@ namespace MousePlatformer
         private ContactFilter2D filter;
 
         public event Action<CollectibleType, int> CountChanged;
+        public event Action<Collectible> Collected;
+        public event Action<Collectible> PhotoClosed;
+        public bool CanCollect => isActiveAndEnabled && Time.timeScale > 0f
+            && (GameManager.Instance == null || GameManager.Instance.State == GameManager.LoopState.Playing);
         public Collectible InteractionTarget { get; private set; }
         public Collectible FoodTarget { get; private set; }
         public float TargetDistanceSquared => InteractionTarget != null && collectionArea != null
@@ -26,10 +30,27 @@ namespace MousePlatformer
             return GameSession.GetCollectibleCount(type);
         }
 
-        internal void RecordCollection(CollectibleType type)
+        internal void RecordCollection(Collectible collectible)
         {
+            CollectibleType type = collectible.Type;
             int count = GameSession.AddCollectibleCount(type, 1);
+            Collected?.Invoke(collectible);
             CountChanged?.Invoke(type, count);
+            // Goal evaluation is a separate commit phase, after item effects and before local presentation.
+            EvaluateGoals(type, CollectionGoalTiming.Collected);
+        }
+
+        public void NotifyPhotoClosed(Collectible collectible)
+        {
+            if (collectible == null || collectible.Collector != this || collectible.Type != CollectibleType.Photo) return;
+            PhotoClosed?.Invoke(collectible);
+            EvaluateGoals(collectible.Type, CollectionGoalTiming.PhotoClosed);
+        }
+
+        private void EvaluateGoals(CollectibleType type, CollectionGoalTiming timing)
+        {
+            GameManager manager = GameManager.Instance;
+            if (manager != null && manager.CollectionGoals != null) manager.CollectionGoals.Evaluate(type, timing);
         }
 
         public void AddKnowledge(int amount)
@@ -37,6 +58,7 @@ namespace MousePlatformer
             if (amount <= 0) return;
             int count = GameSession.AddCollectibleCount(CollectibleType.Knowledge, amount);
             CountChanged?.Invoke(CollectibleType.Knowledge, count);
+            EvaluateGoals(CollectibleType.Knowledge, CollectionGoalTiming.Collected);
         }
 
         private void Awake()
@@ -54,7 +76,7 @@ namespace MousePlatformer
 
         private void Update()
         {
-            if (Time.timeScale <= 0f || input == null || !input.isActiveAndEnabled) return;
+            if (!CanCollect || input == null || !input.isActiveAndEnabled) return;
             if (input.EatPressed) CollectSelectedTarget(FoodTarget);
             if (isActiveAndEnabled && Time.timeScale > 0f && input.InteractionPressed) CollectSelectedTarget(InteractionTarget);
         }
@@ -85,7 +107,7 @@ namespace MousePlatformer
         {
             InteractionTarget = null;
             FoodTarget = null;
-            if (collectionArea == null || !collectionArea.enabled) return;
+            if (!CanCollect || collectionArea == null || !collectionArea.enabled) return;
 
             // The player moves its Transform directly and automatic physics synchronization is disabled.
             Physics2D.SyncTransforms();

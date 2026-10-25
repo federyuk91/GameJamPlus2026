@@ -4,7 +4,7 @@ using UnityEngine;
 namespace MousePlatformer
 {
     [DefaultExecutionOrder(110), DisallowMultipleComponent]
-    [RequireComponent(typeof(PlayerMovement), typeof(AudioSource))]
+    [RequireComponent(typeof(PlayerMovement))]
     public sealed class PlayerFootsteps : MonoBehaviour
     {
         public enum FootstepGait
@@ -35,7 +35,12 @@ namespace MousePlatformer
         private void Awake()
         {
             if (movement == null) movement = GetComponent<PlayerMovement>();
-            if (source == null) source = GetComponent<AudioSource>();
+            if (source == null)
+            {
+                Debug.LogError("Assign the Footsteps AudioSource from the player's Audio hierarchy.", this);
+                enabled = false;
+                return;
+            }
             baseSourceVolume = source.volume;
             source.playOnAwake = false;
             source.loop = false;

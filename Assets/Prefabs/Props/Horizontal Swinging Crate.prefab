@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 2894280810327223630}
   - component: {fileID: 9700001000}
   - component: {fileID: 9800007101}
-  - component: {fileID: 9800007102}
   - component: {fileID: 9800007103}
   m_Layer: 0
   m_Name: 02 Horizontal Swinging Crate
@@ -242,6 +241,7 @@ MonoBehaviour:
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
   waterDragMultiplier: 3.33333333
+  overrideMaxSpeed: 0
   maxSpeed: 5
   solidLayers:
     serializedVersion: 2
@@ -1287,30 +1287,12 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   motion: {fileID: 7998587169240745152}
-  testEnd: {fileID: 9800007102}
+  ending: 4
   audioSource: {fileID: 9800007103}
   impactClip: {fileID: 8300000, guid: 29d68da1d8bf477c9adff7bac9763144, type: 3}
   impactVolume: 0.8
   minimumFallSpeed: 0.5
   contactTolerance: 0.02
---- !u!114 &9800007102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332618563694007208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 0}
-  subjectDied: 1
-  flashDurationOverride: -1
-  resultMessages:
-  - The subject has completed the pressure stage.
 --- !u!82 &9800007103
 AudioSource:
   m_ObjectHideFlags: 0

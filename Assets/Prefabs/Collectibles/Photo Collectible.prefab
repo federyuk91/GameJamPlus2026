@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 5718437077508530872}
   - component: {fileID: 4546305336044527665}
   - component: {fileID: 3706214367928598243}
-  - component: {fileID: 5000004100}
-  - component: {fileID: 5000004101}
   m_Layer: 0
   m_Name: Photo Collectible
   m_TagString: Untagged
@@ -154,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143b5182dcc3467eb4a44b01d69f8c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collectionId: 
   type: 2
   requiresInteraction: 1
   pickupArea: {fileID: 5718437077508530872}
@@ -186,50 +185,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d645b17e667e42b2be86ec1386831bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collectible: {fileID: 4546305336044527665}
   hud: {fileID: 0}
-  collectionId: 
   photo: {fileID: 0}
-  photosToEndTest: 3
-  useSessionTotal: 1
-  curiosityEnding: {fileID: 5000004101}
   onContinue:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5000004100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5539735911339432288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af44c941abc4765bb309cbd07c2ba10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hud: {fileID: 0}
-  avatar: {fileID: 0}
-  messages:
-  - Three photographs already? Such curiosity! We had better take a break now.
-  - You have seen quite enough for today. Let us give that curious mind a rest.
-  - What an inquisitive little mouse. Further observation will not be necessary.
-  duration: 7
---- !u!114 &5000004101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5539735911339432288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
-  scientistComment: {fileID: 5000004100}
-  subjectDied: 0
-  flashDurationOverride: -1
-  resultMessages:
-  - The subject has become too curious after examining three photographs.
-  - The subject has exceeded the recommended level of curiosity.

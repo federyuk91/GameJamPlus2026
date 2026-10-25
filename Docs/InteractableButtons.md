@@ -96,3 +96,19 @@ Spawn Points to stop after the third crate, or leave it enabled to repeat.
 Existing scene prefab instances inherit the solid surface. No gameplay scenes
 were edited or reloaded. Check mouse descent, crate removal, door events,
 Single Use and reactivation in Play Mode.
+
+
+## Sprite Physics Shape collision
+
+ButtonPressurePlate now uses a PolygonCollider2D surface matching every physics path of the currently displayed sprite, including intermediate press/release frames. Sprite-local vertices are converted through renderer and collider transforms, with Flip X/Y support. With no usable sprite physics paths, a sprite-bounds rectangle is used as a fallback. Weight detection checks the actual polygon distance/contact point instead of only the overall bounds top, so lower portions of stepped shapes can support bodies.
+
+All six button prefabs use polygon surfaces while retaining their original surface component IDs and interaction triggers. The authored initial polygon preserves the previous resting rectangle; Initialize/SetSprite installs the sprite's physics paths at startup. Older standalone scene copies with a box surface are converted locally on first MatchVisual (old box disabled, polygon used). On a frame change, existing passengers follow the change in top height using the same obstacle-constrained carry as before. Gizmos draw the polygon paths. Button events, Single Use and locking behavior are unchanged.
+
+Runtime and Editor compilation verified. Check pressed/halfway/released collision, weight release and rider movement in Unity using the authored sprite Physics Shapes.
+
+
+## Pushing crates over small button edges
+
+Pushable > Max Push Step Height defaults to 0.0625 world units (2 artwork pixels at 32 PPU). It enables small up/across/down steps only during player push/pull and only while the crate is grounded. Zero disables it. The player/crate shared-displacement clearance query includes the same step route so it does not reject the edge before the actual move can step over it. Ceiling, wall, landing slope and movement budget checks remain active. Ordinary gravity/prop movement and swimming pushes keep their existing no-step behavior. This does not change the player's own stepping height or enlarge the button collider. Stacked objects can still block upward clearance.
+
+Runtime and Editor compilation checked. In Unity, verify pushing/pulling over low button rims, rejection of taller edges, and blocked clearance below a ceiling.

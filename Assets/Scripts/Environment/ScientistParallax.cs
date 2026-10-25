@@ -1,3 +1,4 @@
+using GameJamPlus.Gameplay;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -6,6 +7,10 @@ namespace MousePlatformer
     public sealed class ScientistParallax : MonoBehaviour
     {
         [SerializeField] private Camera viewCamera;
+        [SerializeField, Tooltip("Optional scene manager. Positions the scientist behind the actual player spawn before starting parallax.")]
+        private GameManager spawnManager;
+        [SerializeField, Tooltip("World-space offset of the scientist bust from the selected spawn. Depth is preserved.")]
+        private Vector2 spawnOffset;
         [SerializeField] private SpriteRenderer bust;
         [SerializeField] private MagnifyingLens2D lens;
         [SerializeField, Tooltip("Fraction of camera translation followed by the bust. 0 stays in world space, 1 stays at the same screen position.")]
@@ -57,6 +62,11 @@ namespace MousePlatformer
             if (viewCamera == null || bust == null || bust.sprite == null || lens == null || Time.deltaTime <= 0f) return;
             if (!initialized)
             {
+                if (spawnManager != null)
+                {
+                    Vector2 offset = spawnManager.SpawnPosition + spawnOffset - (Vector2)bust.transform.position;
+                    transform.position += new Vector3(offset.x, offset.y, 0f);
+                }
                 cameraOrigin = viewCamera.transform.position;
                 bustOrigin = bust.transform.position;
                 lensOrigin = lens.transform.position;

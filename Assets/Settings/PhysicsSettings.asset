@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PhysicsSettings
   m_EditorClassIdentifier: 
   gravityAcceleration: 30
+  maxSpeed: 26
   simulationSubsteps: 4
   ropeSimulationSubsteps: 4
   ropeConstraintIterations: 24

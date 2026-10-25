@@ -6,10 +6,7 @@ namespace GameJamPlus.Gameplay
 {
     public static class GameSession
     {
-        private static readonly Dictionary<CollectibleType, int> collectibleCounts = new Dictionary<CollectibleType, int>();
-        private static readonly Dictionary<CollectibleType, int> testCollectibleCounts = new Dictionary<CollectibleType, int>();
-        private static readonly HashSet<string> collectedPhotoIds = new HashSet<string>();
-        private static readonly HashSet<string> consumedCollectibleIds = new HashSet<string>();
+        public static CollectibleSession Collections { get; } = new CollectibleSession();
         private static readonly Dictionary<string, SpawnShuffleBag> spawnBags = new Dictionary<string, SpawnShuffleBag>();
         public static int Universe { get; private set; }
         public static int TotalTests { get; private set; }
@@ -110,14 +107,11 @@ namespace GameJamPlus.Gameplay
             MaximumDeaths = 100;
             LastSubjectDied = HasPendingResult = false;
             spawnBags.Clear();
-            testCollectibleCounts.Clear();
             active = false;
             testObservations = TestObservation.None;
             subjectPhotoCount = 0;
             clearObservationsOnAdvance = false;
-            collectibleCounts.Clear();
-            collectedPhotoIds.Clear();
-            consumedCollectibleIds.Clear();
+            Collections.Reset();
         }
 
         public static void EnsureStarted(int startingUniverse, int attemptsPerUniverse = 10, int maximumDeaths = 100)
@@ -125,9 +119,7 @@ namespace GameJamPlus.Gameplay
             if (active && Universe > 0) return;
             ClearCheckpoint();
             Universe = Mathf.Clamp(startingUniverse, 1, 10);
-            collectibleCounts.Clear();
-            collectedPhotoIds.Clear();
-            consumedCollectibleIds.Clear();
+            Collections.Reset();
             TotalTests = Universe;
             CompletedTests = 0;
             SubjectsUsed = 1;
@@ -141,7 +133,6 @@ namespace GameJamPlus.Gameplay
             SubjectHealth = PlayerHealth.Maximum;
             LastSubjectDied = HasPendingResult = false;
             spawnBags.Clear();
-            testCollectibleCounts.Clear();
             active = true;
             testObservations = TestObservation.None;
             subjectPhotoCount = 0;
@@ -170,7 +161,7 @@ namespace GameJamPlus.Gameplay
                 SubjectsUsed++;
                 SubjectHealth = PlayerHealth.Maximum;
             }
-            testCollectibleCounts.Clear();
+            Collections.BeginAttempt();
             // Keep the final observations visible in Results; clear them only when starting the next subject.
             if (clearObservationsOnAdvance)
             {
@@ -181,46 +172,14 @@ namespace GameJamPlus.Gameplay
             HasPendingResult = false;
         }
 
-        public static int GetCollectibleCount(CollectibleType type)
-        {
-            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
-            return collectibleCounts.TryGetValue(counterType, out int count) ? count : 0;
-        }
+        public static int GetCollectibleCount(CollectibleType type) => Collections.GetCount(type);
 
-        public static int GetTestCollectibleCount(CollectibleType type)
-        {
-            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
-            return testCollectibleCounts.TryGetValue(counterType, out int count) ? count : 0;
-        }
-
-        public static bool HasCollectedPhoto(string collectionId)
-        {
-            return !string.IsNullOrWhiteSpace(collectionId) && collectedPhotoIds.Contains(collectionId);
-        }
-
-        public static void RememberPhoto(string collectionId)
-        {
-            if (!string.IsNullOrWhiteSpace(collectionId)) collectedPhotoIds.Add(collectionId);
-        }
-
-        public static bool HasConsumedCollectible(string collectionId)
-        {
-            return !string.IsNullOrWhiteSpace(collectionId) && consumedCollectibleIds.Contains(collectionId);
-        }
-
-        public static void RememberConsumedCollectible(string collectionId)
-        {
-            if (!string.IsNullOrWhiteSpace(collectionId)) consumedCollectibleIds.Add(collectionId);
-        }
+        public static int GetTestCollectibleCount(CollectibleType type) => Collections.GetCount(type, false);
 
         public static int AddCollectibleCount(CollectibleType type, int amount)
         {
             int added = Mathf.Max(0, amount);
-            int count = GetCollectibleCount(type) + added;
-            // Keep the pickup type for poison effects, but store both foods in the cheese counter.
-            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
-            collectibleCounts[counterType] = count;
-            testCollectibleCounts[counterType] = GetTestCollectibleCount(type) + added;
+            int count = Collections.Add(type, added);
             if (added > 0)
             {
                 if (type == CollectibleType.Cheese || type == CollectibleType.GreenCheese)

@@ -12,6 +12,7 @@ namespace GameJamPlus.Gameplay
         ExtendedStay = 8,
         LittleMechanic = 16,
         VeryCurious = 32,
-        Electrician = 64
+        Electrician = 64,
+        SenseOfDirection = 128
     }
 }

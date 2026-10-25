@@ -57,6 +57,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4a4a4057d5b1fe249b5bf383dfb6ab8b, type: 2}
   waterConnection: {fileID: 0}
   autoWaterConnection: 1
+  gizmoSize: 2
   onOpened:
     m_PersistentCalls:
       m_Calls: []

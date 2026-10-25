@@ -20,6 +20,7 @@ namespace MousePlatformer
         private Vector3 localDestination;
         private Vector3 localHangPosition;
         private Vector2 lastHangTarget;
+        private Vector2 lastClimbTarget;
         private bool raised;
         private float cooldown;
         private float elapsed;
@@ -93,6 +94,7 @@ namespace MousePlatformer
             }
             support = top.collider;
             localDestination = support.transform.InverseTransformPoint(originalPosition + shift);
+            lastClimbTarget = support.transform.TransformPoint(localDestination);
             localHangPosition = support.transform.InverseTransformPoint(transform.position);
             lastHangTarget = transform.position;
             Direction = direction;
@@ -221,6 +223,7 @@ namespace MousePlatformer
                 if (!CanClimbTo(destination))
                     return true;
                 State = LedgeState.Climbing;
+                lastClimbTarget = destination;
                 elapsed = 0f;
                 ClimbStarted?.Invoke();
             }
@@ -228,7 +231,20 @@ namespace MousePlatformer
             { Reject("Climb interrupted: traversal timeout"); Stop(); released = true; return true; }
             Vector2 target = support.transform.TransformPoint(localDestination);
             Vector2 start = transform.position;
-            Vector2 delta = target - start;
+            // Follow the carrier first; climb speed limits only movement relative to that carrier.
+            Vector2 carryDisplacement = target - lastClimbTarget;
+            lastClimbTarget = target;
+            Vector2 carrierVelocity = dt > 0f ? carryDisplacement / dt : Vector2.zero;
+            body.Move(carryDisplacement, ignored: support);
+            if (Vector2.Distance(transform.position, start + carryDisplacement) > 0.01f)
+            {
+                Reject("Climb interrupted: carrier motion obstructed");
+                Stop();
+                velocity = carrierVelocity;
+                released = true;
+                return true;
+            }
+            Vector2 delta = target - (Vector2)transform.position;
             float step = LocalMovement.ClimbSpeed * dt;
             if (delta.y > 0.001f) raised = false;
             if (!raised)
@@ -248,7 +264,7 @@ namespace MousePlatformer
                     if (Mathf.Abs(transform.position.y - target.y) <= 0.001f)
                     {
                         body.Move(Vector2.down * (Mathf.Max(body.Skin, Physics2D.defaultContactOffset * 2f) + body.Skin));
-                        velocity = new Vector2((transform.position.x - start.x) / dt, 0f);
+                        velocity = new Vector2((transform.position.x - start.x) / dt, carrierVelocity.y);
                         lastAttempt = "Climb completed";
                         Stop();
                         released = true;

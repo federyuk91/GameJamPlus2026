@@ -10,9 +10,10 @@ namespace MousePlatformer
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private CollectibleCollector collector;
         [SerializeField] private PlayerHealth health;
-        [SerializeField, Tooltip("Outcome if the immediate poison damage consumes the last heart. Uses Starvation Outcome when unassigned.")]
-        private TestEndEvent poisonOutcome;
-        [SerializeField] private TestEndEvent starvationOutcome;
+        [SerializeField, Tooltip("Outcome if the immediate poison damage consumes the last heart. Uses Starvation Ending when set to None.")]
+        private StageEndCase poisonEnding = StageEndCase.None;
+        [SerializeField, Tooltip("Central conclusion when satiety reaches zero.")]
+        private StageEndCase starvationEnding = StageEndCase.Starvation;
         [SerializeField] private PlayerWheelInteraction wheel;
         [SerializeField, Min(1)] private int maximumNotches = 5;
         [SerializeField, Min(0.1f)] private float drainInterval = 60f;
@@ -42,13 +43,13 @@ namespace MousePlatformer
 
         private void OnEnable()
         {
-            if (collector != null) collector.CountChanged += OnCollected;
+            if (collector != null) collector.Collected += OnCollected;
             if (wheel != null) wheel.UsageChanged += ResetWheelDrain;
         }
 
         private void OnDisable()
         {
-            if (collector != null) collector.CountChanged -= OnCollected;
+            if (collector != null) collector.Collected -= OnCollected;
             if (wheel != null) wheel.UsageChanged -= ResetWheelDrain;
         }
 
@@ -93,11 +94,12 @@ namespace MousePlatformer
             Current = Mathf.Max(0, Current - 1);
             Changed?.Invoke(Current, Maximum);
             NotchLost?.Invoke();
-            if (Current == 0 && starvationOutcome != null) starvationOutcome.EndTest();
+            if (Current == 0) StageEndManager.Request(starvationEnding, this);
         }
 
-        private void OnCollected(CollectibleType type, int count)
+        private void OnCollected(Collectible collectible)
         {
+            CollectibleType type = collectible.Type;
             if (type == CollectibleType.Cheese) RestoreFull();
             else if (type == CollectibleType.GreenCheese) RestoreAndPoison();
         }
@@ -118,8 +120,8 @@ namespace MousePlatformer
             Refill();
             if (health != null && health.ApplyDamage(1) && health.IsDead)
             {
-                TestEndEvent outcome = poisonOutcome != null ? poisonOutcome : starvationOutcome;
-                if (outcome != null) outcome.EndTest();
+                StageEndCase ending = poisonEnding != StageEndCase.None ? poisonEnding : starvationEnding;
+                StageEndManager.Request(ending, this);
             }
         }
 

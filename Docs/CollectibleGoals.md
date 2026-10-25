@@ -1,15 +1,43 @@
-# Collectible quantities and persistence IDs
+# Collectible quantities and persistence
 
-The cheese goal lives under Player > Cheese Collection Goal, with a CollectibleTestGoal wired to the player's CollectibleCollector and a non-lethal TestEndEvent. Required Count is 10. It commits the ending immediately during the quantity callback, before subsequent pickup events can release buttons or activate other hazards. GameplayHudController suppresses ordinary pickup dialogue after an ending starts.
+## Ownership
 
-GameManager.EndingOutcome identifies the accepted ending event. A single `Stage ending:` Console log records its source, scene, lethal flag, cheese quantity and chosen scientist comment. Prior non-lethal shocks do not select a different dialogue; a lethal shock accepted before the cheese threshold remains a death ending.
+Collectible owns collectionId, pickup state, interaction mode and the onCollected presentation event. CollectibleRemains only changes the consumed sprite and plate physics. CollectiblePhoto only displays its texture and reports closure. Physics remains configured on the individual objects.
 
-Photo Collectible > CollectiblePhoto checks Photos To End Test (3) after closing the photograph. It reads the quantity directly from GameSession. Collection IDs only track which placed photos remain collected between universes; they never determine whether the threshold is reached. Missing Curiosity Ending now emits an explicit error instead of silently doing nothing.
+GameSession.Collections owns a plain CollectibleSession, containing persistent IDs, session totals and attempt counts. Normal and green cheese share the Cheese counter; their original pickup types remain distinct for satiety, poison and voice effects. Attempt counts reset on GameSession.Advance, while IDs and session totals survive stage/universe changes until a new run. The observation count for the current subject remains separate, preserving its existing reset behavior.
 
-Both components expose Use Session Total. On is the configured default and counts the same persistent session total shown by the HUD. Off is available for goals that intentionally count only the current level/subject. The current level quantity resets at GameSession.Advance; the HUD total survives between universes of the same run. Photo and cheese counts are separate; green cheese does not count as ordinary cheese.
+## Ordered collection
 
-Tools > Gameplay > Repair Collectible Goal Prefabs wires the cheese goal and verifies the Photo type and Play event in the photo prefab. Tools > Gameplay > Repair Collectible IDs In Scenes repairs blank or duplicate IDs in placed remains/photo components, verifies photo callbacks and keeps snapshots in Recovery. It excludes recovered scene copies. Scenes already open remain dirty without automatic saving; other scenes are backed up before saving. The same ID check runs automatically when a scene is saved, so duplicate/newly placed collectibles receive their own persistent IDs. Source prefab IDs may remain blank: the ID belongs to each placed instance.
+1. Validate the item and input, reserve its ID, and disable its pickup area.
+2. Add the quantity and notebook observations.
+3. Emit CollectibleCollector.Collected with the actual item. PlayerSatiety applies food effects and PlayerVoices handles normal-cheese audio.
+4. Emit CountChanged for HUD/counter observers.
+5. CollectionGoalController evaluates immediate goals through a separate commit phase.
+6. Invoke local onCollected UnityEvents, then show remains or hide the item.
 
-Tools > Gameplay > Audit Collectible Scene Setup writes Temp/CollectibleSceneAudit.txt for loaded scenes, listing types, IDs, pickup callbacks, photo thresholds and goal references. Repair results are in Temp/CollectibleIdRepair-report.txt and Temp/CollectibleGoalSetup-report.txt. These are configuration checks, not automated gameplay tests.
+This keeps accepted endings ahead of pickup presentation that can release pressure plates, and keeps food effects ahead of goal evaluation. Changes such as AddKnowledge do not masquerade as eating an item.
 
-Il formaggio normale e quello avvelenato condividono il contatore Cheese, sia nella HUD sia nelle soglie di vittoria (totale o livello corrente). GreenCheese resta il tipo della raccolta per applicare il veleno; non ha un contatore UI separato.
+PhotoClosed is emitted on the originating collector after the photo is closed and its onContinue callbacks have run. The already-hidden photo collectible retains its collector reference for this callback. Goal evaluation occurs after PhotoClosed, when the HUD has restored its photo-owned pause.
+
+## Central goals
+
+Universe Rig has CollectionGoalController on the same GameObject as GameManager. Its serialized rule list contains:
+
+- Cheese: threshold 10, session total, evaluate on collection, StageEndCase.CheeseGoal.
+- Photo: every multiple of 3, session total, evaluate after closing the photo, StageEndCase.PhotoGoal.
+
+Each CollectionGoalRule is a normal serializable class: enabled flag, collectible counter, required quantity, session/attempt scope, threshold/multiple match, evaluation timing and ending case. Rules are evaluated in list order and stop at the first accepted ending. GameManager references the controller explicitly. The standalone older gameplay scenes have equivalent controllers beside their GameManager.
+
+## Migration
+
+Existing IDs were moved from remains/photo components into their owning Collectible, including placed-instance overrides. No IDs were regenerated. Photo textures, callbacks, plate configuration and physical properties were retained. Empty source-prefab IDs remain empty; placed instances should have unique IDs.
+
+The old Player/Cheese Collection Goal component and its empty container were removed. CollectibleTestGoal.cs and its meta remain temporarily, marked Obsolete and unreferenced by operational code/assets, pending explicit deletion approval. Recovery snapshots under Assets/_Recovery were not migrated.
+
+## Editor tools
+
+- Repair Collectible IDs In Scenes now reads IDs from Collectible. Existing non-empty unique IDs are retained; blank/duplicate IDs are repaired when explicitly running the tool or saving a scene. Photo references/events are checked without moving goal settings back onto photos. Archived recovery scenes are excluded.
+- Repair Collectible Goal Prefabs configures Universe Rig's central controller and the photo Play event. Existing non-empty rule lists are preserved; defaults are created only for an empty list.
+- Audit Collectible Scene Setup reports collectible IDs, types, callbacks and central rule counts. It is not a gameplay test.
+
+No compilation, Play Mode or automated tests were run. In Unity check persisted plates/photos across loops, cheese/poison effects, HUD quantities, the tenth cheese, photo closure at totals 3/6/9, plate stacking, and a fresh run resetting IDs/totals.

@@ -89,13 +89,16 @@ public sealed class PhysicsSettingsEditor : Editor
         Section("World Gravity", "SimulatedBody2D → PlayerMovement, PlayerLedgeClimb, PlayerSwimming, PropsMotion; RopeSimulation");
         Field("gravityAcceleration");
 
+        Section("Shared Speed Limit", "All SimulatedBody2D components");
+        Field("maxSpeed", "Maximum total speed in every medium. Bodies use this unless Override Max Speed is enabled locally.");
+
         Section("Props Simulation", "PropsMotion (individual bodies and coordinated groups)");
         Field("simulationSubsteps");
 
         Section("Rope Simulation", "RopeSimulation");
         Field("ropeSimulationSubsteps");
         Field("ropeConstraintIterations");
-        EditorGUILayout.HelpBox("Per body: Gravity Scale, Max Speed, Max Slope Angle, Ground Friction and drag. PlayerSwimming also uses the body's Water Drag.", MessageType.None);
+        EditorGUILayout.HelpBox("Per body: optional Max Speed override, Gravity Scale, Max Slope Angle, Ground Friction and drag. PlayerSwimming also uses the body's Water Drag.", MessageType.None);
         serializedObject.ApplyModifiedProperties();
     }
 

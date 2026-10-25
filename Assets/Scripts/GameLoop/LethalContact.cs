@@ -7,7 +7,8 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private TestEndEvent testEnd;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase ending = StageEndCase.Fall;
         [SerializeField] private bool showGizmos;
         private bool triggered;
 
@@ -16,7 +17,7 @@ namespace GameJamPlus.Gameplay
             GameManager manager = GameManager.Instance;
             if (manager == null || manager.State != GameManager.LoopState.Playing) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
-            if (triggered || testEnd == null || contactArea == null || playerCollider == null
+            if (triggered || ending == StageEndCase.None || contactArea == null || playerCollider == null
                 || !contactArea.enabled || !playerCollider.enabled
                 || !playerCollider.gameObject.activeInHierarchy) return;
 
@@ -25,7 +26,7 @@ namespace GameJamPlus.Gameplay
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f) return;
             triggered = true;
-            testEnd.EndTest();
+            StageEndManager.Request(ending, this);
         }
 
         private void OnDrawGizmos()
@@ -53,7 +54,7 @@ namespace GameJamPlus.Gameplay
         private void Reset()
         {
             contactArea = GetComponent<Collider2D>();
-            testEnd = GetComponent<TestEndEvent>();
+
             if (contactArea != null) contactArea.isTrigger = true;
         }
 

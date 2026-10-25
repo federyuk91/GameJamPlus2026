@@ -9,7 +9,8 @@ namespace MousePlatformer
     public sealed class PlayerOxygen : MonoBehaviour
     {
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private TestEndEvent drowningOutcome;
+        [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
+        private StageEndCase drowningEnding = StageEndCase.Drowning;
         [SerializeField, Min(1)] private int maximumNotches = 5;
         [SerializeField, Min(0.1f)] private float drainInterval = 5f;
         [SerializeField, Min(0.1f)] private float recoveryInterval = 1f;
@@ -94,7 +95,7 @@ namespace MousePlatformer
                 warningIssued = true;
                 onLowOxygen?.Invoke();
             }
-            if (Current == 0 && drowningOutcome != null) drowningOutcome.EndTest();
+            if (Current == 0 && drowningEnding != StageEndCase.None) StageEndManager.Request(drowningEnding, this);
         }
     }
 }

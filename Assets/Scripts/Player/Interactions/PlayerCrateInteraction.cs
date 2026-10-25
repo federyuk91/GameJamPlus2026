@@ -13,14 +13,18 @@ namespace MousePlatformer
         private float crateGroundTolerance = 0.04f;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
         private PlayerInteractionSettings Settings => WorldSettings != null ? WorldSettings.interactions : PhysicsSettings.DefaultInteractions;
+        private float PlayerStepHeight => Mathf.Max(0f, WorldSettings != null
+            ? WorldSettings.player.maxStepHeight : PhysicsSettings.DefaultPlayer.maxStepHeight);
         private PlayerMovementSettings LocalMovement => (playerMovement != null
             ? playerMovement : playerMovement = GetComponent<PlayerMovement>()).MovementSettings;
         private float MaximumPushWeight => Mathf.Max(0f, LocalMovement.maximumPushWeight);
         private Pushable held;
         private bool interactionStarted;
+        private bool suppressAutomaticClimb;
         private readonly List<RaycastHit2D> triggerHits = new List<RaycastHit2D>(8);
         public event Action InteractionStarted;
         public Pushable HeldCrate => held;
+        public bool SuppressAutomaticClimb => suppressAutomaticClimb;
         public float GrabReach => Mathf.Max(0f, LocalMovement.horizontalHandInteraction);
         public bool HasReachableCrate => isActiveAndEnabled && body != null
             && (NearbyCrate(1f, GrabReach, out _) != null
@@ -41,6 +45,7 @@ namespace MousePlatformer
         public float ResolveHorizontal(float requested, bool grab, bool canInteract)
         {
             if (body == null) body = GetComponent<SimulatedBody2D>();
+            if (!grab) suppressAutomaticClimb = false;
             if (!grab || !canInteract)
             {
                 Release();
@@ -56,6 +61,8 @@ namespace MousePlatformer
 
             if (held != null)
             {
+                // Keep push intent across loss of support until the player releases the grab button.
+                suppressAutomaticClimb = true;
                 float weight = held.StackWeight;
                 if (weight >= MaximumPushWeight)
                 {
@@ -69,8 +76,8 @@ namespace MousePlatformer
                 }
                 float maxDisplacement = Settings.crateMoveSpeed / Mathf.Max(0.01f, weight) * Time.fixedDeltaTime;
                 float limited = Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
-                float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape);
-                float crateAllowed = held.Body.AllowedHorizontal(limited, body.Shape);
+                float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape, PlayerStepHeight);
+                float crateAllowed = held.AllowedHorizontalByPlayer(limited, body.Shape);
                 float shared = Mathf.Sign(limited) * Mathf.Min(Mathf.Abs(playerAllowed), Mathf.Abs(crateAllowed));
                 return held.MoveHorizontalByPlayer(shared, body.Shape);
             }
@@ -113,6 +120,7 @@ namespace MousePlatformer
         {
             if (shape == null || !shape.TryGetComponent(out Pushable pushable)
                 || !pushable.isActiveAndEnabled || !HasPushSupport(pushable.Body)
+                || body.GroundCollider == pushable.Body.Shape
                 || pushable.StackWeight >= MaximumPushWeight) return null;
             return pushable;
         }
@@ -157,6 +165,10 @@ namespace MousePlatformer
             return Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(amount), gap + Mathf.Max(0f, Vector2.Dot(moved, direction)));
         }
 
-        private void OnDisable() => Release();
+        private void OnDisable()
+        {
+            Release();
+            suppressAutomaticClimb = false;
+        }
     }
 }

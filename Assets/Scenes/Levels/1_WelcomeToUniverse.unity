@@ -221,7 +221,7 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8300000001, guid: 68d0d6c6e51cb4d46a52f582a58d656c, type: 3}
+    - target: {fileID: 4546305336044527665, guid: 68d0d6c6e51cb4d46a52f582a58d656c, type: 3}
       propertyPath: collectionId
       value: 8a48d8a9e40caf44988da1a82a9252dc.d8cbc16cca8743a9ba59abad4a3953e0
       objectReference: {fileID: 0}
@@ -949,14 +949,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2521859256895114778, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: hud
-      value: 
-      objectReference: {fileID: 1278549803}
-    - target: {fileID: 3489158560104624151, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: gameManager
-      value: 
-      objectReference: {fileID: 987192585}
     - target: {fileID: 4142468269563670406, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
       propertyPath: m_Name
       value: Piranha (1)
@@ -11008,6 +11000,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 9870000000}
+  - component: {fileID: 9860000000}
+  - component: {fileID: 9850000000}
   - component: {fileID: 987192586}
   - component: {fileID: 987192585}
   m_Layer: 0
@@ -11029,6 +11024,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aea27e98e2814b9ea7e75d4642a092f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dialogues: {fileID: 9850000000}
+  stageEnds: {fileID: 9860000000}
+  collectionGoals: {fileID: 9870000000}
   hud: {fileID: 1278549803}
   player: {fileID: 1579771691}
   playerCollider: {fileID: 1579771689}
@@ -11046,8 +11044,6 @@ MonoBehaviour:
   startingUniverse: 10
   gameplaySceneName: LoopScene
   endGameSceneName: EndGame
-  flashDuration: 1.5
-  fallbackComment: Excellent. We can consider this test complete.
 --- !u!4 &987192586
 Transform:
   m_ObjectHideFlags: 0
@@ -16267,7 +16263,7 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8300000001, guid: 68d0d6c6e51cb4d46a52f582a58d656c, type: 3}
+    - target: {fileID: 4546305336044527665, guid: 68d0d6c6e51cb4d46a52f582a58d656c, type: 3}
       propertyPath: collectionId
       value: 8a48d8a9e40caf44988da1a82a9252dc.92156801cc46410c93a538e796d102bb
       objectReference: {fileID: 0}
@@ -17568,18 +17564,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 4027669037393712695, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: skin
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 4027669037393712695, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: weight
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 4027669037393712695, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: maxSpeed
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 7072776503502995229, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
       propertyPath: 'terrains.Array.data[0]'
       value: 
@@ -18608,14 +18592,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2521859256895114778, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: hud
-      value: 
-      objectReference: {fileID: 1278549803}
-    - target: {fileID: 3489158560104624151, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: gameManager
-      value: 
-      objectReference: {fileID: 987192585}
     - target: {fileID: 4142468269563670406, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
       propertyPath: m_Name
       value: Piranha (2)
@@ -33170,14 +33146,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2521859256895114778, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: hud
-      value: 
-      objectReference: {fileID: 1278549803}
-    - target: {fileID: 3489158560104624151, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
-      propertyPath: gameManager
-      value: 
-      objectReference: {fileID: 987192585}
     - target: {fileID: 4142468269563670406, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
       propertyPath: m_Name
       value: Piranha
@@ -33236,6 +33204,243 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 144475741569323959, guid: b0ccc5420bdacf24a96fc3cd63fea47b, type: 3}
   m_PrefabInstance: {fileID: 8723459750760128347}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9850000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987192584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b86620b0fc4ec2b56357675feb1ac5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.DialogueManager
+  hud: {fileID: 1278549803}
+  defaultEnding:
+    avatar: {fileID: 0}
+    messages:
+    - "Excellent. We can consider this test complete."
+    duration: 7
+  welcome:
+    avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+    messages:
+    - "Welcome to Universe-{universe}. Relax and enjoy your stay."
+    duration: 7
+  piranha:
+    avatar: {fileID: 0}
+    messages:
+    - "How sociable! You have already made friends with the fish. Let us take a break now."
+    - "I see you have found some new aquatic friends. I would say you have socialized enough for today!"
+    duration: 7
+  starvation:
+    avatar: {fileID: 0}
+    messages:
+    - "A healthy, balanced diet is the foundation of a long life."
+    - "Meals are very important. Let us remember that for the next stage."
+    duration: 7
+  drowning:
+    avatar: {fileID: 0}
+    messages:
+    - "A break to catch your breath is always a good idea."
+    - "Let us remind the subject to breathe between exercises."
+    duration: 7
+  lowOxygen:
+    avatar: {fileID: 0}
+    messages:
+    - "Excellent concentration! Let us remember to breathe, though."
+    - "A quick trip to the surface helps keep the mind clear."
+    duration: 7
+  cheeseGoal:
+    avatar: {fileID: 0}
+    messages:
+    - "Excellent appetite! That is enough cheese for this trial. Time for a well-earned rest."
+    - "Ten portions already! What a healthy appetite. We can conclude this trial here."
+    duration: 7
+  cheeseCollected:
+    avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+    messages:
+    - "Excellent choice. Some cheese to keep exploring."
+    - "Cheese collected. Let us see what you find in the next room."
+    - "A small reward for your curiosity."
+    - "I see you have made yourself comfortable. Keep it up!"
+    duration: 7
+  poisoned:
+    avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+    messages:
+    - "Good, very good. It is time to rest."
+    - "Yes, I think a nap is just what you need."
+    - "Oh, going to sleep already? What a shame..."
+    duration: 7
+  photoGoal:
+    avatar: {fileID: 0}
+    messages:
+    - "Three photographs already? Such curiosity! We had better take a break now."
+    - "You have seen quite enough for today. Let us give that curious mind a rest."
+    - "What an inquisitive little mouse. Further observation will not be necessary."
+    duration: 7
+  fallDeath:
+    avatar: {fileID: 0}
+    messages:
+    - "Interesting. The subject has decided to explore gravity personally."
+    - "A very convincing descent. I would say we have earned a break."
+    - "Excellent, the descent stage is complete too. Let us rest for a moment."
+    duration: 7
+  goal:
+    avatar: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}
+    messages:
+    - "You found the way out! Excellent navigation. Your trial is complete; enjoy a well-deserved rest."
+    - "Splendid! Another successful journey through the maze. We can conclude this trial here."
+    duration: 7
+  electricShock:
+    avatar: {fileID: 0}
+    messages:
+    - "Ah, a passion for science and electricity. I know that irresistible temptation."
+    duration: 7
+  mouseTrap:
+    avatar: {fileID: 0}
+    messages:
+    - "That should not have been there! Clean room seven."
+    duration: 7
+--- !u!114 &9860000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987192584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f5862d5e62f42c180b227c91016ac5d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.StageEndManager
+  gameManager: {fileID: 987192585}
+  hud: {fileID: 1278549803}
+  dialogues: {fileID: 9850000000}
+  defaultTransitionDuration: 1.5
+  starvation:
+    dialogueCase: 4
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has demonstrated the importance of a healthy, balanced diet."
+    - "The subject has investigated the effects of prolonged fasting."
+  drowning:
+    dialogueCase: 5
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has explored its breath-holding limits."
+    - "The subject has demonstrated that breathing matters even underwater."
+  poisoning:
+    dialogueCase: 9
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has chosen to rest after its meal."
+    - "The feeding stage ended with a rest break."
+  crushing:
+    dialogueCase: 0
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has completed the pressure stage."
+  electricShock:
+    dialogueCase: 13
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has demonstrated outstanding conductivity."
+  mouseTrap:
+    dialogueCase: 14
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has reported a misplaced object in room seven."
+    - "Looks like someone had one snack too many. Better get some rest!"
+  fall:
+    dialogueCase: 11
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has investigated how gravity works."
+    - "The subject has completed the descent with remarkable determination."
+  goal:
+    dialogueCase: 12
+    subjectDied: 0
+    useExitImage: 1
+    completionObservations: 128
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has escaped the maze and completed the trial."
+    - "The subject has successfully reached the exit and has been recovered alive."
+  cheeseGoal:
+    dialogueCase: 7
+    subjectDied: 0
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has enjoyed ten portions of cheese and completed the trial in good health."
+  photoGoal:
+    dialogueCase: 10
+    subjectDied: 0
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject has become too curious after examining three photographs."
+    - "The subject has exceeded the recommended level of curiosity."
+  piranha:
+    dialogueCase: 3
+    subjectDied: 1
+    useExitImage: 0
+    completionObservations: 0
+    flashDurationOverride: -1
+    resultMessages:
+    - "The subject is attracted to fish."
+--- !u!114 &9870000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987192584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320643add77540dd9750da57ad1f5fa3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.CollectionGoalController
+  gameManager: {fileID: 987192585}
+  rules:
+  - enabled: 1
+    type: 0
+    requiredCount: 10
+    useSessionTotal: 1
+    match: 0
+    timing: 0
+    ending: 9
+  - enabled: 1
+    type: 2
+    requiredCount: 3
+    useSessionTotal: 1
+    match: 1
+    timing: 1
+    ending: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

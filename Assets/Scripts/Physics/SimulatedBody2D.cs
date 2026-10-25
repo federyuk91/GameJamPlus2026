@@ -22,7 +22,9 @@ namespace MousePlatformer
         [SerializeField, Tooltip("Shared ground detector, refreshed by the movement driver and after body moves.")]
         private GroundContact2D groundContact;
         [Header("Speed limit")]
-        [SerializeField, Min(0.01f), Tooltip("Maximum total movement speed in world units/s, shared by prop motion and balloon lift in every medium. This caps vector magnitude, including diagonal movement. Character controls may impose lower limits.")]
+        [SerializeField, Tooltip("Enable a local speed limit instead of Physics Settings > Max Speed. Disabled by default.")]
+        private bool overrideMaxSpeed;
+        [SerializeField, Min(0.01f), Tooltip("Local maximum total movement speed, used only while Override Max Speed is enabled. Caps vector magnitude and the movement budget in every medium.")]
         private float maxSpeed = 26f;
         [SerializeField, Min(0f), Tooltip("Individual multiplier of world gravity, shared by props and animal movement. 1 applies world gravity unchanged. Swimming and airborne descent can apply additional gameplay multipliers.")]
         private float gravityScale = 1f;
@@ -54,7 +56,8 @@ namespace MousePlatformer
         public float AirDrag => Mathf.Max(0f, airDrag);
         public float WaterDrag => Mathf.Max(0f, waterDragMultiplier) * Mathf.Max(0f,
             physicsSettings != null ? physicsSettings.water.waterDrag : SwimMotion.DefaultWaterDrag);
-        public float MaxSpeed => Mathf.Max(0.01f, maxSpeed);
+        public float MaxSpeed => Mathf.Max(0.01f, overrideMaxSpeed ? maxSpeed
+            : physicsSettings != null ? physicsSettings.maxSpeed : PhysicsSettings.DefaultMaxSpeed);
         public float GravityScale => Mathf.Max(0f, gravityScale);
         public float GravityAcceleration => (physicsSettings != null
             ? physicsSettings.gravityAcceleration : PhysicsSettings.DefaultGravityAcceleration) * GravityScale;
@@ -136,7 +139,12 @@ namespace MousePlatformer
             displacement = LimitDisplacement(displacement);
             if (horizontalIgnored != null)
             {
-                // A held crate and player must retain their shared horizontal displacement.
+                if (followGround && Grounded)
+                {
+                    // Keep the shared push displacement while retaining the player's own step handling.
+                    SweepMove(displacement, maxStepHeight, horizontalIgnored, true, maxStepHeight);
+                    return;
+                }
                 Move(displacement, horizontalIgnored);
                 RefreshGround(followGround || displacement.y <= 0f);
                 return;
@@ -145,12 +153,13 @@ namespace MousePlatformer
             SweepMove(displacement, maxStepHeight, null, followGround);
         }
 
-        private void SweepMove(Vector2 displacement, float maxStepHeight, Collider2D ignored, bool followGround)
+        private void SweepMove(Vector2 displacement, float maxStepHeight, Collider2D ignored, bool followGround, float maxStepDownHeight = 0f)
         {
             float maxSlopeAngle = MaxSlopeAngle;
             bool wasGrounded = HasGroundContact && followGround;
             float descent = Mathf.Abs(displacement.x) * Mathf.Abs(GroundNormal.x) / Mathf.Max(0.01f, GroundNormal.y);
             descent = Mathf.Min(descent, displacement.magnitude + maxStepHeight);
+            if (wasGrounded) descent = Mathf.Max(descent, Mathf.Max(0f, maxStepDownHeight));
             HitWall = HitCeiling = false;
             Vector2 remaining = displacement;
             for (int i = 0; i < 4 && remaining.sqrMagnitude > 0.0000000001f; i++)
@@ -192,7 +201,8 @@ namespace MousePlatformer
             if (wasGrounded)
             {
                 Collider2D support = Probe(Vector2.down, descent + skin * 2f, out float distance, out Vector2 normal, ignored);
-                if (support != null && normal.y > 0.01f)
+                if (support != null && normal.y > 0.01f && (maxStepDownHeight <= 0f
+                    || (IsWalkable(normal, maxSlopeAngle) && distance - skin <= descent + 0.00001f)))
                     Translate(Vector2.down * Mathf.Max(0f, distance - skin));
             }
             RefreshGround(followGround || displacement.y <= 0f, ignored);
@@ -223,6 +233,14 @@ namespace MousePlatformer
 
         private bool TryStep(float horizontal, float maxHeight, float maxSlopeAngle, Collider2D ignored = null)
         {
+            if (!TryGetStep(horizontal, maxHeight, maxSlopeAngle, ignored, out Vector2 step)) return false;
+            Translate(step);
+            return true;
+        }
+
+        private bool TryGetStep(float horizontal, float maxHeight, float maxSlopeAngle, Collider2D ignored, out Vector2 step)
+        {
+            step = Vector2.zero;
             if (Mathf.Approximately(horizontal, 0f)) return false;
             Probe(Vector2.up, maxHeight + skin, out float ceilingDistance, ignored);
             float lift = Mathf.Min(maxHeight, Mathf.Max(0f, ceilingDistance - skin));
@@ -241,16 +259,19 @@ namespace MousePlatformer
             float rise = lift - Mathf.Max(0f, groundDistance - skin);
             if (rise <= 0f || rise > maxHeight) return false;
 
-            Vector2 step = new Vector2(horizontal, rise);
+            step = new Vector2(horizontal, rise);
             if (step.magnitude > RemainingMovementDistance) return false;
-            Translate(step);
             return true;
         }
 
-        public float AllowedHorizontal(float amount, Collider2D ignored = null)
+        public float AllowedHorizontal(float amount, Collider2D ignored = null, float maxStepHeight = 0f)
         {
             Vector2 desired = HorizontalDisplacement(amount);
-            return AllowedDisplacement(desired, ignored).x;
+            float allowed = AllowedDisplacement(desired, ignored).x;
+            if (Grounded && maxStepHeight > 0f && Mathf.Abs(allowed) + 0.00001f < Mathf.Abs(desired.x)
+                && TryGetStep(amount, maxStepHeight, MaxSlopeAngle, ignored, out Vector2 step)
+                && step.magnitude <= MaxSpeed * Time.fixedDeltaTime) return amount;
+            return allowed;
         }
 
         private Vector2 HorizontalDisplacement(float amount)
@@ -270,10 +291,13 @@ namespace MousePlatformer
             return direction * allowed;
         }
 
-        public float MoveHorizontal(float amount, Collider2D ignored = null)
+        public float MoveHorizontal(float amount, Collider2D ignored = null, float maxStepHeight = 0f)
         {
             float startX = transform.position.x;
-            Move(HorizontalDisplacement(amount), ignored: ignored);
+            Vector2 displacement = HorizontalDisplacement(amount);
+            if (Grounded && maxStepHeight > 0f)
+                SweepMove(LimitDisplacement(displacement), maxStepHeight, ignored, true, maxStepHeight);
+            else Move(displacement, ignored: ignored);
             return transform.position.x - startX;
         }
 

@@ -29,19 +29,24 @@ namespace MousePlatformer
             previousPosition = position;
         }
 
-        public void UpdateSupport(bool canRide)
+        public Vector2 UpdateSupport(bool canRide, bool inheritOnRelease)
         {
+            Vector2 detachedVelocity = Vector2.zero;
             PropsMotion candidate = null;
             if (canRide && body.Grounded && body.GroundCollider != null)
                 body.GroundCollider.TryGetComponent(out candidate);
             if (candidate != null && !candidate.isActiveAndEnabled) candidate = null;
             if (support != candidate)
             {
+                // Ground movement is relative to the carrier; preserve its motion when stepping off.
+                if (support != null && candidate == null && inheritOnRelease)
+                    detachedVelocity = support.FrameVelocity;
                 Release();
                 support = candidate;
                 if (support != null) support.SetPassenger(body);
             }
             if (support != null) previousPosition = support.transform.position;
+            return detachedVelocity;
         }
 
         public void Release()
