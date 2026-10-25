@@ -35,15 +35,12 @@ MonoBehaviour:
     ropeRegrabDelay: 0.25
   water:
     bottomWalkSpeedMultiplier: 0.5
-    acceleration: 10
-    strokeAcceleration: 45
-    strokeControlTime: 0.35
-    braking: 6
-    gravityMultiplier: 0.23333333
+    waterDrag: 1.5
+    gravityMultiplier: 0.15
     maxSinkSpeed: 3.5
-    strokeSpeed: 4
-    surfaceJumpSpeed: 6
-    surfaceJumpDepth: 0.25
+    strokeSpeed: 4.5
+    surfaceJumpSpeed: 7
+    surfaceJumpDepth: 0.3
   ladder:
     jumpHorizontalSpeed: 6
     jumpUpSpeed: 9

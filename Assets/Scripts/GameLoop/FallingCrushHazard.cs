@@ -19,6 +19,10 @@ namespace GameJamPlus.Gameplay
         private float minimumFallSpeed = 0.5f;
         [SerializeField, Min(0f), Tooltip("Extra world-space head contact tolerance, added to the crate collision skin.")]
         private float contactTolerance = 0.02f;
+        [SerializeField, Min(0f), Tooltip("Seconds continuously inside or outside water before disabling or enabling crushing damage. Returning to the previous medium cancels the pending change.")]
+        private float waterTransitionDelay = 2f;
+        private bool waterProtectionActive;
+        private float waterTransitionElapsed;
         private Bounds previousBounds;
         private float previousFallSpeed;
         private bool triggered;
@@ -38,6 +42,8 @@ namespace GameJamPlus.Gameplay
         private void OnEnable()
         {
             previousBounds = motion.Body.Shape.bounds;
+            waterProtectionActive = WaterVolume.SubmergedFraction(previousBounds) > 0f;
+            waterTransitionElapsed = 0f;
             previousFallSpeed = 0f;
             triggered = false;
             completed = false;
@@ -52,9 +58,10 @@ namespace GameJamPlus.Gameplay
             Bounds currentBounds = motion.Body.Shape.bounds;
             // Check the final bounds: the prop may have entered water during this physics step.
             bool inWater = WaterVolume.SubmergedFraction(currentBounds) > 0f;
+            UpdateWaterProtection(inWater);
             float fallSpeed = Mathf.Max(0f, -motion.FrameVelocity.y);
             GameManager manager = GameManager.Instance;
-            if (!triggered && !inWater && motion.isActiveAndEnabled && motion.Body.Shape.enabled
+            if (!triggered && !waterProtectionActive && motion.isActiveAndEnabled && motion.Body.Shape.enabled
                 && manager != null && manager.State == GameManager.LoopState.Playing
                 && Mathf.Max(previousFallSpeed, fallSpeed) >= minimumFallSpeed
                 && HitsHead(previousBounds, currentBounds, manager.PlayerCollider)
@@ -70,7 +77,20 @@ namespace GameJamPlus.Gameplay
                 animationRoutine = StartCoroutine(PlayCrush(manager.PlayerCrushVisual));
             }
             previousBounds = currentBounds;
-            previousFallSpeed = inWater ? 0f : fallSpeed;
+            previousFallSpeed = waterProtectionActive ? 0f : fallSpeed;
+        }
+
+        private void UpdateWaterProtection(bool inWater)
+        {
+            if (inWater == waterProtectionActive)
+            {
+                waterTransitionElapsed = 0f;
+                return;
+            }
+            waterTransitionElapsed += Time.fixedDeltaTime;
+            if (waterTransitionElapsed < waterTransitionDelay) return;
+            waterProtectionActive = inWater;
+            waterTransitionElapsed = 0f;
         }
 
         private IEnumerator PlayCrush(PlayerCrushVisual crushVisual)

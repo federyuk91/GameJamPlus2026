@@ -9,6 +9,8 @@ namespace MousePlatformer
     {
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private PlayerMovement playerMovement;
+        [SerializeField, Min(0f), Tooltip("Maximum gap to walkable ground that still allows pushing a crate during small rope/lift corrections.")]
+        private float crateGroundTolerance = 0.04f;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
         private PlayerInteractionSettings Settings => WorldSettings != null ? WorldSettings.interactions : PhysicsSettings.DefaultInteractions;
         private PlayerMovementSettings LocalMovement => (playerMovement != null
@@ -70,7 +72,7 @@ namespace MousePlatformer
                 float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape);
                 float crateAllowed = held.Body.AllowedHorizontal(limited, body.Shape);
                 float shared = Mathf.Sign(limited) * Mathf.Min(Mathf.Abs(playerAllowed), Mathf.Abs(crateAllowed));
-                return held.MoveHorizontal(shared, body.Shape);
+                return held.MoveHorizontalByPlayer(shared, body.Shape);
             }
 
             return requested;
@@ -110,9 +112,19 @@ namespace MousePlatformer
         private Pushable GetReachablePushable(Collider2D shape)
         {
             if (shape == null || !shape.TryGetComponent(out Pushable pushable)
-                || !pushable.isActiveAndEnabled || !pushable.Body.Grounded
+                || !pushable.isActiveAndEnabled || !HasPushSupport(pushable.Body)
                 || pushable.StackWeight >= MaximumPushWeight) return null;
             return pushable;
+        }
+
+        private bool HasPushSupport(SimulatedBody2D candidate)
+        {
+            if (candidate.Grounded) return true;
+            float tolerance = Mathf.Max(candidate.Skin * 2f, crateGroundTolerance);
+            Collider2D support = candidate.Probe(Vector2.down, tolerance + candidate.Skin,
+                out float distance, out Vector2 normal, body.Shape);
+            return support != null && distance <= tolerance + candidate.Skin && normal.y > 0.01f
+                && Vector2.Angle(normal, Vector2.up) <= candidate.MaxSlopeAngle + 0.01f;
         }
 
         private bool CanReach(Pushable crate)

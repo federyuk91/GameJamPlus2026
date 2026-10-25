@@ -102,6 +102,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3c952d4f5499c5f448a05e1f3027d402, type: 3}
   - {fileID: 0}
   - {fileID: 21300000, guid: 2cd3480a0d7d41d09c6e67011de237d4, type: 3}
+  cheeseCountFrames:
+  - {fileID: 1991445489062669798, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -2596072681779512170, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 7104835974339852070, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 6247115559271563280, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 5302245848309580016, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 3718983967030052744, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -7744708632687448639, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -3659307198893522439, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: -9167367063461887553, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
+  - {fileID: 591818233427335809, guid: 9acc4aff0ae55884a9b04b44eaf25ee3, type: 3}
   showWelcomeOnStart: 1
   welcomeText: Welcome to Universe-{universe}. Relax and enjoy your stay.
   welcomePortrait: {fileID: 21300000, guid: d43949e9434a9b34ebb39592a7ac0cb6, type: 3}

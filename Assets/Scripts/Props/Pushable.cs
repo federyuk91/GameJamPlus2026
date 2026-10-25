@@ -41,6 +41,19 @@ namespace MousePlatformer
 
         public void EnableStacking() => Motion.EnableStacking();
 
+        public float MoveHorizontalByPlayer(float amount, Collider2D ignored)
+        {
+            BalloonLift balloon = ropeAttachment != null ? ropeAttachment.LiftingBalloon : null;
+            if (balloon == null || !balloon.PayloadTaut || Mathf.Approximately(amount, 0f))
+                return MoveHorizontal(amount, ignored);
+            float allowed = Body.AllowedHorizontal(amount, ignored);
+            // Let the free anchor follow first, rather than stretching the rope and lifting the crate off its support.
+            float followed = balloon.Motion.FollowPushedPayload(allowed, Body.Shape);
+            float followedAlongPush = Mathf.Max(0f, Mathf.Sign(amount) * followed);
+            float shared = Mathf.Sign(amount) * Mathf.Min(Mathf.Abs(allowed), followedAlongPush);
+            return MoveHorizontal(shared, ignored);
+        }
+
         public float MoveHorizontal(float amount, Collider2D ignored = null)
         {
             if (Mathf.Approximately(amount, 0f)) return 0f;

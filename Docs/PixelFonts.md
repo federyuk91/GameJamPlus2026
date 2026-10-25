@@ -30,6 +30,9 @@ Communication text is now 14px (previously 10px), with SYSTEM hint descriptions 
 
 The main menu credits and final credits now acknowledge Daniel Linssen for both fonts, covering the required attribution for m6x11. FontCredits.txt remains alongside the imported files.
 
+In the final sequence this attribution appears on the dedicated Third Party
+assets page after Made with Unity, alongside Deep-sea Creatures by PixelCampGames.
+
 Font rules explicitly cover each selected section and its descendants, and clear `-unity-font-definition` to `none`. UI Toolkit gives an inherited TextCore font asset precedence over the legacy `-unity-font` property; setting only the latter does not reliably replace the theme font. Controls created dynamically under the selected sections inherit the same rules.
 
 The author recommends sizes 16, 32, 48, etc. for both m5x7 and m6x11. Check readability, pixel alignment, line height and required language glyphs in the actual UI before switching fonts.

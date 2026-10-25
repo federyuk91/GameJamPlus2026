@@ -21,6 +21,21 @@ In still air with no other load and default settings, maximum ascent is `Simulat
 
 The balloon and its taut payload join the existing coordinated vertical simulation, so the balloon cannot independently fly away from a heavy grounded load. When the rope is slack the balloon first rises until it is taut; it does not remotely lift the crate. Cutting the link immediately removes the 0.5 discount and separates their simulation on the next physics tick.
 
+When the player pushes or pulls a grounded balloon payload with a taut rope,
+Pushable.MoveHorizontalByPlayer first allows the balloon anchor to follow the
+requested horizontal movement. The crate moves only as far as the balloon could
+follow, respecting the balloon's obstacles, tether constraints and remaining
+per-tick travel budget. This avoids repeatedly stretching the rope and projecting
+the crate upward, which could interrupt grabbing. Ordinary prop simulation still
+uses MoveHorizontal; it does not recursively drag the balloon during rope correction.
+Cut or slack ropes use the ordinary push path.
+
+PlayerCrateInteraction / Crate Ground Tolerance (0.04 world units on Player) also
+accepts a nearby walkable support during small lift corrections. The probe ignores
+the player itself; crates farther from ground remain unavailable for land pushing.
+Check continuous push/pull on flat ground, stopping against walls, balloon ceiling
+obstacles and cutting the rope in Play Mode. This change was compilation-checked.
+
 For manual setup, assign Balloon Rope's `RopeSimulation.Balloon Anchor` to BalloonLift. Add RopeAttachment to the crate, assign that rope, its local Pushable and PropsMotion, and use a top attachment offset. Assign the attachment to PropsMotion.Tether and Pushable.Rope Attachment. Keep the crate outside the moving balloon's hierarchy. The free Balloon prefab already has Balloon Anchor and Lift Capacity assigned. This supports one payload attachment per crate with the current rope setup.
 
 ### Ground or moving-object tether

@@ -26,7 +26,9 @@ namespace MousePlatformer
 
         private void OnCountChanged(CollectibleType collectedType, int totalCount)
         {
-            if (completed || collectedType != type || outcome == null
+            bool matchesType = collectedType == type
+                || (type == CollectibleType.Cheese && collectedType == CollectibleType.GreenCheese);
+            if (completed || !matchesType || outcome == null
                 || (useSessionTotal ? totalCount : GameSession.GetTestCollectibleCount(type)) < Mathf.Max(1, requiredCount)) return;
 
             GameManager manager = GameManager.Instance;

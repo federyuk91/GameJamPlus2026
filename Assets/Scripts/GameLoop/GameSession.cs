@@ -183,12 +183,14 @@ namespace GameJamPlus.Gameplay
 
         public static int GetCollectibleCount(CollectibleType type)
         {
-            return collectibleCounts.TryGetValue(type, out int count) ? count : 0;
+            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
+            return collectibleCounts.TryGetValue(counterType, out int count) ? count : 0;
         }
 
         public static int GetTestCollectibleCount(CollectibleType type)
         {
-            return testCollectibleCounts.TryGetValue(type, out int count) ? count : 0;
+            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
+            return testCollectibleCounts.TryGetValue(counterType, out int count) ? count : 0;
         }
 
         public static bool HasCollectedPhoto(string collectionId)
@@ -215,8 +217,10 @@ namespace GameJamPlus.Gameplay
         {
             int added = Mathf.Max(0, amount);
             int count = GetCollectibleCount(type) + added;
-            collectibleCounts[type] = count;
-            testCollectibleCounts[type] = GetTestCollectibleCount(type) + added;
+            // Keep the pickup type for poison effects, but store both foods in the cheese counter.
+            CollectibleType counterType = type == CollectibleType.GreenCheese ? CollectibleType.Cheese : type;
+            collectibleCounts[counterType] = count;
+            testCollectibleCounts[counterType] = GetTestCollectibleCount(type) + added;
             if (added > 0)
             {
                 if (type == CollectibleType.Cheese || type == CollectibleType.GreenCheese)

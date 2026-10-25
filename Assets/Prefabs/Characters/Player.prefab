@@ -258,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 1.5
+  waterDragMultiplier: 1
   groundFriction: 1
   maxSlopeAngle: 45
   groundContact: {fileID: 9700001000}
@@ -266,6 +266,8 @@ MonoBehaviour:
   gravityScale: 1
   shape: {fileID: 0}
   ignorePlayerColliders: 0
+  blocksOtherProps: 0
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -338,6 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
   playerMovement: {fileID: 3818418520059698947}
+  crateGroundTolerance: 0.04
 --- !u!114 &4776370160298788677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,7 +371,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
   playerMovement: {fileID: 3818418520059698947}
-  swimSpeedMultiplier: 1
+  swimSpeedMultiplier: 0.9
+  controls:
+    acceleration: 9
+    strokeAcceleration: 14
+    strokeControlTime: 0.3
+    braking: 0
   poolObservationDuration: 20
 --- !u!114 &4717284519982122627
 MonoBehaviour:
@@ -505,6 +513,7 @@ MonoBehaviour:
   rope: {fileID: 4776370160298788677}
   ladder: {fileID: 4717284519982122627}
   ledge: {fileID: 922162904946277516}
+  useSceneTerrainsWhenUnassigned: 1
   terrains:
   - {fileID: 0}
 --- !u!82 &3354982396404189761
@@ -653,9 +662,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
   playerCollider: {fileID: 5067529301207272031}
+  collector: {fileID: 5709383898159029123}
   health: {fileID: 9800100001}
   poisonOutcome: {fileID: 0}
-  collector: {fileID: 5709383898159029123}
   starvationOutcome: {fileID: 5709383898159029302}
   wheel: {fileID: 5709383898159029810}
   maximumNotches: 5
@@ -695,6 +704,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 5709383898159029301}
   subjectDied: 1
+  useExitImage: 0
   flashDurationOverride: -1
   resultMessages:
   - The subject has demonstrated the importance of a healthy, balanced diet.
@@ -926,6 +936,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 5709383898159029801}
   subjectDied: 1
+  useExitImage: 0
   flashDurationOverride: -1
   resultMessages:
   - The subject has explored its breath-holding limits.
@@ -1249,6 +1260,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
   lethalCharges: 3
   decayInterval: 60
+--- !u!114 &9800100001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e83a4d1da9340ce94f2c890fdfba3c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  current: 5
 --- !u!1 &2059410933207641600
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,6 +1322,7 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   scientistComment: {fileID: 2295011373493329530}
   subjectDied: 0
+  useExitImage: 0
   flashDurationOverride: -1
   resultMessages:
   - The subject has enjoyed ten portions of cheese and completed the trial in good
@@ -1370,17 +1395,3 @@ Transform:
   - {fileID: 6152871682746685960}
   m_Father: {fileID: 887508910703741189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
---- !u!114 &9800100001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e83a4d1da9340ce94f2c890fdfba3c1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  current: 5

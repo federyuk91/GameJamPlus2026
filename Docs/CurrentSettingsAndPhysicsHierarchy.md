@@ -267,3 +267,13 @@ La tolleranza verticale della presa del bordo è PlayerMovementSettings.vertical
 Il nuoto legge WaterDrag da SimulatedBody2D per lo smorzamento verticale. I props leggono lo stesso parametro dal proprio body e lo modulano con l’immersione. Il player usa 1.5, conservando il precedente Vertical Drag; SwimMotion non conserva più un duplicato globale.
 
 Scala e risalita del bordo condividono PlayerMovementSettings.ClimbSpeed = Move Speed × Climb Speed Multiplier. Il moltiplicatore è locale all’animale (default 0.6): nel player attuale la velocità è 3, conservando la scala e riducendo il bordo da 5 a 3. Rimossi ladder.climbSpeed e ledgeClimb.climbSpeed dai settings globali. La salita della corda mantiene il proprio parametro.
+
+
+## Swimming resistance and local control
+
+- Physics Settings → Water → Water Drag is now the shared damping coefficient, default 1.5 s⁻¹. Swimming applies it to both velocity axes, including while direction input is held.
+- Player Swimming → Controls owns Acceleration (9), Stroke Acceleration (14), Stroke Control Time (0.3 s), and Braking (0). Values compensate approximately for the horizontal drag relative to the previously authored acceleration 5 and stroke acceleration 10. Swim Speed Multiplier remains 0.9 on Player.
+- Braking adds constant horizontal deceleration only when directional input is released. At zero, resistance alone slows the swimmer exponentially; very small residual horizontal speed is snapped to rest. The stopping tail is more gradual than the previous constant braking.
+- Vertical gravity, sink limit and stroke impulses are unchanged. Surface control after leaving water uses the player's control settings without water drag.
+- Simulated Body 2D → Water Drag Multiplier controls the body's response to shared water resistance. Player is 1; existing props were converted from their old coefficient 5 to multiplier 3.33333333, preserving effective drag 5 with shared drag 1.5. Raising shared drag affects props as well.
+- Serialized assets were migrated from body waterDrag to waterDragMultiplier; control fields were removed from shared Water settings and assigned on the Player prefab. Custom code calling SwimMotion.Step / StepHorizontal must pass SwimControlSettings.

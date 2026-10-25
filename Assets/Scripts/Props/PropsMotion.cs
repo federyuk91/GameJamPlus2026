@@ -408,6 +408,15 @@ namespace MousePlatformer
 
         public Vector2 FrameVelocity { get; private set; }
 
+        public float FollowPushedPayload(float amount, Collider2D payloadShape)
+        {
+            if (!isActiveAndEnabled || !Airborne || Mathf.Approximately(amount, 0f)) return 0f;
+            float allowed = body.AllowedHorizontal(amount, payloadShape);
+            Vector2 before = transform.position;
+            MoveConstrained(Vector2.right * allowed, payloadShape);
+            return transform.position.x - before.x;
+        }
+
         private Vector2 ConstrainVelocity(Vector2 velocity)
         {
             if (tether != null) velocity = tether.ConstrainVelocity(velocity);

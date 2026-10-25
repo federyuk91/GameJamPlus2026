@@ -102,8 +102,6 @@
 .camera-height-lock { display: none; position: absolute; top: 4px; right: 8px; max-width: 420px; margin: 0; padding: 2px 5px; font-size: 7px; color: var(--hud-gold); background-color: rgba(1, 8, 13, 0.85); -unity-text-align: middle-right; }
 .oxygen-notches .satiety-notch { background-color: rgb(85, 211, 243); border-color: rgb(181, 239, 255); }
 .oxygen-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
-.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
-.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
 .pause-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(1, 8, 13, 0.82); align-items: center; justify-content: center; }
 .pause-card { width: 240px; min-height: 244px; padding: 12px 18px; border-width: 1px; border-color: rgb(231, 232, 222); border-radius: 3px; background-color: rgb(10, 20, 26); color: rgb(231, 232, 222); }
 .pause-kicker { font-size: 8px; margin: 0; -unity-text-align: middle-center; letter-spacing: 1px; }
@@ -127,8 +125,6 @@
 .status-electricity-icons { flex-direction: row; align-items: center; }
 .satiety-notch { width: 12px; margin-right: 3px; height: 7px; flex-shrink: 0; background-color: rgb(255, 201, 76); border-width: 1px; border-color: var(--hud-gold); }
 .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(83, 97, 102); }
-.poisoned-notches .satiety-notch { background-color: rgb(64, 201, 119); border-color: rgb(154, 243, 150); }
-.poisoned-notches .satiety-notch-empty { background-color: rgb(15, 26, 33); border-color: rgb(49, 91, 65); }
 .counter { flex-direction: row; justify-content: flex-start; background-color: transparent; border-width: 0; margin: 0; }
 .counter-value { flex-grow: 1; min-width: 0; padding: 0; -unity-text-align: middle-left; }
 .counter-icon { flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
@@ -144,12 +140,15 @@
 .satiety-caption { color: var(--hud-gold); }
 .vital-caption, .satiety-caption { width: 56px; height: 14px; flex-shrink: 0; font-size: 7px; margin: 0 5px 0 0; padding: 0; -unity-text-align: middle-left; }
 .health-hearts { flex-direction: row; align-items: center; }
-.health-heart { width: 12px; height: 12px; margin-right: 3px; flex-shrink: 0; }
+.health-heart { width: 12px; height: 12px; margin-right: 3px; flex-shrink: 0; background-image: url("../../Art/UI/Gameplay/Hearth.png"); -unity-background-scale-mode: scale-to-fit; }
 .health-heart-empty { opacity: 0.2; }
+#satiety-notches .satiety-notch { height: 12px; background-image: url("../../Art/UI/Gameplay/Satiety.png"); -unity-background-scale-mode: scale-to-fit; background-color: transparent; border-width: 0; }
+#satiety-notches .satiety-notch-empty { opacity: 0.2; }
+#satiety-notches.poisoned-notches .satiety-notch { -unity-background-image-tint-color: rgb(64, 255, 119); }
 .resource-dashboard .status-panel { display: none; justify-content: flex-end; height: 16px; }
 .resource-dashboard .status-electricity-icons { display: none; }
 .resource-counters.collectibles-panel { min-height: 0; display: flex; position: absolute; top: 2px; right: 10px;
-    width: 236px; height: 22px; margin: 0; padding: 2px 6px;
+    width: 180px; height: 26px; margin: 0; padding: 2px 6px;
     flex-direction: row; flex-grow: 0; align-items: center;
     background-color: rgb(20, 43, 58); color: rgb(240, 229, 202);
     border-width: 1px; border-color: rgb(240, 229, 202); border-radius: 2px; }

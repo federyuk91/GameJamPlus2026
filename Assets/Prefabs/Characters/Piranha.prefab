@@ -231,6 +231,8 @@ MonoBehaviour:
   contactArea: {fileID: 6326247046255604221}
   playerCollider: {fileID: 0}
   playerOxygen: {fileID: 0}
+  playerHealth: {fileID: 0}
+  biteOutcome: {fileID: 3489158560104624151}
   biteInterval: 1
   showGizmos: 0
 --- !u!114 &2521859256895114778
@@ -303,7 +305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.SimulatedBody2D
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 6910685692764264916}

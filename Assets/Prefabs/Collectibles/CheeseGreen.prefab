@@ -302,7 +302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   maxSpeed: 8
   gravityScale: 1
   shape: {fileID: 9100000101}

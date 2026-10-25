@@ -31,6 +31,8 @@ namespace GameJamPlus.UI
         [SerializeField, Range(0f, 1f)] private float typingVolume = 0.25f;
         [SerializeField] private Sprite defaultCounterIcon;
         [SerializeField] private Sprite[] counterIcons = new Sprite[4];
+        [SerializeField, Tooltip("Cheese counter frames in collected-count order, from 0 to 9. Victory thresholds are configured separately on the collectible goal.")]
+        private Sprite[] cheeseCountFrames = new Sprite[10];
         [SerializeField] private bool showWelcomeOnStart = true;
         [SerializeField, TextArea] private string welcomeText =
             "Welcome to Universe-10. Relax and enjoy your stay.";
@@ -152,6 +154,7 @@ namespace GameJamPlus.UI
             {
                 counterLabels[index] = root.Q<Label>("counter-" + CounterNames[index] + "-value");
                 counterImages[index] = root.Q<Image>("counter-" + CounterNames[index] + "-icon");
+                if (counterLabels[index] == null || counterImages[index] == null) continue;
                 Sprite icon = counterIcons != null && index < counterIcons.Length ? counterIcons[index] : null;
                 if (icon == null && index != 2) icon = counterImages[index].sprite;
                 SetCounterSprite(index, icon != null ? icon : index == 2 ? null : defaultCounterIcon);
@@ -375,7 +378,7 @@ namespace GameJamPlus.UI
             int nextValue = Mathf.Max(0, value);
             bool increased = nextValue > counterValues[index];
             counterValues[index] = nextValue;
-            if (ready)
+            if (ready && counterLabels[index] != null)
             {
                 RefreshCounter(index);
                 if (increased && counterFeedbackEnabled)
@@ -393,10 +396,8 @@ namespace GameJamPlus.UI
             switch (type)
             {
                 case CollectibleType.Cheese:
-                    SetCounter(0, count);
-                    break;
                 case CollectibleType.GreenCheese:
-                    SetCounter(1, count);
+                    SetCounter(0, count);
                     break;
                 case CollectibleType.Photo:
                     SetCounter(3, count);
@@ -491,6 +492,12 @@ namespace GameJamPlus.UI
         private void RefreshCounter(int index)
         {
             counterLabels[index].text = "\u00D7 " + counterValues[index];
+            if (index == 0 && cheeseCountFrames != null && cheeseCountFrames.Length > 0)
+            {
+                int frameIndex = Mathf.Clamp(counterValues[index], 0, Mathf.Min(9, cheeseCountFrames.Length - 1));
+                Sprite frameSprite = cheeseCountFrames[frameIndex];
+                if (frameSprite != null) SetCounterSprite(index, frameSprite);
+            }
         }
 
         private void SetCounterSprite(int index, Sprite sprite)

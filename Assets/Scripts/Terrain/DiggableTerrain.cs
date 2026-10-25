@@ -7,6 +7,8 @@ namespace MousePlatformer
     [DefaultExecutionOrder(-100), DisallowMultipleComponent]
     public sealed class DiggableTerrain : MonoBehaviour
     {
+        private static readonly List<DiggableTerrain> activeTerrains = new List<DiggableTerrain>();
+        internal static IReadOnlyList<DiggableTerrain> ActiveTerrains => activeTerrains;
         [SerializeField] private BoxCollider2D area;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Material maskedMaterial;
@@ -35,6 +37,9 @@ namespace MousePlatformer
         private static readonly int MatrixId = Shader.PropertyToID("_DigWorldToLocal");
         private static readonly int AlphaId = Shader.PropertyToID("_DugAlpha");
         private static readonly int TintId = Shader.PropertyToID("_DugTint");
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRegistry() => activeTerrains.Clear();
 
         private void Awake()
         {
@@ -201,12 +206,14 @@ namespace MousePlatformer
         private void OnEnable()
         {
             if (solid == null) return;
+            if (!activeTerrains.Contains(this)) activeTerrains.Add(this);
             area.enabled = false;
             RebuildColliders();
         }
 
         private void OnDisable()
         {
+            activeTerrains.Remove(this);
             foreach (BoxCollider2D collider in colliders)
                 if (collider != null) collider.enabled = false;
             if (solid != null && area != null) area.enabled = originalColliderEnabled;

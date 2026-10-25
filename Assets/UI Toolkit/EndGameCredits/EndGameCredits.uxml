@@ -18,7 +18,6 @@
                     <ui:VisualElement tooltip="IGDA Italy" class="thanks-logo igda"/>
                     <ui:VisualElement tooltip="SGS" class="thanks-logo sgs"/>
                 </ui:VisualElement>
-                <ui:Label text="m5x7 &amp; m6x11 fonts by Daniel Linssen" tooltip="https://managore.itch.io/m5x7 · https://managore.itch.io/m6x11" class="font-credit typed"/>
                 <ui:VisualElement class="monitor-footer">
                     <ui:VisualElement class="transmission-line">
                         <ui:Label text="END OF TRANSMISSION" class="transmission typed"/>
@@ -32,6 +31,24 @@
         <ui:VisualElement name="unity-logo" picking-mode="Ignore" class="unity-splash">
             <ui:VisualElement tooltip="Made with Unity" class="unity-logo"/>
             <ui:Label name="thank-you-message" text="Thank you for playing" class="thank-you-message"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="third-party-screen" class="third-party-screen">
+            <ui:Label text="Third Party assets" class="third-party-heading"/>
+            <ui:ScrollView name="third-party-content" mode="Vertical" horizontal-scroller-visibility="Hidden" class="third-party-content">
+                <ui:VisualElement class="third-party-entry">
+                    <ui:Label text="Deep-sea Creatures" class="third-party-asset"/>
+                    <ui:Label text="By PixelCampGames" class="third-party-author"/>
+                    <ui:Label text="pixelcampgames.itch.io/deep-sea-creatures" class="third-party-source"/>
+                    <ui:Label text="CC BY-SA 4.0 — creativecommons.org/licenses/by-sa/4.0/" class="third-party-source"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="third-party-entry">
+                    <ui:Label text="m5x7 &amp; m6x11 fonts" class="third-party-asset"/>
+                    <ui:Label text="By Daniel Linssen (managore)" class="third-party-author"/>
+                    <ui:Label text="managore.itch.io/m5x7 · managore.itch.io/m6x11" class="third-party-source"/>
+                    <ui:Label text="m5x7: CC0 · m6x11: used with attribution" class="third-party-source"/>
+                </ui:VisualElement>
+            </ui:ScrollView>
+            <ui:Button name="third-party-main-menu" text="Main Menu" class="menu-button third-party-menu"/>
         </ui:VisualElement>
         <ui:VisualElement name="power-led" picking-mode="Ignore" class="status-led"/>
     </ui:VisualElement>

@@ -59,12 +59,10 @@ public sealed class PhysicsSettingsEditor : Editor
         Section("Push / Pull", "PlayerCrateInteraction → Pushable, PropsMotion");
         Field("interactions.crateMoveSpeed");
 
-        Section("Water — Horizontal Movement", "PlayerSwimming, PlayerMovement (bottom walking)");
+        Section("Water — Resistance / Bottom Walking", "SimulatedBody2D, PlayerSwimming, PlayerMovement");
         Field("water.bottomWalkSpeedMultiplier", "Relative to normal player speed: 0.5 = half speed. Used while submerged and standing on a walkable surface.");
-        Field("water.acceleration", "How quickly the requested speed is reached.");
-        Field("water.strokeAcceleration", "Lateral response after a swim stroke, including just outside the water.");
-        Field("water.strokeControlTime");
-        Field("water.braking", "How quickly movement stops after releasing directional input.");
+        Field("water.waterDrag", "Shared resistance on both velocity axes. SimulatedBody2D applies its individual Water Drag Multiplier.");
+        EditorGUILayout.HelpBox("Acceleration, Stroke Acceleration, Stroke Control Time and Braking are configured on PlayerSwimming.", MessageType.None);
 
         Section("Water — Vertical Movement", "PlayerSwimming");
         Field("water.gravityMultiplier");

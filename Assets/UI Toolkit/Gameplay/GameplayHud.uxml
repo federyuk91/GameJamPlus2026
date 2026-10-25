@@ -24,11 +24,11 @@
                 <ui:VisualElement class="health-panel">
                     <ui:Label text="HEALTH" class="vital-caption"/>
                     <ui:VisualElement name="health-hearts" class="health-hearts">
-                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
-                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
-                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
-                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
-                        <game:StatusEffectIcon effect="Heart" class="health-heart"/>
+                        <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
+                        <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
+                        <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
+                        <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
+                        <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
@@ -58,10 +58,6 @@
                 <ui:VisualElement name="counter-primary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
                     <ui:Image name="counter-primary-icon" picking-mode="Ignore" source="project://database/Assets/Art/UI/Gameplay/Cheese-Sheet.png?fileID=1991445489062669798&amp;guid=9acc4aff0ae55884a9b04b44eaf25ee3&amp;type=3#Cheese-Sheet_0" scale-mode="ScaleToFit" class="counter-icon"/>
                     <ui:Label name="counter-primary-value" text="× 0" picking-mode="Ignore" class="counter-value"/>
-                </ui:VisualElement>
-                <ui:VisualElement name="counter-secondary" picking-mode="Ignore" class="counter" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
-                    <ui:Image name="counter-secondary-icon" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Props/PoisonCheese.png?fileID=21300000&amp;guid=3c952d4f5499c5f448a05e1f3027d402&amp;type=3#PoisonCheese" scale-mode="ScaleToFit" class="counter-icon"/>
-                    <ui:Label name="counter-secondary-value" text="× 0" picking-mode="Ignore" class="counter-value"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="counter-tertiary" tooltip="Research / Knowledge" picking-mode="Ignore" class="counter" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
                     <ui:Image name="counter-tertiary-icon" picking-mode="Ignore" class="counter-icon">

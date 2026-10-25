@@ -13,8 +13,8 @@ namespace MousePlatformer
         [Header("Prop resistance")]
         [SerializeField, Min(0f), Tooltip("Air velocity damping in inverse seconds, shared by PropsMotion and BalloonLift. Character locomotion keeps its own acceleration and braking.")]
         private float airDrag = 0.35f;
-        [SerializeField, Min(0f), Tooltip("Water velocity damping in inverse seconds. Props apply it progressively with immersion; swimmers apply it vertically while submerged. Higher values reduce momentum faster; 0 disables damping.")]
-        private float waterDrag = 5f;
+        [SerializeField, Min(0f), Tooltip("Individual response to shared Physics Settings > Water > Water Drag. 1 uses the shared drag; props apply it progressively with immersion. Swimmers damp both axes.")]
+        private float waterDragMultiplier = 5f / SwimMotion.DefaultWaterDrag;
         [SerializeField, Min(0f), FormerlySerializedAs("groundDrag"), Tooltip("Ground friction coefficient. Maximum resisting force is this value times the force pressing the body against the ground. A resting body holds while tan(slope angle) is no greater than this coefficient under gravity alone. Replaces the former Ground Drag damping formula.")]
         private float groundFriction = 1f;
         [SerializeField, Range(0f, 89f), Tooltip("Maximum walkable surface angle in degrees for this body. Does not set the sliding threshold: sliding is calculated from forces and Ground Friction.")]
@@ -52,7 +52,8 @@ namespace MousePlatformer
         public void SetCanPressButtons(bool value) => canPressButtons = value;
         public PhysicsSettings Settings => physicsSettings;
         public float AirDrag => Mathf.Max(0f, airDrag);
-        public float WaterDrag => Mathf.Max(0f, waterDrag);
+        public float WaterDrag => Mathf.Max(0f, waterDragMultiplier) * Mathf.Max(0f,
+            physicsSettings != null ? physicsSettings.water.waterDrag : SwimMotion.DefaultWaterDrag);
         public float MaxSpeed => Mathf.Max(0.01f, maxSpeed);
         public float GravityScale => Mathf.Max(0f, gravityScale);
         public float GravityAcceleration => (physicsSettings != null

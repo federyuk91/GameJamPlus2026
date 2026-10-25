@@ -159,17 +159,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 2.5
-  waterDrag: 5
+  waterDragMultiplier: 3.3333333
+  groundFriction: 1
+  maxSlopeAngle: 89
+  groundContact: {fileID: 9700001000}
   maxSpeed: 5
+  gravityScale: 2.2
+  shape: {fileID: 1003}
+  ignorePlayerColliders: 0
+  blocksOtherProps: 0
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.005
   weight: 1
-  groundFriction: 1
-  maxSlopeAngle: 89
-  groundContact: {fileID: 9700001000}
-  gravityScale: 2.2
 --- !u!114 &1005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +208,7 @@ MonoBehaviour:
   pushable: {fileID: 1005}
   balloon: {fileID: 1007}
   initialVelocity: {x: 0, y: 0}
+  followSupport: 0
 --- !u!114 &1007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +250,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9700001000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 1004}
 --- !u!1 &2000
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,6 +328,7 @@ MonoBehaviour:
   restDirection: {x: 0, y: -1}
   segmentLength: 0.25
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
+  gravityScale: 1
   tautTolerance: 0.01
   damping: 0.35
   swingLimits:
@@ -320,7 +339,6 @@ MonoBehaviour:
   canBeCut: 1
   showGizmos: 1
   balloonAnchor: {fileID: 1007}
-  gravityScale: 1
 --- !u!1 &3000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,17 +1228,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.3333333
+  groundFriction: 1
+  maxSlopeAngle: 89
+  groundContact: {fileID: 9700001001}
   maxSpeed: 5
+  gravityScale: 2.2
+  shape: {fileID: 5003}
+  ignorePlayerColliders: 0
+  blocksOtherProps: 0
+  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.005
   weight: 1
-  groundFriction: 1
-  maxSlopeAngle: 89
-  groundContact: {fileID: 9700001001}
-  gravityScale: 2.2
 --- !u!114 &5005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1255,6 +1277,7 @@ MonoBehaviour:
   pushable: {fileID: 5005}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
+  followSupport: 0
 --- !u!114 &5007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1285,53 +1308,8 @@ MonoBehaviour:
   rope: {fileID: 2002}
   pushable: {fileID: 5005}
   motion: {fileID: 5006}
+  crushHazard: {fileID: 9800007101}
   attachmentOffset: {x: 0, y: 0.5}
---- !u!1 &9000
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9001}
-  m_Layer: 0
-  m_Name: Balloon With Crate
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9001
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9000}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1001}
-  - {fileID: 5001}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9700001000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  body: {fileID: 1004}
 --- !u!114 &9700001001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1352,11 +1330,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80acea0008e94eb78772bdf53c7de3c4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   motion: {fileID: 5006}
   testEnd: {fileID: 9800007102}
   audioSource: {fileID: 9800007103}
@@ -1374,11 +1352,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2763edeab37a425199c64cd3f2ba6628, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   scientistComment: {fileID: 0}
   subjectDied: 1
+  useExitImage: 0
   flashDurationOverride: -1
   resultMessages:
   - The subject has completed the pressure stage.
@@ -1479,3 +1458,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &9000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9001}
+  m_Layer: 0
+  m_Name: Balloon With Crate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1001}
+  - {fileID: 5001}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

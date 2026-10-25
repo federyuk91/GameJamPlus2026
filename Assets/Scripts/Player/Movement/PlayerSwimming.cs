@@ -12,6 +12,7 @@ namespace MousePlatformer
         [SerializeField] private PlayerMovement playerMovement;
         [Tooltip("Multiplies this animal's Move Speed to determine horizontal swimming speed. 1 uses normal movement speed; 0.5 halves it. The body's Max Speed still limits motion.")]
         [SerializeField, Min(0f)] private float swimSpeedMultiplier = 1f;
+        [SerializeField] private SwimControlSettings controls = new SwimControlSettings();
         [SerializeField, Min(0.1f)] private float poolObservationDuration = 20f;
         private float consecutiveWaterTime;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
@@ -78,15 +79,15 @@ namespace MousePlatformer
             if (strokePressed)
             {
                 surfaceJumpActive = InWater && nearSurface;
-                strokeControlRemaining = Settings.strokeControlTime;
+                strokeControlRemaining = Mathf.Max(0f, controls.strokeControlTime);
                 if (InWater && dt > 0f) StrokePerformed?.Invoke();
             }
             // Preserve the surface impulse until the body leaves water instead of capping it on the next tick.
-            return Settings.Step(velocity, horizontal, strokePressed, dt, body.GravityAcceleration, SwimSpeed, body.WaterDrag, HasStrokeControl, surfaceJumpActive);
+            return Settings.Step(velocity, horizontal, strokePressed, dt, body.GravityAcceleration, SwimSpeed, body.WaterDrag, controls, HasStrokeControl, surfaceJumpActive);
         }
 
         public float SurfaceHorizontal(float velocity, float horizontal, float dt)
-            => Settings.StepHorizontal(velocity, horizontal, dt, SwimSpeed, HasStrokeControl);
+            => Settings.StepHorizontal(velocity, horizontal, dt, SwimSpeed, HasStrokeControl, controls);
 
         private void OnDisable() { consecutiveWaterTime = 0f; InWater = false; nearSurface = surfaceJumpActive = false; ResetStrokeControl(); }
     }

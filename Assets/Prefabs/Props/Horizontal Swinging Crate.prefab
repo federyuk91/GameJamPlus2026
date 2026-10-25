@@ -241,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   maxSpeed: 5
   solidLayers:
     serializedVersion: 2
@@ -316,6 +316,7 @@ MonoBehaviour:
   rope: {fileID: 2827747081682800627}
   pushable: {fileID: 5443690112531502628}
   motion: {fileID: 7998587169240745152}
+  crushHazard: {fileID: 9800007101}
   attachmentOffset: {x: 0, y: 0.5}
 --- !u!1 &795283313155343663
 GameObject:
@@ -1280,7 +1281,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 332618563694007208}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80acea0008e94eb78772bdf53c7de3c4, type: 3}
   m_Name:

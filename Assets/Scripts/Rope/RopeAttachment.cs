@@ -1,3 +1,4 @@
+using GameJamPlus.Gameplay;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -10,6 +11,8 @@ namespace MousePlatformer
         [SerializeField] private RopeSimulation rope;
         [SerializeField] private Pushable pushable;
         [SerializeField] private PropsMotion motion;
+        [SerializeField, Tooltip("Optional crushing damage. Disabled while the rope is intact and enabled when it is cut.")]
+        private FallingCrushHazard crushHazard;
         [SerializeField] private Vector2 attachmentOffset;
         private bool tailAttached;
         public bool Attached { get; private set; }
@@ -30,12 +33,14 @@ namespace MousePlatformer
         {
             if (pushable == null) pushable = GetComponent<Pushable>();
             if (motion == null) motion = GetComponent<PropsMotion>();
+            if (crushHazard == null) crushHazard = GetComponent<FallingCrushHazard>();
         }
 
         private void OnEnable()
         {
             if (rope == null || !rope.BindLoad(this)) return;
             Attached = true;
+            if (crushHazard != null) crushHazard.enabled = false;
             if (pushable != null) pushable.enabled = rope.BalloonAnchor != null;
             rope.Cut += HandleCut;
         }
@@ -60,6 +65,7 @@ namespace MousePlatformer
 
         private void HandleCut(RopeSimulation source)
         {
+            if (crushHazard != null) crushHazard.enabled = true;
             if (source.KeepCrateSideAfterCut && source.Chain.EndpointConnectedSegmentCount > 0)
             {
                 // Release the floor constraint while keeping the remaining rope tied to the crate.

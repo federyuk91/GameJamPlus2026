@@ -25,7 +25,16 @@
 .menu-button:hover, .menu-button:focus { background-color: rgb(29, 52, 49); border-color: rgb(135, 171, 135); }
 .power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(153, 164, 161); opacity: 0; }
 
-.font-credit { height: 20px; min-height: 20px; flex-shrink: 0; font-size: 16px; margin: 0; -unity-text-align: middle-center; color: rgb(167, 193, 182); }
+.third-party-screen { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgb(4, 7, 9); padding: 20px 28px; align-items: center; }
+.third-party-heading { flex-shrink: 0; font-size: 26px; color: rgb(219, 213, 185);
+    margin: 0 0 12px 0; -unity-text-align: middle-center; }
+.third-party-content { flex-grow: 1; flex-shrink: 1; min-height: 0; width: 100%; max-width: 560px; }
+.third-party-entry { margin-bottom: 16px; padding-bottom: 10px; border-bottom-width: 1px; border-bottom-color: rgb(55, 73, 76); }
+.third-party-asset { font-size: 22px; color: rgb(219, 213, 185); margin: 0; }
+.third-party-author { font-size: 18px; color: rgb(167, 193, 182); margin: 0; }
+.third-party-source { font-size: 15px; color: rgb(167, 193, 182); white-space: normal; margin: 0; }
+.third-party-menu { flex-shrink: 0; margin-top: 12px; }
 
 .final-root, .final-root * {
     -unity-font-definition: none;

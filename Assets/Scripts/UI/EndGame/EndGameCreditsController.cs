@@ -35,8 +35,12 @@ namespace GameJamPlus.UI
         private float logoFadeDuration = 1.2f;
         [SerializeField, Min(0f), Tooltip("Seconds fading in the central Unity logo after the monitor shuts down.")]
         private float unityLogoFadeDuration = 1.5f;
-        [SerializeField, Min(0f), Tooltip("Seconds holding the Unity logo and completed thank-you message before returning to Main Menu.")]
+        [SerializeField, Min(0f), Tooltip("Seconds holding the Unity logo and completed thank-you message before Third Party assets.")]
         private float unityLogoHoldDuration = 1.5f;
+        [SerializeField, Min(0f), Tooltip("Seconds fading in Third Party assets after the Unity splash.")]
+        private float thirdPartyFadeDuration = 1f;
+        [SerializeField, Min(0f), Tooltip("Seconds displaying Third Party assets before returning to Main Menu. Confirm, Back or Main Menu can continue earlier.")]
+        private float thirdPartyHoldDuration = 8f;
         [SerializeField, Min(0f), Tooltip("Seconds after the Unity logo finishes appearing before the thank-you message begins fading in.")]
         private float thankYouDelay = 0.5f;
         [SerializeField, Min(0f), Tooltip("Seconds fading in the thank-you message below the Unity logo.")]
@@ -55,6 +59,11 @@ namespace GameJamPlus.UI
         private VisualElement powerLed;
         private VisualElement logos;
         private VisualElement unityLogo;
+        private VisualElement thirdPartyScreen;
+        private Button thirdPartyMenuButton;
+        private bool thirdPartyVisible;
+        private bool thirdPartyContinueRequested;
+        private int thirdPartyShownFrame;
         private Label thankYouMessage;
         private Label transmissionCursor;
         private Button menuButton;
@@ -103,9 +112,16 @@ namespace GameJamPlus.UI
             content = root.Q("monitor-content");
             glow = root.Q("power-glow");
             powerLed = root.Q("power-led");
+            powerLed.style.visibility = Visibility.Visible;
             powerLed.RemoveFromClassList("is-powered");
             logos = root.Q("thanks-logos");
             unityLogo = root.Q("unity-logo");
+            thirdPartyScreen = root.Q("third-party-screen");
+            thirdPartyMenuButton = root.Q<Button>("third-party-main-menu");
+            thirdPartyScreen.style.display = DisplayStyle.None;
+            thirdPartyScreen.style.opacity = 0f;
+            thirdPartyVisible = thirdPartyContinueRequested = false;
+            thirdPartyMenuButton.clicked += ContinueFromThirdParty;
             thankYouMessage = root.Q<Label>("thank-you-message");
             thankYouMessage.style.opacity = 0f;
             transmissionCursor = root.Q<Label>("transmission-cursor");
@@ -161,6 +177,7 @@ namespace GameJamPlus.UI
 
         private void OnAdvance(InputAction.CallbackContext context)
         {
+            if (thirdPartyVisible) { ContinueFromThirdParty(); return; }
             if (opening) { revealRequested = true; return; }
             if (!complete) RevealAll();
             else ReturnToMenu();
@@ -284,7 +301,38 @@ namespace GameJamPlus.UI
             }
             thankYouMessage.style.opacity = 1f;
             yield return new WaitForSecondsRealtime(Mathf.Max(0f, unityLogoHoldDuration));
+            yield return ShowThirdPartyAssets();
             SceneManager.LoadScene(mainMenuSceneName);
+        }
+
+        private IEnumerator ShowThirdPartyAssets()
+        {
+            unityLogo.style.visibility = Visibility.Hidden;
+            powerLed.style.visibility = Visibility.Hidden;
+            thirdPartyScreen.style.display = DisplayStyle.Flex;
+            thirdPartyVisible = true;
+            thirdPartyShownFrame = Time.frameCount;
+            thirdPartyMenuButton.Focus();
+            float elapsed = 0f;
+            while (elapsed < thirdPartyFadeDuration)
+            {
+                thirdPartyScreen.style.opacity = Mathf.SmoothStep(0f, 1f, elapsed / thirdPartyFadeDuration);
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+            thirdPartyScreen.style.opacity = 1f;
+            elapsed = 0f;
+            while (!thirdPartyContinueRequested && elapsed < thirdPartyHoldDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+        }
+
+        private void ContinueFromThirdParty()
+        {
+            if (thirdPartyVisible && Time.frameCount > thirdPartyShownFrame)
+                thirdPartyContinueRequested = true;
         }
 
         private IEnumerator AnimateMonitor(float fromX, float toX, float fromY, float toY, float duration)
@@ -309,6 +357,7 @@ namespace GameJamPlus.UI
             GameAudioSettings.EffectsVolumeChanged -= ApplyVolume;
             GameAudioSettings.MusicVolumeChanged -= ApplyMusicVolume;
             if (menuButton != null) menuButton.clicked -= ReturnToMenu;
+            if (thirdPartyMenuButton != null) thirdPartyMenuButton.clicked -= ContinueFromThirdParty;
             typingAudio.Stop();
             if (ambienceAudio != null) ambienceAudio.Stop();
             if (televisionAudio != null) televisionAudio.Stop();

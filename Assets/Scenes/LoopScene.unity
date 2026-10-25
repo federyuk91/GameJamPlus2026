@@ -1275,7 +1275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001000}
@@ -7241,7 +7241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001001}
@@ -8621,6 +8621,7 @@ MonoBehaviour:
   rope: {fileID: 217595365}
   pushable: {fileID: 0}
   motion: {fileID: 0}
+  crushHazard: {fileID: 9800007111}
   attachmentOffset: {x: 0, y: 1}
 --- !u!114 &1306783269
 MonoBehaviour:
@@ -8732,7 +8733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001002}
@@ -81968,6 +81969,8 @@ MonoBehaviour:
   contactArea: {fileID: 2100004200}
   playerCollider: {fileID: 1138048428}
   playerOxygen: {fileID: 0}
+  playerHealth: {fileID: 0}
+  biteOutcome: {fileID: 2100004203}
   biteInterval: 1
   showGizmos: 0
 --- !u!114 &2100004202
@@ -82107,7 +82110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.SimulatedBody2D
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0.35
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001003}
@@ -83323,7 +83326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001004}
@@ -83398,7 +83401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001005}
@@ -83473,7 +83476,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001006}
@@ -83548,7 +83551,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001007}
@@ -85469,7 +85472,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 2.5
-  waterDrag: 5
+  waterDragMultiplier: 3.33333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001008}

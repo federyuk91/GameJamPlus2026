@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MousePlatformer
@@ -15,7 +16,10 @@ namespace MousePlatformer
         [SerializeField] private PlayerLadderInteraction ladder;
         [SerializeField] private PlayerLedgeClimb ledge;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
-        [SerializeField] private DiggableTerrain[] terrains;
+        [SerializeField, Tooltip("Use active terrains in this player's scene when Terrains has no assigned references. Explicit assignments take precedence.")]
+        private bool useSceneTerrainsWhenUnassigned = true;
+        [SerializeField, Tooltip("Optional explicit list. Leave unassigned to use registered scene terrains automatically.")]
+        private DiggableTerrain[] terrains;
         private DiggableTerrain terrain;
         public bool InputClaimed { get; private set; }
         public bool IsDigging { get; private set; }
@@ -46,11 +50,17 @@ namespace MousePlatformer
         private bool TryFindTerrain(Vector2 direction, out DiggableTerrain found)
         {
             found = null;
-            if (terrains == null) return false;
+            bool hasAssignments = false;
+            for (int index = 0; terrains != null && index < terrains.Length; index++)
+                if (terrains[index] != null) { hasAssignments = true; break; }
+            bool useSceneTerrains = !hasAssignments && useSceneTerrainsWhenUnassigned;
+            IReadOnlyList<DiggableTerrain> candidates = useSceneTerrains ? DiggableTerrain.ActiveTerrains : terrains;
+            if (candidates == null) return false;
             Vector2 center = body.Shape.bounds.center;
-            foreach (DiggableTerrain candidate in terrains)
+            foreach (DiggableTerrain candidate in candidates)
             {
                 if (candidate == null || !candidate.isActiveAndEnabled) continue;
+                if (useSceneTerrains && candidate.gameObject.scene != gameObject.scene) continue;
                 if (!candidate.HasEarth(center, center + direction.normalized * Settings.reach, RadiusFor(candidate))) continue;
                 found = candidate;
                 return true;
