@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cea8f7363f004df18f59ce1e979198e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.Gameplay.MouseTrap
-  playerHealth: {fileID: 0}
+  playerStats: {fileID: 0}
   damage: 3
   contactArea: {fileID: 1002}
   playerCollider: {fileID: 0}
@@ -193,7 +193,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 100
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8555344189139360066, guid: 1d087ee503eebe74c932161d2a80dad1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

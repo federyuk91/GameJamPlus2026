@@ -11032,7 +11032,7 @@ MonoBehaviour:
   playerCollider: {fileID: 1579771689}
   playerRecovery: {fileID: 1579771683}
   playerCrushVisual: {fileID: 9800091002}
-  playerHealth: {fileID: 0}
+  playerStats: {fileID: 0}
   gameplayCamera: {fileID: 188667629}
   spawnPoints:
   - {fileID: 229599096}
@@ -16130,7 +16130,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -10
+  m_SortingOrder: 200
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 0a36334c874c7144dbe0625340e7c420, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -17704,28 +17704,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b85f960e7fde4f15ab35404d99ad3986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygenBubbles
---- !u!114 &1579771693 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029800, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 1579771679}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd8f2ae75f64879a0d4e95dc2583ac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygen
 --- !u!114 &1579771694 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029300, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+  m_CorrespondingSourceObject: {fileID: 9800100001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
   m_PrefabInstance: {fileID: 1579771679}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027b8eb5294544148bfc29471a045c16, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ae2ef1cf0804c0495058bfe0ab4d124, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerStats
 --- !u!1001 &1582179916
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23716,17 +23705,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e4f302cd174c0e896709aa77c3a97d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &9800099002 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9800099001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 1579771679}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
 --- !u!19719996 &121301252907616676
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -30786,17 +30764,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 188667635}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: oxygen
-      value: 
-      objectReference: {fileID: 1579771693}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: satiety
+      propertyPath: stats
       value: 
       objectReference: {fileID: 1579771694}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: electricity
-      value: 
-      objectReference: {fileID: 9800099002}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
       propertyPath: oxygenBubbles
       value: 

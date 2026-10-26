@@ -3181,8 +3181,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029300, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
+    - target: {fileID: 9800100001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+      propertyPath: satietyEnabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5709383898159029400, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -3201,8 +3201,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5709383898159029800, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-      propertyPath: m_Enabled
+    - target: {fileID: 9800100001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+      propertyPath: oxygenEnabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5709383898159029803, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}

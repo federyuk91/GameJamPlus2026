@@ -10,7 +10,7 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private BoxCollider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private PlayerHealth playerHealth;
+        [SerializeField] private PlayerStats playerStats;
         [SerializeField, Min(1)] private int damage = 3;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private Sprite[] closingFrames;
@@ -68,16 +68,16 @@ namespace GameJamPlus.Gameplay
                 || !contactArea.enabled || ending == StageEndCase.None) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
-            if (playerHealth == null) playerCollider.TryGetComponent(out playerHealth);
-            if (playerHealth == null || playerHealth.IsDead) return;
+            if (playerStats == null) playerCollider.TryGetComponent(out playerStats);
+            if (playerStats == null || playerStats.IsDead) return;
             Physics2D.SyncTransforms();
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f) return;
             triggered = true;
             contactArea.enabled = false;
             GameSession.RecordObservation(TestObservation.LittleMechanic);
-            playerHealth.ApplyDamage(Mathf.Max(1, damage));
-            endingStage = playerHealth.IsDead && StageEndManager.TryBeginAnimated(ending, this, out animationRequest);
+            playerStats.ApplyDamage(Mathf.Max(1, damage));
+            endingStage = playerStats.IsDead && StageEndManager.TryBeginAnimated(ending, this, out animationRequest);
             PlayGoreSound();
             animationRoutine = StartCoroutine(PlayClosingAnimation());
         }

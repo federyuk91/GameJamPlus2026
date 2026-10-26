@@ -32,7 +32,13 @@ namespace GameJamPlus.UI
         public EffectKind Effect
         {
             get => effect;
-            set { effect = value; MarkDirtyRepaint(); }
+            set
+            {
+                effect = value;
+                EnableInClassList("status-electricity", effect == EffectKind.Electricity);
+                EnableInClassList("status-heart", effect == EffectKind.Heart);
+                MarkDirtyRepaint();
+            }
         }
 
         public StatusEffectIcon()
@@ -45,6 +51,8 @@ namespace GameJamPlus.UI
 
         private void Draw(MeshGenerationContext context)
         {
+            // Keep the procedural fallback only when no authored sprite is assigned.
+            if (resolvedStyle.backgroundImage.sprite != null) return;
             float scale = Mathf.Floor(Mathf.Min(contentRect.width, contentRect.height) / 12f);
             if (scale < 1f) return;
             Vector2 origin = new Vector2(Mathf.Floor((contentRect.width - 12f * scale) * 0.5f),

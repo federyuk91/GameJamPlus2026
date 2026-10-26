@@ -12,7 +12,7 @@ namespace MousePlatformer.EditorTools
         private const string ReportPath = "Temp/CodexGameplayCheck/player-feedback-import-report.txt";
         private static readonly string[] AssetPaths =
         {
-            "Assets/Scripts/Player/Vitals/PlayerOxygen.cs",
+            "Assets/Scripts/Player/Vitals/PlayerStats.cs",
             "Assets/Scripts/Player/Presentation/PlayerOxygenBubbles.cs",
             "Assets/Scripts/UI/Gameplay/SatietyHud.cs",
             "Assets/Art/Pixel Art/Effects/Oxygen/bubble1.png",

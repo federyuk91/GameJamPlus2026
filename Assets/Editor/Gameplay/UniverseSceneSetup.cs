@@ -134,9 +134,8 @@ public static class UniverseSceneSetup
                 ("buttons", player.GetComponent<PlayerButtonInteraction>()), ("wheel", player.GetComponent<PlayerWheelInteraction>()));
             SetReferences(hud, ("playerInput", input), ("collectibleCollector", player.GetComponent<CollectibleCollector>()),
                 ("interactionAvailability", availability), ("viewport", viewport), ("cameraController", follow));
-            SetReferences(hudObject.GetComponent<SatietyHud>(), ("satiety", player.GetComponent<PlayerSatiety>()),
-                ("oxygen", player.GetComponent<PlayerOxygen>()), ("electricity", player.GetComponent<PlayerElectricity>()),
-                ("health", player.GetComponent<PlayerHealth>()), ("oxygenBubbles", player.GetComponent<PlayerOxygenBubbles>()),
+            SetReferences(hudObject.GetComponent<SatietyHud>(), ("stats", player.GetComponent<PlayerStats>()),
+                ("oxygenBubbles", player.GetComponent<PlayerOxygenBubbles>()),
                 ("gameplayCamera", follow));
             SetReferences(hudObject.GetComponent<RopeBiteProgressView>(), ("gameplayCamera", camera), ("bite", player.GetComponent<PlayerRopeBite>()));
             GameObject managerObject = new GameObject("Game Manager", typeof(GameManager));
@@ -144,7 +143,7 @@ public static class UniverseSceneSetup
             GameManager manager = managerObject.GetComponent<GameManager>();
             SetReferences(manager, ("hud", hud), ("player", player.transform), ("playerCollider", player.GetComponent<BoxCollider2D>()),
                 ("playerRecovery", player.GetComponent<PlayerRecovery>()), ("playerCrushVisual", player.GetComponent<PlayerCrushVisual>()),
-                ("playerHealth", player.GetComponent<PlayerHealth>()), ("gameplayCamera", follow), ("campaign", campaign));
+                ("playerStats", player.GetComponent<PlayerStats>()), ("gameplayCamera", follow), ("campaign", campaign));
             CreateHandIntro(rig.transform, manager);
             GameObject spawnGroup = new GameObject("Spawn Points");
             spawnGroup.transform.SetParent(rig.transform, false);
@@ -184,6 +183,8 @@ public static class UniverseSceneSetup
         hand.transform.SetParent(parent, false);
         hand.transform.localPosition = new Vector3(0.2f, 1.05f, 0f);
         SpriteRenderer visual = hand.GetComponent<SpriteRenderer>();
+        visual.sortingLayerID = SortingLayer.NameToID("Default");
+        visual.sortingOrder = 200;
         visual.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Pixel Art/Characters/Scientist/HandRelease/handRelease1.png");
         Animator animator = hand.GetComponent<Animator>();
         animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Animations/HandRelease/HandRelease.controller");

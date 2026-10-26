@@ -170,10 +170,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.SatietyHud
   document: {fileID: 2100002202}
-  satiety: {fileID: 0}
-  oxygen: {fileID: 0}
-  electricity: {fileID: 0}
-  health: {fileID: 0}
   oxygenBubbles: {fileID: 0}
   gameplayCamera: {fileID: 0}
   flashColor: {r: 1, g: 0.85, b: 0.1, a: 0.25}
@@ -185,6 +181,7 @@ MonoBehaviour:
   oxygenFlashDuration: 0.25
   shakeDuration: 0.2
   shakeAmplitude: 0.06
+  stats: {fileID: 0}
 --- !u!82 &2100006400
 AudioSource:
   m_ObjectHideFlags: 0

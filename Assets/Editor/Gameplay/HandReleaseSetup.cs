@@ -157,7 +157,7 @@ public static class HandReleaseSetup
             if (playerSprite != null)
             {
                 hand.sortingLayerID = playerSprite.sortingLayerID;
-                hand.sortingOrder = playerSprite.sortingOrder + 1;
+                hand.sortingOrder = playerSprite.sortingOrder;
             }
         }
         foreach (Object changed in new Object[] { hand, animator, intro, manager })

@@ -1,0 +1,29 @@
+/* Shared references keep the authored sprite slices intact. */
+.ui-sprite { width: 16px; height: 16px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.sprite-play { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=6779710386922843757&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Play"); }
+.sprite-pause { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-1726542893968771761&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Pause"); }
+.sprite-settings { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=890694647&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Settings"); }
+.sprite-home { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-1433598140&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Home"); }
+.sprite-cancel { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=1848680423977069169&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Cancel"); }
+.sprite-continue { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-759295151&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Continue"); }
+.sprite-undo { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=1628845296&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Undo"); }
+.sprite-confirm { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=236435362&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Confirm"); }
+.sprite-warn { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=1829192467&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Warn"); }
+.sprite-left-indicator { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-7478807543839380654&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Left_Indicator"); }
+.sprite-right-indicator { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-8391683045673320443&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Right_Indicator"); }
+.sprite-button.sprite-button { background-position-x: left 4px; background-position-y: center; background-size: 16px 16px; background-repeat: no-repeat; padding-left: 24px; }
+.body-navigation .body-arrow.sprite-button { background-position-x: center; padding-left: 0; padding-right: 0; }
+.menu-button .menu-pointer { height: 16px; -unity-background-scale-mode: scale-to-fit; }
+.health-hearts .health-heart { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=3695665267759785205&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Heart"); }
+.health-hearts .health-heart-empty { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=774961201&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#EmptyHeart"); opacity: 1; }
+.status-effect-icon.status-electricity { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-6409411074059559326&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#ShockPoint"); -unity-background-scale-mode: scale-to-fit; }
+.status-effect-icon.status-heart { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=3695665267759785205&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Heart"); -unity-background-scale-mode: scale-to-fit; }
+.test-observation .observation-mark { width: 12px; height: 12px; background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-7439109923509247952&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Check"); -unity-background-scale-mode: scale-to-fit; }
+.audio-slider .unity-base-slider__dragger { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=8254646615373617550&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Handle"); -unity-background-scale-mode: scale-to-fit; background-color: transparent; border-width: 0; border-radius: 0; width: 16px; height: 16px; }
+.pause-slider .unity-base-slider__dragger { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=8254646615373617550&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Handle"); -unity-background-scale-mode: scale-to-fit; background-color: transparent; border-width: 0; border-radius: 0; width: 16px; height: 16px; }
+#fullscreen .unity-toggle__input { background-color: transparent; border-width: 0; }
+#fullscreen .unity-toggle__checkmark { width: 16px; height: 16px; opacity: 1; visibility: visible; background-color: transparent; background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-1663682009211868804&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#ToggleOff"); -unity-background-image-tint-color: white; -unity-background-scale-mode: scale-to-fit; }
+#fullscreen:checked .unity-toggle__checkmark { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-9138160313829311728&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Toggle%20On"); }
+#pause-fullscreen .unity-toggle__input { background-color: transparent; border-width: 0; }
+#pause-fullscreen .unity-toggle__checkmark { width: 16px; height: 16px; opacity: 1; visibility: visible; background-color: transparent; background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-1663682009211868804&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#ToggleOff"); -unity-background-image-tint-color: white; -unity-background-scale-mode: scale-to-fit; }
+#pause-fullscreen:checked .unity-toggle__checkmark { background-image: url("project://database/Assets/Art/UI/UserInterface.png?fileID=-9138160313829311728&guid=e5ece360fa16bc4498d98b727c7738c2&type=3#Toggle%20On"); }

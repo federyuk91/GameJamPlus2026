@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="EndGame.uss" />
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="endgame-root">
         <ui:VisualElement name="endgame-frame" class="endgame-frame">
             <ui:VisualElement name="ending-view" class="ending-view hidden">
@@ -20,7 +21,7 @@
                     <ui:VisualElement class="report-row"><ui:Label text="Subjects recovered" /><ui:Label name="subjects-recovered" text="10" class="report-value" /></ui:VisualElement>
                     <ui:VisualElement class="separator" />
                     <ui:Label name="experiment-outcome" text="OUTCOME: 100% SUCCESS" class="experiment-outcome" />
-                    <ui:Button name="report-continue" text="Continue" class="terminal-button report-continue" />
+                    <ui:Button name="report-continue" text="Continue" class="terminal-button report-continue sprite-button sprite-continue" />
                 </ui:VisualElement>
                 <ui:VisualElement name="report-power-glow" class="report-power-glow" picking-mode="Ignore" />
             </ui:VisualElement>

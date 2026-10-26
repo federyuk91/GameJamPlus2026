@@ -81942,11 +81942,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PiranhaBite
   contactArea: {fileID: 2100004200}
   playerCollider: {fileID: 1138048428}
-  playerOxygen: {fileID: 0}
-  playerHealth: {fileID: 0}
   biteEnding: 11
   biteInterval: 1
   showGizmos: 0
+  playerStats: {fileID: 0}
 --- !u!114 &2100004600 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4027669037393712695, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -81960,15 +81959,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &2100006301 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029300, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
+  m_CorrespondingSourceObject: {fileID: 9800100001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
   m_PrefabInstance: {fileID: 7666400714346116476}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027b8eb5294544148bfc29471a045c16, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ae2ef1cf0804c0495058bfe0ab4d124, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerStats
 --- !u!114 &2100006400 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5709383898159029500, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -82094,17 +82093,6 @@ MonoBehaviour:
   buoyancyAcceleration: 100
   body: {fileID: 2100007301}
   verticalDampingRatio: 1
---- !u!114 &2100007400 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029800, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 7666400714346116476}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd8f2ae75f64879a0d4e95dc2583ac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygen
 --- !u!114 &2100007500 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5709383898159029804, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -84321,11 +84309,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 519420031}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: oxygen
-      value: 
-      objectReference: {fileID: 2100007400}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: satiety
+      propertyPath: stats
       value: 
       objectReference: {fileID: 2100006301}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
@@ -84336,10 +84320,6 @@ PrefabInstance:
       propertyPath: gameplayCamera
       value: 
       objectReference: {fileID: 519420034}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: electricity
-      value:
-      objectReference: {fileID: 9800099002}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -85993,17 +85973,6 @@ MonoBehaviour:
   motion: {fileID: 2110030003}
   ropeAttachment: {fileID: 0}
   showGizmos: 1
---- !u!114 &9800099002 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9800099001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 7666400714346116476}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
 --- !u!114 &9850000000
 MonoBehaviour:
   m_ObjectHideFlags: 0

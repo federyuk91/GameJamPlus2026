@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:game="GameJamPlus.UI" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/GameplayHud.uss?fileID=7433441132597879392&amp;guid=e3953661930f48a484f21a438b7da774&amp;type=3#GameplayHud"/>
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls"/>
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement name="gameplay-hud" picking-mode="Ignore" class="gameplay-hud" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
         <ui:VisualElement name="hud-frame" picking-mode="Ignore" class="hud-frame">
             <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom">
@@ -109,49 +110,49 @@
                         <ui:Label text="OBSERVATION NOTES" class="test-notes-heading"/>
                         <ui:VisualElement name="test-observation-0" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Enjoys the food" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-1" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Gets regular exercise" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-2" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Loves the pool" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-3" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Extended stay" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-4" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Little mechanic" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-5" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Very curious" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-6" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Electrician" class="observation-text"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="test-observation-7" class="test-observation">
                             <ui:VisualElement class="observation-box">
-                                <ui:Label text="X" class="observation-mark"/>
+                                <ui:VisualElement picking-mode="Ignore" class="observation-mark"/>
                             </ui:VisualElement>
                             <ui:Label text="Sense of direction" class="observation-text"/>
                         </ui:VisualElement>
@@ -170,17 +171,17 @@
             <ui:VisualElement name="pause-overlay" picking-mode="Position" class="pause-overlay">
                 <ui:VisualElement class="pause-card">
                     <ui:Label text="SESSION SUSPENDED" class="pause-kicker"/>
-                    <ui:Label text="PAUSED" class="pause-title"/>
+                    <ui:Label text="PAUSED" class="pause-title sprite-button sprite-pause"/>
                     <ui:VisualElement name="pause-main" class="pause-page">
-                        <ui:Button name="pause-resume" text="Resume" class="pause-button"/>
+                        <ui:Button name="pause-resume" text="Resume" class="pause-button sprite-button sprite-continue"/>
                         <ui:Button name="pause-show-controls" text="Controls" class="pause-button"/>
-                        <ui:Button name="pause-show-options" text="Options" class="pause-button"/>
-                        <ui:Button name="pause-main-menu" text="Main Menu" class="pause-button"/>
-                        <ui:Button name="pause-quit" text="Quit Game" class="pause-button"/>
+                        <ui:Button name="pause-show-options" text="Options" class="pause-button sprite-button sprite-settings"/>
+                        <ui:Button name="pause-main-menu" text="Main Menu" class="pause-button sprite-button sprite-home"/>
+                        <ui:Button name="pause-quit" text="Quit Game" class="pause-button sprite-button sprite-cancel"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="pause-controls" class="pause-page pause-subpage">
                         <ui:VisualElement name="pause-controls-content" class="body-controls"/>
-                        <ui:Button name="pause-controls-back" text="Back" class="pause-button"/>
+                        <ui:Button name="pause-controls-back" text="Back" class="pause-button sprite-button sprite-undo"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="pause-options" class="pause-page pause-subpage">
                         <ui:Label text="OPTIONS" class="pause-section"/>
@@ -188,7 +189,7 @@
                         <ui:Slider name="pause-music" label="Music" low-value="0" high-value="1" class="pause-slider"/>
                         <ui:Slider name="pause-effects" label="Effects" low-value="0" high-value="1" class="pause-slider"/>
                         <ui:Toggle name="pause-fullscreen" label="Fullscreen" value="true" class="pause-toggle"/>
-                        <ui:Button name="pause-options-back" text="Back" class="pause-button"/>
+                        <ui:Button name="pause-options-back" text="Back" class="pause-button sprite-button sprite-undo"/>
                     </ui:VisualElement>
                     <ui:Label name="pause-status" class="pause-status"/>
                     <ui:Label name="pause-hint" text="Esc - Resume   Space - Confirm" class="pause-hint"/>

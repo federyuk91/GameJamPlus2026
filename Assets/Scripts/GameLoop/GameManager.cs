@@ -28,7 +28,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private MousePlatformer.PlayerRecovery playerRecovery;
         [SerializeField] private MousePlatformer.PlayerCrushVisual playerCrushVisual;
-        [SerializeField] private MousePlatformer.PlayerHealth playerHealth;
+        [SerializeField] private MousePlatformer.PlayerStats playerStats;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Assigned active spawn points are shuffled without replacement across retries. All are used before a new cycle, avoiding immediate repetition between cycles.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
@@ -48,7 +48,7 @@ namespace GameJamPlus.Gameplay
         public StageEndManager StageEnds => stageEnds;
         public MousePlatformer.CollectionGoalController CollectionGoals => collectionGoals;
         public StageEndDefinition EndingOutcome => stageEnds != null ? stageEnds.Outcome : null;
-        public int SurvivingHealth => playerHealth != null ? playerHealth.Current : MousePlatformer.PlayerHealth.Maximum;
+        public int SurvivingHealth => playerStats != null ? playerStats.Health : MousePlatformer.PlayerStats.MaximumHealth;
         internal void SetStageState(LoopState state) => State = state;
         public Collider2D PlayerCollider => playerCollider;
         public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
@@ -71,10 +71,10 @@ namespace GameJamPlus.Gameplay
             Instance = this;
             if (playerCrushVisual == null && player != null)
                 player.TryGetComponent(out playerCrushVisual);
-            if (playerHealth == null && player != null) player.TryGetComponent(out playerHealth);
+            if (playerStats == null && player != null) player.TryGetComponent(out playerStats);
             GameSession.EnsureStarted(startingUniverse, campaign != null ? campaign.AttemptsPerUniverse : 10,
                 campaign != null ? campaign.MaximumDeaths : 100);
-            if (playerHealth != null) playerHealth.SetHealth(GameSession.SubjectHealth);
+            if (playerStats != null) playerStats.SetHealth(GameSession.SubjectHealth);
             GameSession.EnterGameplayScene(gameObject.scene.path);
             if (hud == null)
             {

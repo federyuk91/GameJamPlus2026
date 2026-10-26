@@ -10,7 +10,7 @@ namespace GameJamPlus.Gameplay
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private PlayerElectricity playerElectricity;
+        [SerializeField] private PlayerStats playerStats;
         [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
         private StageEndCase ending = StageEndCase.ElectricShock;
         [SerializeField, Min(1), Tooltip("Lightning charges applied to the player once per activation. A value of 2 applies two charges; reaching the player's lethal charge count ends the life.")]
@@ -69,7 +69,7 @@ namespace GameJamPlus.Gameplay
         public void Deactivate()
         {
             remainingDuration = 0f;
-            if (playerElectricity != null) playerElectricity.EndShock(this);
+            if (playerStats != null) playerStats.EndShock(this);
             automaticActivation = false;
             if (audioSource != null) audioSource.Stop();
             UpdateDischargeVisual();
@@ -94,14 +94,14 @@ namespace GameJamPlus.Gameplay
             if (playerShocked) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
             if (playerCollider == null || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy) return;
-            if (playerElectricity == null) playerCollider.TryGetComponent(out playerElectricity);
-            if (playerElectricity == null) return;
+            if (playerStats == null) playerCollider.TryGetComponent(out playerStats);
+            if (playerStats == null) return;
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f) return;
-            if (!playerElectricity.ReceiveShock(Mathf.Max(1, electricityAmount))) return;
+            if (!playerStats.ReceiveShock(Mathf.Max(1, electricityAmount))) return;
             playerShocked = true;
-            playerElectricity.BeginShock(this);
-            if (playerElectricity.IsLethal) StageEndManager.Request(ending, this);
+            playerStats.BeginShock(this);
+            if (playerStats.IsElectricallyLethal) StageEndManager.Request(ending, this);
         }
 
         public void EnableAutomaticActivation() => SetAutomaticActivation(true);
@@ -131,7 +131,7 @@ namespace GameJamPlus.Gameplay
             GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
             if (audioSource != null) audioSource.Stop();
             remainingDuration = 0f;
-            if (playerElectricity != null) playerElectricity.EndShock(this);
+            if (playerStats != null) playerStats.EndShock(this);
             UpdateDischargeVisual();
             if (electricLight != null) electricLight.enabled = false;
         }

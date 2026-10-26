@@ -7,6 +7,7 @@
     <ui:Template name="BindingDialog" src="BodyControlsBindingDialog.uxml" />
     <Style src="GameplayHud.uss" />
     <Style src="BodyControls.uss" />
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="body-controls-shared">
         <ui:Label name="body-title" text="CONTROLS" class="body-title" />
         <ui:VisualElement class="body-pages">
@@ -28,7 +29,7 @@
         </ui:VisualElement>
         <ui:Label name="body-feedback" class="body-feedback" />
         <ui:VisualElement class="body-navigation">
-            <ui:Button name="body-previous" text="&lt;" class="pause-button body-arrow" />
+            <ui:Button name="body-previous" text="" class="pause-button body-arrow sprite-button sprite-left-indicator" />
             <ui:Button name="body-tab-0" class="pause-button body-tab body-tab-active">
                 <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
                 <ui:Label text="Overview" picking-mode="Ignore" />
@@ -49,10 +50,10 @@
                 <ui:VisualElement class="body-tab-dot" picking-mode="Ignore" />
                 <ui:Label text="Tail" picking-mode="Ignore" />
             </ui:Button>
-            <ui:Button name="body-next" text="&gt;" class="pause-button body-arrow" />
+            <ui:Button name="body-next" text="" class="pause-button body-arrow sprite-button sprite-right-indicator" />
         </ui:VisualElement>
         <ui:VisualElement class="body-tools">
-            <ui:Button name="body-reset" text="Reset bindings" class="pause-button" />
+            <ui:Button name="body-reset" text="Reset bindings" class="pause-button sprite-button sprite-undo" />
         </ui:VisualElement>
         <ui:VisualElement name="body-help" class="body-help input-prompt-row">
             <game:InputPromptElement binding="horizontal" preview-path="horizontal" preview-label="Left / Right" />

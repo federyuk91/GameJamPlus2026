@@ -6,7 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class PlayerInputReader : MonoBehaviour
     {
-        [SerializeField] private PlayerElectricity electricity;
+        [SerializeField] private PlayerStats stats;
         private InputAction move;
         private InputAction jump;
         private InputAction bite;
@@ -18,7 +18,7 @@ namespace MousePlatformer
         private bool gameplayLocked;
         private bool waitingForInteractionRelease;
         private bool cameraControlsLocked;
-        public bool IsParalyzed => electricity != null && electricity.IsParalyzed;
+        public bool IsParalyzed => stats != null && stats.IsParalyzed;
         public bool ExternalGameplayActionsLocked => gameplayLocked || waitingForInteractionRelease || IsParalyzed;
         public bool GameplayActionsLocked => ExternalGameplayActionsLocked || cameraControlsLocked;
         public Vector2 CameraMove => move != null ? move.ReadValue<Vector2>() : Vector2.zero;
@@ -82,7 +82,7 @@ namespace MousePlatformer
 
         private void Awake()
         {
-            if (electricity == null) electricity = GetComponent<PlayerElectricity>();
+            if (stats == null) stats = GetComponent<PlayerStats>();
             move = new InputAction("Move", InputActionType.Value, expectedControlType: "Vector2");
             move.AddBinding("<Gamepad>/leftStick").WithProcessor("stickDeadzone");
             move.AddBinding("<Gamepad>/dpad");

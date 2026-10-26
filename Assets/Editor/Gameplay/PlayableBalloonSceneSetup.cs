@@ -66,10 +66,15 @@ public static class PlayableBalloonSceneSetup
 
         RestorePrefabComponents(player.gameObject);
         RestorePrefabComponents(balloon.gameObject);
-        PlayerSatiety satiety = player.GetComponent<PlayerSatiety>();
-        if (satiety != null) satiety.enabled = false;
-        PlayerOxygen oxygen = player.GetComponent<PlayerOxygen>();
-        if (oxygen != null) oxygen.enabled = false;
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+        if (stats != null)
+        {
+            SerializedObject statsObject = new SerializedObject(stats);
+            statsObject.FindProperty("satietyEnabled").boolValue = false;
+            statsObject.FindProperty("oxygenEnabled").boolValue = false;
+            statsObject.ApplyModifiedProperties();
+            PrefabUtility.RecordPrefabInstancePropertyModifications(stats);
+        }
         RopeSimulation rope = balloon.GetComponentInChildren<RopeSimulation>(true);
         PlayerRopeInteraction grip = player.GetComponent<PlayerRopeInteraction>();
         Undo.RecordObject(grip, "Set initial balloon grip");

@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/MainMenu/MainMenu.uss?fileID=7433441132597879392&amp;guid=b889d0467f7f4d73a171bcd9aad6284b&amp;type=3#MainMenu" />
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="display-frame">
         <ui:VisualElement name="menu-root" class="menu-root">
             <ui:VisualElement picking-mode="Ignore" class="background" />
@@ -10,19 +11,19 @@
                     <ui:Label text="A home for every mouse" class="subtitle" />
                     <ui:VisualElement name="main-panel" class="main-panel">
                         <ui:Button name="new-game" tabindex="1" class="menu-button">
-                            <ui:Label text="▶" picking-mode="Ignore" class="menu-pointer" />
+                            <ui:VisualElement picking-mode="Ignore" class="menu-pointer ui-sprite sprite-play" />
                             <ui:Label text="New Game" picking-mode="Ignore" />
                         </ui:Button>
                         <ui:Button name="options" tabindex="2" class="menu-button">
-                            <ui:Label text="▶" picking-mode="Ignore" class="menu-pointer" />
+                            <ui:VisualElement picking-mode="Ignore" class="menu-pointer ui-sprite sprite-settings" />
                             <ui:Label text="Options" picking-mode="Ignore" />
                         </ui:Button>
                         <ui:Button name="credits" tabindex="3" class="menu-button">
-                            <ui:Label text="▶" picking-mode="Ignore" class="menu-pointer" />
+                            <ui:VisualElement picking-mode="Ignore" class="menu-pointer ui-sprite sprite-right-indicator" />
                             <ui:Label text="Credits" picking-mode="Ignore" />
                         </ui:Button>
                         <ui:Button name="quit" tabindex="4" class="menu-button">
-                            <ui:Label text="▶" picking-mode="Ignore" class="menu-pointer" />
+                            <ui:VisualElement picking-mode="Ignore" class="menu-pointer ui-sprite sprite-cancel" />
                             <ui:Label text="Quit" picking-mode="Ignore" />
                         </ui:Button>
                     </ui:VisualElement>
@@ -50,7 +51,7 @@
                                         <ui:Slider name="effects-volume" label="Effects" low-value="0" high-value="1" value="1" class="audio-slider" />
                                         <ui:Label text="DISPLAY" class="section-heading" />
                                         <ui:Toggle name="fullscreen" label="Fullscreen" value="true" />
-                                        <ui:Button name="options-back" text="Back" class="dialog-button" />
+                                        <ui:Button name="options-back" text="Back" class="dialog-button sprite-button sprite-undo" />
                                     </ui:VisualElement>
                                     <ui:VisualElement name="credits-panel" class="context-card hidden">
                                         <ui:Label text="THE PEOPLE BEHIND THE PROGRAM" class="section-heading" />
@@ -88,8 +89,8 @@
                                     </ui:VisualElement>
                                     <ui:VisualElement name="quit-panel" class="context-card hidden">
                                         <ui:Label text="Leave the laboratory?" class="dialog-title" />
-                                        <ui:Button name="quit-back" text="Cancel" class="dialog-button" />
-                                        <ui:Button name="quit-confirm" text="Quit" class="dialog-button" />
+                                        <ui:Button name="quit-back" text="Cancel" class="dialog-button sprite-button sprite-undo" />
+                                        <ui:Button name="quit-confirm" text="Quit" class="dialog-button sprite-button sprite-cancel" />
                                     </ui:VisualElement>
                                 </ui:VisualElement>
                             </ui:VisualElement>

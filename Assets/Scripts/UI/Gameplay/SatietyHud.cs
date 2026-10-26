@@ -9,10 +9,7 @@ namespace GameJamPlus.UI
     public sealed class SatietyHud : MonoBehaviour
     {
         [SerializeField] private UIDocument document;
-        [SerializeField] private PlayerSatiety satiety;
-        [SerializeField] private PlayerOxygen oxygen;
-        [SerializeField] private PlayerElectricity electricity;
-        [SerializeField] private PlayerHealth health;
+        [SerializeField] private PlayerStats stats;
         [SerializeField] private PlayerOxygenBubbles oxygenBubbles;
         [SerializeField] private PlatformCameraController gameplayCamera;
         [SerializeField, Tooltip("Screen tint when a satiety notch is lost and hunger increases.")]
@@ -54,25 +51,17 @@ namespace GameJamPlus.UI
         {
             activeFlashColor = flashColor;
             if (document == null) document = GetComponent<UIDocument>();
-            if (electricity == null && satiety != null) satiety.TryGetComponent(out electricity);
-            if (health == null && satiety != null) satiety.TryGetComponent(out health);
-            if (health != null)
+            if (stats != null)
             {
-                health.Changed += RefreshHealth;
-                health.Damaged += PlayDamageFlash;
+                stats.HealthChanged += RefreshHealth;
+                stats.Damaged += PlayDamageFlash;
+                stats.SatietyChanged += OnResourceChanged;
+                stats.SatietyLost += OnNotchLost;
+                stats.OxygenChanged += OnResourceChanged;
+                stats.OxygenLost += OnOxygenNotchLost;
+                stats.ElectricityChanged += OnElectricityChanged;
             }
-            previousElectricity = electricity != null ? electricity.Current : 0;
-            if (satiety != null)
-            {
-                satiety.Changed += OnResourceChanged;
-                satiety.NotchLost += OnNotchLost;
-            }
-            if (oxygen != null)
-            {
-                oxygen.Changed += OnResourceChanged;
-                oxygen.NotchLost += OnOxygenNotchLost;
-            }
-            if (electricity != null) electricity.Changed += OnElectricityChanged;
+            previousElectricity = stats != null ? stats.ElectricCharges : 0;
         }
 
         private void LateUpdate()
@@ -157,13 +146,13 @@ namespace GameJamPlus.UI
 
         private void RefreshResources()
         {
-            bool showOxygen = oxygen != null && (oxygen.IsUnderwater || oxygen.Current < oxygen.Maximum);
-            lowSatiety = satiety != null && satiety.Current == 1;
-            lowOxygen = showOxygen && oxygen.Current == 1;
+            bool showOxygen = stats != null && (stats.IsUnderwater || stats.Oxygen < stats.MaximumOxygen);
+            lowSatiety = stats != null && stats.Satiety == 1;
+            lowOxygen = showOxygen && stats.Oxygen == 1;
             if (caption != null) caption.text = "SATIETY";
-            if (satiety != null) RefreshNotches(notches, satiety.Current, satiety.Maximum);
+            if (stats != null) RefreshNotches(notches, stats.Satiety, stats.MaximumSatiety);
             if (oxygenPanel != null) oxygenPanel.style.display = showOxygen ? DisplayStyle.Flex : DisplayStyle.None;
-            if (showOxygen) RefreshNotches(oxygenNotches, oxygen.Current, oxygen.Maximum);
+            if (showOxygen) RefreshNotches(oxygenNotches, stats.Oxygen, stats.MaximumOxygen);
             RefreshHealth();
             RefreshStatus();
         }
@@ -171,7 +160,7 @@ namespace GameJamPlus.UI
         private void RefreshHealth()
         {
             if (hearts == null) return;
-            int current = health != null ? health.Current : PlayerHealth.Maximum;
+            int current = stats != null ? stats.Health : PlayerStats.MaximumHealth;
             lowHealth = current == 1;
             for (int index = 0; index < hearts.childCount; index++)
                 hearts[index].EnableInClassList("health-heart-empty", index >= current);
@@ -179,11 +168,11 @@ namespace GameJamPlus.UI
 
         private void RefreshStatus()
         {
-            bool poisoned = satiety != null && satiety.IsPoisoned;
+            bool poisoned = stats != null && stats.IsPoisoned;
             notches?.EnableInClassList("poisoned-notches", poisoned);
             if (poisonStatus != null)
                 poisonStatus.style.display = poisoned ? DisplayStyle.Flex : DisplayStyle.None;
-            int charges = electricity != null ? electricity.Current : 0;
+            int charges = stats != null ? stats.ElectricCharges : 0;
             if (statusPanel != null) statusPanel.style.display = poisoned || charges > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             if (electricityStatusHost != null) electricityStatusHost.style.display = charges > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             while (electricityStatusHost != null && electricityIcons.Count < charges)
@@ -206,7 +195,7 @@ namespace GameJamPlus.UI
 
         private void OnNotchLost()
         {
-            PlayFlash(satiety != null && satiety.LastLossWasPoison ? poisonFlashColor : flashColor);
+            PlayFlash(stats != null && stats.LastSatietyLossWasPoison ? poisonFlashColor : flashColor);
         }
 
         public void PlayDamageFlash() => PlayFlash(damageFlashColor);
@@ -221,21 +210,15 @@ namespace GameJamPlus.UI
 
         private void OnDisable()
         {
-            if (satiety != null)
+            if (stats != null)
             {
-                satiety.Changed -= OnResourceChanged;
-                satiety.NotchLost -= OnNotchLost;
-            }
-            if (oxygen != null)
-            {
-                oxygen.Changed -= OnResourceChanged;
-                oxygen.NotchLost -= OnOxygenNotchLost;
-            }
-            if (electricity != null) electricity.Changed -= OnElectricityChanged;
-            if (health != null)
-            {
-                health.Changed -= RefreshHealth;
-                health.Damaged -= PlayDamageFlash;
+                stats.SatietyChanged -= OnResourceChanged;
+                stats.SatietyLost -= OnNotchLost;
+                stats.OxygenChanged -= OnResourceChanged;
+                stats.OxygenLost -= OnOxygenNotchLost;
+                stats.ElectricityChanged -= OnElectricityChanged;
+                stats.HealthChanged -= RefreshHealth;
+                stats.Damaged -= PlayDamageFlash;
             }
             flash?.RemoveFromHierarchy();
             oxygenFlash?.RemoveFromHierarchy();

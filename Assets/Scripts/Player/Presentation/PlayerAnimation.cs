@@ -17,7 +17,7 @@ namespace MousePlatformer
         [SerializeField] private PlayerCrateInteraction crateInteraction;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private PlayerButtonInteraction buttonInteraction;
-        [SerializeField] private PlayerElectricity electricity;
+        [SerializeField] private PlayerStats stats;
         [SerializeField, Min(0.01f)] private float shockedAnimationSpeed = 1.5f;
         [SerializeField] private AnimationClip pressButtonClip;
         [SerializeField, Min(0.01f)] private float pressButtonAnimationSpeed = 1f;
@@ -52,7 +52,7 @@ namespace MousePlatformer
         private void OnButtonPressed()
         {
             if (animator == null || pressButtonClip == null) return;
-            if (electricity != null && electricity.IsParalyzed) return;
+            if (stats != null && stats.IsParalyzed) return;
             buttonPressRemaining = pressButtonClip.length / Mathf.Max(0.01f, pressButtonAnimationSpeed);
             animator.SetFloat(PressButtonSpeed, pressButtonAnimationSpeed);
             animator.SetInteger(MotionState, (int)Motion.PressButton);
@@ -70,7 +70,7 @@ namespace MousePlatformer
             if (digging == null) digging = GetComponent<PlayerDigging>();
             if (crateInteraction == null) crateInteraction = GetComponent<PlayerCrateInteraction>();
             if (ropeInteraction == null) ropeInteraction = GetComponent<PlayerRopeInteraction>();
-            if (electricity == null) electricity = GetComponent<PlayerElectricity>();
+            if (stats == null) stats = GetComponent<PlayerStats>();
         }
 
         private void Update()
@@ -98,7 +98,7 @@ namespace MousePlatformer
 
         private Motion ChooseMotion(bool ledgeActive, bool onLadder, bool inWater, bool climbingRope)
         {
-            if (electricity != null && electricity.IsParalyzed) return Motion.Shocked;
+            if (stats != null && stats.IsParalyzed) return Motion.Shocked;
             if (ledgeActive)
                 return ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging ? Motion.WallHanging : Motion.ClimbUp;
             if (onLadder) return Motion.LadderClimb;

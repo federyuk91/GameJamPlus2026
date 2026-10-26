@@ -89,7 +89,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -5
+  m_SortingOrder: 200
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8669770911061469388, guid: af3dacf14b7632949b496335e5ffd32d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -228,11 +228,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PiranhaBite
   contactArea: {fileID: 6326247046255604221}
   playerCollider: {fileID: 0}
-  playerOxygen: {fileID: 0}
-  playerHealth: {fileID: 0}
   biteEnding: 11
   biteInterval: 1
   showGizmos: 0
+  playerStats: {fileID: 0}
 --- !u!114 &407488142064766398
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ namespace MousePlatformer
         [SerializeField] private PlayerRopeBite ropeBite;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private PlayerCrateInteraction crateInteraction;
-        [SerializeField] private PlayerSatiety satiety;
+        [SerializeField] private PlayerStats stats;
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerLedgeClimb ledgeClimb;
         [SerializeField] private GameplayHudController hud;
@@ -40,7 +40,7 @@ namespace MousePlatformer
             if (ropeBite == null) ropeBite = GetComponent<PlayerRopeBite>();
             if (ropeInteraction == null) ropeInteraction = GetComponent<PlayerRopeInteraction>();
             if (crateInteraction == null) crateInteraction = GetComponent<PlayerCrateInteraction>();
-            if (satiety == null) satiety = GetComponent<PlayerSatiety>();
+            if (stats == null) stats = GetComponent<PlayerStats>();
             if (digging == null) digging = GetComponent<PlayerDigging>();
             if (ledgeClimb == null) ledgeClimb = GetComponent<PlayerLedgeClimb>();
             ScheduleDiggingVoice();
@@ -56,7 +56,7 @@ namespace MousePlatformer
             if (ropeBite != null) ropeBite.RopeCut += OnRopeCut;
             if (ropeInteraction != null) ropeInteraction.JumpedFromRope += OnRopeJumped;
             if (crateInteraction != null) crateInteraction.InteractionStarted += OnCrateStarted;
-            if (satiety != null) satiety.NotchLost += OnNotchLost;
+            if (stats != null) stats.SatietyLost += OnNotchLost;
             if (ledgeClimb != null) ledgeClimb.ClimbStarted += OnClimbStarted;
             GameAudioSettings.EffectsVolumeChanged += ApplyEffectsVolume;
             ApplyEffectsVolume(GameAudioSettings.EffectsVolume);
@@ -132,7 +132,7 @@ namespace MousePlatformer
             if (ropeBite != null) ropeBite.RopeCut -= OnRopeCut;
             if (ropeInteraction != null) ropeInteraction.JumpedFromRope -= OnRopeJumped;
             if (crateInteraction != null) crateInteraction.InteractionStarted -= OnCrateStarted;
-            if (satiety != null) satiety.NotchLost -= OnNotchLost;
+            if (stats != null) stats.SatietyLost -= OnNotchLost;
             if (ledgeClimb != null) ledgeClimb.ClimbStarted -= OnClimbStarted;
             GameAudioSettings.EffectsVolumeChanged -= ApplyEffectsVolume;
             if (photoSubscribed && hud != null) hud.PhotoShown -= OnPhotoShown;

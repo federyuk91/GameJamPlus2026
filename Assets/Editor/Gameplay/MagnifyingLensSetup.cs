@@ -13,14 +13,47 @@ public static class MagnifyingLensSetup
     private const string Report = "Temp/MagnifyingLensSetup-result.txt";
     private const string LensSpriteGuid = "6a4cf2330ad18054f92a858b416219f3";
     private const string MaterialPath = "Assets/Materials/MagnifyingLens2D.mat";
+    private const string FlaskAuditRequest = "Temp/AuditGreenFlaskLens.request";
 
-    static MagnifyingLensSetup() => EditorApplication.delayCall += ProcessRequest;
+    static MagnifyingLensSetup() => EditorApplication.update += ProcessRequest;
 
     private static void ProcessRequest()
     {
-        if (!File.Exists(Request) || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (File.Exists(FlaskAuditRequest))
+        {
+            File.Delete(FlaskAuditRequest);
+            try { AuditGreenFlask(); }
+            catch (System.Exception exception) { File.WriteAllText("Temp/GreenFlaskLens-audit.txt", exception.ToString()); Debug.LogException(exception); }
+        }
+        if (!File.Exists(Request)) return;
         File.Delete(Request);
         Configure();
+    }
+
+    [MenuItem("Tools/Gameplay/Audit Green Flask Lens")]
+    public static void AuditGreenFlask()
+    {
+        const string prefabPath = "Assets/Prefabs/Decorations/Green Conical Flask Lens.prefab";
+        const string materialPath = "Assets/Materials/GreenConicalFlaskLens.mat";
+        AssetDatabase.ImportAsset("Assets/Shaders/MagnifyingLens2D.shader", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        AssetDatabase.ImportAsset(materialPath, ImportAssetOptions.ForceSynchronousImport);
+        AssetDatabase.ImportAsset(prefabPath, ImportAssetOptions.ForceSynchronousImport);
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+        if (prefab == null || material == null) throw new System.InvalidOperationException("Flask prefab or material missing.");
+        SpriteRenderer visual = prefab.GetComponent<SpriteRenderer>();
+        MagnifyingLens2D lens = prefab.GetComponent<MagnifyingLens2D>();
+        if (visual == null || visual.sprite == null || lens == null || visual.sharedMaterial != material)
+            throw new System.InvalidOperationException("Incomplete flask lens configuration.");
+        Shader shader = material.shader;
+        int property = shader.FindPropertyIndex("_LensDistortion");
+        if (property < 0 || shader.GetPropertyRangeLimits(property) != new Vector2(-1f, 1f) || ShaderUtil.ShaderHasError(shader))
+            throw new System.InvalidOperationException("Invalid distortion slider or shader compilation errors.");
+        SerializedObject data = new SerializedObject(lens);
+        if (data.FindProperty("lensRenderer").objectReferenceValue != visual || data.FindProperty("magnifyingMaterial").objectReferenceValue != material)
+            throw new System.InvalidOperationException("Incorrect flask component references.");
+        File.WriteAllText("Temp/GreenFlaskLens-audit.txt", "SUCCESS: prefab, sprite, material and component references valid; Lens Distortion range [-1, 1]; shader has no compilation errors. No Play Mode executed.");
     }
 
     [MenuItem("Tools/Gameplay/Configure Magnifying Lens")]

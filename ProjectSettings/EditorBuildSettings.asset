@@ -53,6 +53,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Universes/Universo_1.unity
     guid: be9ddfe477547384787d0796a4c2a8e7
+  - enabled: 1
+    path: Assets/Scenes/Universes/Universo_10_Composed.unity
+    guid: aa17eb103b07a204d857c17223d4c90e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

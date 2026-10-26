@@ -21,7 +21,7 @@ namespace GameJamPlus.Gameplay
         public static int SubjectUniverse { get; private set; }
         public static int SubjectRepetition { get; private set; }
         public static int GuestIndex { get; private set; }
-        public static int SubjectHealth { get; private set; } = PlayerHealth.Maximum;
+        public static int SubjectHealth { get; private set; } = PlayerStats.MaximumHealth;
         public static string SubjectId => $"U{SubjectUniverse}-R{SubjectRepetition}-G{GuestIndex}";
         public static bool LastSubjectDied { get; private set; }
         public static int CompletedUniverses { get; private set; }
@@ -102,7 +102,7 @@ namespace GameJamPlus.Gameplay
             DeceasedSubjects = 0;
             CompletedUniverses = 0;
             Attempt = SubjectUniverse = SubjectRepetition = GuestIndex = 0;
-            SubjectHealth = PlayerHealth.Maximum;
+            SubjectHealth = PlayerStats.MaximumHealth;
             AttemptsPerUniverse = 10;
             MaximumDeaths = 100;
             LastSubjectDied = HasPendingResult = false;
@@ -130,7 +130,7 @@ namespace GameJamPlus.Gameplay
             Attempt = 1;
             SubjectUniverse = Universe;
             SubjectRepetition = GuestIndex = 0;
-            SubjectHealth = PlayerHealth.Maximum;
+            SubjectHealth = PlayerStats.MaximumHealth;
             LastSubjectDied = HasPendingResult = false;
             spawnBags.Clear();
             active = true;
@@ -159,7 +159,7 @@ namespace GameJamPlus.Gameplay
                 SubjectUniverse = Universe;
                 GuestIndex++;
                 SubjectsUsed++;
-                SubjectHealth = PlayerHealth.Maximum;
+                SubjectHealth = PlayerStats.MaximumHealth;
             }
             Collections.BeginAttempt();
             // Keep the final observations visible in Results; clear them only when starting the next subject.
@@ -193,7 +193,7 @@ namespace GameJamPlus.Gameplay
             return count;
         }
 
-        public static void RecordTestResult(bool subjectDied, double elapsedSeconds = 0d, int survivingHealth = PlayerHealth.Maximum)
+        public static void RecordTestResult(bool subjectDied, double elapsedSeconds = 0d, int survivingHealth = PlayerStats.MaximumHealth)
         {
             if (!active || HasPendingResult) return;
             testObservations = GetTestObservations(elapsedSeconds);
@@ -201,7 +201,7 @@ namespace GameJamPlus.Gameplay
             CompletedTests++;
             LastSubjectDied = subjectDied;
             HasPendingResult = true;
-            SubjectHealth = subjectDied ? 0 : Mathf.Clamp(survivingHealth, 1, PlayerHealth.Maximum);
+            SubjectHealth = subjectDied ? 0 : Mathf.Clamp(survivingHealth, 1, PlayerStats.MaximumHealth);
             if (!subjectDied) CompletedUniverses++;
             if (subjectDied) DeceasedSubjects++;
         }

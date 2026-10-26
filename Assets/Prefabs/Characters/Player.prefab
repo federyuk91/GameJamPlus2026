@@ -80,7 +80,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 200
   m_MaskInteraction: 0
   m_Sprite: {fileID: 5971361692417818110, guid: 961d35910ad5f1040956c6831e5015cd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -140,19 +140,16 @@ GameObject:
   - component: {fileID: 7072776503502995229}
   - component: {fileID: 1424147588155047261}
   - component: {fileID: 5709383898159029123}
-  - component: {fileID: 5709383898159029300}
+  - component: {fileID: 9800100001}
   - component: {fileID: 5709383898159029400}
   - component: {fileID: 5709383898159029500}
   - component: {fileID: 5709383898159029700}
-  - component: {fileID: 5709383898159029800}
   - component: {fileID: 5709383898159029803}
   - component: {fileID: 5709383898159029804}
   - component: {fileID: 5709383898159029807}
   - component: {fileID: 5709383898159029810}
   - component: {fileID: 9700001000}
   - component: {fileID: 9800091001}
-  - component: {fileID: 9800099001}
-  - component: {fileID: 9800100001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -235,7 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ab36126d664a8cb773c652bbf3e46a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  electricity: {fileID: 9800099001}
+  stats: {fileID: 9800100001}
 --- !u!114 &4027669037393712695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +420,7 @@ MonoBehaviour:
   crateInteraction: {fileID: 7645364035520464402}
   ropeInteraction: {fileID: 4776370160298788677}
   buttonInteraction: {fileID: 5709383898159029700}
-  electricity: {fileID: 9800099001}
+  stats: {fileID: 9800100001}
   shockedAnimationSpeed: 1.5
   pressButtonClip: {fileID: 7400000, guid: c3bb1be247514b5e80639d7b0a6a7d60, type: 2}
   pressButtonAnimationSpeed: 1
@@ -642,28 +639,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectionArea: {fileID: 5067529301207272031}
   input: {fileID: 7712171590627343095}
---- !u!114 &5709383898159029300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027b8eb5294544148bfc29471a045c16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
-  playerCollider: {fileID: 5067529301207272031}
-  collector: {fileID: 5709383898159029123}
-  health: {fileID: 9800100001}
-  poisonEnding: 0
-  starvationEnding: 1
-  wheel: {fileID: 5709383898159029810}
-  maximumNotches: 5
-  drainInterval: 60
-  poisonInterval: 3
-  poisonTicks: 5
 --- !u!114 &5709383898159029400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,7 +656,7 @@ MonoBehaviour:
   ropeBite: {fileID: 5308502565440761107}
   ropeInteraction: {fileID: 4776370160298788677}
   crateInteraction: {fileID: 7645364035520464402}
-  satiety: {fileID: 5709383898159029300}
+  stats: {fileID: 9800100001}
   digging: {fileID: 7072776503502995229}
   ledgeClimb: {fileID: 922162904946277516}
   hud: {fileID: 0}
@@ -824,40 +799,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerButtonInteraction
   input: {fileID: 7712171590627343095}
   body: {fileID: 4027669037393712695}
---- !u!114 &5709383898159029800
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd8f2ae75f64879a0d4e95dc2583ac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygen
-  playerCollider: {fileID: 5067529301207272031}
-  drowningEnding: 2
-  maximumNotches: 5
-  drainInterval: 5
-  recoveryInterval: 1
-  breathingPointHeight: 0.85
-  warningSeconds: 10
-  onLowOxygen:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5709383898159029803}
-        m_TargetAssemblyTypeName: GameJamPlus.UI.DialogueTrigger, Assembly-CSharp
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &5709383898159029803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1158,20 +1099,6 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   crushDuration: 0.25
   crushedHoldDuration: 0.1
---- !u!114 &9800099001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
-  lethalCharges: 3
-  decayInterval: 60
 --- !u!114 &9800100001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1181,10 +1108,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 1681965045980687389}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e83a4d1da9340ce94f2c890fdfba3c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ae2ef1cf0804c0495058bfe0ab4d124, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  current: 5
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerStats
+  satietyEnabled: 1
+  oxygenEnabled: 1
+  electricityEnabled: 1
+  playerCollider: {fileID: 5067529301207272031}
+  collector: {fileID: 5709383898159029123}
+  wheel: {fileID: 5709383898159029810}
+  health: 5
+  poisonEnding: 0
+  starvationEnding: 1
+  maximumSatiety: 5
+  satietyDrainInterval: 60
+  poisonInterval: 3
+  poisonTicks: 5
+  lethalCharges: 3
+  electricityDecayInterval: 60
+  drowningEnding: 2
+  maximumOxygen: 5
+  oxygenDrainInterval: 5
+  oxygenRecoveryInterval: 1
+  breathingPointHeight: 0.85
+  warningSeconds: 10
+  onLowOxygen:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5709383898159029803}
+        m_TargetAssemblyTypeName: GameJamPlus.UI.DialogueTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8026293878368258149
 GameObject:
   m_ObjectHideFlags: 0

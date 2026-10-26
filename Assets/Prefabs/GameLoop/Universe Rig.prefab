@@ -81,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 200
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 0a36334c874c7144dbe0625340e7c420, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1124,7 +1124,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 506
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -2109,7 +2109,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 500
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -2761,7 +2761,7 @@ MonoBehaviour:
   playerCollider: {fileID: 2962018860356862394}
   playerRecovery: {fileID: 2338354600787662617}
   playerCrushVisual: {fileID: 8018746527891738268}
-  playerHealth: {fileID: 8018746527891743556}
+  playerStats: {fileID: 8018746527891743556}
   gameplayCamera: {fileID: 7163261487205096508}
   spawnPoints:
   - {fileID: 4490182708067577412}
@@ -2944,7 +2944,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -20
+  m_SortingOrder: 99
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -3992,7 +3992,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 500
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -9109,7 +9109,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1356387550, guid: 1ecc7c4dd6ff49518f8b6f670b5b58a7, type: 3}
       propertyPath: m_SortingOrder
-      value: -32768
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 1845343367, guid: 1ecc7c4dd6ff49518f8b6f670b5b58a7, type: 3}
       propertyPath: viewCamera
@@ -9153,7 +9153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3164042638981440303, guid: 1ecc7c4dd6ff49518f8b6f670b5b58a7, type: 3}
       propertyPath: m_SortingOrder
-      value: -32767
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 3164042638981440303, guid: 1ecc7c4dd6ff49518f8b6f670b5b58a7, type: 3}
       propertyPath: m_SortingLayerID
@@ -16581,17 +16581,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b85f960e7fde4f15ab35404d99ad3986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygenBubbles
---- !u!114 &2338354600787662285 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029800, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 8018746518360280037}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd8f2ae75f64879a0d4e95dc2583ac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerOxygen
 --- !u!114 &2338354600787662295 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5709383898159029810, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -16625,17 +16614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c02fb5ddb9744ff916186b1f68be08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerRecovery
---- !u!114 &2338354600787662801 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5709383898159029300, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 8018746518360280037}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027b8eb5294544148bfc29471a045c16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerSatiety
 --- !u!114 &2802322588684740342 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5308502565440761107, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
@@ -16687,20 +16665,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e83a4d1da9340ce94f2c890fdfba3c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ae2ef1cf0804c0495058bfe0ab4d124, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8018746527891746652 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9800099001, guid: beb983d683b0e744681b1c352f2f2a05, type: 3}
-  m_PrefabInstance: {fileID: 8018746518360280037}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05eb5b8130ef49fb88e83537b0949683, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerElectricity
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerStats
 --- !u!1001 &8058366060084990010
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17817,21 +17784,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3915087874267095495}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: health
+      propertyPath: stats
       value: 
       objectReference: {fileID: 8018746527891743556}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: oxygen
-      value: 
-      objectReference: {fileID: 2338354600787662285}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: satiety
-      value: 
-      objectReference: {fileID: 2338354600787662801}
-    - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
-      propertyPath: electricity
-      value: 
-      objectReference: {fileID: 8018746527891746652}
     - target: {fileID: 2100006300, guid: b4f3cca3898b42d1b7ea80a0079f0f1f, type: 3}
       propertyPath: oxygenBubbles
       value: 

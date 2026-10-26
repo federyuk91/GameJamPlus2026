@@ -2,6 +2,7 @@
     <ui:Template name="Overview" src="BodyControlsOverview.uxml" />
     <Style src="GameplayHud.uss" />
     <Style src="BodyControls.uss" />
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="gameplay-hud controls-stage">
         <ui:VisualElement class="pause-card controls-open">
             <ui:Label text="CONTROLS" class="body-title" />
@@ -13,7 +14,7 @@
                     <game:InputPromptElement binding="confirm" preview-path="&lt;Keyboard&gt;/space" preview-label="Space" />
                     <ui:Label text="Continue" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <ui:Button name="controls-continue" text="Continue &gt;" class="pause-button pause-selected" />
+                <ui:Button name="controls-continue" text="Continue" class="pause-button pause-selected sprite-button sprite-continue" />
             </ui:VisualElement>
             <ui:Label name="controls-status" class="body-feedback" />
         </ui:VisualElement>

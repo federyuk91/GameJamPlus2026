@@ -1,6 +1,7 @@
 <ui:UXML xmlns:game="GameJamPlus.UI" xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="GameplayHud.uss" />
     <Style src="BodyControls.uss" />
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="body-binding-card">
         <ui:Label name="body-binding-title" text="Listening new button for {part}..." class="body-binding-title" />
         <ui:Label name="body-confirm-title" text="Confirm &quot;{button}&quot; for {part}?" class="body-binding-title" style="display: none;" />
@@ -24,9 +25,9 @@
             <ui:Label text="Cancel" />
         </ui:VisualElement>
         <ui:VisualElement name="body-binding-choices" class="body-binding-choices">
-            <ui:Button name="body-binding-yes" text="Yes" class="pause-button" />
-            <ui:Button name="body-binding-no" text="No" class="pause-button" />
-            <ui:Button name="body-binding-cancel" text="Cancel" class="pause-button" />
+            <ui:Button name="body-binding-yes" text="Yes" class="pause-button sprite-button sprite-confirm" />
+            <ui:Button name="body-binding-no" text="No" class="pause-button sprite-button sprite-undo" />
+            <ui:Button name="body-binding-cancel" text="Cancel" class="pause-button sprite-button sprite-cancel" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

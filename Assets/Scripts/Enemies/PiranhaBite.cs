@@ -8,8 +8,7 @@ namespace MousePlatformer
     {
         [SerializeField] private Collider2D contactArea;
         [SerializeField] private Collider2D playerCollider;
-        [SerializeField] private PlayerOxygen playerOxygen;
-        [SerializeField] private PlayerHealth playerHealth;
+        [SerializeField] private PlayerStats playerStats;
         [SerializeField, Tooltip("Conclusion requested from the central StageEndManager. None disables this ending.")]
         private StageEndCase biteEnding = StageEndCase.Piranha;
         [SerializeField, Min(0.1f), Tooltip("Minimum seconds between bites while this piranha remains in contact with the player. Each bite removes one health point and one oxygen notch.")]
@@ -31,23 +30,21 @@ namespace MousePlatformer
             if (manager == null || manager.State != GameManager.LoopState.Playing
                 || Time.timeAsDouble < nextBiteTime) return;
             if (playerCollider == null) playerCollider = manager.PlayerCollider;
-            if (playerOxygen == null && playerCollider != null)
-                playerCollider.TryGetComponent(out playerOxygen);
-            if (playerHealth == null && playerCollider != null)
-                playerCollider.TryGetComponent(out playerHealth);
+            if (playerStats == null && playerCollider != null)
+                playerCollider.TryGetComponent(out playerStats);
             if (contactArea == null || !contactArea.enabled || playerCollider == null
                 || !playerCollider.enabled || !playerCollider.gameObject.activeInHierarchy
-                || playerOxygen == null || playerHealth == null || playerHealth.IsDead
-                || playerOxygen.Current <= 0) return;
+                || playerStats == null || playerStats.IsDead
+                || playerStats.Oxygen <= 0) return;
 
             // Both actors use custom Transform movement, without Rigidbody2D contact callbacks.
             Physics2D.SyncTransforms();
             ColliderDistance2D contact = contactArea.Distance(playerCollider);
             if (!contact.isValid || contact.distance > 0f) return;
             nextBiteTime = Time.timeAsDouble + Mathf.Max(0.1f, biteInterval);
-            playerHealth.ApplyDamage(1);
-            playerOxygen.ConsumeNotch();
-            if (playerHealth.IsDead && biteEnding != StageEndCase.None) StageEndManager.Request(biteEnding, this);
+            playerStats.ApplyDamage(1);
+            playerStats.ConsumeOxygenNotch();
+            if (playerStats.IsDead && biteEnding != StageEndCase.None) StageEndManager.Request(biteEnding, this);
         }
 
         private void OnDrawGizmos()

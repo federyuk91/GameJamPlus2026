@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="EndGameCredits.uss"/>
+    <Style src="../UserInterfaceSprites.uss" />
     <ui:VisualElement class="final-root">
         <ui:VisualElement name="final-monitor" class="final-monitor">
             <ui:VisualElement name="monitor-content" class="monitor-content">
@@ -23,7 +24,7 @@
                         <ui:Label text="END OF TRANSMISSION" class="transmission typed"/>
                         <ui:Label name="transmission-cursor" text="_" class="transmission typed"/>
                     </ui:VisualElement>
-                    <ui:Button name="main-menu" text="Main Menu" class="menu-button"/>
+                    <ui:Button name="main-menu" text="Main Menu" class="menu-button sprite-button sprite-home"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="power-glow" picking-mode="Ignore" class="power-glow"/>
@@ -48,7 +49,7 @@
                     <ui:Label text="m5x7: CC0 · m6x11: used with attribution" class="third-party-source"/>
                 </ui:VisualElement>
             </ui:ScrollView>
-            <ui:Button name="third-party-main-menu" text="Main Menu" class="menu-button third-party-menu"/>
+            <ui:Button name="third-party-main-menu" text="Main Menu" class="menu-button third-party-menu sprite-button sprite-home"/>
         </ui:VisualElement>
         <ui:VisualElement name="power-led" picking-mode="Ignore" class="status-led"/>
     </ui:VisualElement>

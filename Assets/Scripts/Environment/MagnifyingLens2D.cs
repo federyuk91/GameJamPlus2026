@@ -1,44 +1,66 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 namespace MousePlatformer
 {
-    [ExecuteAlways, DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
+    [ExecuteAlways, DefaultExecutionOrder(300), DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
     public sealed class MagnifyingLens2D : MonoBehaviour
     {
         public const string BackgroundLayer = "Lens Background";
+        private static readonly int BackgroundTexture = Shader.PropertyToID("_LensBackgroundTexture");
         [SerializeField] private SpriteRenderer lensRenderer;
         [SerializeField] private Material magnifyingMaterial;
-        [SerializeField] private Camera viewCamera;
+        [SerializeField, Tooltip("Optional gameplay camera. If unassigned, uses the MainCamera rendering this scene, without a scene search.")]
+        private Camera viewCamera;
         [SerializeField, Range(1f, 5f)] private float magnification = 2f;
         [SerializeField] private Vector2 lensCenterUV = new Vector2(0.40608f, 0.69966f);
+        [SerializeField, Tooltip("Half width and height of the circular distortion area, as fractions of the sprite dimensions. Lens Distortion is adjusted on the material.")]
+        private Vector2 lensRadiusUV = new Vector2(0.5f, 0.5f);
         [SerializeField, Range(0.01f, 1f)] private float greenDominance = 0.2f;
-        private readonly List<GameObject> roots = new List<GameObject>();
-        private readonly List<Renderer> renderers = new List<Renderer>();
-        private readonly List<SortingGroup> groups = new List<SortingGroup>();
-        private readonly List<Renderer> discoveredRenderers = new List<Renderer>();
-        private readonly List<SortingGroup> discoveredGroups = new List<SortingGroup>();
-        private readonly List<Renderer> changedRenderers = new List<Renderer>();
-        private readonly List<int> rendererLayers = new List<int>();
-        private readonly List<int> rendererOrders = new List<int>();
-        private readonly List<SortingGroup> changedGroups = new List<SortingGroup>();
-        private readonly List<int> groupLayers = new List<int>();
-        private readonly List<int> groupOrders = new List<int>();
-        private readonly List<BackgroundTarget> backgroundTargets = new List<BackgroundTarget>();
+        [SerializeField, HideInInspector] private Material previousMaterial;
 
-        private struct BackgroundTarget
+        private sealed class CaptureTarget
         {
             public Renderer Renderer;
-            public SortingGroup Group;
-            public int Layer;
-            public int Order;
-            public float Distance;
+            public readonly List<SortingGroup> Groups = new List<SortingGroup>();
         }
-        [SerializeField, HideInInspector] private Material previousMaterial;
+
+        private readonly struct SortEntry
+        {
+            public readonly Object Source;
+            public readonly int Layer;
+            public readonly int Order;
+            public readonly int Queue;
+            public readonly Vector3 Position;
+
+            public SortEntry(Object source, int layer, int order, int queue, Vector3 position)
+            {
+                Source = source;
+                Layer = SortingLayer.GetLayerValueFromID(layer);
+                Order = order;
+                Queue = queue;
+                Position = position;
+            }
+        }
+
+        private readonly List<GameObject> roots = new List<GameObject>();
+        private readonly List<Renderer> discovered = new List<Renderer>();
+        private readonly List<CaptureTarget> targets = new List<CaptureTarget>();
+        private readonly Dictionary<Renderer, CaptureTarget> targetCache = new Dictionary<Renderer, CaptureTarget>();
+        private readonly List<Renderer> hidden = new List<Renderer>();
+        private readonly List<SortEntry> lensPath = new List<SortEntry>();
+        private readonly List<SortEntry> candidatePath = new List<SortEntry>();
+        private readonly Dictionary<Camera, RenderTexture> textures = new Dictionary<Camera, RenderTexture>();
+        private readonly UniversalRenderPipeline.SingleCameraRequest request = new UniversalRenderPipeline.SingleCameraRequest();
+        private Camera captureCamera;
+        private Camera automaticCamera;
+        private UniversalAdditionalCameraData captureData;
         private MaterialPropertyBlock properties;
-        private float nextRefresh;
+        private CaptureTarget lensTarget;
+        private bool capturing;
 
         public Vector3 LensCenterWorld
         {
@@ -55,36 +77,51 @@ namespace MousePlatformer
 
         private void OnEnable()
         {
+            automaticCamera = null;
             if (lensRenderer == null) lensRenderer = GetComponent<SpriteRenderer>();
             RenderPipelineManager.beginCameraRendering += BeginCamera;
-            RenderPipelineManager.endCameraRendering += EndCamera;
-            nextRefresh = 0f;
+#if UNITY_EDITOR
+            UnityEditor.SceneView.duringSceneGui += DuringSceneGui;
+#endif
             ApplySettings();
         }
 
+        private void LateUpdate()
+        {
+            Camera source = viewCamera != null ? viewCamera : automaticCamera;
+            if (source != null) Capture(source);
+        }
+
+#if UNITY_EDITOR
+        private void DuringSceneGui(UnityEditor.SceneView sceneView)
+        {
+            if (Event.current.type == EventType.Repaint && sceneView.camera != null) Capture(sceneView.camera);
+        }
+#endif
+
         public void ApplySettings()
         {
-            if (lensRenderer == null || magnifyingMaterial == null) return;
+            if (lensRenderer == null || magnifyingMaterial == null || lensRenderer.sprite == null) return;
             if (lensRenderer.sharedMaterial != magnifyingMaterial)
             {
                 previousMaterial = lensRenderer.sharedMaterial;
                 lensRenderer.sharedMaterial = magnifyingMaterial;
             }
-            Sprite sprite = lensRenderer.sprite;
-            if (sprite == null) return;
             if (properties == null) properties = new MaterialPropertyBlock();
             lensRenderer.GetPropertyBlock(properties);
+            Sprite sprite = lensRenderer.sprite;
             Vector2 center = (Vector2.Scale(lensCenterUV, sprite.rect.size) - sprite.pivot) / sprite.pixelsPerUnit;
             properties.SetVector("_LensCenter", new Vector4(center.x, center.y, 0f, 0f));
+            Vector2 radius = Vector2.Scale(lensRadiusUV, sprite.rect.size) / sprite.pixelsPerUnit;
+            properties.SetVector("_LensRadius", new Vector4(Mathf.Max(0.0001f, radius.x), Mathf.Max(0.0001f, radius.y), 0f, 0f));
             properties.SetFloat("_Magnification", magnification);
             properties.SetFloat("_GreenDominance", greenDominance);
             lensRenderer.SetPropertyBlock(properties);
         }
 
-        private void RefreshRenderers()
+        private void RefreshTargets()
         {
-            renderers.Clear();
-            groups.Clear();
+            targets.Clear();
             for (int index = 0; index < SceneManager.sceneCount; index++)
             {
                 Scene scene = SceneManager.GetSceneAt(index);
@@ -92,119 +129,199 @@ namespace MousePlatformer
                 scene.GetRootGameObjects(roots);
                 foreach (GameObject root in roots)
                 {
-                    root.GetComponentsInChildren(true, discoveredRenderers);
-                    foreach (Renderer candidate in discoveredRenderers)
-                        if (candidate.GetComponentInParent<SortingGroup>() == null) renderers.Add(candidate);
-                    root.GetComponentsInChildren(true, discoveredGroups);
-                    foreach (SortingGroup group in discoveredGroups)
-                        if (group.transform.parent == null || group.transform.parent.GetComponentInParent<SortingGroup>() == null)
-                            groups.Add(group);
+                    root.GetComponentsInChildren(true, discovered);
+                    foreach (Renderer renderer in discovered)
+                    {
+                        if (!targetCache.TryGetValue(renderer, out CaptureTarget target))
+                        {
+                            target = new CaptureTarget { Renderer = renderer };
+                            targetCache.Add(renderer, target);
+                        }
+                        renderer.GetComponentsInParent(true, target.Groups);
+                        targets.Add(target);
+                    }
                 }
             }
-            nextRefresh = Time.realtimeSinceStartup + 0.25f;
+            if (lensTarget == null) lensTarget = new CaptureTarget { Renderer = lensRenderer };
+            lensRenderer.GetComponentsInParent(true, lensTarget.Groups);
+        }
+
+        private static void BuildPath(CaptureTarget target, List<SortEntry> path)
+        {
+            path.Clear();
+            Renderer renderer = target.Renderer;
+            Vector3 position = renderer.bounds.center;
+            if (renderer is SpriteRenderer sprite && sprite.spriteSortPoint == SpriteSortPoint.Pivot) position = sprite.transform.position;
+            Material material = renderer.sharedMaterial;
+            path.Add(new SortEntry(renderer, renderer.sortingLayerID, renderer.sortingOrder, material != null ? material.renderQueue : 3000, position));
+            foreach (SortingGroup group in target.Groups)
+            {
+                if (group == null || !group.isActiveAndEnabled) continue;
+                path.Add(new SortEntry(group, group.sortingLayerID, group.sortingOrder, 3000, group.transform.position));
+                if (group.sortAtRoot) break;
+            }
+            path.Reverse();
+        }
+
+        private bool IsBehind(Camera camera)
+        {
+            int count = Mathf.Min(candidatePath.Count, lensPath.Count);
+            for (int index = 0; index < count; index++)
+            {
+                SortEntry candidate = candidatePath[index];
+                SortEntry lens = lensPath[index];
+                if (candidate.Source == lens.Source) continue;
+                if (candidate.Layer != lens.Layer) return candidate.Layer < lens.Layer;
+                if (candidate.Order != lens.Order) return candidate.Order < lens.Order;
+                if (candidate.Queue != lens.Queue) return candidate.Queue < lens.Queue;
+                // Children of the same group share its distance for transparent sorting.
+                if (index > 0) return false;
+                return SortDistance(camera, candidate.Position) > SortDistance(camera, lens.Position) + 0.0001f;
+            }
+            return false;
+        }
+
+        private static float SortDistance(Camera camera, Vector3 position)
+        {
+            if (camera.transparencySortMode == TransparencySortMode.CustomAxis)
+                return Vector3.Dot(position, camera.transparencySortAxis);
+            if (camera.transparencySortMode == TransparencySortMode.Perspective
+                || (camera.transparencySortMode == TransparencySortMode.Default && !camera.orthographic))
+                return (position - camera.transform.position).sqrMagnitude;
+            return Vector3.Dot(position - camera.transform.position, camera.transform.forward);
+        }
+
+        private void PrepareCamera(Camera source)
+        {
+            if (captureCamera == null)
+            {
+                GameObject cameraObject = new GameObject("Lens Capture Camera") { hideFlags = HideFlags.HideAndDontSave };
+                captureCamera = cameraObject.AddComponent<Camera>();
+                captureData = cameraObject.AddComponent<UniversalAdditionalCameraData>();
+                captureData.renderType = CameraRenderType.Base;
+                captureData.renderPostProcessing = false;
+                captureData.requiresColorOption = CameraOverrideOption.Off;
+                captureData.requiresDepthOption = CameraOverrideOption.Off;
+                captureData.allowXRRendering = false;
+            }
+            captureCamera.CopyFrom(source);
+            captureCamera.enabled = false;
+            captureCamera.transform.SetPositionAndRotation(source.transform.position, source.transform.rotation);
+            captureCamera.rect = new Rect(0f, 0f, 1f, 1f);
+            captureCamera.clearFlags = CameraClearFlags.SolidColor;
+            captureCamera.backgroundColor = source.backgroundColor;
+            captureCamera.allowMSAA = false;
+            captureCamera.targetTexture = null;
+            captureCamera.projectionMatrix = source.projectionMatrix;
+            captureCamera.worldToCameraMatrix = source.worldToCameraMatrix;
+        }
+
+        private RenderTexture TextureFor(Camera source)
+        {
+            int width = Mathf.Max(1, source.scaledPixelWidth);
+            int height = Mathf.Max(1, source.scaledPixelHeight);
+            textures.TryGetValue(source, out RenderTexture texture);
+            if (texture != null && texture.width == width && texture.height == height) return texture;
+            if (texture != null) { texture.Release(); DestroyResource(texture); }
+            texture = new RenderTexture(width, height, 24, source.allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default)
+            {
+                name = "Lens Background Capture",
+                hideFlags = HideFlags.HideAndDontSave,
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                antiAliasing = 1
+            };
+            texture.Create();
+            textures[source] = texture;
+            return texture;
+        }
+
+        private void Capture(Camera source)
+        {
+            if (capturing || lensRenderer == null || !lensRenderer.enabled || magnifyingMaterial == null
+                || GraphicsSettings.currentRenderPipeline == null || !gameObject.activeInHierarchy
+                || !gameObject.scene.IsValid() || !gameObject.scene.isLoaded) return;
+            PrepareCamera(source);
+            if (!RenderPipeline.SupportsRenderRequest(captureCamera, request)) return;
+            RefreshTargets();
+            BuildPath(lensTarget, lensPath);
+            RenderTexture texture = TextureFor(source);
+            capturing = true;
+            try
+            {
+                foreach (CaptureTarget target in targets)
+                {
+                    Renderer renderer = target.Renderer;
+                    if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.forceRenderingOff) continue;
+                    BuildPath(target, candidatePath);
+                    if (renderer != lensRenderer && IsBehind(source)) continue;
+                    hidden.Add(renderer);
+                    renderer.forceRenderingOff = true;
+                }
+                request.destination = texture;
+                // SubmitRenderRequest completes synchronously. Restore visibility before the main camera renders.
+                RenderPipeline.SubmitRenderRequest(captureCamera, request);
+            }
+            finally
+            {
+                foreach (Renderer renderer in hidden)
+                    if (renderer != null) renderer.forceRenderingOff = false;
+                hidden.Clear();
+                capturing = false;
+            }
+            ApplySettings();
+            Bind(texture);
         }
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera)
         {
-            if (lensRenderer == null || !lensRenderer.enabled || magnifyingMaterial == null
-                || (camera != viewCamera && camera.cameraType != CameraType.SceneView)) return;
-            RestoreLayers();
-            ApplySettings();
-            if (Time.realtimeSinceStartup >= nextRefresh) RefreshRenderers();
-            int backgroundID = SortingLayer.NameToID(BackgroundLayer);
-            if (backgroundID == 0) return;
-            backgroundTargets.Clear();
-            foreach (Renderer candidate in renderers)
+            if (capturing || lensRenderer == null) return;
+            if (viewCamera == null && camera.cameraType == CameraType.Game && camera.CompareTag("MainCamera")
+                && camera.gameObject.scene == gameObject.scene) automaticCamera = camera;
+            if (textures.TryGetValue(camera, out RenderTexture texture)) Bind(texture);
+            else if (camera == viewCamera || camera == automaticCamera || camera.cameraType == CameraType.SceneView)
             {
-                if (candidate == null || candidate == lensRenderer || !candidate.enabled
-                    || !BehindLens(candidate.sortingLayerID, candidate.sortingOrder, candidate.transform.position, camera)) continue;
-                backgroundTargets.Add(new BackgroundTarget
-                {
-                    Renderer = candidate, Layer = candidate.sortingLayerID, Order = candidate.sortingOrder,
-                    Distance = Vector3.Dot(candidate.transform.position, camera.transform.forward)
-                });
-            }
-            foreach (SortingGroup group in groups)
-            {
-                if (group == null || !group.enabled || lensRenderer.transform.IsChildOf(group.transform)
-                    || !BehindLens(group.sortingLayerID, group.sortingOrder, group.transform.position, camera)) continue;
-                backgroundTargets.Add(new BackgroundTarget
-                {
-                    Group = group, Layer = group.sortingLayerID, Order = group.sortingOrder,
-                    Distance = Vector3.Dot(group.transform.position, camera.transform.forward)
-                });
-            }
-            // Flatten only the capture layer, preserving each source layer's original priority.
-            backgroundTargets.Sort(CompareTargets);
-            for (int index = 0; index < backgroundTargets.Count; index++)
-            {
-                BackgroundTarget target = backgroundTargets[index];
-                int order = Mathf.Clamp(short.MinValue + index, short.MinValue, short.MaxValue);
-                if (target.Renderer != null)
-                {
-                    changedRenderers.Add(target.Renderer);
-                    rendererLayers.Add(target.Layer);
-                    rendererOrders.Add(target.Order);
-                    target.Renderer.sortingLayerID = backgroundID;
-                    target.Renderer.sortingOrder = order;
-                }
-                else
-                {
-                    changedGroups.Add(target.Group);
-                    groupLayers.Add(target.Layer);
-                    groupOrders.Add(target.Order);
-                    target.Group.sortingLayerID = backgroundID;
-                    target.Group.sortingOrder = order;
-                }
+                if (properties == null) properties = new MaterialPropertyBlock();
+                lensRenderer.GetPropertyBlock(properties);
+                properties.SetFloat("_LensCaptureReady", 0f);
+                lensRenderer.SetPropertyBlock(properties);
             }
         }
 
-        private static int CompareTargets(BackgroundTarget left, BackgroundTarget right)
+        private void Bind(RenderTexture texture)
         {
-            int layer = SortingLayer.GetLayerValueFromID(left.Layer).CompareTo(SortingLayer.GetLayerValueFromID(right.Layer));
-            if (layer != 0) return layer;
-            int order = left.Order.CompareTo(right.Order);
-            return order != 0 ? order : right.Distance.CompareTo(left.Distance);
+            if (properties == null) properties = new MaterialPropertyBlock();
+            lensRenderer.GetPropertyBlock(properties);
+            properties.SetTexture(BackgroundTexture, texture);
+            properties.SetFloat("_LensCaptureReady", 1f);
+            lensRenderer.SetPropertyBlock(properties);
         }
 
-        private bool BehindLens(int layer, int order, Vector3 position, Camera camera)
+        private static void DestroyResource(Object resource)
         {
-            int layerValue = SortingLayer.GetLayerValueFromID(layer);
-            int lensValue = SortingLayer.GetLayerValueFromID(lensRenderer.sortingLayerID);
-            if (layerValue != lensValue) return layerValue < lensValue;
-            if (order != lensRenderer.sortingOrder) return order < lensRenderer.sortingOrder;
-            return Vector3.Dot(position - lensRenderer.transform.position, camera.transform.forward) > 0.0001f;
-        }
-
-        private void EndCamera(ScriptableRenderContext context, Camera camera) => RestoreLayers();
-
-        private void RestoreLayers()
-        {
-            for (int index = 0; index < changedRenderers.Count; index++)
-                if (changedRenderers[index] != null)
-                {
-                    changedRenderers[index].sortingLayerID = rendererLayers[index];
-                    changedRenderers[index].sortingOrder = rendererOrders[index];
-                }
-            for (int index = 0; index < changedGroups.Count; index++)
-                if (changedGroups[index] != null)
-                {
-                    changedGroups[index].sortingLayerID = groupLayers[index];
-                    changedGroups[index].sortingOrder = groupOrders[index];
-                }
-            changedRenderers.Clear();
-            rendererLayers.Clear();
-            rendererOrders.Clear();
-            changedGroups.Clear();
-            groupLayers.Clear();
-            groupOrders.Clear();
+            if (Application.isPlaying) Destroy(resource);
+            else DestroyImmediate(resource);
         }
 
         private void OnDisable()
         {
             RenderPipelineManager.beginCameraRendering -= BeginCamera;
-            RenderPipelineManager.endCameraRendering -= EndCamera;
-            RestoreLayers();
+#if UNITY_EDITOR
+            UnityEditor.SceneView.duringSceneGui -= DuringSceneGui;
+#endif
+            foreach (RenderTexture texture in textures.Values)
+            {
+                if (texture == null) continue;
+                texture.Release();
+                DestroyResource(texture);
+            }
+            textures.Clear();
+            targetCache.Clear();
+            targets.Clear();
+            lensTarget = null;
+            if (captureCamera != null) DestroyResource(captureCamera.gameObject);
+            captureCamera = null;
+            captureData = null;
             if (lensRenderer != null && lensRenderer.sharedMaterial == magnifyingMaterial)
             {
                 lensRenderer.sharedMaterial = previousMaterial;
