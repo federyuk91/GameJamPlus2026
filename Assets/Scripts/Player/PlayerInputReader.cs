@@ -97,7 +97,7 @@ namespace MousePlatformer
             jump.performed += QueueJump;
             collect = new InputAction("FrontPaws", InputActionType.Button);
             collect.AddBinding("<Keyboard>/e");
-            collect.AddBinding("<Gamepad>/buttonWest");
+            collect.AddBinding("<Gamepad>/buttonEast");
             bite = new InputAction("Mouth", InputActionType.Button);
             bite.AddBinding("<Keyboard>/f");
             bite.AddBinding("<Gamepad>/buttonNorth");

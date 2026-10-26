@@ -78,6 +78,8 @@ public sealed class PhysicsSettingsEditor : Editor
         EditorGUILayout.HelpBox("Local settings: movement and hand reach → PlayerMovement; speed multipliers → PlayerSwimming / PlayerDigging; bite reach → PlayerRopeBite.", MessageType.None);
 
         Group("Environment & Props");
+        Section("Pressure Buttons", "SimulatedBody2D → ButtonPressurePlate");
+        Field("buttonWeightActivation", "Only bodies with Weight strictly greater than this threshold can activate buttons.");
         Section("Immersed Weight", "PropsMotion → Pushable, PropsBuoyancy");
         Field("fullSubmersionWeightMultiplier");
 

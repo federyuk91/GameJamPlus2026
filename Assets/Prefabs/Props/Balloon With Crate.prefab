@@ -169,7 +169,6 @@ MonoBehaviour:
   shape: {fileID: 1003}
   ignorePlayerColliders: 0
   blocksOtherProps: 0
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
@@ -1238,7 +1237,6 @@ MonoBehaviour:
   shape: {fileID: 5003}
   ignorePlayerColliders: 0
   blocksOtherProps: 0
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65

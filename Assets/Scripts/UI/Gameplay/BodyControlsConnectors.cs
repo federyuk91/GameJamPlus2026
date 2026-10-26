@@ -116,8 +116,10 @@ namespace GameJamPlus.UI
             foreach (VisualElement callout in callouts)
             {
                 if (callout == null || callout.resolvedStyle.display == DisplayStyle.None) continue;
-                Vector2 minimum = callout.ChangeCoordinatesTo(this, Vector2.zero);
-                Vector2 maximum = callout.ChangeCoordinatesTo(this, callout.layout.size);
+                Vector2 firstCorner = callout.ChangeCoordinatesTo(this, Vector2.zero);
+                Vector2 oppositeCorner = callout.ChangeCoordinatesTo(this, callout.layout.size);
+                Vector2 minimum = Vector2.Min(firstCorner, oppositeCorner);
+                Vector2 maximum = Vector2.Max(firstCorner, oppositeCorner);
                 Rect bounds = Rect.MinMaxRect(minimum.x - 1f, minimum.y - 1f, maximum.x + 1f, maximum.y + 1f);
                 if (TryGetHiddenInterval(start, end, bounds, out Vector2 interval)) hiddenIntervals.Add(interval);
             }

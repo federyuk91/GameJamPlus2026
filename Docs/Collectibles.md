@@ -2,13 +2,21 @@
 
 ## Ground physics
 
+### Empty plate piles
+
+Cheese and CheeseGreen assign five Stack_emptyPlate_Sheet frames to CollectibleRemains > Plate Frames, in order from one to five plates. Each frame includes its collider height; the collider grows upwards while preserving the bottom. At 32 PPU the heights are 8, 12, 15, 18 and 21 pixels.
+
+After PropsMotion resolves a fixed tick, an empty plate supported by another empty plate transfers its count and mass into the lower pile, up to five plates. Fully absorbed objects deactivate immediately, leaving one Pushable and one body collider. Remaining plates form another pile above a full pile. Uneaten cheese never merges; horizontal contact alone does not merge plates. Button activation is calculated from pile dry weight > PhysicsSettings.buttonWeightActivation. The threshold is 0.5 kg: one or two empty plates cannot press a button; three plates (0.6 kg) can. The player weighs 0.51 kg and can press buttons.
+
+Consumption sets body mass to Empty Plate Weight (0.2 kg), independently of the uneaten cheese mass. Mass is summed from incoming bodies: three plates weigh 0.6 kg and five weigh 1 kg. The new frames are assigned on the two cheese prefabs; standalone legacy objects require the same Plate Frames assignments to enable merging. Consumed collectible identities still persist through the existing session system; pile placement/count is runtime state and is reconstructed from consumed items when a scene reloads.
+
 Cheese and CheeseGreen prefabs, and the four standalone cheeses in LoopScene, now use SimulatedBody2D + PropsMotion. CollectibleGravity and its meta file were removed. The existing gravity component file IDs were retained for PropsMotion, while a body and a separate footprint BoxCollider2D were added to each object. No Rigidbody2D is required.
 
 SimulatedBody2D explicitly references a separate body collider (size 0.90625 x 0.625, offset 0.015625, -0.1875 while cheese is present). Blocks Other Props is enabled: cheese supports other cheese and props through custom casts while its trigger remains pass-through for the mouse. The original Pickup Area remains separate. Ignore Player Colliders prevents cheese from landing on the mouse.
 
-Eating disables pickup, swaps to the empty plate and changes the body collider to Consumed Shape Size/Offset (0.90625 x 0.25, offset 0.015625, -0.375), preserving the bottom position. CollectibleRemains also disables Can Press Buttons on this body. The empty plate keeps its physical motion and prop collisions but contributes no button pressure. A reusable button emits On Release after raising when cheese is eaten or moved away, provided no other pressing body remains. Single Use buttons keep their existing locked-down behavior. Other objects above the consumed cheese can settle onto the smaller plate collider.
+Eating disables pickup, swaps to the empty plate and changes the body collider to Consumed Shape Size/Offset (0.90625 x 0.25, offset 0.015625, -0.375), preserving the bottom position. Can Press Buttons is read-only and calculated from Weight > PhysicsSettings.buttonWeightActivation. The empty plate keeps its physical motion and prop collisions; accumulated pile weight determines whether it can press buttons. A reusable button emits On Release after raising when cheese is eaten or moved away, provided no other pressing body remains. Single Use buttons keep their existing locked-down behavior. Other objects above the consumed cheese can settle onto the smaller plate collider.
 
-The body preserves Ground Layers (65), Skin (0.002), Max Speed (8) and the old 30 units/s² acceleration through Gravity Scale = 1 with the shared world gravity of 30. Air Drag is 0 to preserve the former falling response. Weight starts at 0.01 kg and remains editable per object. The empty plate enables its configured Pushable component on consumption. Wind and other shared prop forces can affect these objects. Changing world gravity also changes their acceleration proportionally.
+The body preserves Ground Layers (65), Skin (0.002), Max Speed (8) and the old 30 units/s² acceleration through Gravity Scale = 1 with the shared world gravity of 30. Air Drag is 0 to preserve the former falling response. A full cheese plate weighs 0.51 kg and remains editable per object. Consumption sets Empty Plate Weight to 0.2 kg and enables the configured Pushable component. Wind and other shared prop forces can affect these objects. Changing world gravity also changes their acceleration proportionally.
 
 PropsMotion > Follow Support is enabled for these non-blocking objects. The shared fixed-tick coordinator simulates ordinary props first and support followers afterwards. Followers carry their previous support's local point through its transform, using collision-constrained movement and the body's speed budget, then update the current support. Followers do not join load-bearing stack groups, so plates do not introduce additional stack load. The setting is reusable on other non-blocking props; their collider's solidity is configured separately.
 
@@ -57,3 +65,7 @@ Portrait, square and panoramic textures are centered and enlarged to fit without
 ## Collection goals and persistence
 
 Collection IDs live on Collectible. CollectibleRemains only manages the plate's presentation and physical shape; CollectiblePhoto only manages photo presentation and closure. CollectionGoalController in Universe Rig evaluates ten total cheeses and every third photo after closing, using serializable rules. Both cheese variants share the Cheese counter while preserving their different food effects. See CollectibleGoals.md for the current flow and migration details.
+
+## Player mass and movement
+
+Player mass is 0.51 kg. Jump launch speed is calculated from jump height and gravity, and swimming applies acceleration, water drag and stroke speed directly; neither depends on player mass. Their existing tuning is therefore preserved without compensating multipliers. The new mass still applies to physically supported loads such as ropes and props.

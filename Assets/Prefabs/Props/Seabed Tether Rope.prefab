@@ -639,7 +639,6 @@ MonoBehaviour:
   shape: {fileID: 872056609812719817}
   ignorePlayerColliders: 0
   blocksOtherProps: 0
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65

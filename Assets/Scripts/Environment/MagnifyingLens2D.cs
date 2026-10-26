@@ -9,6 +9,8 @@ namespace MousePlatformer
     [ExecuteAlways, DefaultExecutionOrder(300), DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
     public sealed class MagnifyingLens2D : MonoBehaviour
     {
+        public enum EffectMaskSource { GreenChroma, SeparateTexture, SpriteSecondaryTexture, SeparateSprite }
+        public enum EffectMaskChannel { Red, Green, Blue, Alpha }
         public const string BackgroundLayer = "Lens Background";
         private static readonly int BackgroundTexture = Shader.PropertyToID("_LensBackgroundTexture");
         [SerializeField] private SpriteRenderer lensRenderer;
@@ -20,6 +22,16 @@ namespace MousePlatformer
         [SerializeField, Tooltip("Half width and height of the circular distortion area, as fractions of the sprite dimensions. Lens Distortion is adjusted on the material.")]
         private Vector2 lensRadiusUV = new Vector2(0.5f, 0.5f);
         [SerializeField, Range(0.01f, 1f)] private float greenDominance = 0.2f;
+        [Header("Effect mask")]
+        [SerializeField, Tooltip("Green Chroma keeps the original lens behavior. Separate Texture and Sprite Secondary Texture preserve the sprite's colors/alpha over the distorted background.")]
+        private EffectMaskSource maskSource;
+        [SerializeField, Tooltip("Independent mask matching the full sprite rectangle. Used only with Separate Texture. Black = no effect, white = full effect.")]
+        private Texture2D effectMask;
+        [SerializeField, Tooltip("Sprite used as a mask in Separate Sprite mode. Select an individual sliced sprite here, rather than its entire texture sheet.")]
+        private Sprite effectMaskSprite;
+        [SerializeField, Tooltip("Color or alpha channel read from the independent mask.")]
+        private EffectMaskChannel maskChannel;
+        [SerializeField, Range(0f, 1f)] private float maskStrength = 1f;
         [SerializeField, HideInInspector] private Material previousMaterial;
 
         private sealed class CaptureTarget
@@ -61,6 +73,13 @@ namespace MousePlatformer
         private MaterialPropertyBlock properties;
         private CaptureTarget lensTarget;
         private bool capturing;
+        private SecondarySpriteTexture[] secondaryMasks = System.Array.Empty<SecondarySpriteTexture>();
+        private Sprite cachedMaskSprite;
+        private Texture cachedMaskTexture;
+        private bool maskSpriteMappingValid;
+        private Vector4 maskUVOrigin;
+        private Vector4 maskUVX;
+        private Vector4 maskUVY;
 
         public Vector3 LensCenterWorld
         {
@@ -77,6 +96,7 @@ namespace MousePlatformer
 
         private void OnEnable()
         {
+            cachedMaskSprite = null;
             automaticCamera = null;
             if (lensRenderer == null) lensRenderer = GetComponent<SpriteRenderer>();
             RenderPipelineManager.beginCameraRendering += BeginCamera;
@@ -116,7 +136,73 @@ namespace MousePlatformer
             properties.SetVector("_LensRadius", new Vector4(Mathf.Max(0.0001f, radius.x), Mathf.Max(0.0001f, radius.y), 0f, 0f));
             properties.SetFloat("_Magnification", magnification);
             properties.SetFloat("_GreenDominance", greenDominance);
+            properties.SetFloat("_MaskSource", (float)maskSource);
+            properties.SetFloat("_MaskStrength", maskStrength);
+            bool maskAvailable;
+            if (maskSource == EffectMaskSource.GreenChroma) maskAvailable = true;
+            else if (maskSource == EffectMaskSource.SeparateTexture) maskAvailable = effectMask != null;
+            else if (maskSource == EffectMaskSource.SeparateSprite) maskAvailable = UpdateMaskSpriteMapping();
+            else maskAvailable = HasSecondaryMask(sprite);
+            properties.SetFloat("_MaskAvailable", maskAvailable ? 1f : 0f);
+            Vector4 channel = Vector4.zero;
+            channel[(int)maskChannel] = 1f;
+            properties.SetVector("_MaskChannel", channel);
+            Texture maskTexture = maskSource == EffectMaskSource.SeparateSprite && effectMaskSprite != null
+                ? effectMaskSprite.texture : effectMask;
+            properties.SetTexture("_SeparateMask", maskTexture != null ? maskTexture : Texture2D.blackTexture);
+            properties.SetVector("_MaskUVOrigin", maskUVOrigin);
+            properties.SetVector("_MaskUVX", maskUVX);
+            properties.SetVector("_MaskUVY", maskUVY);
+            Vector2 minimum = -sprite.pivot / sprite.pixelsPerUnit;
+            properties.SetVector("_SpriteRect", new Vector4(minimum.x, minimum.y,
+                sprite.pixelsPerUnit / Mathf.Max(1f, sprite.rect.width), sprite.pixelsPerUnit / Mathf.Max(1f, sprite.rect.height)));
             lensRenderer.SetPropertyBlock(properties);
+        }
+
+        private void OnValidate() => cachedMaskSprite = null;
+
+        private bool UpdateMaskSpriteMapping()
+        {
+            if (effectMaskSprite == null) return false;
+            if (cachedMaskSprite == effectMaskSprite && cachedMaskTexture == effectMaskSprite.texture) return maskSpriteMappingValid;
+            cachedMaskSprite = effectMaskSprite;
+            cachedMaskTexture = effectMaskSprite.texture;
+            maskSpriteMappingValid = false;
+            Vector2[] vertices = effectMaskSprite.vertices;
+            Vector2[] uv = effectMaskSprite.uv;
+            if (vertices.Length < 3 || uv.Length != vertices.Length) return false;
+            for (int index = 2; index < vertices.Length; index++)
+            {
+                Vector2 first = vertices[1] - vertices[0];
+                Vector2 second = vertices[index] - vertices[0];
+                float determinant = first.x * second.y - first.y * second.x;
+                if (Mathf.Abs(determinant) < 0.00000001f) continue;
+                // Recover the sprite's affine UV mapping, including atlas rotation and flips.
+                Vector2 uvFirst = uv[1] - uv[0];
+                Vector2 uvSecond = uv[index] - uv[0];
+                Vector2 xAxis = (uvFirst * second.y - uvSecond * first.y) / determinant;
+                Vector2 yAxis = (uvSecond * first.x - uvFirst * second.x) / determinant;
+                Vector2 minimum = -effectMaskSprite.pivot / effectMaskSprite.pixelsPerUnit;
+                Vector2 origin = uv[0] + xAxis * (minimum.x - vertices[0].x) + yAxis * (minimum.y - vertices[0].y);
+                xAxis *= effectMaskSprite.rect.width / effectMaskSprite.pixelsPerUnit;
+                yAxis *= effectMaskSprite.rect.height / effectMaskSprite.pixelsPerUnit;
+                maskUVOrigin = new Vector4(origin.x, origin.y, 0f, 0f);
+                maskUVX = new Vector4(xAxis.x, xAxis.y, 0f, 0f);
+                maskUVY = new Vector4(yAxis.x, yAxis.y, 0f, 0f);
+                maskSpriteMappingValid = true;
+                break;
+            }
+            return maskSpriteMappingValid;
+        }
+
+        private bool HasSecondaryMask(Sprite sprite)
+        {
+            int count = sprite.GetSecondaryTextureCount();
+            if (secondaryMasks.Length != count) secondaryMasks = new SecondarySpriteTexture[count];
+            sprite.GetSecondaryTextures(secondaryMasks);
+            foreach (SecondarySpriteTexture secondary in secondaryMasks)
+                if (secondary.name == "_LensMask" && secondary.texture != null) return true;
+            return false;
         }
 
         private void RefreshTargets()
@@ -238,7 +324,7 @@ namespace MousePlatformer
 
         private void Capture(Camera source)
         {
-            if (capturing || lensRenderer == null || !lensRenderer.enabled || magnifyingMaterial == null
+            if (capturing || lensRenderer == null || lensRenderer.sprite == null || !lensRenderer.enabled || magnifyingMaterial == null
                 || GraphicsSettings.currentRenderPipeline == null || !gameObject.activeInHierarchy
                 || !gameObject.scene.IsValid() || !gameObject.scene.isLoaded) return;
             PrepareCamera(source);

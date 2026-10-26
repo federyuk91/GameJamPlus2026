@@ -447,6 +447,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Background Elements_0
+      rect:
+        serializedVersion: 2
+        x: 1905
+        y: 15
+        width: 132
+        height: 228
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fd8cac67306faa439c3a81015507f5a
+      internalID: 1228344979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -461,6 +483,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Background Elements_0: 1228344979
       Foreground Elements_0: 4333038238805441471
       Foreground Elements_1: -8188331269811741201
       Foreground Elements_10: -1204840063744143825

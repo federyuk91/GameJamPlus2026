@@ -33,3 +33,38 @@ Configure Scientist Parallax with Welcome open. Setup is undoable, does not move
 existing scenery into groups, preserves assigned roots and marks the loaded
 scene dirty without saving. Save normally after reviewing the result. Disable
 restores original positions. No Play Mode checks were run.
+
+
+## Sprite color/alpha plus an independent effect mask
+
+The existing Green Chroma mode remains the default for existing MagnifyingLens2D components and keeps the previous green-replacement composition. The independent Mask Source choices keep the original sprite RGBA and composite it above the magnified/distorted captured background. Neither requires painting a key color into the sprite.
+
+Quick setup: open the SpriteRenderer component context menu and choose Configure Masked Lens. It adds/configures MagnifyingLens2D, assigns Assets/Materials/MaskedSpriteLens.mat, selects Sprite Secondary Texture mode and centers the lens at (0.5, 0.5). No existing scenes/prefabs are converted automatically.
+
+For Sprite Secondary Texture, open the sprite in Sprite Editor > Secondary Textures and assign a mask texture with the exact name `_LensMask`. Use the same source dimensions/layout as the sprite sheet; Unity's sprite/atlas UVs also sample the secondary mask. Choose Mask Channel (Red/Green/Blue/Alpha) on MagnifyingLens2D. Red is the default: a grayscale mask works directly and leaves the original sprite alpha available for glass, color artwork and antialiased edges.
+
+Alternatively choose Separate Texture and assign Effect Mask. This texture maps across the selected sprite's full original rectangle using local coordinates, independent of primary sprite atlas placement. For animated sprites this mode uses one mask stretched per frame; use Secondary Textures for matching per-frame masks on a sheet.
+
+White/1 applies the lens, black/0 leaves the background unchanged, intermediate mask values blend the effect. Mask Strength scales the coverage. Missing mask textures disable the effect, including when the chosen channel is Alpha. For numeric grayscale masks, import with sRGB disabled; use Clamp wrapping, and Point filtering for pixel-art masks or Bilinear for soft edges. Keep the sprite alpha source set to its input alpha.
+
+Use Mesh Type = Full Rect on sprites that need the lens inside transparent regions or outside the opaque artwork. A shader can only affect pixels covered by the sprite's geometry. It cannot extend outside that rectangle. An opaque sprite remains opaque above the effect; use transparent/semitransparent artwork where the background should show through. SpriteRenderer tint and alpha also affect the composite, so renderer alpha fades the lens together with the sprite.
+
+Magnification remains on MagnifyingLens2D; Lens Distortion is adjusted on the material. Lens Center UV and Lens Radius UV position/shape the existing distortion. The mask controls coverage separately. The same per-lens sorting-aware capture camera is reused: each active lens still renders its own background capture, rather than using a new render feature or global opaque texture.
+
+Runtime and Editor C# compilation verified with current project sources. Shader import and visual behavior need checking in Unity; no shader compilation or Play Mode validation was run in the terminal.
+
+
+### Selecting an individual sliced mask sprite
+
+Effect Mask accepts a Texture2D, so Unity does not allow a subasset such as Background Elements_0 there. Select Mask Source = Separate Sprite and assign the sliced asset to Effect Mask Sprite instead. It samples only that sprite's region of its sheet. Local-to-atlas UV mapping is recovered from the mask sprite mesh and cached, including rotated atlas mappings; validation or changing the sprite/texture invalidates the cache. The selected mask rectangle is stretched across the displayed sprite rectangle.
+
+For mask sprites use Full Rect geometry and disable tight packing in any atlas containing them, so the full rectangular mask area remains allocated. Select Mask Channel = Alpha to use the mask sprite's silhouette/transparency, or Red/Green/Blue for a painted mask channel. The source sprite import and sheet are not modified by this feature. Runtime/Editor C# compilation verified; shader visual validation remains in Unity.
+
+
+### Foreground opacity and conditional mask fields
+
+The main sprite's imported alpha determines foreground opacity. There is no Sprite Opacity multiplier on the component or shader. SpriteRenderer tint/alpha retains its standard whole-renderer behavior. Glass/liquid areas intended to show the background must have the desired alpha authored in the main PNG; opaque pixels remain opaque.
+
+The component Inspector shows only fields relevant to Mask Source: Green Chroma shows Green Dominance; Separate Texture shows Effect Mask (Texture2D); Separate Sprite shows Effect Mask Sprite; Sprite Secondary Texture shows instructions for assigning `_LensMask` in Sprite Editor without either separate-mask field. Mask Channel appears for independent masks, while Mask Strength remains available for all modes. Hidden assignments are retained for switching modes, but only the selected mode is sampled.
+
+Universo_10_Composed's Green Conical Flask Lens still uses Separate Texture, GreenFlask_mask.png and the Red channel. The temporary spriteOpacity scene override has been removed. The mask import uses linear grayscale data, and its transparent exterior suppresses RGB-mask sampling outside the silhouette. Both PNG files are unchanged. Runtime/editor C# compilation checked; shader rendering remains to be checked in Unity.

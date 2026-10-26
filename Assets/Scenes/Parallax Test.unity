@@ -7544,12 +7544,11 @@ MonoBehaviour:
   shape: {fileID: 0}
   ignorePlayerColliders: 0
   blocksOtherProps: 0
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.005
-  weight: 0.03
+  weight: 0.51
 --- !u!114 &6608451982127386820
 MonoBehaviour:
   m_ObjectHideFlags: 0

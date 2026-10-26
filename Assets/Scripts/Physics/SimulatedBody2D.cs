@@ -35,8 +35,6 @@ namespace MousePlatformer
         private bool ignorePlayerColliders;
         [SerializeField, Tooltip("The trigger shape supports other simulated props while remaining pass-through for the player. Pickup triggers are not affected.")]
         private bool blocksOtherProps;
-        [SerializeField, Tooltip("Whether this body counts as weight on pressure buttons. Does not change physical mass or collisions.")]
-        private bool canPressButtons = true;
         [SerializeField] private LayerMask solidLayers = 1;
         [SerializeField, Min(0.001f)] private float skin = 0.005f;
         [SerializeField, Min(0.001f), Tooltip("Dry body mass in kilograms. Shared by pushing, flotation, rope loads and balloon balance.")]
@@ -50,8 +48,9 @@ namespace MousePlatformer
         public BoxCollider2D Shape => shape != null ? shape : shape = GetComponent<BoxCollider2D>();
         public float Skin => skin;
         public float Weight => Mathf.Max(0.001f, weight);
-        public bool CanPressButtons => canPressButtons;
-        public void SetCanPressButtons(bool value) => canPressButtons = value;
+        public void SetWeight(float value) => weight = Mathf.Max(0.001f, value);
+        public bool CanPressButtons => Weight > (physicsSettings != null
+            ? physicsSettings.buttonWeightActivation : PhysicsSettings.DefaultButtonWeightActivation);
         public PhysicsSettings Settings => physicsSettings;
         public float AirDrag => Mathf.Max(0f, airDrag);
         public float WaterDrag => Mathf.Max(0f, waterDragMultiplier) * Mathf.Max(0f,

@@ -12,10 +12,11 @@
 .controls-open .pause-status, .controls-open .pause-hint { display: none; }
 .body-controls { flex-grow: 1; }
 .body-title { height: 16px; margin: 0; font-size: 10px; color: rgb(240, 229, 202); -unity-text-align: middle-center; }
-.body-diagram { width: 100%; height: 188px; flex-shrink: 0; }
+.body-diagram { width: 100%; height: 188px; flex-shrink: 0; scale: -1 1; }
 .body-image { -unity-background-scale-mode: scale-to-fit; position: absolute; left: 50%; margin-left: -94px; top: 20px; width: 188px; height: 188px; }
 .body-scanner { position: absolute; left: 0; right: 0; top: 0; bottom: 0; -unity-background-scale-mode: scale-to-fit; }
 .body-callout {
+    scale: -1 1;
     position: absolute;
     min-width: 28px;
     max-width: 74px;

@@ -9,11 +9,32 @@ namespace MousePlatformer
     public static class PlayerControlBindings
     {
         private static readonly string[] KeyboardDefaults = { "<Keyboard>/f", "<Keyboard>/e", "<Keyboard>/space", "" };
-        private static readonly string[] GamepadDefaults = { "<Gamepad>/buttonNorth", "<Gamepad>/buttonWest", "<Gamepad>/buttonSouth", "<Gamepad>/buttonEast" };
+        private static readonly string[] GamepadDefaults = { "<Gamepad>/buttonNorth", "<Gamepad>/buttonEast", "<Gamepad>/buttonSouth", "<Gamepad>/buttonWest" };
         public static event Action Changed;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetSubscriptions() => Changed = null;
+        private static void ResetSubscriptions()
+        {
+            Changed = null;
+            MigrateGamepadLayout();
+        }
+
+        private static void MigrateGamepadLayout()
+        {
+            const string versionKey = "Controls.GamepadLayoutVersion";
+            if (PlayerPrefs.GetInt(versionKey, 0) >= 1) return;
+            string frontKey = Key(PlayerBodyAction.FrontPaws, true);
+            string tailKey = Key(PlayerBodyAction.Tail, true);
+            // Update saved legacy defaults once, keeping other custom assignments intact.
+            if (PlayerPrefs.GetString(frontKey, "<Gamepad>/buttonWest") == "<Gamepad>/buttonWest"
+                && PlayerPrefs.GetString(tailKey, "<Gamepad>/buttonEast") == "<Gamepad>/buttonEast")
+            {
+                PlayerPrefs.DeleteKey(frontKey);
+                PlayerPrefs.DeleteKey(tailKey);
+            }
+            PlayerPrefs.SetInt(versionKey, 1);
+            PlayerPrefs.Save();
+        }
 
         private static string Key(PlayerBodyAction action, bool gamepad) => "Controls." + action + (gamepad ? ".Gamepad" : ".Keyboard");
         public static string DefaultPath(PlayerBodyAction action, bool gamepad) => (gamepad ? GamepadDefaults : KeyboardDefaults)[(int)action];

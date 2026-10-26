@@ -27,17 +27,36 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LensMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SeparateMask:
+        m_Texture: {fileID: 2800000, guid: f99acaee6da3c294784f6c524aaeeaef, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _LensDistortion: 0
-    - _GreenDominance: 0.08
-    - _Magnification: 2
+    - _GreenDominance: 0.362
+    - _LensCaptureReady: 0
+    - _LensDistortion: -0.942
+    - _Magnification: 4.1
+    - _MaskAvailable: 0
+    - _MaskSource: 2
+    - _MaskStrength: 0
+    - _SpriteOpacity: 0.784
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _LensCenter: {r: 0, g: 0, b: 0, a: 0}
+    - _LensRadius: {r: 1, g: 1, b: 0, a: 0}
+    - _MaskChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _MaskUVOrigin: {r: 0, g: 0, b: 0, a: 0}
+    - _MaskUVX: {r: 1, g: 0, b: 0, a: 0}
+    - _MaskUVY: {r: 0, g: 1, b: 0, a: 0}
+    - _SpriteRect: {r: -0.5, g: -0.5, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

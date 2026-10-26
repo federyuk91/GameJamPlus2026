@@ -83257,12 +83257,11 @@ MonoBehaviour:
   shape: {fileID: 9100000101}
   ignorePlayerColliders: 1
   blocksOtherProps: 1
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.002
-  weight: 0.01
+  weight: 0.51
 --- !u!61 &9100000101
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -83333,12 +83332,11 @@ MonoBehaviour:
   shape: {fileID: 9100000103}
   ignorePlayerColliders: 1
   blocksOtherProps: 1
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.002
-  weight: 0.01
+  weight: 0.51
 --- !u!61 &9100000103
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -83409,12 +83407,11 @@ MonoBehaviour:
   shape: {fileID: 9100000105}
   ignorePlayerColliders: 1
   blocksOtherProps: 1
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.002
-  weight: 0.01
+  weight: 0.51
 --- !u!61 &9100000105
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -83485,12 +83482,11 @@ MonoBehaviour:
   shape: {fileID: 9100000107}
   ignorePlayerColliders: 1
   blocksOtherProps: 1
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.002
-  weight: 0.01
+  weight: 0.51
 --- !u!61 &9100000107
 BoxCollider2D:
   m_ObjectHideFlags: 0

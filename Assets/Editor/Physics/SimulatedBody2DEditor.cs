@@ -21,6 +21,19 @@ public sealed class SimulatedBody2DEditor : Editor
                 if (speedValue) EditorGUILayout.PropertyField(property, new GUIContent("Override Max Speed Value", property.tooltip));
                 else EditorGUILayout.PropertyField(property, true);
             }
+            if (property.propertyPath == "weight")
+            {
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    bool canPress = ((SimulatedBody2D)target).CanPressButtons;
+                    bool mixed = false;
+                    foreach (Object selected in targets)
+                        mixed |= ((SimulatedBody2D)selected).CanPressButtons != canPress;
+                    EditorGUI.showMixedValue = mixed;
+                    EditorGUILayout.Toggle("Can Press Buttons", canPress);
+                    EditorGUI.showMixedValue = false;
+                }
+            }
         }
         serializedObject.ApplyModifiedProperties();
         if (targets.Length == 1)

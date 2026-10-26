@@ -11016,6 +11016,131 @@ Transform:
   - {fileID: 670337439}
   m_Father: {fileID: 222998750}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1016426054
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_Name
+      value: Green Conical Flask Lens
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: effectMask
+      value: 
+      objectReference: {fileID: 2800000, guid: f99acaee6da3c294784f6c524aaeeaef, type: 3}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: maskSource
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: maskChannel
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: maskStrength
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: magnification
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: greenDominance
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: lensCenterUV.y
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: lensRadiusUV.x
+      value: 0.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: lensRadiusUV.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141000002, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: effectMaskSprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_Size.x
+      value: 4.53125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_Size.y
+      value: 7.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2dc50dceb01794b4ba161f8dcb288d9c, type: 3}
+    - target: {fileID: 2121000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.3653086
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3653086
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3653086
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 32.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001000001, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 92a737954e3e4af7b05cadf195f6ab44, type: 3}
 --- !u!1001 &1023021649
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21461,7 +21586,13 @@ MonoBehaviour:
   viewCamera: {fileID: 3915087874883675621}
   magnification: 1.5
   lensCenterUV: {x: -0.4, y: 0.7}
+  lensRadiusUV: {x: 0.5, y: 0.5}
   greenDominance: 0.2
+  maskSource: 0
+  effectMask: {fileID: 0}
+  effectMaskSprite: {fileID: 0}
+  maskChannel: 0
+  maskStrength: 1
   previousMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
 --- !u!212 &2032442883
 SpriteRenderer:
@@ -29819,7 +29950,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: hasBinding
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: bindingMode
@@ -29831,11 +29962,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: targetCell.x
-      value: 28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: targetCell.y
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: searchTilemap
@@ -29844,7 +29975,7 @@ PrefabInstance:
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: targetTilemap
       value: 
-      objectReference: {fileID: 8170156346659690157}
+      objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 878c4737d2384cf29ede6f16e6ee13ca, type: 3}
       propertyPath: waterConnection
       value: 
@@ -37907,7 +38038,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &8206792194792408762
 GameObject:
   m_ObjectHideFlags: 0
@@ -38748,3 +38879,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 733151253}
+  - {fileID: 1016426054}

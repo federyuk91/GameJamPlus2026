@@ -158,9 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143b5182dcc3467eb4a44b01d69f8c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectionId: 
   type: 0
   requiresInteraction: 1
+  collectionId: 
   pickupArea: {fileID: 5718437077508530872}
   showGizmos: 1
   remains: {fileID: 8300000001}
@@ -208,8 +208,20 @@ MonoBehaviour:
   consumedSprite: {fileID: 21300000, guid: dd622e87bbf68ab4483267f71aa709fc, type: 3}
   consumedPushable: {fileID: 9800095001}
   body: {fileID: 9100000100}
+  emptyPlateWeight: 0.2
   consumedShapeSize: {x: 0.90625, y: 0.25}
   consumedShapeOffset: {x: 0.015625, y: -0.375}
+  plateFrames:
+  - sprite: {fileID: 21300000, guid: 7c11c90e7fff7ea49a13de39cd27ed93, type: 3}
+    height: 0.25
+  - sprite: {fileID: 21300000, guid: 41577b9805bb00445a5f0a1f040390be, type: 3}
+    height: 0.375
+  - sprite: {fileID: 21300000, guid: 61f8a7562aabd8e458c0a456add3d4a8, type: 3}
+    height: 0.46875
+  - sprite: {fileID: 21300000, guid: a8ca2cc4cd2eb7846885b65695f753da, type: 3}
+    height: 0.5625
+  - sprite: {fileID: 21300000, guid: d9ff59efbc83de24a84e2afc0c88a3c7, type: 3}
+    height: 0.65625
 --- !u!61 &9100000101
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -270,7 +282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDragMultiplier: 3.33333333
+  waterDragMultiplier: 3.3333333
   groundFriction: 1
   maxSlopeAngle: 89
   groundContact: {fileID: 9700001000}
@@ -280,12 +292,11 @@ MonoBehaviour:
   shape: {fileID: 9100000101}
   ignorePlayerColliders: 1
   blocksOtherProps: 1
-  canPressButtons: 1
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.002
-  weight: 0.01
+  weight: 0.51
 --- !u!114 &8300000002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,9 +339,10 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
   body: {fileID: 9100000100}
   motion: {fileID: 8300000002}
   ropeAttachment: {fileID: 0}
   showGizmos: 1
+  maxPushStepHeight: 0.1

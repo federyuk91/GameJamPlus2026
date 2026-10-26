@@ -11,6 +11,9 @@ namespace MousePlatformer
         [Tooltip("Shared maximum total speed in world units/s for all SimulatedBody2D components, unless a body explicitly enables its local override.")]
         [Min(0.01f)] public float maxSpeed = DefaultMaxSpeed;
         public static float DefaultMaxSpeed => 26f;
+        [Tooltip("A body can activate pressure buttons only when its dry weight is strictly greater than this threshold.")]
+        [Min(0f)] public float buttonWeightActivation = DefaultButtonWeightActivation;
+        public static float DefaultButtonWeightActivation => 0.5f;
         [Header("Shared simulation rules")]
         [Tooltip("Substeps per fixed tick for props and their coordinated vertical groups. Higher values improve precision at a higher CPU cost.")]
         [Min(1)] public int simulationSubsteps = DefaultSimulationSubsteps;
