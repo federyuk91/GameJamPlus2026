@@ -10,9 +10,7 @@ namespace MousePlatformer
         [SerializeField] private Collider2D surfaceCollider;
         [SerializeField, Min(0.005f), Tooltip("World-space gap allowed between a body's feet and the button top.")]
         private float contactTolerance = 0.025f;
-        private readonly List<Collider2D> overlaps = new List<Collider2D>(16);
         private readonly List<SimulatedBody2D> passengers = new List<SimulatedBody2D>(8);
-        private readonly Dictionary<Collider2D, SimulatedBody2D> bodyCache = new Dictionary<Collider2D, SimulatedBody2D>();
         private readonly List<Vector2> shapePoints = new List<Vector2>(16);
         private readonly List<Vector2[]> shapePaths = new List<Vector2[]>(4);
 
@@ -45,26 +43,31 @@ namespace MousePlatformer
             if (surfaceCollider == null || !surfaceCollider.enabled || !surfaceCollider.gameObject.activeInHierarchy) return;
             Physics2D.SyncTransforms();
             Bounds surface = surfaceCollider.bounds;
-            Vector2 center = surface.center;
-            Vector2 size = (Vector2)surface.size + Vector2.one * (contactTolerance * 2f);
-            ContactFilter2D filter = new ContactFilter2D { useTriggers = true };
-            Physics2D.OverlapBox(center, size, 0f, filter, overlaps);
-            foreach (Collider2D candidate in overlaps)
+            foreach (SimulatedBody2D body in SimulatedBody2D.ActiveBodies)
             {
-                if (candidate == surfaceCollider || candidate.transform.IsChildOf(transform)) continue;
-                if (!bodyCache.TryGetValue(candidate, out SimulatedBody2D body))
-                {
-                    candidate.TryGetComponent(out body);
-                    bodyCache.Add(candidate, body);
-                }
-                if (body == null || !body.isActiveAndEnabled || body.Shape != candidate) continue;
+                if (body == null || !body.isActiveAndEnabled) continue;
+                Collider2D candidate = body.Shape;
+                if (candidate == null || !candidate.enabled || !candidate.gameObject.activeInHierarchy
+                    || candidate == surfaceCollider || candidate.transform.IsChildOf(transform)) continue;
                 Bounds bounds = candidate.bounds;
-                float tolerance = Mathf.Max(contactTolerance, body.Skin * 2f);
-                ColliderDistance2D contact = surfaceCollider.Distance(candidate);
-                if (!contact.isValid || contact.distance > tolerance) continue;
-                float gap = bounds.min.y - contact.pointA.y;
+                float skin = Mathf.Max(0f, body.Skin);
+                float normalGap = skin + contactTolerance;
+                float minimumUpNormal = Mathf.Max(0.01f, Mathf.Cos(body.MaxSlopeAngle * Mathf.Deg2Rad));
+                float probeDistance = normalGap / minimumUpNormal;
+                // Physics2D ignores Z; renderer depth must not exclude a valid pressure contact.
+                Rect searchBounds = Rect.MinMaxRect(surface.min.x - probeDistance, surface.min.y - probeDistance,
+                    surface.max.x + probeDistance, surface.max.y + probeDistance);
+                Rect bodyBounds = Rect.MinMaxRect(bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y);
+                if (!searchBounds.Overlaps(bodyBounds)) continue;
+                Collider2D support = body.Probe(Vector2.down, probeDistance,
+                    out float distance, out Vector2 normal, out Vector2 point);
+                if (support != surfaceCollider || normal.y < minimumUpNormal) continue;
+                // Probe reports full-body travel, compensating for its inset query shape.
+                // Subtract the actual resting skin gap along the surface normal.
+                float effectiveGap = distance * normal.y - skin;
+                if (effectiveGap > contactTolerance) continue;
                 float horizontalOverlap = Mathf.Min(bounds.max.x, surface.max.x) - Mathf.Max(bounds.min.x, surface.min.x);
-                if (bounds.center.y <= contact.pointA.y || Mathf.Abs(gap) > tolerance || horizontalOverlap <= 0.005f) continue;
+                if (bounds.center.y <= point.y || horizontalOverlap <= 0.005f) continue;
                 if (!passengers.Contains(body)) passengers.Add(body);
             }
         }
@@ -134,7 +137,6 @@ namespace MousePlatformer
         {
             HasWeight = false;
             passengers.Clear();
-            bodyCache.Clear();
         }
 
         private void OnDrawGizmos()

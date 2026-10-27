@@ -112,3 +112,8 @@ Runtime and Editor compilation verified. Check pressed/halfway/released collisio
 Pushable > Max Push Step Height defaults to 0.0625 world units (2 artwork pixels at 32 PPU). It enables small up/across/down steps only during player push/pull and only while the crate is grounded. Zero disables it. The player/crate shared-displacement clearance query includes the same step route so it does not reject the edge before the actual move can step over it. Ceiling, wall, landing slope and movement budget checks remain active. Ordinary gravity/prop movement and swimming pushes keep their existing no-step behavior. This does not change the player's own stepping height or enlarge the button collider. Stacked objects can still block upward clearance.
 
 Runtime and Editor compilation checked. In Unity, verify pushing/pulling over low button rims, rejection of taller edges, and blocked clearance below a ceiling.
+
+
+## Skin-aware pressure contacts
+
+ButtonPressurePlate checks registered active SimulatedBody2D shapes with the same downward Probe used by movement. The nearest supporting collider must be the button surface and its normal must be walkable. The residual contact gap is Probe distance * normal.y - body.Skin, compared against Contact Tolerance. Probe already compensates for the inset cast box, so the skin is not counted twice. The bounds check uses XY Rects only, ignoring renderer Z depth as Physics2D does. The bounds check and probe reach include Skin + Contact Tolerance, converted to vertical distance for the maximum walkable slope. Bodies register on enable and unregister on disable; no runtime scene search is needed. Weight activation still uses Weight > PhysicsSettings.buttonWeightActivation.

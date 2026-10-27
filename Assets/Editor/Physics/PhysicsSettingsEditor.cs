@@ -42,6 +42,8 @@ public sealed class PhysicsSettingsEditor : Editor
         Field("ledgeClimb.maxHeight", "Maximum height difference between the feet and the ledge. While grounded, directional input climbs obstacles above standard step height.");
         Field("ledgeClimb.hangHeightFraction", "Fraction of collider height measured from the feet: 0.85 places the grip near the top of the body.");
         Field("ledgeClimb.retryDelay");
+        Field("ledgeClimb.gripProbeClearance");
+        Field("ledgeClimb.minimumGripDepth");
 
         Section("Ladder", "PlayerLadderInteraction");
         Field("ladder.jumpHorizontalSpeed");

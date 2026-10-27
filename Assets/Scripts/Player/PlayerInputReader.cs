@@ -7,6 +7,8 @@ namespace MousePlatformer
     public sealed class PlayerInputReader : MonoBehaviour
     {
         [SerializeField] private PlayerStats stats;
+        [SerializeField, Min(0.01f), Tooltip("Time in seconds that a front-paw press remains available to start climbing a ledge.")]
+        private float ledgeInputBuffer = 0.15f;
         private InputAction move;
         private InputAction jump;
         private InputAction bite;
@@ -14,6 +16,8 @@ namespace MousePlatformer
         private bool collectionConsumed;
         private bool mouthConsumed;
         private bool jumpQueued;
+        private bool ledgeInteractionQueued;
+        private double ledgeInteractionExpires;
         private AvailableGameplayActions selectedInteractions = AvailableGameplayActions.All;
         private bool gameplayLocked;
         private bool waitingForInteractionRelease;
@@ -38,12 +42,14 @@ namespace MousePlatformer
             gameplayLocked = locked;
             waitingForInteractionRelease = !locked;
             jumpQueued = false;
+            ClearLedgeInteraction();
         }
         private const AvailableGameplayActions CollectActions = AvailableGameplayActions.CollectPhoto | AvailableGameplayActions.CollectItem;
         private const AvailableGameplayActions EatActions = AvailableGameplayActions.EatCheese | AvailableGameplayActions.EatGreenCheese;
         public bool EatPressed => !GameplayActionsLocked && bite != null && bite.WasPressedThisFrame() && !mouthConsumed
             && (selectedInteractions & EatActions) != 0;
-        public bool LedgeInteractionPressed => !GameplayActionsLocked && collect != null && collect.WasPressedThisFrame() && !collectionConsumed
+        public bool LedgeInteractionPressed => !GameplayActionsLocked && ledgeInteractionQueued
+            && Time.timeAsDouble <= ledgeInteractionExpires && !collectionConsumed
             && (selectedInteractions & AvailableGameplayActions.ClimbLedge) != 0;
         public float Horizontal => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().x;
         public float Vertical => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().y;
@@ -98,6 +104,7 @@ namespace MousePlatformer
             collect = new InputAction("FrontPaws", InputActionType.Button);
             collect.AddBinding("<Keyboard>/e");
             collect.AddBinding("<Gamepad>/buttonEast");
+            collect.performed += QueueLedgeInteraction;
             bite = new InputAction("Mouth", InputActionType.Button);
             bite.AddBinding("<Keyboard>/f");
             bite.AddBinding("<Gamepad>/buttonNorth");
@@ -110,8 +117,17 @@ namespace MousePlatformer
             PlayerControlBindings.Apply(collect, PlayerBodyAction.FrontPaws);
             PlayerControlBindings.Apply(bite, PlayerBodyAction.Mouth);
             jumpQueued = false;
+            ClearLedgeInteraction();
         }
         private void QueueJump(InputAction.CallbackContext context) { if (!GameplayActionsLocked) jumpQueued = true; }
+        private void QueueLedgeInteraction(InputAction.CallbackContext context)
+        {
+            if (GameplayActionsLocked || collectionConsumed) return;
+            ledgeInteractionQueued = true;
+            ledgeInteractionExpires = Time.timeAsDouble + ledgeInputBuffer;
+        }
+
+        public void ClearLedgeInteraction() => ledgeInteractionQueued = false;
         public void ConsumeCollectibleInteraction(CollectibleType type)
         {
             if (type == CollectibleType.Cheese || type == CollectibleType.GreenCheese) mouthConsumed = true;
@@ -122,14 +138,17 @@ namespace MousePlatformer
         {
             mouthConsumed = true;
             collectionConsumed = true;
+            ClearLedgeInteraction();
         }
 
         public void ConsumeInteraction()
         {
             collectionConsumed = true;
+            ClearLedgeInteraction();
         }
         private void Update()
         {
+            if (GameplayActionsLocked || Time.timeAsDouble > ledgeInteractionExpires) ClearLedgeInteraction();
             if (collect == null || !collect.IsPressed())
             {
                 collectionConsumed = false;
@@ -145,7 +164,7 @@ namespace MousePlatformer
             return result;
         }
         private void OnEnable() { move.Enable(); jump.Enable(); bite.Enable(); collect.Enable(); }
-        private void OnDisable() { move.Disable(); jump.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; collectionConsumed = false; mouthConsumed = false; }
+        private void OnDisable() { move.Disable(); jump.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; collectionConsumed = false; mouthConsumed = false; ClearLedgeInteraction(); }
         private void OnDestroy() { PlayerControlBindings.Changed -= ApplyBindings; move.Dispose(); jump.Dispose(); bite.Dispose(); collect.Dispose(); }
     }
 }

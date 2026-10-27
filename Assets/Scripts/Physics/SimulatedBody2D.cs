@@ -8,6 +8,19 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D), typeof(GroundContact2D))]
     public sealed class SimulatedBody2D : MonoBehaviour
     {
+        private static readonly List<SimulatedBody2D> activeBodies = new List<SimulatedBody2D>();
+        public static IReadOnlyList<SimulatedBody2D> ActiveBodies => activeBodies;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetActiveBodies() => activeBodies.Clear();
+
+        private void OnEnable()
+        {
+            if (!activeBodies.Contains(this)) activeBodies.Add(this);
+        }
+
+        private void OnDisable() => activeBodies.Remove(this);
+
         [SerializeField, Tooltip("Shared world settings used by every physics behaviour on this body.")]
         private PhysicsSettings physicsSettings;
         [Header("Prop resistance")]

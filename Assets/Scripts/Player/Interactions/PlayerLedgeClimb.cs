@@ -74,6 +74,12 @@ namespace MousePlatformer
                 || Vector2.Angle(top.normal, Vector2.up) > Mathf.Clamp(body.MaxSlopeAngle, 0f, 89f) + 0.01f)
                 return Reject("No valid supporting surface above the side", top.collider);
             float surfaceRise = top.point.y - bounds.min.y;
+            if (!fromGround)
+            {
+                if (!TryFindLocalGrip(bounds, direction, top, out RaycastHit2D localTop)) return false;
+                top = localTop;
+                surfaceRise = top.point.y - bounds.min.y;
+            }
             // Keep the landing box outside the contact tolerance, then settle onto the support.
             float landingGap = Mathf.Max(body.Skin, Physics2D.defaultContactOffset * 2f);
             float rise = surfaceRise + landingGap;
@@ -104,6 +110,48 @@ namespace MousePlatformer
             if (fromGround) ClimbStarted?.Invoke();
             lastAttempt = fromGround ? "Climb started" : "Attachment successful";
             return true;
+        }
+
+        private bool TryFindLocalGrip(Bounds bounds, float direction, RaycastHit2D candidate,
+            out RaycastHit2D localTop)
+        {
+            localTop = default;
+            float clearance = Mathf.Max(0.001f, Settings.gripProbeClearance);
+            float depth = Mathf.Max(0.001f, Settings.minimumGripDepth);
+            float reach = bounds.extents.x + HorizontalReach + body.Skin;
+            Vector2 lowerOrigin = new Vector2(bounds.center.x, candidate.point.y - clearance);
+            if (!TryFindGripSurface(lowerOrigin, Vector2.right * direction, reach, out RaycastHit2D side)
+                || side.collider != candidate.collider || side.distance <= 0f || side.normal.x * direction > -0.5f)
+                return Reject("No local side beneath the grip", side.collider);
+
+            // Compare nearby geometry, including other crates, rather than collider identity alone.
+            Vector2 upperOrigin = new Vector2(bounds.center.x, candidate.point.y + clearance);
+            float gripReach = side.distance + depth;
+            if (TryFindGripSurface(upperOrigin, Vector2.right * direction, gripReach, out RaycastHit2D upper))
+                return Reject("Wall above the grip leaves no exposed shelf", upper.collider);
+
+            Vector2 topOrigin = new Vector2(side.point.x + direction * depth, upperOrigin.y);
+            if (!TryFindGripSurface(topOrigin, Vector2.down, clearance * 2f, out localTop)
+                || localTop.distance <= 0f || localTop.collider != candidate.collider
+                || localTop.normal.y < 0.9f
+                || Mathf.Abs(localTop.point.y - candidate.point.y) > clearance * 0.5f)
+                return Reject("No supporting shelf beside the paws", localTop.collider);
+            return true;
+        }
+
+        private bool TryFindGripSurface(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D nearest)
+        {
+            Physics2D.Raycast(origin, direction, body.SolidFilter, hits, distance);
+            nearest = default;
+            float nearestDistance = float.PositiveInfinity;
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider == body.Shape || hit.collider.transform.IsChildOf(transform)) continue;
+                if (hit.distance >= nearestDistance) continue;
+                nearest = hit;
+                nearestDistance = hit.distance;
+            }
+            return nearest.collider != null;
         }
 
         private bool Reject(string reason, Collider2D blocker = null)

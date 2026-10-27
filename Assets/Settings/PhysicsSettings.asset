@@ -50,6 +50,8 @@ MonoBehaviour:
   ledgeClimb:
     enabled: 1
     maxHeight: 0.75
+    gripProbeClearance: 0.03125
+    minimumGripDepth: 0.03125
     hangHeightFraction: 0.85
     retryDelay: 0.15
   digging:

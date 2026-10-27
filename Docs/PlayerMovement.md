@@ -286,3 +286,13 @@ Runtime and Editor compilation checked. In Unity, check pushing a crate over an 
 The shared horizontal clearance calculation now includes the player's own PhysicsSettings.player.maxStepHeight as well as the crate's independent Pushable.maxPushStepHeight. Both must allow the movement: a crate blocked by a taller edge limits the shared horizontal displacement, so the player does not keep pulling away while the crate remains stuck.
 
 While grounded and holding a crate, MovePlayer uses the normal swept step handling rather than the old axis-only special case that skipped stepping. It also follows a walkable step down within the player's threshold, avoiding a transient airborne state and unnecessary Release. Crates use the same ground-follow route during player push/pull, with their own smaller threshold. Snapping starts only from actual ground contact, observes collision/budget checks, and cannot bridge a drop beyond the permitted descent. Larger falls, jumping, releasing grab and moving out of reach retain normal release behavior. Automatic climb suppression during held push input is unchanged.
+
+
+## Local ledge grip validation
+
+Airborne ledge attachment checks a local side beneath the candidate top, free horizontal space above it, and an exposed supporting shelf immediately behind that side. Grip Probe Clearance and Minimum Grip Depth are configured in Physics Settings > Ledge Climb, both initially 0.03125 units (one pixel at 32 PPU). Upper clearance checks every solid collider, including separate stacked crates. Aligned stacks and continuous walls do not expose an intermediate grip; protruding shelves can. This does not require full landing clearance: CanClimbTo still runs only when attempting to climb from a hang. Last Attempt reports which local grip check rejected attachment. Grounded automatic climbing retains its existing checks.
+
+
+## Buffered climb input
+
+PlayerInputReader captures front-paw presses through InputAction.performed and keeps a ledge-only request for Ledge Input Buffer seconds (0.15 by default). Releasing the button does not erase a short tap before the next physics tick. PlayerMovement consumes the interaction only when climbing starts, so a rejected clearance check can retry until the request expires. Leaving the ledge, entering water, teleporting, consuming the interaction elsewhere, changing bindings or locking/disabling input clears the request. Other front-paw interactions retain their existing press/hold behaviour.

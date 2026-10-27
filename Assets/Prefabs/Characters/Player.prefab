@@ -234,6 +234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 9800100001}
+  ledgeInputBuffer: 0.15
 --- !u!114 &4027669037393712695
 MonoBehaviour:
   m_ObjectHideFlags: 0

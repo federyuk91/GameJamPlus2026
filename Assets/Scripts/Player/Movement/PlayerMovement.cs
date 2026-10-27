@@ -127,12 +127,18 @@ namespace MousePlatformer
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
             bool traversalReleased = false;
-            if (inWater && ledgeClimb != null && ledgeClimb.Active) ledgeClimb.Cancel();
+            if (inWater && ledgeClimb != null && ledgeClimb.Active)
+            {
+                ledgeClimb.Cancel();
+                input.ClearLedgeInteraction();
+            }
             bool ledgeInteractionPressed = input.LedgeInteractionPressed;
             if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed, ledgeInteractionPressed,
                 out Vector2 climbVelocity, out bool ledgeReleased))
             {
-                if (ledgeInteractionPressed) input.ConsumeInteraction();
+                if (ledgeInteractionPressed && ledgeClimb.State == PlayerLedgeClimb.LedgeState.Climbing)
+                    input.ConsumeInteraction();
+                if (ledgeReleased) input.ClearLedgeInteraction();
                 ResetSurfaceMotion();
                 if (swimming != null) swimming.ResetStrokeControl();
                 if (crateInteraction != null) crateInteraction.Release();
@@ -322,6 +328,7 @@ namespace MousePlatformer
         }
         public void TeleportTo(Vector2 destination)
         {
+            if (input != null) input.ClearLedgeInteraction();
             if (crateInteraction != null) crateInteraction.Release();
             if (ropeInteraction != null) ropeInteraction.Detach();
             if (ladderInteraction != null) ladderInteraction.Detach();
