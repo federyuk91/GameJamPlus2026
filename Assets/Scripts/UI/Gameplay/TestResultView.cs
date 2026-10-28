@@ -14,7 +14,7 @@ namespace GameJamPlus.UI
         private bool useExitImage;
         private readonly VisualElement resultScreen;
         private readonly VisualElement counters;
-        private readonly VisualElement timer;
+        private readonly VisualElement campaignReadout;
         private readonly Label elapsed;
         private readonly Label result;
         private readonly Label universe;
@@ -55,7 +55,7 @@ namespace GameJamPlus.UI
             cover.parent.RegisterCallback<GeometryChangedEvent>(OnRootGeometryChanged);
             resultScreen = root.Q("test-result");
             counters = root.Q("resource-counters");
-            timer = root.Q(className: "timer-anchor");
+            campaignReadout = root.Q("campaign-readout") ?? root.Q(className: "timer-anchor");
             elapsed = root.Q<Label>("test-elapsed");
             result = root.Q<Label>("test-result-message");
             notes = root.Q<ScrollView>("test-notes");
@@ -92,8 +92,8 @@ namespace GameJamPlus.UI
                 Debug.LogWarning("Assign the Exit Tunnel image and shader on Gameplay HUD to show the goal transition.");
             cover.BringToFront();
             if (useExitImage) FitCoverToScreen();
-            counters.style.display = DisplayStyle.None;
-            timer.style.display = DisplayStyle.None;
+            if (counters != null) counters.style.display = DisplayStyle.None;
+            if (campaignReadout != null) campaignReadout.style.display = DisplayStyle.None;
             cover.style.opacity = useExitImage ? 1f : 0f;
             cover.style.backgroundColor = Color.clear;
             tunnel.style.display = useExitImage ? DisplayStyle.None : DisplayStyle.Flex;

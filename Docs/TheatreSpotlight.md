@@ -10,4 +10,16 @@ Drag `Assets/Prefabs/Props/Theatre Spotlight.prefab` into a gameplay scene and p
 
 The sprite `Assets/Art/Pixel Art/Props/Faretto.png` is an exact 23×20 pixel extraction of the visible layer in `Assets/Art/Pixel Art/Faretto.aseprite`, imported at 32 pixels per unit with Point filtering, no mipmaps and no compression. The original Aseprite file is preserved.
 
-No Play Mode, compilation or automated tests were run. Check lamp orientation, smooth tracking, light visibility and area boundaries in Unity.
+C# compilation verified after adding manual controls. No Play Mode or automated tests were run. Check lamp orientation, smooth tracking, light visibility and area boundaries in Unity.
+
+## Manual controls
+
+The Theatre Spotlight component exposes public parameterless UnityEvent methods:
+
+- TurnOnLight, TurnOffLight, ToggleLight: force light output on/off, preserving Fade Duration.
+- TurnOnFollow, TurnOffFollow, ToggleFollow: enable player tracking anywhere or freeze the current orientation. These do not change light output.
+- UseAutomaticLight, UseAutomaticFollow: restore area-based behavior independently.
+
+Light Mode and Follow Mode start at Automatic, preserving existing prefab behavior: the light fades on and follows while the player is inside Tracking Area, then fades off and rotates back to its rest pose outside. Manual On ignores the tracking area; following still requires an available player collider. Toggle uses the requested state rather than the fading intensity, so repeated toggles reverse correctly during a fade.
+
+Wire an event to the root Theatre Spotlight GameObject and select the required method under TheatreSpotlight. Review event wiring and fades in Unity Play Mode.

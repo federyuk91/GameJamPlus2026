@@ -44,6 +44,7 @@ namespace GameJamPlus.UI
         private Slider musicVolume;
         private Slider effectsVolume;
         private Toggle fullscreen;
+        private Toggle hideTooltip;
         private Label status;
         private InputDevicePrompts devicePrompts;
         private Label navigationHint;
@@ -102,6 +103,8 @@ namespace GameJamPlus.UI
             musicVolume = root.Q<Slider>("music-volume");
             effectsVolume = root.Q<Slider>("effects-volume");
             fullscreen = root.Q<Toggle>("fullscreen");
+            hideTooltip = root.Q<Toggle>("hide-tooltip");
+            hideTooltip.SetValueWithoutNotify(GameUISettings.HideTooltip);
             root.Q<Label>("credit-designer-programmer").text = designerProgrammerName;
             root.Q<Label>("credit-artist").text = artistName;
             root.Q<Label>("credit-pixel-artist").text = pixelArtistName;
@@ -133,6 +136,7 @@ namespace GameJamPlus.UI
             musicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
             effectsVolume.RegisterValueChangedCallback(OnEffectsVolumeChanged);
             fullscreen.RegisterValueChangedCallback(OnFullscreenChanged);
+            hideTooltip.RegisterValueChangedCallback(OnHideTooltipChanged);
 
             SelectMenuButton(menuButtons[0]);
             initialFocus = root.schedule.Execute(() => menuButtons[0].Focus());
@@ -167,6 +171,7 @@ namespace GameJamPlus.UI
             musicVolume.UnregisterValueChangedCallback(OnMusicVolumeChanged);
             effectsVolume.UnregisterValueChangedCallback(OnEffectsVolumeChanged);
             fullscreen.UnregisterValueChangedCallback(OnFullscreenChanged);
+            hideTooltip.UnregisterValueChangedCallback(OnHideTooltipChanged);
             PlayerPrefs.Save();
             RestoreSubmit();
             root = null;
@@ -428,7 +433,8 @@ namespace GameJamPlus.UI
 
         private void OpenOptions()
         {
-            EnterRightPanel(1, masterVolume, musicVolume, effectsVolume, fullscreen, root.Q<Button>("options-back"));
+            hideTooltip.SetValueWithoutNotify(GameUISettings.HideTooltip);
+            EnterRightPanel(1, masterVolume, musicVolume, effectsVolume, fullscreen, hideTooltip, root.Q<Button>("options-back"));
         }
 
         private void OnOptionsPointerDown(PointerDownEvent pointerEvent)
@@ -472,6 +478,7 @@ namespace GameJamPlus.UI
             musicVolume.focusable = value;
             effectsVolume.focusable = value;
             fullscreen.focusable = value;
+            hideTooltip.focusable = value;
             root.Q<Button>("options-back").focusable = value;
             root.Q<Button>("quit-back").focusable = value;
             root.Q<Button>("quit-confirm").focusable = value;
@@ -524,6 +531,8 @@ namespace GameJamPlus.UI
         private void OnMasterVolumeChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.MasterVolume = changeEvent.newValue;
         private void OnMusicVolumeChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.MusicVolume = changeEvent.newValue;
         private void OnEffectsVolumeChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.EffectsVolume = changeEvent.newValue;
+
+        private void OnHideTooltipChanged(ChangeEvent<bool> changeEvent) => GameUISettings.HideTooltip = changeEvent.newValue;
 
         private void OnFullscreenChanged(ChangeEvent<bool> changeEvent)
         {

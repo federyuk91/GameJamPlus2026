@@ -51,6 +51,7 @@
                                         <ui:Slider name="effects-volume" label="Effects" low-value="0" high-value="1" value="1" class="audio-slider" />
                                         <ui:Label text="DISPLAY" class="section-heading" />
                                         <ui:Toggle name="fullscreen" label="Fullscreen" value="true" />
+                                        <ui:Toggle name="hide-tooltip" label="Hide tooltip" value="false" />
                                         <ui:Button name="options-back" text="Back" class="dialog-button sprite-button sprite-undo" />
                                     </ui:VisualElement>
                                     <ui:VisualElement name="credits-panel" class="context-card hidden">

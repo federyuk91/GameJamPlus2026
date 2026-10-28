@@ -190,6 +190,7 @@ MonoBehaviour:
   motion: {fileID: 1006}
   ropeAttachment: {fileID: 0}
   showGizmos: 1
+  maxPushStepHeight: 0.0625
 --- !u!114 &1006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,7 +226,7 @@ MonoBehaviour:
   attachment: {fileID: 0}
   motion: {fileID: 1006}
   liftCapacity: 0.5
-  hoverWeightTolerance: 0.1
+  hoverWeightTolerance: 0.05
   liftAcceleration: 78
   swingInfluence: 0.35
 --- !u!95 &1008
@@ -1258,6 +1259,7 @@ MonoBehaviour:
   motion: {fileID: 5006}
   ropeAttachment: {fileID: 5008}
   showGizmos: 1
+  maxPushStepHeight: 0.0625
 --- !u!114 &5006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1341,6 +1343,7 @@ MonoBehaviour:
   impactVolume: 0.8
   minimumFallSpeed: 0.5
   contactTolerance: 0.02
+  waterTransitionDelay: 2
 --- !u!82 &9800007103
 AudioSource:
   m_ObjectHideFlags: 0

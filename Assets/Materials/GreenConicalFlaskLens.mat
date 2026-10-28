@@ -43,7 +43,7 @@ Material:
     m_Floats:
     - _GreenDominance: 0.362
     - _LensCaptureReady: 0
-    - _LensDistortion: -0.942
+    - _LensDistortion: -0.212
     - _Magnification: 4.1
     - _MaskAvailable: 0
     - _MaskSource: 2

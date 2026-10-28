@@ -18,6 +18,10 @@ namespace MousePlatformer
         private PhysicsSettings WorldSettings => Body.Settings;
         [SerializeField] private PropsBuoyancy buoyancy;
         [SerializeField] private RopeAttachment tether;
+        [SerializeField, Tooltip("Additional rope constraints on this body. The original Tether reference remains the primary attachment.")]
+        private RopeAttachment[] additionalTethers = System.Array.Empty<RopeAttachment>();
+        private readonly List<RopeAttachment> ropeAttachments = new List<RopeAttachment>(2);
+        private bool attachmentsInitialized;
         [SerializeField] private Pushable pushable;
         [SerializeField] private BalloonLift balloon;
         [SerializeField] private Vector2 initialVelocity;
@@ -43,16 +47,99 @@ namespace MousePlatformer
         public bool InWater => SubmergedFraction > 0f;
         private bool Airborne => balloon != null && balloon.isActiveAndEnabled;
         public bool UsesAirLift => Airborne;
-        public float BalloonWeightReduction => tether != null ? tether.LiftCapacity : 0f;
-        private bool InternalBalloonTether => tether != null && tether.LiftingBalloon != null
-            && coordinatedVertical && tether.LiftingBalloon.Motion.coordinatedVertical;
+        public IReadOnlyList<RopeAttachment> RopeAttachments
+        {
+            get { InitializeAttachments(); return ropeAttachments; }
+        }
+        public BalloonLift LiftingBalloon
+        {
+            get
+            {
+                InitializeAttachments();
+                foreach (RopeAttachment attachment in ropeAttachments)
+                    if (attachment != null && attachment.ConstrainsMotion && attachment.LiftingBalloon != null)
+                        return attachment.LiftingBalloon;
+                return null;
+            }
+        }
+        public float BalloonWeightReduction => LiftingBalloon != null ? LiftingBalloon.LiftCapacity : 0f;
+        private bool InternalBalloonTether => LiftingBalloon != null
+            && coordinatedVertical && LiftingBalloon.Motion.coordinatedVertical;
         public float Weight => Body.Weight;
         public float PushWeight => pushable != null ? pushable.StackWeight
             : CrateFlotation.EffectiveWeight(Weight, WaterVolume.SubmergedFraction(body.Shape.bounds), FullSubmersionWeightMultiplier);
         public float PassengerWeight => (passenger != null && passenger.isActiveAndEnabled ? passenger.Weight : 0f)
-            + (tether != null ? tether.RopePassengerWeight : 0f)
+            + RopePassengerWeight
             + (Airborne ? balloon.RopePassengerWeight : 0f);
         private float InertialWeight => Weight + PassengerWeight;
+
+        private float RopePassengerWeight
+        {
+            get
+            {
+                float total = 0f;
+                InitializeAttachments();
+                foreach (RopeAttachment attachment in ropeAttachments)
+                    if (attachment != null && attachment.isActiveAndEnabled) total += attachment.RopePassengerWeight;
+                return total;
+            }
+        }
+
+        private void InitializeAttachments()
+        {
+            if (attachmentsInitialized) return;
+            attachmentsInitialized = true;
+            if (tether != null) ropeAttachments.Add(tether);
+            foreach (RopeAttachment attachment in additionalTethers)
+                if (attachment != null && !ropeAttachments.Contains(attachment)) ropeAttachments.Add(attachment);
+            if (additionalTethers.Length == 0)
+                foreach (RopeAttachment attachment in GetComponents<RopeAttachment>())
+                    if (!ropeAttachments.Contains(attachment)) ropeAttachments.Add(attachment);
+        }
+
+        public void RegisterRopeAttachment(RopeAttachment attachment)
+        {
+            InitializeAttachments();
+            if (attachment != null && !ropeAttachments.Contains(attachment)) ropeAttachments.Add(attachment);
+        }
+
+        private bool SkipTether(RopeAttachment attachment, bool sharedVerticalMove, bool ignoreBalloon)
+        {
+            if (attachment == null || !attachment.ConstrainsMotion) return true;
+            BalloonLift lifting = attachment.LiftingBalloon;
+            return lifting != null && (ignoreBalloon || (sharedVerticalMove && coordinatedVertical && lifting.Motion.coordinatedVertical));
+        }
+
+        private Vector2 ConstrainTetherPosition(Vector2 position, bool sharedVerticalMove = false, bool ignoreBalloon = false)
+        {
+            // Alternate projections onto the ropes' reach circles to satisfy the combined constraint.
+            int iterations = RopeAttachments.Count > 1 ? 12 : 1;
+            for (int iteration = 0; iteration < iterations; iteration++)
+            {
+                Vector2 previous = position;
+                foreach (RopeAttachment attachment in ropeAttachments)
+                    if (!SkipTether(attachment, sharedVerticalMove, ignoreBalloon)) position = attachment.ConstrainPosition(position);
+                if ((position - previous).sqrMagnitude < 0.0000000001f) break;
+            }
+            return position;
+        }
+
+        public Vector2 AllowedTetherDisplacement(Vector2 displacement, bool ignoreBalloon = false, bool sharedVerticalMove = false)
+        {
+            Vector2 start = transform.position;
+            if ((ConstrainTetherPosition(start + displacement, sharedVerticalMove, ignoreBalloon) - start - displacement).sqrMagnitude < 0.0000000001f)
+                return displacement;
+            float low = 0f;
+            float high = 1f;
+            for (int iteration = 0; iteration < 12; iteration++)
+            {
+                float middle = (low + high) * 0.5f;
+                Vector2 target = start + displacement * middle;
+                if ((ConstrainTetherPosition(target, sharedVerticalMove, ignoreBalloon) - target).sqrMagnitude < 0.0000000001f) low = middle;
+                else high = middle;
+            }
+            return displacement * low;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetRegistry()
@@ -78,7 +165,7 @@ namespace MousePlatformer
         {
             if (body == null) body = GetComponent<SimulatedBody2D>();
             if (buoyancy == null) buoyancy = GetComponent<PropsBuoyancy>();
-            if (tether == null) tether = GetComponent<RopeAttachment>();
+            InitializeAttachments();
             if (pushable == null) pushable = GetComponent<Pushable>();
             if (balloon == null) balloon = GetComponent<BalloonLift>();
             Velocity = body.LimitVelocity(initialVelocity);
@@ -389,21 +476,7 @@ namespace MousePlatformer
 
         private float AllowedTetherVertical(Vector2 direction, float requested)
         {
-            if (InternalBalloonTether) return requested;
-            if (tether == null || !tether.Attached) return requested;
-            Vector2 start = transform.position;
-            Vector2 target = start + direction * requested;
-            if ((tether.ConstrainPosition(target) - target).sqrMagnitude < 0.0000000001f) return requested;
-            float low = 0f;
-            float high = requested;
-            for (int iteration = 0; iteration < 12; iteration++)
-            {
-                float middle = (low + high) * 0.5f;
-                target = start + direction * middle;
-                if ((tether.ConstrainPosition(target) - target).sqrMagnitude < 0.0000000001f) low = middle;
-                else high = middle;
-            }
-            return low;
+            return AllowedTetherDisplacement(direction * requested, sharedVerticalMove: true).magnitude;
         }
 
         public Vector2 FrameVelocity { get; private set; }
@@ -419,7 +492,14 @@ namespace MousePlatformer
 
         private Vector2 ConstrainVelocity(Vector2 velocity)
         {
-            if (tether != null) velocity = tether.ConstrainVelocity(velocity);
+            int iterations = RopeAttachments.Count > 1 ? 12 : 1;
+            for (int iteration = 0; iteration < iterations; iteration++)
+            {
+                Vector2 previous = velocity;
+                foreach (RopeAttachment attachment in ropeAttachments)
+                    if (attachment != null && attachment.ConstrainsMotion) velocity = attachment.ConstrainVelocity(velocity);
+                if ((velocity - previous).sqrMagnitude < 0.0000000001f) break;
+            }
             if (Airborne) velocity = balloon.ConstrainVelocity(velocity);
             return body.LimitVelocity(velocity);
         }
@@ -456,15 +536,14 @@ namespace MousePlatformer
         {
             Vector2 start = transform.position;
             Vector2 target = start + displacement;
-            bool constrainTether = tether != null && !(sharedVerticalMove && InternalBalloonTether);
-            if (constrainTether) target = tether.ConstrainPosition(target);
+            target = ConstrainTetherPosition(target, sharedVerticalMove);
             if (Airborne && !(sharedVerticalMove && coordinatedVertical)) target = balloon.ConstrainPosition(target);
             MoveSafely(target - start, ignored);
             // Resolve the rope and solid geometry together without teleporting through obstacles.
-            for (int i = 0; i < 4 && constrainTether && tether.Attached; i++)
+            for (int i = 0; i < 4; i++)
             {
                 Vector2 position = transform.position;
-                Vector2 correction = tether.ConstrainPosition(position) - position;
+                Vector2 correction = ConstrainTetherPosition(position, sharedVerticalMove) - position;
                 if (correction.sqrMagnitude < 0.00000001f) break;
                 MoveSafely(correction, ignored);
             }

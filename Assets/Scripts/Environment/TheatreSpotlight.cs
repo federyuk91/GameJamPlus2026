@@ -7,6 +7,8 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class TheatreSpotlight : MonoBehaviour
     {
+        public enum ControlMode { Automatic, On, Off }
+
         [SerializeField] private BoxCollider2D trackingArea;
         [SerializeField] private Transform aimingPivot;
         [SerializeField] private Light2D spotlight;
@@ -16,11 +18,42 @@ namespace MousePlatformer
         private float rotationSpeed = 120f;
         [SerializeField, Min(0f), Tooltip("Seconds fading the spotlight on when the player enters its area, or off when the player leaves. Brightness is configured on the child Light 2D.")]
         private float fadeDuration = 0.3f;
+        [SerializeField, Tooltip("Automatic follows the tracking area. On and Off force the light state independently of player tracking.")]
+        private ControlMode lightMode = ControlMode.Automatic;
+        [SerializeField, Tooltip("Automatic tracks inside the area and returns to rest outside. On tracks the player anywhere. Off holds the current orientation.")]
+        private ControlMode followMode = ControlMode.Automatic;
         [SerializeField] private bool showGizmos = true;
         private Quaternion restRotation;
         private float activeIntensity;
 
         public bool IsTracking { get; private set; }
+        public bool IsLightOn => spotlight != null && spotlight.enabled;
+
+        public void TurnOnLight() => lightMode = ControlMode.On;
+        public void TurnOffLight() => lightMode = ControlMode.Off;
+        public void ToggleLight()
+        {
+            bool requestedOn = lightMode == ControlMode.On
+                || (lightMode == ControlMode.Automatic && ContainsPlayer());
+            lightMode = requestedOn ? ControlMode.Off : ControlMode.On;
+        }
+
+        public void TurnOnFollow() => followMode = ControlMode.On;
+        public void TurnOffFollow()
+        {
+            followMode = ControlMode.Off;
+            IsTracking = false;
+        }
+        public void ToggleFollow()
+        {
+            bool requestedOn = followMode == ControlMode.On
+                || (followMode == ControlMode.Automatic && ContainsPlayer());
+            if (requestedOn) TurnOffFollow();
+            else TurnOnFollow();
+        }
+
+        public void UseAutomaticLight() => lightMode = ControlMode.Automatic;
+        public void UseAutomaticFollow() => followMode = ControlMode.Automatic;
 
         private void Awake()
         {
@@ -42,7 +75,11 @@ namespace MousePlatformer
             if (Time.deltaTime <= 0f) return;
             if (targetCollider == null && GameManager.Instance != null)
                 targetCollider = GameManager.Instance.PlayerCollider;
-            IsTracking = ContainsPlayer();
+            bool playerInArea = ContainsPlayer();
+            bool targetAvailable = targetCollider != null && targetCollider.enabled
+                && targetCollider.gameObject.activeInHierarchy;
+            IsTracking = targetAvailable && (followMode == ControlMode.On
+                || (followMode == ControlMode.Automatic && playerInArea));
             Quaternion desiredRotation = aimingPivot.parent != null
                 ? aimingPivot.parent.rotation * restRotation : restRotation;
             if (IsTracking)
@@ -52,9 +89,12 @@ namespace MousePlatformer
                     desiredRotation = Quaternion.Euler(0f, 0f,
                         Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f);
             }
-            aimingPivot.rotation = Quaternion.RotateTowards(aimingPivot.rotation,
-                desiredRotation, rotationSpeed * Time.deltaTime);
-            float desiredIntensity = IsTracking ? activeIntensity : 0f;
+            if (followMode != ControlMode.Off)
+                aimingPivot.rotation = Quaternion.RotateTowards(aimingPivot.rotation,
+                    desiredRotation, rotationSpeed * Time.deltaTime);
+            bool lightOn = lightMode == ControlMode.On
+                || (lightMode == ControlMode.Automatic && playerInArea);
+            float desiredIntensity = lightOn ? activeIntensity : 0f;
             spotlight.intensity = fadeDuration > 0f
                 ? Mathf.MoveTowards(spotlight.intensity, desiredIntensity, activeIntensity * Time.deltaTime / fadeDuration)
                 : desiredIntensity;
@@ -63,7 +103,7 @@ namespace MousePlatformer
 
         private bool ContainsPlayer()
         {
-            if (!trackingArea.enabled || !trackingArea.gameObject.activeInHierarchy
+            if (trackingArea == null || !trackingArea.enabled || !trackingArea.gameObject.activeInHierarchy
                 || targetCollider == null || !targetCollider.enabled
                 || !targetCollider.gameObject.activeInHierarchy) return false;
             // Custom character movement does not produce Rigidbody2D trigger callbacks.

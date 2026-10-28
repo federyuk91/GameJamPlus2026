@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:game="GameJamPlus.UI" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/GameplayHud.uss?fileID=7433441132597879392&amp;guid=e3953661930f48a484f21a438b7da774&amp;type=3#GameplayHud"/>
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls"/>
-    <Style src="../UserInterfaceSprites.uss" />
+    <Style src="project://database/Assets/UI%20Toolkit/UserInterfaceSprites.uss?fileID=7433441132597879392&amp;guid=a0500b9bcb6f4d5fa18f80cf6264303f&amp;type=3#UserInterfaceSprites"/>
     <ui:VisualElement name="gameplay-hud" picking-mode="Ignore" class="gameplay-hud" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
         <ui:VisualElement name="hud-frame" picking-mode="Ignore" class="hud-frame">
             <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom">
@@ -21,9 +21,9 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard">
+            <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard" style="width: 129px;">
                 <ui:VisualElement class="health-panel">
-                    <ui:Label text="HEALTH" class="vital-caption"/>
+                    <ui:Label text="HEALTH" name="Label" class="vital-caption" style="width: 35px;"/>
                     <ui:VisualElement name="health-hearts" class="health-hearts">
                         <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
                         <ui:VisualElement picking-mode="Ignore" class="health-heart"/>
@@ -33,7 +33,7 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="satiety-panel" picking-mode="Ignore" class="satiety-panel">
-                    <ui:Label name="satiety-caption" text="SATIETY" picking-mode="Ignore" class="satiety-caption vital-caption"/>
+                    <ui:Label name="satiety-caption" text="SATIETY" picking-mode="Ignore" class="satiety-caption vital-caption" style="width: 35px;"/>
                     <ui:VisualElement name="satiety-notches" picking-mode="Ignore" class="satiety-notches">
                         <ui:VisualElement class="satiety-notch"/>
                         <ui:VisualElement class="satiety-notch"/>
@@ -74,22 +74,18 @@
             <ui:VisualElement name="interaction-hints-anchor" picking-mode="Ignore" class="interaction-hints-anchor">
                 <ui:VisualElement name="interaction-hints" picking-mode="Ignore" class="interaction-hints interaction-hints-panel"/>
             </ui:VisualElement>
-            <ui:VisualElement name="campaign-readout" picking-mode="Ignore" class="campaign-readout">
-                <ui:Label name="campaign-progress" text="UNIVERSE 10 / ATTEMPT 1/10"/>
-                <ui:Label name="subject-identity" text="SUBJECT U10-R0-G0"/>
+            <ui:VisualElement name="campaign-readout" picking-mode="Ignore" class="campaign-readout" style="left: 10px; top: 2px; align-items: center; justify-content: flex-start; align-self: center; width: 180px; height: 26px; align-content: flex-start; min-height: 0; border-left-color: rgb(240, 229, 202); border-right-color: rgb(240, 229, 202); border-top-color: rgb(240, 229, 202); border-bottom-color: rgb(240, 229, 202); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px; background-color: rgb(20, 43, 58); color: rgb(240, 229, 202); padding-left: 5px; padding-right: 5px; flex-direction: row; padding-top: 0; padding-bottom: 0;">
+                <ui:VisualElement name="counter-primary" picking-mode="Ignore" class="counter" style="border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; flex-direction: column; width: 134px; height: 20px; align-self: auto; border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; top: 0; left: 0; bottom: 4px; right: 78px; min-height: 0;">
+                    <ui:Label name="campaign-progress" text="UNIVERSE 10 / ATTEMPT 1/10" picking-mode="Position" style="align-items: auto; height: 8px; flex-direction: column; justify-content: flex-start; align-content: auto; font-size: 8px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; min-height: 10px; -unity-text-align: middle-left;"/>
+                    <ui:Label name="subject-identity" text="SUBJECT U10-R0-G0" style="height: 8px; font-size: 8px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; min-height: 10px; -unity-text-align: middle-left;"/>
+                </ui:VisualElement>
+                <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-right; height: 7px; bottom: 0; align-items: flex-end; font-size: 8px; padding-left: 0;"/>
             </ui:VisualElement>
             <ui:VisualElement name="scientist-ending-footer" picking-mode="Ignore" class="scientist-ending-footer"/>
             <ui:Label name="camera-height-lock" text="CAMERA HEIGHT LOCKED — C TO UNLOCK" picking-mode="Ignore" class="camera-height-lock"/>
             <ui:Label name="camera-lock-reminder" picking-mode="Ignore" class="camera-lock-reminder"/>
             <ui:VisualElement name="test-white-cover" picking-mode="Ignore" class="test-white-cover"/>
-            <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area" style="bottom: 73px; top: 22px;">
-                <ui:VisualElement picking-mode="Ignore" class="timer-anchor">
-                    <ui:VisualElement picking-mode="Ignore" class="timer-panel">
-                        <ui:Label text="TIME ELAPSED" picking-mode="Ignore" class="timer-caption" style="-unity-text-align: lower-center; padding-top: 0; margin-top: 2px;"/>
-                        <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-center; height: 7px; bottom: 1px;"/>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
+            <ui:VisualElement name="hud-safe-area" picking-mode="Ignore" class="hud-safe-area" style="bottom: 73px; top: 28px;"/>
             <ui:VisualElement name="test-result" picking-mode="Ignore" class="test-result">
                 <ui:VisualElement class="test-notebook">
                     <ui:VisualElement class="notebook-margin"/>
@@ -189,6 +185,7 @@
                         <ui:Slider name="pause-music" label="Music" low-value="0" high-value="1" class="pause-slider"/>
                         <ui:Slider name="pause-effects" label="Effects" low-value="0" high-value="1" class="pause-slider"/>
                         <ui:Toggle name="pause-fullscreen" label="Fullscreen" value="true" class="pause-toggle"/>
+                        <ui:Toggle name="pause-hide-tooltip" label="Hide tooltip" value="false" class="pause-toggle"/>
                         <ui:Button name="pause-options-back" text="Back" class="pause-button sprite-button sprite-undo"/>
                     </ui:VisualElement>
                     <ui:Label name="pause-status" class="pause-status"/>

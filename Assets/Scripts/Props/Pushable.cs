@@ -22,12 +22,13 @@ namespace MousePlatformer
         public float Weight => Body.Weight;
         private PropsMotion Motion => motion != null ? motion : motion = GetComponent<PropsMotion>();
         private float SupportedWeight => CrateFlotation.EffectiveWeight(Weight, WaterVolume.SubmergedFraction(Body.Shape.bounds), Motion.FullSubmersionWeightMultiplier)
-            - (ropeAttachment != null ? ropeAttachment.LiftCapacity : 0f);
+            - Motion.BalloonWeightReduction;
         public float EffectiveWeight => Mathf.Max(0f, SupportedWeight);
 
         private void Awake()
         {
             if (ropeAttachment == null) ropeAttachment = GetComponent<RopeAttachment>();
+            if (ropeAttachment != null) Motion.RegisterRopeAttachment(ropeAttachment);
         }
         public float StackWeight
         {
@@ -44,13 +45,16 @@ namespace MousePlatformer
         public void EnableStacking() => Motion.EnableStacking();
 
         public float AllowedHorizontalByPlayer(float amount, Collider2D ignored)
-            => Body.AllowedHorizontal(amount, ignored, Mathf.Max(0f, maxPushStepHeight));
+        {
+            float allowed = Body.AllowedHorizontal(amount, ignored, Mathf.Max(0f, maxPushStepHeight));
+            return Motion.AllowedTetherDisplacement(Vector2.right * allowed, ignoreBalloon: true).x;
+        }
 
         public float MoveHorizontalByPlayer(float amount, Collider2D ignored)
         {
-            BalloonLift balloon = ropeAttachment != null ? ropeAttachment.LiftingBalloon : null;
+            BalloonLift balloon = Motion.LiftingBalloon;
             if (balloon == null || !balloon.PayloadTaut || Mathf.Approximately(amount, 0f))
-                return MoveHorizontal(amount, ignored, Mathf.Max(0f, maxPushStepHeight));
+                return MoveHorizontal(AllowedHorizontalByPlayer(amount, ignored), ignored, Mathf.Max(0f, maxPushStepHeight));
             float allowed = AllowedHorizontalByPlayer(amount, ignored);
             // Let the free anchor follow first, rather than stretching the rope and lifting the crate off its support.
             float followed = balloon.Motion.FollowPushedPayload(allowed, Body.Shape);

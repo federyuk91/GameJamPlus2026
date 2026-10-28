@@ -52,6 +52,8 @@ MonoBehaviour:
   targetCollider: {fileID: 0}
   rotationSpeed: 120
   fadeDuration: 0.3
+  lightMode: 0
+  followMode: 0
   showGizmos: 1
 --- !u!1 &1100
 GameObject:

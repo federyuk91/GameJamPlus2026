@@ -22,6 +22,7 @@ namespace GameJamPlus.UI
         private readonly Slider music;
         private readonly Slider effects;
         private readonly Toggle fullscreen;
+        private readonly Toggle hideTooltip;
         private readonly PlayerInputReader playerInput;
         private readonly Func<bool> canPause;
         private readonly InputAction pause;
@@ -57,6 +58,8 @@ namespace GameJamPlus.UI
             music = root.Q<Slider>("pause-music");
             effects = root.Q<Slider>("pause-effects");
             fullscreen = root.Q<Toggle>("pause-fullscreen");
+            hideTooltip = root.Q<Toggle>("pause-hide-tooltip");
+            hideTooltip.SetValueWithoutNotify(GameUISettings.HideTooltip);
             bool savedFullscreen = PlayerPrefs.GetInt("Settings.Fullscreen", 1) == 1;
             fullscreen.SetValueWithoutNotify(savedFullscreen);
             Screen.fullScreen = savedFullscreen;
@@ -76,11 +79,12 @@ namespace GameJamPlus.UI
             Bind(root.Q<Button>("pause-controls-back"), ShowMain);
             Bind(root.Q<Button>("pause-options-back"), ShowMain);
             foreach (Button button in controlsView.AllButtons) RegisterHover(button);
-            foreach (VisualElement element in new VisualElement[] { master, music, effects, fullscreen }) RegisterHover(element);
+            foreach (VisualElement element in new VisualElement[] { master, music, effects, fullscreen, hideTooltip }) RegisterHover(element);
             master.RegisterValueChangedCallback(OnMasterChanged);
             music.RegisterValueChangedCallback(OnMusicChanged);
             effects.RegisterValueChangedCallback(OnEffectsChanged);
             fullscreen.RegisterValueChangedCallback(OnFullscreenChanged);
+            hideTooltip.RegisterValueChangedCallback(OnHideTooltipChanged);
 
             pause = new InputAction("Pause", InputActionType.Button);
             pause.AddBinding("<Keyboard>/escape");
@@ -236,8 +240,9 @@ namespace GameJamPlus.UI
             music.SetValueWithoutNotify(GameAudioSettings.MusicVolume);
             effects.SetValueWithoutNotify(GameAudioSettings.EffectsVolume);
             fullscreen.SetValueWithoutNotify(PlayerPrefs.GetInt("Settings.Fullscreen", 1) == 1);
+            hideTooltip.SetValueWithoutNotify(GameUISettings.HideTooltip);
             ShowPage(optionsPage);
-            SetSelection(master, music, effects, fullscreen, optionsPage.Q<Button>("pause-options-back"));
+            SetSelection(master, music, effects, fullscreen, hideTooltip, optionsPage.Q<Button>("pause-options-back"));
         }
 
         private void ShowPage(VisualElement page)
@@ -276,6 +281,8 @@ namespace GameJamPlus.UI
         private void OnMasterChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.MasterVolume = changeEvent.newValue;
         private void OnMusicChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.MusicVolume = changeEvent.newValue;
         private void OnEffectsChanged(ChangeEvent<float> changeEvent) => GameAudioSettings.EffectsVolume = changeEvent.newValue;
+        private void OnHideTooltipChanged(ChangeEvent<bool> changeEvent) => GameUISettings.HideTooltip = changeEvent.newValue;
+
         private void OnFullscreenChanged(ChangeEvent<bool> changeEvent)
         {
             Screen.fullScreen = changeEvent.newValue;
@@ -316,6 +323,7 @@ namespace GameJamPlus.UI
             music.UnregisterValueChangedCallback(OnMusicChanged);
             effects.UnregisterValueChangedCallback(OnEffectsChanged);
             fullscreen.UnregisterValueChangedCallback(OnFullscreenChanged);
+            hideTooltip.UnregisterValueChangedCallback(OnHideTooltipChanged);
         }
     }
 }

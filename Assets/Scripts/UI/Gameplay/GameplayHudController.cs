@@ -19,6 +19,11 @@ namespace GameJamPlus.UI
         [SerializeField] private PlayerInputReader playerInput;
         [SerializeField] private CollectibleCollector collectibleCollector;
         [SerializeField] private GameplayInteractionAvailability interactionAvailability;
+        [SerializeField, Tooltip("Testi condivisi dei suggerimenti di interazione mostrati nella HUD.")]
+        private GameplayTooltipSettings tooltipSettings;
+        private static readonly GameplayTooltipText DefaultTooltipTexts = new GameplayTooltipText();
+        private GameplayTooltipText TooltipTexts => tooltipSettings != null && tooltipSettings.Texts != null
+            ? tooltipSettings.Texts : DefaultTooltipTexts;
         [SerializeField] private BodyControlsSettings controlsSettings;
         [SerializeField] private PixelPerfectViewport viewport;
         [SerializeField] private PlatformCameraController cameraController;
@@ -181,6 +186,7 @@ namespace GameJamPlus.UI
             advanceScientistComment.Enable();
             scrollScientistComment.Enable();
             ready = true;
+            GameUISettings.Changed += RefreshInteractionHints;
             displayedSecond = -1;
             RefreshTimer();
             viewport.ViewportChanged += RefreshViewport;
@@ -603,13 +609,13 @@ namespace GameJamPlus.UI
             interactionHints.Clear();
             if (spawnPresentationActive)
             {
-                Label prompt = new Label("Press a button to start") { pickingMode = PickingMode.Ignore };
+                Label prompt = new Label(TooltipTexts.start) { pickingMode = PickingMode.Ignore };
                 prompt.AddToClassList("interaction-hint-description");
                 interactionHints.Add(prompt);
                 interactionHints.style.display = DisplayStyle.Flex;
                 return;
             }
-            bool blocked = testEnding || Time.timeScale <= 0f || photoView.IsVisible || testResultView.IsVisible;
+            bool blocked = GameUISettings.HideTooltip || testEnding || Time.timeScale <= 0f || photoView.IsVisible || testResultView.IsVisible;
             if (blocked)
             {
                 interactionHints.style.display = DisplayStyle.None;
@@ -625,26 +631,26 @@ namespace GameJamPlus.UI
                 return;
             }
             if ((available & AvailableGameplayActions.MoveCrate) != 0)
-                AddInteractionHint(InputPromptAction.MoveCrate, "Hold to push / pull", true);
+                AddInteractionHint(InputPromptAction.MoveCrate, TooltipTexts.moveCrate, true);
             if ((available & AvailableGameplayActions.ClimbLedge) != 0)
-                AddInteractionHint(InputPromptAction.Interact, "Climb up");
+                AddInteractionHint(InputPromptAction.Interact, TooltipTexts.climbUp);
             if ((available & AvailableGameplayActions.EatCheese) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, "Eat cheese");
+                AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.eatCheese);
             if ((available & AvailableGameplayActions.EatGreenCheese) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, "Eat green cheese");
+                AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.eatGreenCheese);
             if ((available & AvailableGameplayActions.CollectPhoto) != 0)
-                AddInteractionHint(InputPromptAction.Collect, "Collect photo");
+                AddInteractionHint(InputPromptAction.Collect, TooltipTexts.collectPhoto);
             if ((available & AvailableGameplayActions.CollectItem) != 0)
-                AddInteractionHint(InputPromptAction.Collect, "Collect");
+                AddInteractionHint(InputPromptAction.Collect, TooltipTexts.collectItem);
             if ((available & AvailableGameplayActions.PressButton) != 0)
-                AddInteractionHint(InputPromptAction.Collect, "Activate");
+                AddInteractionHint(InputPromptAction.Collect, TooltipTexts.activateButton);
             if ((available & AvailableGameplayActions.UseWheel) != 0)
                 AddInteractionHint(InputPromptAction.Collect,
-                    interactionAvailability.IsUsingWheel ? "Leave wheel" : "Use wheel");
+                    interactionAvailability.IsUsingWheel ? TooltipTexts.leaveWheel : TooltipTexts.useWheel);
             if ((available & AvailableGameplayActions.CutRope) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, "Hold to gnaw");
+                AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.gnaw);
             if ((available & AvailableGameplayActions.Dig) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, "Hold to dig", true);
+                AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.dig, true);
             bool showHints = interactionHints.childCount > 0;
             interactionHints.style.display = showHints ? DisplayStyle.Flex : DisplayStyle.None;
         }
@@ -710,6 +716,7 @@ namespace GameJamPlus.UI
 
         private void OnDisable()
         {
+            GameUISettings.Changed -= RefreshInteractionHints;
             shockGamepadFeedback.Stop();
             counterFeedbackEnabled = false;
             for (int index = 0; index < counterHighlights.Length; index++)

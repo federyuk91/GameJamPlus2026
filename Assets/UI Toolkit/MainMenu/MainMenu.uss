@@ -57,8 +57,8 @@
 
 .audio-slider { height: 28px; margin: 0 0 4px 0; border-width: 2px; border-color: transparent; }
 #fullscreen { height: 28px; margin: 0; border-width: 2px; border-color: transparent; }
-.audio-slider:focus, #fullscreen:focus { border-color: var(--menu-focus); }
-.audio-slider .unity-base-field__label, #fullscreen .unity-base-field__label { color: var(--menu-text); min-width: 104px; font-size: 14px; }
+.audio-slider:focus, #fullscreen:focus, #hide-tooltip:focus { border-color: var(--menu-focus); }
+.audio-slider .unity-base-field__label, #fullscreen .unity-base-field__label, #hide-tooltip .unity-base-field__label { color: var(--menu-text); min-width: 104px; font-size: 14px; }
 .audio-slider .unity-base-slider__tracker { background-color: var(--menu-border); }
 .audio-slider .unity-base-slider__dragger { background-color: var(--menu-accent); border-color: var(--menu-background); width: 14px; height: 14px; }
 #fullscreen .unity-toggle__input { background-color: var(--menu-surface); border-color: var(--menu-border); }
@@ -83,8 +83,8 @@
 .thanks-sgs { background-image: url("../../Art/UI/MainMenu/Branding/SGS_Logo.png"); }
 #options-panel .audio-slider { height: 32px; margin: 0; border-radius: 3px; }
 #options-panel .unity-base-field__label { -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); }
-.audio-slider:hover, #fullscreen:hover { background-color: rgba(174, 73, 47, 0.08); }
-.audio-slider:focus, #fullscreen:focus { background-color: rgba(174, 73, 47, 0.12); }
+.audio-slider:hover, #fullscreen:hover, #hide-tooltip:hover { background-color: rgba(174, 73, 47, 0.08); }
+.audio-slider:focus, #fullscreen:focus, #hide-tooltip:focus { background-color: rgba(174, 73, 47, 0.12); }
 .audio-slider .unity-base-slider__tracker { height: 4px; border-radius: 0; }
 .audio-slider .unity-base-slider__dragger { border-width: 1px; border-radius: 0; }
 #fullscreen .unity-toggle__input { border-width: 1px; border-radius: 0; }
@@ -119,8 +119,8 @@
 .context-card .thanks-logo { width: 84px; height: 30px; background-color: transparent; }
 .context-card .audio-slider { height: 25px; }
 #options-panel .audio-slider { height: 25px; }
-.context-card .audio-slider .unity-base-field__label, .context-card #fullscreen .unity-base-field__label { min-width: 84px; font-size: 12px; color: var(--menu-on-control); }
-.context-card #fullscreen { height: 23px; }
+.context-card .audio-slider .unity-base-field__label, .context-card #fullscreen .unity-base-field__label, .context-card #hide-tooltip .unity-base-field__label { min-width: 84px; font-size: 12px; color: var(--menu-on-control); }
+.context-card #fullscreen, .context-card #hide-tooltip { height: 20px; min-height: 20px; flex-shrink: 0; }
 .context-card .dialog-button { height: 24px; min-height: 24px; margin-top: 4px; font-size: 14px; }
 #options-back { margin-top: auto; }
 .context-card .dialog-title { color: var(--menu-on-control); font-size: 18px; }

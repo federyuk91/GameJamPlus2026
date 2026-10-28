@@ -10847,6 +10847,7 @@ MonoBehaviour:
   pauseWhilePhotoOpen: 1
   shockLowFrequencyMotor: 0.45
   shockHighFrequencyMotor: 0.75
+  tooltipSettings: {fileID: 11400000, guid: 77f7b2a28ba34dc9b0ba343c3dc4da36, type: 2}
 --- !u!114 &9101879148219320925
 MonoBehaviour:
   m_ObjectHideFlags: 0

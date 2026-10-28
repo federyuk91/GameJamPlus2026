@@ -56,3 +56,14 @@ Rope Simulation.Length is a piece count (minimum 1); editing it adds/removes pie
 The anchor stays fixed. Pieces align without gaps in the initial direction, upward for seabed ropes. Rebuild and align pieces restores alignment after manual edits. Edit geometry outside Play Mode; simulation, climbing, bites and crate constraints then use the new count. Ropes do not use one large BoxCollider; interaction follows simulated segments.
 
 RopeAttachment now requires PropsMotion and SimulatedBody2D only. Pushable is optional: existing crates keep their configured pushing behaviour, while rope-supported planks can be attached without becoming pushable.
+
+
+## Multiple rope attachments
+
+PropsMotion keeps the existing Tether reference and adds Additional Tethers. Assign one RopeAttachment per rope on the same body, each with its own offset. Existing single-rope prefabs require no migration; local attachments are discovered once if no additional references are assigned. Attachments created at runtime register when initialized/enabled.
+
+All active intact ropes constrain the body position and velocity. Rope rider loads are summed. Shared vertical balloon/payload groups ignore only their internal lifting rope; fixed ground constraints still limit the entire group. Horizontal player pushing respects fixed attachments before asking the balloon to follow. Cutting or disabling a rope releases only that constraint and recomputes pushing/crushing state from the remaining attachments. Single-attachment push/crush policy is preserved. Multi-attachment crates remain pushable within their combined rope reach; a remaining ground tie does not suppress crushing after overhead support is cut.
+
+Anchored Balloon With Crate.prefab assigns the upper balloon rope as Tether and the lower ground rope in Additional Tethers. Top offset is +0.5 and bottom offset is -0.5. The upper rope is 8 x 0.25 = 2 units, initially taut; the lower rope is 6 x 0.25 = 1.5 units, initially spanning about 1.401 units. Length and authored positions are preserved: fixing the combined movement constraint prevents the lower rope from being stretched indefinitely.
+
+C# runtime and Editor compilation verified; prefab endpoints/references checked. In Unity review ascent stopping at the ground tie, horizontal pushing, cutting either rope first, cutting both, and the existing single-rope balloon/crate and hanging-crate prefabs. This supports multiple constraints on one body; it does not introduce a general solver for networks of multiple lifting balloons.

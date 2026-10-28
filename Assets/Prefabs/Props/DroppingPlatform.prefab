@@ -209,20 +209,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDragMultiplier: 3.33333333
+  waterDragMultiplier: 3.3333333
+  groundFriction: 1
+  maxSlopeAngle: 89
+  groundContact: {fileID: 9700001000}
   overrideMaxSpeed: 0
   maxSpeed: 15
-  gravityScale: 0.66666666
+  gravityScale: 0.6666667
   shape: {fileID: 4284425686651463661}
   ignorePlayerColliders: 1
+  blocksOtherProps: 0
   solidLayers:
     serializedVersion: 2
     m_Bits: 65
   skin: 0.005
   weight: 1
-  groundFriction: 1
-  maxSlopeAngle: 89
-  groundContact: {fileID: 9700001000}
 --- !u!114 &1138703816112355650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +239,7 @@ MonoBehaviour:
   body: {fileID: 659814282621909855}
   buoyancy: {fileID: 0}
   tether: {fileID: 2859488635282179306}
+  additionalTethers: []
   pushable: {fileID: 0}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}
@@ -257,7 +259,21 @@ MonoBehaviour:
   rope: {fileID: 1681847654352532253}
   pushable: {fileID: 0}
   motion: {fileID: 1138703816112355650}
+  crushHazard: {fileID: 0}
   attachmentOffset: {x: 0, y: 0.5}
+--- !u!114 &9700001000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3571334217369073994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 659814282621909855}
 --- !u!1 &5759153342036046104
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,7 +301,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.000000031023493, w: 1}
   m_LocalPosition: {x: 0, y: -1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1102829022780635243}
@@ -376,7 +392,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.000000031023493, w: 1}
   m_LocalPosition: {x: 0, y: -2.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1102829022780635243}
@@ -627,16 +643,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d517c22ef0af4de0a2c7d3de6b84797f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &9700001000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3571334217369073994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a2e2e27b1ed433080faeecff2ab1e6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  body: {fileID: 659814282621909855}

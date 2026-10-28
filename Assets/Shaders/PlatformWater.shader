@@ -23,6 +23,17 @@ Shader "GameJamPlus/Platform Water"
         Pass
         {
             Tags { "LightMode"="Universal2D" }
+            // Bit 6 marks visible water so overlapping sections blend into the scene only once.
+            Stencil
+            {
+                Ref 64
+                ReadMask 64
+                WriteMask 64
+                Comp NotEqual
+                Pass Replace
+                Fail Keep
+                ZFail Keep
+            }
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
@@ -70,6 +81,7 @@ Shader "GameJamPlus/Platform Water"
                 color = lerp(color, _SurfaceColor.rgb, edge);
                 float alpha = lerp(tint.a, max(tint.a, _SurfaceColor.a), edge);
                 alpha *= SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).a;
+                clip(alpha - 0.0001);
                 return half4(color, alpha);
             }
             ENDHLSL

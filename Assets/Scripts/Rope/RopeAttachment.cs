@@ -5,7 +5,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace MousePlatformer
 {
     [MovedFrom(true, sourceNamespace: "MousePlatformer", sourceAssembly: "Assembly-CSharp", sourceClassName: "CrateRopeAttachment")]
-    [DisallowMultipleComponent, RequireComponent(typeof(PropsMotion), typeof(SimulatedBody2D))]
+    [RequireComponent(typeof(PropsMotion), typeof(SimulatedBody2D))]
     public sealed class RopeAttachment : MonoBehaviour
     {
         [SerializeField] private RopeSimulation rope;
@@ -16,6 +16,7 @@ namespace MousePlatformer
         [SerializeField] private Vector2 attachmentOffset;
         private bool tailAttached;
         public bool Attached { get; private set; }
+        public bool ConstrainsMotion => isActiveAndEnabled && Attached && rope != null && rope.isActiveAndEnabled;
         public bool HasRopeConnection => Attached || tailAttached;
         public bool InWater => motion != null && motion.InWater;
         public bool Floats => motion != null && (motion.InWater || motion.UsesAirLift);
@@ -34,20 +35,21 @@ namespace MousePlatformer
             if (pushable == null) pushable = GetComponent<Pushable>();
             if (motion == null) motion = GetComponent<PropsMotion>();
             if (crushHazard == null) crushHazard = GetComponent<FallingCrushHazard>();
+            motion.RegisterRopeAttachment(this);
         }
 
         private void OnEnable()
         {
             if (rope == null || !rope.BindLoad(this)) return;
             Attached = true;
-            if (crushHazard != null) crushHazard.enabled = false;
-            if (pushable != null) pushable.enabled = rope.BalloonAnchor != null;
+            motion.RegisterRopeAttachment(this);
+            RefreshBodyControls();
             rope.Cut += HandleCut;
         }
 
         public Vector2 ConstrainPosition(Vector2 position)
         {
-            if (!Attached) return position;
+            if (!ConstrainsMotion) return position;
             Vector2 offset = (Vector2)transform.TransformVector(attachmentOffset);
             Vector2 anchor = rope.transform.position;
             return anchor + Vector2.ClampMagnitude(position + offset - anchor, rope.Length) - offset;
@@ -55,7 +57,7 @@ namespace MousePlatformer
 
         public Vector2 ConstrainVelocity(Vector2 velocity)
         {
-            if (!Attached) return velocity;
+            if (!ConstrainsMotion) return velocity;
             Vector2 radial = AttachmentPoint - (Vector2)rope.transform.position;
             if (radial.magnitude < rope.Length - rope.TautTolerance) return velocity;
             Vector2 normal = radial.normalized;
@@ -65,13 +67,12 @@ namespace MousePlatformer
 
         private void HandleCut(RopeSimulation source)
         {
-            if (crushHazard != null) crushHazard.enabled = true;
             if (source.KeepCrateSideAfterCut && source.Chain.EndpointConnectedSegmentCount > 0)
             {
                 // Release the floor constraint while keeping the remaining rope tied to the crate.
                 Attached = false;
                 tailAttached = true;
-                if (pushable != null) pushable.enabled = true;
+                RefreshBodyControls();
                 return;
             }
             Detach();
@@ -84,7 +85,25 @@ namespace MousePlatformer
             tailAttached = false;
             rope.Cut -= HandleCut;
             rope.ReleaseLoad(this);
-            if (pushable != null) pushable.enabled = true;
+            RefreshBodyControls();
+        }
+
+        private void RefreshBodyControls()
+        {
+            bool anchored = false;
+            bool hasBalloon = false;
+            bool supportedFromAbove = false;
+            bool multipleAttachments = motion.RopeAttachments.Count > 1;
+            foreach (RopeAttachment attachment in motion.RopeAttachments)
+            {
+                if (attachment == null || !attachment.ConstrainsMotion) continue;
+                anchored = true;
+                hasBalloon |= attachment.Rope.BalloonAnchor != null;
+                supportedFromAbove |= attachment.Rope.transform.position.y > attachment.AttachmentPoint.y + 0.01f;
+            }
+            // One cut must not release controls still held by another intact rope.
+            if (crushHazard != null) crushHazard.enabled = multipleAttachments ? !supportedFromAbove : !anchored;
+            if (pushable != null) pushable.enabled = !anchored || hasBalloon || multipleAttachments;
         }
 
         private void OnDisable() => Detach();
