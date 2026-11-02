@@ -1,0 +1,949 @@
+fileFormatVersion: 2
+guid: 842411db057a04848b6f84cca58fba65
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6793751264431649233
+    second: LaboratoryEquipment-Colored_0
+  - first:
+      213: -7140547732892210229
+    second: LaboratoryEquipment-Colored_1
+  - first:
+      213: -5033911807610083643
+    second: LaboratoryEquipment-Colored_2
+  - first:
+      213: -2736137388097402953
+    second: LaboratoryEquipment-Colored_3
+  - first:
+      213: 6420254987999495112
+    second: LaboratoryEquipment-Colored_4
+  - first:
+      213: -1305841711670849688
+    second: LaboratoryEquipment-Colored_5
+  - first:
+      213: 2120485150692717414
+    second: LaboratoryEquipment-Colored_6
+  - first:
+      213: 174370523942643375
+    second: LaboratoryEquipment-Colored_7
+  - first:
+      213: -4434253444445941605
+    second: LaboratoryEquipment-Colored_8
+  - first:
+      213: 2868565562234971277
+    second: LaboratoryEquipment-Colored_9
+  - first:
+      213: 3553686232645263213
+    second: LaboratoryEquipment-Colored_10
+  - first:
+      213: 4511131745692872135
+    second: LaboratoryEquipment-Colored_11
+  - first:
+      213: -3102824182025090735
+    second: LaboratoryEquipment-Colored_12
+  - first:
+      213: 5838587239731415980
+    second: LaboratoryEquipment-Colored_13
+  - first:
+      213: 5203811133104153351
+    second: LaboratoryEquipment-Colored_14
+  - first:
+      213: 6504677596829851567
+    second: LaboratoryEquipment-Colored_15
+  - first:
+      213: -5854323907052365356
+    second: LaboratoryEquipment-Colored_16
+  - first:
+      213: 441086435013199496
+    second: LaboratoryEquipment-Colored_17
+  - first:
+      213: 5096845012918042277
+    second: LaboratoryEquipment-Colored_18
+  - first:
+      213: -447530892559574380
+    second: LaboratoryEquipment-Colored_19
+  - first:
+      213: 7294118943305343041
+    second: LaboratoryEquipment-Colored_20
+  - first:
+      213: -6368165555755313122
+    second: LaboratoryEquipment-Colored_21
+  - first:
+      213: -2607377376805821575
+    second: LaboratoryEquipment-Colored_22
+  - first:
+      213: -6878127862514790196
+    second: LaboratoryEquipment-Colored_23
+  - first:
+      213: 978391349523220907
+    second: LaboratoryEquipment-Colored_24
+  - first:
+      213: 1037255356250864834
+    second: LaboratoryEquipment-Colored_25
+  - first:
+      213: 3830059046413297029
+    second: LaboratoryEquipment-Colored_26
+  - first:
+      213: 633464857185822771
+    second: LaboratoryEquipment-Colored_27
+  - first:
+      213: 8890251547786823205
+    second: LaboratoryEquipment-Colored_28
+  - first:
+      213: 7207204206643462498
+    second: LaboratoryEquipment-Colored_29
+  - first:
+      213: -7928614704374288970
+    second: LaboratoryEquipment-Colored_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_0
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 369
+        width: 92
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d13fc8b7c0484e50800000000000000
+      internalID: 6793751264431649233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_1
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 370
+        width: 59
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcb2d3f4bada7ec90800000000000000
+      internalID: -7140547732892210229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_2
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 372
+        width: 69
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c6a1ccb1e3f32ab0800000000000000
+      internalID: -5033911807610083643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_3
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 370
+        width: 30
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b70acdca89470ad0800000000000000
+      internalID: -2736137388097402953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_4
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 366
+        width: 34
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c3c32745e3591950800000000000000
+      internalID: 6420254987999495112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_5
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 362
+        width: 64
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86f88f2c1e7b0ede0800000000000000
+      internalID: -1305841711670849688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_6
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 361
+        width: 107
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663b78e720a7d6d10800000000000000
+      internalID: 2120485150692717414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_7
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 248
+        width: 95
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa666e2511d7b6200800000000000000
+      internalID: 174370523942643375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_8
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 249
+        width: 64
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b905fb76cfd5672c0800000000000000
+      internalID: -4434253444445941605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_9
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 337
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d842fe73e213fc720800000000000000
+      internalID: 2868565562234971277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_10
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 334
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6f5404ecca315130800000000000000
+      internalID: 3553686232645263213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_11
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 248
+        width: 94
+        height: 119
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cde205fb62ca9e30800000000000000
+      internalID: 4511131745692872135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_12
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 244
+        width: 81
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15907ed88dd80f4d0800000000000000
+      internalID: -3102824182025090735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_13
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 249
+        width: 71
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cabc15e0924d60150800000000000000
+      internalID: 5838587239731415980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_14
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 247
+        width: 91
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70365e297a6a73840800000000000000
+      internalID: 5203811133104153351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_15
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 138
+        width: 69
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faf1c71afc1454a50800000000000000
+      internalID: 6504677596829851567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_16
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 139
+        width: 66
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d911109c6341cea0800000000000000
+      internalID: -5854323907052365356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_17
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 185
+        width: 191
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 886843296cd0f1600800000000000000
+      internalID: 441086435013199496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_18
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 134
+        width: 68
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ae7336f881abb640800000000000000
+      internalID: 5096845012918042277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_19
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 135
+        width: 46
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49a19fa360d0ac9f0800000000000000
+      internalID: -447530892559574380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_20
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 125
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 140a925788ae93560800000000000000
+      internalID: 7294118943305343041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_21
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 134
+        width: 40
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e189352ca2bbf97a0800000000000000
+      internalID: -6368165555755313122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_22
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 134
+        width: 29
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 973691c171cb0dbd0800000000000000
+      internalID: -2607377376805821575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_23
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 134
+        width: 34
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc0d613a62bfb80a0800000000000000
+      internalID: -6878127862514790196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_24
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 134
+        width: 183
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba985a7afb1f39d00800000000000000
+      internalID: 978391349523220907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_25
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 13
+        width: 104
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cc34ba3042156e00800000000000000
+      internalID: 1037255356250864834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_26
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 28
+        width: 95
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5856c32096a172530800000000000000
+      internalID: 3830059046413297029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_27
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 33
+        width: 93
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 338214e6ee48ac800800000000000000
+      internalID: 633464857185822771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_28
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 17
+        width: 76
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52643bd1ea4806b70800000000000000
+      internalID: 8890251547786823205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_29
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 31
+        width: 100
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2614fa06a02250460800000000000000
+      internalID: 7207204206643462498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaboratoryEquipment-Colored_30
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 28
+        width: 87
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bde4d81fe6e7f190800000000000000
+      internalID: -7928614704374288970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LaboratoryEquipment-Colored_0: 6793751264431649233
+      LaboratoryEquipment-Colored_1: -7140547732892210229
+      LaboratoryEquipment-Colored_10: 3553686232645263213
+      LaboratoryEquipment-Colored_11: 4511131745692872135
+      LaboratoryEquipment-Colored_12: -3102824182025090735
+      LaboratoryEquipment-Colored_13: 5838587239731415980
+      LaboratoryEquipment-Colored_14: 5203811133104153351
+      LaboratoryEquipment-Colored_15: 6504677596829851567
+      LaboratoryEquipment-Colored_16: -5854323907052365356
+      LaboratoryEquipment-Colored_17: 441086435013199496
+      LaboratoryEquipment-Colored_18: 5096845012918042277
+      LaboratoryEquipment-Colored_19: -447530892559574380
+      LaboratoryEquipment-Colored_2: -5033911807610083643
+      LaboratoryEquipment-Colored_20: 7294118943305343041
+      LaboratoryEquipment-Colored_21: -6368165555755313122
+      LaboratoryEquipment-Colored_22: -2607377376805821575
+      LaboratoryEquipment-Colored_23: -6878127862514790196
+      LaboratoryEquipment-Colored_24: 978391349523220907
+      LaboratoryEquipment-Colored_25: 1037255356250864834
+      LaboratoryEquipment-Colored_26: 3830059046413297029
+      LaboratoryEquipment-Colored_27: 633464857185822771
+      LaboratoryEquipment-Colored_28: 8890251547786823205
+      LaboratoryEquipment-Colored_29: 7207204206643462498
+      LaboratoryEquipment-Colored_3: -2736137388097402953
+      LaboratoryEquipment-Colored_30: -7928614704374288970
+      LaboratoryEquipment-Colored_4: 6420254987999495112
+      LaboratoryEquipment-Colored_5: -1305841711670849688
+      LaboratoryEquipment-Colored_6: 2120485150692717414
+      LaboratoryEquipment-Colored_7: 174370523942643375
+      LaboratoryEquipment-Colored_8: -4434253444445941605
+      LaboratoryEquipment-Colored_9: 2868565562234971277
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

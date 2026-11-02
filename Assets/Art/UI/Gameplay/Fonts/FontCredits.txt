@@ -18,6 +18,15 @@ in its acknowledgements and make the Pixelify Sans copyright and full OFL
 notice available with the distribution. Files stored under Assets alone
 are not guaranteed to be available as readable license files in a Unity build.
 
-m5x7 is applied to communication terminals, trial results, EndGame and final
+m5x7 is applied to communication controls, trial results, EndGame and final
 credits. m6x11 is applied to the main/pause menus and shared control pages.
 Daniel Linssen is acknowledged in both the main menu credits and final credits.
+
+The Secret Font of Monkey Island 1991, refined
+Source: https://www.ptless.org/sfomi/
+Imported from the user-provided MonkeyIsland-1991-refined.ttf.
+Monkey Island 2: LeChuck's Revenge font copyright 1991 LucasArts.
+Applied to scientist dialogue text at 16px (compact) and 24px (ending).
+The author recommends pixel sizes divisible by 8. The optional historical
+vertical scale of 1.2 is intended for sizes of at least 40px; it is not applied
+to this 640x360 HUD. Non-integer display scaling can still soften the pixels.

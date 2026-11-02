@@ -31,7 +31,7 @@
 .scientist-signal { position: absolute; left: 27px; bottom: 7px; width: 5px; height: 5px; border-radius: 3px; background-color: rgb(225, 66, 56); }
 .scientist-signal.signal-active { background-color: var(--scientist-green); }
 .scientist-transcript { flex-grow: 1; flex-basis: 0; min-height: 0; min-width: 0; margin: 0; padding: 0; overflow: visible; }
-.scientist-text { font-size: 14px; color: var(--scientist-green); white-space: normal; margin: 0; padding: 0; }
+.scientist-text { font-size: 16px; color: var(--scientist-green); white-space: normal; margin: 0; padding: 0; }
 .scientist-advance { position: absolute; bottom: 4px; right: 2px; height: 12px; min-height: 12px; min-width: 48px; padding: 0 2px; margin: 0; font-size: 8px; color: var(--hud-gold); background-color: rgb(2, 16, 26); border-width: 0; border-radius: 1px; }
 .scientist-advance:hover { background-color: rgb(19, 39, 45); }
 .scientist-advance:active { background-color: rgb(29, 54, 58); }
@@ -48,7 +48,7 @@
     position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     width: auto; height: auto; margin-bottom: 0;
 }
-.scientist-ending .scientist-text { font-size: 22px; }
+.scientist-ending .scientist-text { font-size: 24px; }
 .scientist-ending .scientist-transcript .unity-scroll-view__content-viewport {
     width: 100%; flex-grow: 1;
 }
@@ -133,6 +133,8 @@
 .counter-icon { flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
 .scientist-screen, .scientist-screen *,
 .test-result, .test-result * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
+/* The author's recommended pixel sizes are multiples of 8. */
+#scientist-text { -unity-font: url("../../Art/UI/Gameplay/Fonts/MonkeyIsland-1991-refined.ttf"); -unity-font-style: normal; }
 .pause-overlay, .pause-overlay *, .pause-card, .pause-card * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m6x11.ttf"); }
 .black-band-bottom { bottom: 0; height: 90px; background-color: transparent; }
 .resource-dashboard { position: absolute; left: auto; right: 10px; bottom: 8px; width: 164px; height: auto;
