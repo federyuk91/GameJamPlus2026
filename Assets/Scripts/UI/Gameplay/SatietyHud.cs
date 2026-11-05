@@ -93,6 +93,8 @@ namespace GameJamPlus.UI
             float warningOpacity = Mathf.Lerp(0.55f, 1f, (Mathf.Sin(Time.unscaledTime * 4f) + 1f) * 0.5f);
             if (hearts != null) hearts.style.opacity = lowHealth ? warningOpacity : 1f;
             if (notches != null) notches.style.opacity = lowSatiety ? warningOpacity : 1f;
+            RefreshSatietyFill();
+            RefreshOxygenFill();
             if (oxygenNotches != null) oxygenNotches.style.opacity = lowOxygen ? warningOpacity : 1f;
             if (flash == null) return;
             flash.style.display = flashRemaining > 0f ? DisplayStyle.Flex : DisplayStyle.None;
@@ -128,13 +130,33 @@ namespace GameJamPlus.UI
         private void RefreshNotches(VisualElement host, int current, int maximum)
         {
             if (host == null) return;
-            if (host.childCount != maximum)
+            if (host.childCount != maximum || (host == notches && maximum > 0 && host[0].Q("satiety-fill") == null)
+                || (host == oxygenNotches && maximum > 0 && host[0].Q("oxygen-fill") == null))
             {
                 host.Clear();
                 for (int index = 0; index < maximum; index++)
                 {
                     VisualElement notch = new VisualElement { pickingMode = PickingMode.Ignore };
                     notch.AddToClassList("satiety-notch");
+                    if (host == notches)
+                    {
+                        VisualElement empty = new VisualElement { pickingMode = PickingMode.Ignore };
+                        empty.AddToClassList("satiety-notch-image");
+                        empty.AddToClassList("satiety-notch-background");
+                        notch.Add(empty);
+                        VisualElement clip = new VisualElement { name = "satiety-fill", pickingMode = PickingMode.Ignore };
+                        clip.AddToClassList("satiety-notch-clip");
+                        VisualElement image = new VisualElement { pickingMode = PickingMode.Ignore };
+                        image.AddToClassList("satiety-notch-image");
+                        clip.Add(image);
+                        notch.Add(clip);
+                    }
+                    else if (host == oxygenNotches)
+                    {
+                        VisualElement fill = new VisualElement { name = "oxygen-fill", pickingMode = PickingMode.Ignore };
+                        fill.AddToClassList("oxygen-notch-fill");
+                        notch.Add(fill);
+                    }
                     host.Add(notch);
                 }
             }
@@ -142,11 +164,38 @@ namespace GameJamPlus.UI
                 host[index].EnableInClassList("satiety-notch-empty", index >= current);
         }
 
+        private void RefreshSatietyFill()
+        {
+            if (stats == null || notches == null) return;
+            float remaining = stats.VisibleSatiety;
+            for (int index = 0; index < notches.childCount; index++)
+            {
+                VisualElement clip = notches[index].Q("satiety-fill");
+                if (clip != null) clip.style.width = Length.Percent(Mathf.Clamp01(remaining - index) * 100f);
+            }
+        }
+
+        private void RefreshOxygenFill()
+        {
+            bool visible = stats != null && (stats.IsUnderwater || !stats.IsOxygenFull);
+            if (oxygenPanel != null) oxygenPanel.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            lowOxygen = visible && stats.Oxygen == 1;
+            if (!visible || oxygenNotches == null) return;
+            if (oxygenNotches.childCount != stats.MaximumOxygen)
+                RefreshNotches(oxygenNotches, stats.Oxygen, stats.MaximumOxygen);
+            float remaining = stats.VisibleOxygen;
+            for (int index = 0; index < oxygenNotches.childCount; index++)
+            {
+                VisualElement fill = oxygenNotches[index].Q("oxygen-fill");
+                if (fill != null) fill.style.width = Length.Percent(Mathf.Clamp01(remaining - index) * 100f);
+            }
+        }
+
         private void OnResourceChanged(int current, int maximum) => RefreshResources();
 
         private void RefreshResources()
         {
-            bool showOxygen = stats != null && (stats.IsUnderwater || stats.Oxygen < stats.MaximumOxygen);
+            bool showOxygen = stats != null && (stats.IsUnderwater || !stats.IsOxygenFull);
             lowSatiety = stats != null && stats.Satiety == 1;
             lowOxygen = showOxygen && stats.Oxygen == 1;
             if (caption != null) caption.text = "SATIETY";

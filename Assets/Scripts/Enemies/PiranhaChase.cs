@@ -16,6 +16,7 @@ namespace MousePlatformer
         [SerializeField] private LayerMask occluderLayers = 65;
         [SerializeField] private bool chasing;
         private readonly List<RaycastHit2D> hits = new List<RaycastHit2D>(8);
+        private PlayerStats targetStats;
         public bool IsChasing => chasing;
         public float ViewDistance => viewDistance;
         public float ViewAngle => viewAngle;
@@ -32,6 +33,7 @@ namespace MousePlatformer
 
         private void Awake()
         {
+            if (targetCollider != null) targetStats = targetCollider.GetComponent<PlayerStats>();
             if (patrol == null) patrol = GetComponent<PiranhaPatrol>();
             if (targetSwimming == null || targetCollider == null)
             {
@@ -49,6 +51,7 @@ namespace MousePlatformer
 
         private bool CanSeePlayer()
         {
+            if (targetStats != null && !targetStats.CanBeSeenByEnemies) return false;
             if (patrol == null || !patrol.isActiveAndEnabled || targetCollider == null || !targetCollider.enabled
                 || !targetCollider.gameObject.activeInHierarchy || targetSwimming == null || !targetSwimming.CheckWater()) return false;
             Vector2 eye = EyePosition;
@@ -65,6 +68,8 @@ namespace MousePlatformer
             Physics2D.Raycast(eye, direction, filter, hits, distance);
             foreach (RaycastHit2D hit in hits)
             {
+                // Il movimento della scatola rivela il topo; il suo stesso riparo non lo occlude.
+                if (targetStats != null && targetStats.IsHidden && hit.collider == targetStats.HiddenCoverCollider) continue;
                 if (hit.collider.transform.IsChildOf(transform)
                     || hit.collider.transform.IsChildOf(targetCollider.transform)) continue;
                 if (hit.distance < distance) return false;

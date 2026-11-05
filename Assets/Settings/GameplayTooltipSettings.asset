@@ -15,6 +15,8 @@ MonoBehaviour:
   texts:
     start: Press a button to start
     moveCrate: Hold to push / pull
+    enterSnakeBox: Hide in box
+    exitSnakeBox: Leave box
     climbUp: Climb up
     eatCheese: Eat
     eatGreenCheese: Eat

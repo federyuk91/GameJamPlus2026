@@ -8,7 +8,7 @@ namespace MousePlatformer
 
     public static class PlayerControlBindings
     {
-        private static readonly string[] KeyboardDefaults = { "<Keyboard>/f", "<Keyboard>/e", "<Keyboard>/space", "" };
+        private static readonly string[] KeyboardDefaults = { "<Keyboard>/f", "<Keyboard>/e", "<Keyboard>/space", "<Keyboard>/leftShift" };
         private static readonly string[] GamepadDefaults = { "<Gamepad>/buttonNorth", "<Gamepad>/buttonEast", "<Gamepad>/buttonSouth", "<Gamepad>/buttonWest" };
         public static event Action Changed;
 

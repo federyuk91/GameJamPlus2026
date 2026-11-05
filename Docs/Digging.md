@@ -12,7 +12,7 @@ does not require manually wiring scene objects into the player. Disabled or
 destroyed terrain unregisters automatically. An explicit non-empty Terrains list
 takes precedence and preserves existing authored restrictions.
 
-Scavo requires the mouth action plus a movement direction into nearby earth.
+Digging requires holding the Front Paws action (E / East by default) plus a movement direction into nearby earth. Mouth actions such as eating and biting ropes are independent. Other hand interactions have priority before digging begins; an active dig retains the hand control until released.
 The shared PhysicsSettings must have Digging / Enabled on. When digging is
 blocked by another solid collider, that collider still stops the mouse even if
 it overlaps the diggable area; avoid covering the same space with solid tiles.

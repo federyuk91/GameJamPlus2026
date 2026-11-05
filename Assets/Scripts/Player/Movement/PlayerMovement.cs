@@ -10,6 +10,11 @@ namespace MousePlatformer
         [SerializeField] private PlayerCrateInteraction crateInteraction;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private PlayerSwimming swimming;
+        [SerializeField] private MouseFacing facing;
+        [SerializeField] private PlayerSnakeBoxInteraction snakeBox;
+        public PlayerSnakeBoxInteraction SnakeBoxInteraction => snakeBox;
+        public bool IsHidden => snakeBox != null && snakeBox.IsInside;
+        public bool IsMovingWhileHidden => IsHidden && snakeBox.IsMoving;
         private PhysicsSettings WorldSettings => (body != null ? body : body = GetComponent<SimulatedBody2D>()).Settings;
         [SerializeField] private PlayerMovementSettings movementSettings = new PlayerMovementSettings();
         [SerializeField] private PlayerLadderInteraction ladderInteraction;
@@ -29,6 +34,7 @@ namespace MousePlatformer
         }
         public bool IsSliding { get; private set; }
         public bool IsMovingOnGround { get; private set; }
+        public bool IsSprinting { get; private set; }
         public bool CanInteractWithCrates { get; private set; }
         public bool IsHangingFromLedge => ledgeClimb != null && ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging;
         private bool cameraControlActive;
@@ -36,7 +42,7 @@ namespace MousePlatformer
         {
             get
             {
-                if (!isActiveAndEnabled || body == null || input == null || input.GameplayActionsLocked
+                if (!isActiveAndEnabled || IsHidden || body == null || input == null || input.GameplayActionsLocked
                     || IsSliding || Mathf.Abs(input.Horizontal) > 0.1f || Mathf.Abs(input.Vertical) > 0.1f
                     || (digging != null && digging.InputClaimed)) return false;
                 if (IsHangingFromLedge) return true;
@@ -71,6 +77,7 @@ namespace MousePlatformer
         private bool jumpCut;
         private float ropeLaunchRemaining;
         private float groundSpeed;
+        private float runningJumpSpeed;
         private float slopeVelocity;
         private bool followingGround;
         private bool jumpedFromSupport;
@@ -81,6 +88,8 @@ namespace MousePlatformer
             if (crateInteraction == null) crateInteraction = GetComponent<PlayerCrateInteraction>();
             if (ropeInteraction == null) ropeInteraction = GetComponent<PlayerRopeInteraction>();
             if (swimming == null) swimming = GetComponent<PlayerSwimming>();
+            if (facing == null) facing = GetComponent<MouseFacing>();
+            if (snakeBox == null) snakeBox = GetComponent<PlayerSnakeBoxInteraction>();
             if (ladderInteraction == null) ladderInteraction = GetComponent<PlayerLadderInteraction>();
             if (ledgeClimb == null) ledgeClimb = GetComponent<PlayerLedgeClimb>();
             if (platformRide == null) platformRide = GetComponent<PlayerPlatformRide>();
@@ -88,6 +97,8 @@ namespace MousePlatformer
         }
         private void FixedUpdate()
         {
+            IsSprinting = false;
+            bool tailPressed = input.ConsumeTailPress();
             body.BeginMovementStep(Time.fixedDeltaTime);
             if (input.IsParalyzed)
             {
@@ -99,6 +110,13 @@ namespace MousePlatformer
                 ResetSurfaceMotion();
                 return;
             }
+            if (IsHidden)
+            {
+                CanInteractWithCrates = IsMovingOnGround = false;
+                ResetSurfaceMotion();
+                Velocity = snakeBox.Tick(Time.fixedDeltaTime);
+                return;
+            }
             if (cameraControlActive)
             {
                 input.ConsumeJump();
@@ -106,7 +124,7 @@ namespace MousePlatformer
             }
             if (platformRide != null) platformRide.Carry();
             jumpedFromSupport = false;
-            TickMovement();
+            TickMovement(tailPressed);
             bool canRide = (ropeInteraction == null || !ropeInteraction.Attached)
                 && (ladderInteraction == null || !ladderInteraction.Attached)
                 && (ledgeClimb == null || !ledgeClimb.Active)
@@ -118,7 +136,7 @@ namespace MousePlatformer
             }
         }
 
-        private void TickMovement()
+        private void TickMovement(bool tailPressed)
         {
             CanInteractWithCrates = false;
             IsMovingOnGround = false;
@@ -127,11 +145,7 @@ namespace MousePlatformer
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
             bool traversalReleased = false;
-            if (inWater && ledgeClimb != null && ledgeClimb.Active)
-            {
-                ledgeClimb.Cancel();
-                input.ClearLedgeInteraction();
-            }
+            // Una presa già acquisita ha precedenza sul nuoto, anche con i piedi immersi.
             bool ledgeInteractionPressed = input.LedgeInteractionPressed;
             if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed, ledgeInteractionPressed,
                 out Vector2 climbVelocity, out bool ledgeReleased))
@@ -195,7 +209,7 @@ namespace MousePlatformer
                 return;
             }
             body.RefreshGround(followingGround || Velocity.y <= 0f);
-            bool walkingUnderwater = inWater && body.Grounded && !jumpPressed;
+            bool walkingUnderwater = inWater && body.Grounded && !jumpPressed && !tailPressed && !swimming.HasTailBoost;
             if (inWater && !walkingUnderwater)
             {
                 ResetSurfaceMotion();
@@ -203,7 +217,7 @@ namespace MousePlatformer
                 bufferRemaining = coyoteRemaining = ropeLaunchRemaining = 0f;
                 // A swim stroke is independent of jump hold duration, including at the surface.
                 jumpCut = true;
-                Vector2 swimVelocity = swimming.Step(Velocity, input.Horizontal, jumpPressed, dt);
+                Vector2 swimVelocity = swimming.Step(Velocity, input.Horizontal, jumpPressed, dt, tailPressed);
                 Vector2 swimDisplacement = swimVelocity * dt;
                 if (crateInteraction != null) swimDisplacement = crateInteraction.ResolveSwimming(swimDisplacement, dt);
                 body.Move(swimDisplacement);
@@ -231,11 +245,29 @@ namespace MousePlatformer
                 Vector2 tangent = new Vector2(normal.y, -normal.x);
                 float downhillSign = Mathf.Sign(tangent.y) * -1f;
                 float walkSpeed = movementSettings.moveSpeed * (walkingUnderwater ? Mathf.Max(0f, Water.bottomWalkSpeedMultiplier) : 1f);
+                bool sprinting = input.SprintHeld && !walkingUnderwater && !onSteepSlope && !input.CrateGrabHeld;
+                float targetSpeed = sprinting ? Mathf.Max(walkSpeed, movementSettings.maxRunSpeed) : walkSpeed;
                 if (!followingGround)
-                    groundSpeed = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, tangent.x), -walkSpeed, walkSpeed);
+                    groundSpeed = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, tangent.x), -targetSpeed, targetSpeed);
                 if (walkingUnderwater) groundSpeed = Mathf.Clamp(groundSpeed, -walkSpeed, walkSpeed);
-                groundSpeed = onSteepSlope ? 0f : Mathf.MoveTowards(groundSpeed,
-                    input.Horizontal * walkSpeed, movementSettings.groundAcceleration * dt);
+                float requestedSpeed = input.Horizontal * targetSpeed;
+                if (onSteepSlope) groundSpeed = 0f;
+                else if (sprinting && Mathf.Abs(requestedSpeed) > walkSpeed
+                    && groundSpeed * Mathf.Sign(requestedSpeed) < Mathf.Abs(requestedSpeed))
+                {
+                    float walkingTarget = Mathf.Sign(requestedSpeed) * walkSpeed;
+                    float runTime = dt;
+                    if (groundSpeed * Mathf.Sign(requestedSpeed) < walkSpeed)
+                    {
+                        float walkingTime = movementSettings.groundAcceleration > 0f
+                            ? Mathf.Abs(walkingTarget - groundSpeed) / movementSettings.groundAcceleration : float.PositiveInfinity;
+                        groundSpeed = Mathf.MoveTowards(groundSpeed, walkingTarget, movementSettings.groundAcceleration * dt);
+                        runTime = Mathf.Max(0f, dt - walkingTime);
+                    }
+                    groundSpeed = Mathf.MoveTowards(groundSpeed, requestedSpeed, movementSettings.sprintAcceleration * runTime);
+                }
+                else groundSpeed = Mathf.MoveTowards(groundSpeed, requestedSpeed, movementSettings.groundAcceleration * dt);
+                runningJumpSpeed = walkingUnderwater ? 0f : Mathf.Min(Mathf.Abs(groundSpeed), targetSpeed);
 
                 float surfaceGravity = walkingUnderwater ? Water.GravityAcceleration(body.GravityAcceleration) : body.GravityAcceleration;
                 Vector2 gravityForce = Vector2.down * (surfaceGravity * body.Weight);
@@ -251,18 +283,19 @@ namespace MousePlatformer
             }
             else
             {
-                ResetSurfaceMotion();
+                ResetSurfaceMotion(true);
                 if (swimming != null && swimming.HasStrokeControl)
                     velocity.x = swimming.SurfaceHorizontal(velocity.x, input.Horizontal, dt);
                 else
-                    velocity.x = Mathf.MoveTowards(velocity.x, input.Horizontal * movementSettings.moveSpeed,
+                    velocity.x = Mathf.MoveTowards(velocity.x, input.Horizontal
+                        * (input.Horizontal * velocity.x > 0f ? Mathf.Max(movementSettings.moveSpeed, runningJumpSpeed) : movementSettings.moveSpeed),
                         (ropeLaunchRemaining > 0f ? movementSettings.airAcceleration * Movement.launchControlMultiplier
                             : movementSettings.airAcceleration) * dt);
             }
             if (bufferRemaining > 0f && coyoteRemaining > 0f)
             {
                 surfaceMotion = false;
-                ResetSurfaceMotion();
+                ResetSurfaceMotion(true);
                 velocity.y = JumpPhysics.LaunchSpeed(movementSettings.jumpHeight, body.GravityAcceleration);
                 if (platformRide != null && platformRide.HasSupport)
                 {
@@ -309,15 +342,22 @@ namespace MousePlatformer
             CanInteractWithCrates = surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding;
             IsMovingOnGround = surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding
                 && Mathf.Abs(input.Horizontal) > 0.1f && Mathf.Abs(velocity.x) > 0.05f;
+            IsSprinting = IsMovingOnGround && input.SprintHeld && !input.CrateGrabHeld;
         }
         private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
         {
             if (crateInteraction != null && crateInteraction.SuppressAutomaticClimb && input.CrateGrabHeld) return false;
             fromGround = fromGround && body.Grounded;
             if ((!fromGround && body.OnSteepSlope) || input.Vertical < -0.1f || ledgeClimb == null) return false;
-            // Recheck after moving: this tick may have crossed the water surface.
-            if (swimming != null && swimming.CheckWater()) return false;
+            // Il nuoto dipende dal bordo inferiore; l'aggancio richiede solo il centro emerso.
+            bool touchingWater = swimming != null && swimming.CheckWater();
+            if (touchingWater && (input.GameplayActionsLocked || !swimming.CanGrabLedge)) return false;
+            if (touchingWater) fromGround = false;
             float direction = Mathf.Abs(input.Horizontal) >= 0.1f ? input.Horizontal : fromGround ? 0f : horizontalVelocity;
+            // Vicino alla superficie si cerca automaticamente un bordo davanti al muso,
+            // anche da fermi. Portata e verifiche della presa restano quelle ordinarie.
+            if (touchingWater && Mathf.Abs(direction) < 0.1f && facing != null)
+                direction = facing.FacingRight ? 1f : -1f;
             if (!ledgeClimb.TryBegin(direction, fromGround)) return false;
             ResetSurfaceMotion();
             if (crateInteraction != null) crateInteraction.Release();
@@ -328,6 +368,8 @@ namespace MousePlatformer
         }
         public void TeleportTo(Vector2 destination)
         {
+            if (input != null) input.ConsumeTailPress();
+            if (snakeBox != null) snakeBox.Cancel();
             if (input != null) input.ClearLedgeInteraction();
             if (crateInteraction != null) crateInteraction.Release();
             if (ropeInteraction != null) ropeInteraction.Detach();
@@ -355,6 +397,8 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            if (snakeBox != null) snakeBox.Cancel();
+            IsSprinting = false;
             CanInteractWithCrates = false;
             IsMovingOnGround = false;
             ResetSurfaceMotion();
@@ -363,8 +407,9 @@ namespace MousePlatformer
             if (swimming != null) swimming.ResetStrokeControl();
         }
 
-        private void ResetSurfaceMotion()
+        private void ResetSurfaceMotion(bool preserveRunningJump = false)
         {
+            if (!preserveRunningJump) runningJumpSpeed = 0f;
             followingGround = false;
             groundSpeed = slopeVelocity = 0f;
             IsSliding = false;

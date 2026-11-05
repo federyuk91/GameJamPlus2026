@@ -3,6 +3,12 @@ using UnityEngine;
 
 namespace MousePlatformer
 {
+    /// <summary>
+    /// Gestisce il morso prolungato che taglia una corda raggiungibile, anche in presenza di ostacoli.
+    /// Ogni pressione prolungata della bocca può completare al massimo un taglio.
+    /// Lo scavo usa le mani ed è gestito separatamente da PlayerDigging.
+    /// </summary>
+    // Viene eseguito prima del movimento del topo, che usa ordine 100.
     [DefaultExecutionOrder(90), DisallowMultipleComponent, RequireComponent(typeof(PlayerInputReader))]
     public sealed class PlayerRopeBite : MonoBehaviour
     {
@@ -10,7 +16,6 @@ namespace MousePlatformer
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private MouseFacing facing;
         [SerializeField] private Transform visual;
-        [SerializeField] private PlayerDigging digging;
         [SerializeField] private PlayerRopeInteraction ropeInteraction;
         [SerializeField] private Vector2 mouthOffset = new Vector2(0.45f, -0.1f);
         [SerializeField, Min(0.01f), Tooltip("Maximum mouth-to-rope distance. Yellow rope gizmos show this reach; while hanging, the grip point is used.")]
@@ -19,72 +24,63 @@ namespace MousePlatformer
         [SerializeField, Tooltip("Shared input diagnostics during gameplay.")]
         private string lastAttempt;
         [SerializeField, Range(0f, 1f)] private float biteProgress;
-        [SerializeField] private Collider2D blockingCollider;
-        private readonly RaycastHit2D[] obstacles = new RaycastHit2D[16];
+        // Il bersaglio identifica la corda; il segmento viene aggiornato mentre questa si muove.
         private RopeSimulation target;
         private int targetSegment = -1;
         private float heldTime;
+        // Dopo un taglio occorre rilasciare il comando prima di poterne eseguire un altro.
         private bool consumedHold;
-        private bool biteChosen;
+        /// <summary>Avanzamento normalizzato del morso corrente, azzerato alla perdita del bersaglio.</summary>
         public float BiteProgress => biteProgress;
         public float Reach => reach;
+        /// <summary>Notifica un taglio riuscito, dopo il consumo della pressione e l'azzeramento del morso.</summary>
         public event Action RopeCut;
-        public bool CanStartDiggingWithSharedInput => isActiveAndEnabled && !consumedHold && !biteChosen;
-
         private void Awake()
         {
+            // Le reference dell'Inspector hanno precedenza; si recuperano una sola volta
+            // i componenti locali mancanti per supportare anche configurazioni precedenti.
             if (input == null) input = GetComponent<PlayerInputReader>();
             if (body == null) body = GetComponent<SimulatedBody2D>();
             if (facing == null) facing = GetComponent<MouseFacing>();
-            if (digging == null) digging = GetComponent<PlayerDigging>();
             if (ropeInteraction == null) ropeInteraction = GetComponent<PlayerRopeInteraction>();
         }
 
         private void FixedUpdate()
         {
+            // Il rilascio, oppure un blocco dell'input, riabilita una nuova pressione.
+            // Si usa il comando grezzo per distinguere il rilascio dall'arbitraggio delle interazioni.
             if (!input.RawBiteHeld)
             {
                 consumedHold = false;
-                biteChosen = false;
-                if (digging != null) digging.ReleaseInput();
                 ResetTarget();
-                blockingCollider = null;
                 lastAttempt = "Waiting for F / North";
                 return;
             }
             if (consumedHold) return;
+            // Il comando può essere premuto ma consumato da un'altra interazione,
+            // oppure non assegnato alle azioni disponibili in questo momento.
             if (!input.BiteHeld)
             {
-                if (digging != null) digging.ReleaseInput();
                 ResetTarget();
                 return;
             }
-            // Always evaluate reachable ropes before digging can consume the shared input.
+            // Sincronizza i collider spostati via Transform prima della verifica del sostegno.
             Physics2D.SyncTransforms();
-            blockingCollider = null;
             RopeSimulation nearest = null;
             int segment = -1;
             if (input.IsInteractionSelected(AvailableGameplayActions.CutRope))
-                TryFindCutTarget(out nearest, out segment, true);
+                TryFindCutTarget(out nearest, out segment);
             if (nearest == null || !nearest.CanBeCut)
             {
+                // Perdere la corda annulla il tempo accumulato per il morso.
                 ResetTarget();
-                if (digging != null && digging.InputClaimed)
-                {
-                    lastAttempt = "Digging active: no reachable rope";
-                    return;
-                }
-                if (!biteChosen && input.IsInteractionSelected(AvailableGameplayActions.Dig)
-                    && digging != null && digging.TryClaimInput())
-                    lastAttempt = "Digging started";
-                else lastAttempt = blockingCollider != null ? "Rope obstructed by a collider" : "No cuttable rope in front of the mouth";
+                lastAttempt = "No cuttable rope in front of the mouth";
                 return;
             }
-            if (digging != null) digging.ReleaseInput();
-            blockingCollider = null;
-            biteChosen = true;
             if (target != nearest)
             {
+                // Cambiare corda richiede un nuovo morso completo; cambiare segmento
+                // della stessa corda, invece, non interrompe l'avanzamento.
                 target = nearest;
                 heldTime = 0f;
             }
@@ -94,6 +90,8 @@ namespace MousePlatformer
             lastAttempt = "Biting in progress";
             if (heldTime >= holdDuration && target.TryCutSegment(targetSegment))
             {
+                // Si consuma la pressione solo dopo il taglio effettivo. Se il segmento
+                // non è tagliabile, la ricerca può riprovare nei tick successivi.
                 consumedHold = true;
                 ResetTarget();
                 lastAttempt = "Rope cut: release F / North";
@@ -101,29 +99,43 @@ namespace MousePlatformer
             }
         }
 
+        /// <summary>
+        /// Verifica la disponibilità geometrica del taglio senza richiedere il tasto premuto
+        /// e senza controllare gli ostacoli. Non avanza il morso né taglia la corda.
+        /// </summary>
         public bool CanCutRope => isActiveAndEnabled && body != null && !consumedHold
-            && TryFindCutTarget(out _, out _, false);
+            && TryFindCutTarget(out _, out _);
 
-        private bool TryFindCutTarget(out RopeSimulation nearest, out int segment, bool updateDiagnostics)
+        /// <summary>
+        /// Privilegia la corda impugnata; in alternativa cerca il segmento integro più vicino
+        /// davanti al topo ed entro la portata della bocca, ignorando gli ostacoli solidi.
+        /// </summary>
+        private bool TryFindCutTarget(out RopeSimulation nearest, out int segment)
         {
             nearest = null;
             segment = -1;
             if (body == null) return false;
+            // Il taglio è consentito da terra, appesi a una corda oppure immersi in acqua;
+            // non durante una normale caduta o un salto senza sostegno.
             bool supported = body.Grounded || (ropeInteraction != null && ropeInteraction.Attached);
             if (!supported && !WaterVolume.ContainsPoint(body.Shape.bounds.center)) return false;
             Transform plane = visual != null ? visual : transform;
+            // Offset e direzione seguono il riferimento visivo, compreso il verso del topo.
             float sign = facing == null || facing.FacingRight ? 1f : -1f;
             Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
             Vector2 forward = plane.TransformDirection(Vector2.right * sign);
             Vector2 facingOrigin = body != null ? body.transform.TransformPoint(body.Shape.offset) : transform.position;
             float best = reach * reach;
-            // A held rope can be brought to the mouth regardless of the facing direction.
+            // La corda impugnata può essere portata alla bocca indipendentemente dal verso.
+            // Questo ramo usa il punto di presa, senza il limite di distanza
+            // applicato più sotto alle corde libere.
             RopeSimulation heldRope = null;
             if (ropeInteraction != null
-                && ropeInteraction.TryGetGrip(out heldRope, out int gripSegment, out Vector2 gripPoint)
-                && heldRope.CanBeCut && HasLineOfSight(mouth, gripPoint - mouth, updateDiagnostics))
+                && ropeInteraction.TryGetGrip(out heldRope, out int gripSegment, out _)
+                && heldRope.CanBeCut)
             {
-                // Preserve a handhold on the supported side of the cut.
+                // Sceglie il segmento in base al lato che deve restare utilizzabile dopo
+                // il taglio, lasciando una presa sul tratto sostenuto della corda.
                 int cutSegment = heldRope.KeepCrateSideAfterCut
                     ? Mathf.Min(gripSegment, heldRope.ClimbableEndSegment - 2)
                     : Mathf.Max(heldRope.ClimbableFirstSegment + 1, gripSegment);
@@ -145,13 +157,17 @@ namespace MousePlatformer
                         if (!rope.Chain.IsSegmentIntact(i)) continue;
                         Vector2 a = rope.Chain[i];
                         Vector2 delta = rope.Chain[i + 1] - a;
+                        // Proietta la bocca sul segmento e limita la proiezione ai suoi estremi.
+                        // Il denominatore minimo evita divisioni per zero su segmenti degeneri.
                         float t = Mathf.Clamp01(Vector2.Dot(mouth - a, delta) / Mathf.Max(delta.sqrMagnitude, 0.000001f));
                         Vector2 point = a + delta * t;
                         Vector2 offset = point - mouth;
                         float squared = offset.sqrMagnitude;
-                        // The mouth can pass the rope while the body is still aligned with it.
+                        // Il controllo "davanti/dietro" parte dal corpo, non dalla bocca:
+                        // permette di mordere una corda appena oltrepassata dal solo muso.
+                        // La tolleranza di 0,05 unità evita esclusioni al limite dell'allineamento.
                         bool behindPlayer = Vector2.Dot(point - facingOrigin, forward) < -0.05f;
-                        if (squared > best || behindPlayer || !HasLineOfSight(mouth, offset, updateDiagnostics)) continue;
+                        if (squared > best || behindPlayer) continue;
                         best = squared;
                         nearest = rope;
                         segment = i;
@@ -161,24 +177,8 @@ namespace MousePlatformer
             return nearest != null && nearest.CanBeCut;
         }
 
-        private bool HasLineOfSight(Vector2 origin, Vector2 offset, bool updateDiagnostics)
-        {
-            float distance = offset.magnitude;
-            if (distance <= 0.0001f) return true;
-            int count = Physics2D.Raycast(origin, offset / distance, body.SolidFilter, obstacles, distance);
-            for (int i = 0; i < count; i++)
-            {
-                Collider2D obstacle = obstacles[i].collider;
-                if (obstacle == body.Shape || obstacle.transform.IsChildOf(transform)) continue;
-                if (obstacles[i].distance < distance - 0.01f)
-                {
-                    if (updateDiagnostics) blockingCollider = obstacle;
-                    return false;
-                }
-            }
-            return true;
-        }
-
+        // Azzera solo il bersaglio e l'avanzamento: conserva
+        // l'eventuale pressione consumata fino al rilascio o a Cancel.
         private void ResetTarget()
         {
             target = null;
@@ -189,6 +189,8 @@ namespace MousePlatformer
 
         private void OnDrawGizmosSelected()
         {
+            // Visualizza la portata ordinaria dalla bocca e il verso di ricerca.
+            // La corda già impugnata usa invece il ramo dedicato al punto di presa.
             Transform plane = visual != null ? visual : transform;
             float sign = facing == null || facing.FacingRight ? 1f : -1f;
             Vector2 mouth = plane.TransformPoint(new Vector2(mouthOffset.x * sign, mouthOffset.y));
@@ -203,10 +205,12 @@ namespace MousePlatformer
             Cancel();
         }
 
+        /// <summary>
+        /// Interrompe il morso, liberando anche lo stato della pressione.
+        /// Viene richiamato alla disattivazione e può essere usato dai sistemi esterni.
+        /// </summary>
         public void Cancel()
         {
-            if (digging != null) digging.ReleaseInput();
-            biteChosen = false;
             consumedHold = false;
             ResetTarget();
         }

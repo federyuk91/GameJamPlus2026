@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 63d9c9b84530daa4b8c51a53f4aa018d
+guid: 579f343709c28d04bb4b7b2527880f2c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -282440257990414503
-    second: Laboratorio Fantascientifico al Neon_0
+      213: -6102805860222315482
+    second: shock_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,8 +37,8 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
-    aniso: 1
+    filterMode: 0
+    aniso: 0
     mipBias: 0
     wrapU: 1
     wrapV: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Laboratorio Fantascientifico al Neon_0
+      name: shock_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 6
         y: 0
-        width: 1672
-        height: 941
+        width: 24
+        height: 23
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 95f2630f412941cf0800000000000000
-      internalID: -282440257990414503
+      spriteID: 624d648776a7e4ba0800000000000000
+      internalID: -6102805860222315482
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Laboratorio Fantascientifico al Neon_0: -282440257990414503
+      shock_0: -6102805860222315482
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -9,7 +9,7 @@
             <game:InputPromptElement name="body-callout-3" class="body-callout body-callout-3" style="top: 77px; right: 16px;" binding="tail" preview-path="" preview-label="—" />
         </ui:VisualElement>
         <ui:VisualElement class="body-details">
-            <ui:Label name="body-description" text="Reserved for a future tail action. You can already choose its controls." class="body-description" />
+            <ui:Label name="body-description" text="Hold to sprint on the ground. Press once in water for a small horizontal boost." class="body-description" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

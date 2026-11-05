@@ -41,8 +41,8 @@ MonoBehaviour:
     gravityMultiplier: 0.15
     maxSinkSpeed: 3.5
     strokeSpeed: 4.5
-    surfaceJumpSpeed: 7
-    surfaceJumpDepth: 0.3
+    surfaceJumpSpeed: 7.5
+    surfaceJumpDepth: 0.5
   ladder:
     jumpHorizontalSpeed: 6
     jumpUpSpeed: 9
@@ -50,9 +50,9 @@ MonoBehaviour:
   ledgeClimb:
     enabled: 1
     maxHeight: 0.75
+    hangHeightFraction: 0.85
     gripProbeClearance: 0.03125
     minimumGripDepth: 0.03125
-    hangHeightFraction: 0.85
     retryDelay: 0.15
   digging:
     enabled: 1

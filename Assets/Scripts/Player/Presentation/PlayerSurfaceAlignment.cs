@@ -9,6 +9,7 @@ namespace MousePlatformer
         [SerializeField] private Transform visualPivot;
         [SerializeField] private PlayerDigging digging;
         [SerializeField] private MouseFacing facing;
+        [SerializeField] private PlayerSwimming swimming;
         private Vector3 restLocalPosition;
         private Quaternion restLocalRotation;
 
@@ -17,6 +18,7 @@ namespace MousePlatformer
             if (body == null) body = GetComponent<SimulatedBody2D>();
             if (digging == null) digging = GetComponent<PlayerDigging>();
             if (facing == null) facing = GetComponent<MouseFacing>();
+            if (swimming == null) swimming = GetComponent<PlayerSwimming>();
             if (visualPivot == null) return;
             restLocalPosition = visualPivot.localPosition;
             restLocalRotation = visualPivot.localRotation;
@@ -34,6 +36,8 @@ namespace MousePlatformer
                 visualPivot.rotation = Quaternion.AngleAxis(digAngle, Vector3.forward) * restLocalRotation;
                 return;
             }
+            // La posa di nuoto resta ancorata al corpo anche quando il collider tocca il fondo.
+            if (swimming != null && swimming.isActiveAndEnabled && swimming.InWater) return;
             if (!body.HasGroundContact) return;
 
             Vector2 normal = body.GroundNormal;

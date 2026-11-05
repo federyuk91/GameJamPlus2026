@@ -56,6 +56,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Universes/Universo_10_Composed.unity
     guid: aa17eb103b07a204d857c17223d4c90e
+  - enabled: 1
+    path: Assets/Scenes/Sequence Room Test.unity
+    guid: 01963fb9d20fe5a4b89ef9d50dfc9560
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

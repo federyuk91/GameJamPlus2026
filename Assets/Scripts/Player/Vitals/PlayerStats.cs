@@ -18,6 +18,7 @@ namespace MousePlatformer
         private CollectibleCollector collector;
         [SerializeField, Tooltip("Wheel interaction that applies its own satiety drain interval while in use.")]
         private PlayerWheelInteraction wheel;
+        [SerializeField] private PlayerMovement movement;
         [Header("Simulation")]
         [SerializeField, Tooltip("Enable hunger consumption and cheese effects for this animal.")]
         private bool satietyEnabled = true;
@@ -31,6 +32,11 @@ namespace MousePlatformer
         private int health = MaximumHealth;
         public int Health => health;
         public bool IsDead => health <= 0;
+        public bool IsHidden => movement != null && movement.IsHidden;
+        public bool IsMovingWhileHidden => movement != null && movement.IsMovingWhileHidden;
+        public bool CanBeSeenByEnemies => !IsHidden || IsMovingWhileHidden;
+        public Collider2D HiddenCoverCollider => movement != null && movement.SnakeBoxInteraction != null
+            ? movement.SnakeBoxInteraction.CoverCollider : null;
         public event Action HealthChanged;
         public event Action Damaged;
 
@@ -53,6 +59,17 @@ namespace MousePlatformer
 
         public int Satiety { get; private set; }
         public int MaximumSatiety => Mathf.Max(1, maximumSatiety);
+        public float VisibleSatiety
+        {
+            get
+            {
+                if (!satietyEnabled || Satiety <= 0) return Satiety;
+                float progress = wheel != null && wheel.IsUsing
+                    ? wheelDrainProgress / wheel.DrainInterval : drainProgress;
+                if (IsPoisoned) progress = Mathf.Max(progress, poisonElapsed / Mathf.Max(0.1f, poisonInterval));
+                return Mathf.Max(0f, Satiety - Mathf.Clamp01(progress));
+            }
+        }
         public bool IsPoisoned => poisonTicksRemaining > 0;
         public bool LastSatietyLossWasPoison { get; private set; }
         public event Action<int, int> SatietyChanged;
@@ -76,16 +93,20 @@ namespace MousePlatformer
         private StageEndCase drowningEnding = StageEndCase.Drowning;
         [SerializeField, Min(1), Tooltip("Maximum oxygen notches for this animal.")] private int maximumOxygen = 5;
         [SerializeField, Min(0.1f), Tooltip("Seconds underwater before losing one oxygen notch.")] private float oxygenDrainInterval = 5f;
-        [SerializeField, Min(0.1f), Tooltip("Seconds above water needed to recover one oxygen notch.")] private float oxygenRecoveryInterval = 1f;
+        [SerializeField, Min(0.1f), Tooltip("Seconds above water needed to continuously recover one full oxygen notch. Partial recovery is retained when submerging again.")] private float oxygenRecoveryInterval = 1f;
+        [SerializeField, Min(0f), Tooltip("Secondi consecutivi con il punto di respirazione fuori dall'acqua prima di iniziare il recupero. Una nuova immersione azzera l'attesa; la pausa sospende il timer.")]
+        private float oxygenRecoveryDelay = 1f;
         [SerializeField, Range(0f, 1f), Tooltip("Breathing point height within the collider, from bottom (0) to top (1).")] private float breathingPointHeight = 0.85f;
         [SerializeField, Min(0f), Tooltip("Remaining oxygen time that triggers the low oxygen notification.")] private float warningSeconds = 10f;
         [SerializeField, Tooltip("Invoked once when remaining underwater oxygen reaches the warning threshold.")] private UnityEvent onLowOxygen = new UnityEvent();
         private float drainElapsed;
-        private float recoveryElapsed;
+        private float aboveWaterElapsed;
         private bool warningIssued;
 
         public int Oxygen { get; private set; }
         public int MaximumOxygen => Mathf.Max(1, maximumOxygen);
+        public float VisibleOxygen => Mathf.Clamp(Oxygen - drainElapsed / Mathf.Max(0.1f, oxygenDrainInterval), 0f, MaximumOxygen);
+        public bool IsOxygenFull => Oxygen >= MaximumOxygen && drainElapsed <= 0f;
         public bool IsUnderwater { get; private set; }
         public float OxygenSecondsRemaining => Mathf.Max(0f, Oxygen * Mathf.Max(0.1f, oxygenDrainInterval) - drainElapsed);
         public event Action<int, int> OxygenChanged;
@@ -95,6 +116,7 @@ namespace MousePlatformer
         {
             if (playerCollider == null) playerCollider = GetComponent<Collider2D>();
             if (collector == null) collector = GetComponent<CollectibleCollector>();
+            if (movement == null) movement = GetComponent<PlayerMovement>();
             Satiety = MaximumSatiety;
             Oxygen = MaximumOxygen;
         }
@@ -271,7 +293,8 @@ namespace MousePlatformer
             else
             {
                 wheelDrainProgress = 0f;
-                drainProgress += Time.fixedDeltaTime / interval;
+                float sprintMultiplier = movement != null && movement.IsSprinting ? 1.1f : 1f;
+                drainProgress += Time.fixedDeltaTime * sprintMultiplier / interval;
                 if (drainProgress < 1f) return;
                 drainProgress -= 1f;
             }
@@ -291,9 +314,18 @@ namespace MousePlatformer
             bool underwater = WaterVolume.ContainsPoint(breathingPoint);
             bool changed = underwater != IsUnderwater;
             IsUnderwater = underwater;
+            float recoveryDeltaTime = 0f;
+            if (underwater) aboveWaterElapsed = 0f;
+            else
+            {
+                float delay = Mathf.Max(0f, oxygenRecoveryDelay);
+                float remainingDelay = Mathf.Max(0f, delay - aboveWaterElapsed);
+                aboveWaterElapsed = Mathf.Min(delay, aboveWaterElapsed + Time.fixedDeltaTime);
+                // Nel tick che termina l'attesa recupera solo per il tempo residuo.
+                recoveryDeltaTime = Mathf.Max(0f, Time.fixedDeltaTime - remainingDelay);
+            }
             if (underwater)
             {
-                recoveryElapsed = 0f;
                 drainElapsed += Time.fixedDeltaTime;
                 if (drainElapsed >= Mathf.Max(0.1f, oxygenDrainInterval))
                 {
@@ -303,20 +335,25 @@ namespace MousePlatformer
                     OxygenLost?.Invoke();
                 }
             }
-            else if (Oxygen < MaximumOxygen || drainElapsed > 0f)
+            else if (recoveryDeltaTime > 0f && (Oxygen < MaximumOxygen || drainElapsed > 0f))
             {
-                recoveryElapsed += Time.fixedDeltaTime;
-                if (recoveryElapsed >= Mathf.Max(0.1f, oxygenRecoveryInterval))
+                // Usa la stessa frazione della barretta consumata: il recupero rimane
+                // continuo e reale anche quando il topo torna subito sott'acqua.
+                drainElapsed -= recoveryDeltaTime * Mathf.Max(0.1f, oxygenDrainInterval)
+                    / Mathf.Max(0.1f, oxygenRecoveryInterval);
+                while (drainElapsed < 0f && Oxygen < MaximumOxygen)
                 {
-                    recoveryElapsed -= Mathf.Max(0.1f, oxygenRecoveryInterval);
-                    Oxygen = Mathf.Min(MaximumOxygen, Oxygen + 1);
-                    // Briefly surfacing cannot reset an almost-consumed notch; a full recovery interval can.
+                    Oxygen++;
+                    drainElapsed += Mathf.Max(0.1f, oxygenDrainInterval);
+                    changed = true;
+                }
+                if (Oxygen == MaximumOxygen && drainElapsed <= 0f)
+                {
                     drainElapsed = 0f;
-                    if (Oxygen == MaximumOxygen) warningIssued = false;
+                    warningIssued = false;
                     changed = true;
                 }
             }
-            else recoveryElapsed = 0f;
             if (changed) OxygenChanged?.Invoke(Oxygen, MaximumOxygen);
             CheckOxygenState();
         }

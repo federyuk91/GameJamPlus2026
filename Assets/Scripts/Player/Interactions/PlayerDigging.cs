@@ -85,8 +85,13 @@ namespace MousePlatformer
             velocity = Vector2.zero;
             IsDigging = false;
             Direction = Vector2.zero;
-            if (!InputClaimed || !input.BiteHeld || !Settings.enabled || terrain == null
-                || !terrain.isActiveAndEnabled || AttachedElsewhere()) return false;
+            if (!input.DigHeld || !Settings.enabled || AttachedElsewhere())
+            {
+                ReleaseInput();
+                return false;
+            }
+            if (!InputClaimed && !TryClaimInput()) return false;
+            if (terrain == null || !terrain.isActiveAndEnabled) { ReleaseInput(); return false; }
             Vector2 direction = Vector2.ClampMagnitude(new Vector2(input.Horizontal, input.Vertical), 1f);
             Vector2 center = body.Shape.bounds.center;
             float radius = RadiusFor(terrain);

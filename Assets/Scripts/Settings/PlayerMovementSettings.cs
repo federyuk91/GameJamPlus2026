@@ -10,6 +10,10 @@ namespace MousePlatformer
         public const float DefaultHorizontalHandInteraction = 0.15f;
         [Tooltip("Horizontal movement speed for this animal in world units/s. Also used when jumping away from a ledge; underwater walking applies its existing multiplier.")]
         [Min(0f)] public float moveSpeed = 5f;
+        [Tooltip("Maximum horizontal running speed while Sprint is held, in world units/s. Cannot reduce normal Move Speed; the body's global Max Speed remains a safety limit.")]
+        [Min(0f)] public float maxRunSpeed = 6f;
+        [Tooltip("Acceleration above normal Move Speed while sprinting on dry ground, in world units/s². Releasing Sprint uses Ground Acceleration to return to walking speed.")]
+        [Min(0f)] public float sprintAcceleration = 2f;
         [Tooltip("Multiplies this animal's Move Speed for both ladder movement and ledge climbing. 0.6 uses 60% of normal movement speed; 0 stops climbing. The body's Max Speed still limits motion.")]
         [Min(0f)] public float climbSpeedMultiplier = 0.6f;
         public float ClimbSpeed => Mathf.Max(0f, moveSpeed) * Mathf.Max(0f, climbSpeedMultiplier);

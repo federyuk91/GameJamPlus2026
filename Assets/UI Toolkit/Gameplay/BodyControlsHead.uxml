@@ -9,7 +9,7 @@
             <game:InputPromptElement name="body-callout-0" class="body-callout body-callout-0" style="top: 49px; left: 49px;" binding="mouth" preview-path="&lt;Keyboard&gt;/f" preview-label="F" />
         </ui:VisualElement>
         <ui:VisualElement class="body-details">
-            <ui:Label name="body-description" text="Eat cheese. Hold to gnaw ropes or dig." class="body-description" />
+            <ui:Label name="body-description" text="Eat cheese. Hold to gnaw ropes." class="body-description" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

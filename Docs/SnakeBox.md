@@ -1,0 +1,19 @@
+# Snake Box
+
+Il prefab `Assets/Prefabs/SnakeBox.prefab` usa `SnakeBox`; il Player condiviso usa `PlayerSnakeBoxInteraction`. Non serve assegnare il player su ogni scatola: le scatole attive nella stessa scena si registrano e il player seleziona quella raggiungibile più vicina. L'interazione compete con ruote, pulsanti e oggetti usando lo stesso comando delle zampe anteriori.
+
+Premere il comando vicino alla scatola, da terra, avvia `EnterFromLeft` o `EnterFromRight` secondo il lato di arrivo. Il player normale e la sua ombra vengono nascosti; la raccolta viene sospesa. Durante ingresso e uscita il movimento è bloccato. Dentro sono disponibili soltanto spostamenti orizzontali, con `MoveToLeft` e `MoveToRight`, i nomi già presenti nel controller importato. Da fermo viene mostrata la sprite chiusa.
+
+Premere di nuovo interazione o salto avvia l'uscita dal lato opposto all'ultimo movimento effettivo. Senza spostamenti si usa il verso dell'ingresso. Si riproduce manualmente l'animazione di ingresso corrispondente, dall'ultimo frame al primo; non viene usata velocità negativa dell'Animator. Se lo spazio di uscita è occupato, il topo rimane dentro: spostare la scatola o cambiare direzione e riprovare. Il salto usato per uscire viene consumato.
+
+Sul componente SnakeBox si configurano `Move Speed`, `Interaction Reach`, `Feet Tolerance`, collider, sprite chiusa e clip di ingresso. La scatola usa SimulatedBody2D e GroundContact2D per seguire rampe in salita e discesa; a ogni movimento copia Max Slope Angle dal corpo del topo. Il collider resta verticale, mentre VisualPivot inclina sprite e animazioni intorno alla base, come per il player. La velocità è misurata lungo la rampa. Non simula caduta, galleggiamento o superamento di gradini: predisporre percorsi supportati e senza acqua.
+
+Le richieste di uscita durante l'ingresso vengono memorizzate. Il punto di uscita tiene conto della pendenza e della Skin; se il terreno lo interseca ancora, cerca un appoggio entro la tolleranza dei gradini del player. Pareti e soffitti continuano a bloccarlo. In PlayerSnakeBoxInteraction, Last Exit Attempt ed Exit Blocker riportano il motivo dell'ultimo rifiuto.
+
+Initial Ground Tolerance corregge una piccola compenetrazione iniziale sollevando la scatola fino all'appoggio trovato da un cast esterno. La correzione viene applicata soltanto se il volume finale è libero. In Play Mode, selezionando la scatola, il punto giallo indica il contatto realmente usato, la linea gialla la normale e la linea azzurra la tangente. Le diagonali di triangolazione mostrate dal Composite non rappresentano necessariamente bordi di collisione.
+
+Lo stato è esposto da `PlayerStats.IsHidden`, `IsMovingWhileHidden` e `CanBeSeenByEnemies`. I faretti non inseguono mai un player Hidden. La visione dei piranha consulta CanBeSeenByEnemies, conservando distanza, cono visivo, ostacoli e requisito di essere in acqua: nascondersi non rende un piranha un nemico terrestre. Gli altri sistemi nemici futuri dovranno consultare la stessa proprietà prima dei propri controlli di visibilità. La scatola occupata è esposta da `HiddenCoverCollider`, per non considerarla un ostacolo alla visione quando il movimento rivela il topo.
+
+Salute e sazietà continuano a funzionare. Disattivazione della scatola, morte, disattivazione del componente o teletrasporto liberano l'occupazione e ripristinano collider, renderer e raccolta. Le stringhe `Hide in box` / `Leave box` si modificano nel catalogo Gameplay Tooltip Settings.
+
+Verifica in Unity: ingresso dai due lati; movimento e arresto; uscita opposta con interazione e salto; uscita bloccata da parete; pausa durante le animazioni; ripristino di sprite e ombra; faretto con follow automatico e forzato. Le altre interazioni devono continuare a funzionare fuori dalla scatola.

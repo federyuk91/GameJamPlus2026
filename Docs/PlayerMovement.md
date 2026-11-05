@@ -163,11 +163,11 @@ PhysicsSettings > Water exposes `strokeAcceleration` (acceleration after Jump) a
 
 Historical numerical checks passed at 30/50/100 Hz for retained velocity, acceleration from rest, surface control and direction reversal. Compilation passed; full input/collider checks remain manual.
 
-## Digging and biting with F / East
+## Digging with Front Paws and biting with Mouth
 
-F / gamepad east is shared by rope cutting and digging. A cuttable rope within mouth reach takes priority and requires a 0.6-second hold. Steel ropes cannot be cut. Otherwise, holding F plus direction digs reachable soil. A reachable cuttable rope interrupts digging. Once biting starts, the same press cannot switch to digging; release after cutting.
+Rope cutting uses the Mouth action (F / North by default), independently of digging. Holding Front Paws (E / East) plus a direction digs nearby soil when other hand interactions do not have priority. Once digging starts it retains the hand control until released; a nearby rope does not interrupt it. Steel ropes cannot be cut.
 
-Digging uses both movement axes, including diagonals. Releasing direction stops the mouse; releasing F restores normal movement/gravity. Digging cannot start while attached to ropes, ladders or ledges. Crates retain E / west; ladder, climb and jump controls remain unchanged.
+Digging uses both movement axes, including diagonals. Releasing direction stops the mouse; releasing Front Paws restores normal movement/gravity. Digging cannot start while attached to ropes, ladders or ledges. Crates share Front Paws; ladder, climb and jump controls remain unchanged.
 
 PhysicsSettings > Digging exposes enabled, speed, radius, reach, excavated alpha (0–255) and tint. Effective radius automatically expands to contain the player collider. Alpha 254 reveals only 1/255 of the background; lower it for visibility without closing tunnels.
 
@@ -296,3 +296,13 @@ Airborne ledge attachment checks a local side beneath the candidate top, free ho
 ## Buffered climb input
 
 PlayerInputReader captures front-paw presses through InputAction.performed and keeps a ledge-only request for Ledge Input Buffer seconds (0.15 by default). Releasing the button does not erase a short tap before the next physics tick. PlayerMovement consumes the interaction only when climbing starts, so a rejected clearance check can retry until the request expires. Leaving the ledge, entering water, teleporting, consuming the interaction elsewhere, changing bindings or locking/disabling input clears the request. Other front-paw interactions retain their existing press/hold behaviour.
+
+## Sprint and running jumps
+
+Player Movement > Movement Settings exposes Max Run Speed (6 units/s) and Sprint Acceleration (2 units/s²). Move Speed remains the normal speed (5); Ground Acceleration handles reaching normal speed and braking. Hold the Tail control to sprint (Left Shift on keyboard and West on controller by default). Acceleration beyond walking speed uses Sprint Acceleration, including when crossing that speed within a physics tick. Sprint is disabled while grabbing crates or walking underwater and respects gameplay locks and paralysis.
+
+Jumping or leaving an edge retains the running speed already earned on the ground, even after releasing Sprint. Air input cannot build sprint speed from rest. This increases horizontal jump range by up to 20% at the default settings without changing jump height, gravity or release behaviour. Traversal, swimming, teleports and disable clear the stored running speed; the shared body Max Speed remains in force. Sprint uses PlayerBodyAction.Tail on keyboard and controller; the Tail page in the controls menu can reassign it and runtime binding changes apply immediately.
+
+## Tail impulse in water
+
+The Tail binding also queues one horizontal impulse per press in water. Holding the control does not repeat it; on land the same binding still provides held sprint. PlayerSwimming exposes Tail Impulse (1.25 units/s) and Tail Boost Duration (0.25 seconds). Horizontal input chooses the direction; without it, the mouse uses its facing direction. During the brief boost, the swimming speed cap receives a decaying allowance so the existing cap does not discard the impulse. Water drag, collisions and the body speed limit still apply. The boost also works on the underwater floor and does not add upward velocity. Input locks, rebinding, teleportation and traversal clear pending presses or active boost state.

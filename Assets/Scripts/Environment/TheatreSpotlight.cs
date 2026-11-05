@@ -14,6 +14,8 @@ namespace MousePlatformer
         [SerializeField] private Light2D spotlight;
         [SerializeField, Tooltip("Optional player collider. When empty, uses the player assigned to the scene's Game Manager.")]
         private Collider2D targetCollider;
+        private Collider2D visibilityTarget;
+        private PlayerStats targetStats;
         [SerializeField, Min(0f), Tooltip("Maximum spotlight rotation speed in degrees per second while following the player or returning to its rest pose.")]
         private float rotationSpeed = 120f;
         [SerializeField, Min(0f), Tooltip("Seconds fading the spotlight on when the player enters its area, or off when the player leaves. Brightness is configured on the child Light 2D.")]
@@ -75,9 +77,14 @@ namespace MousePlatformer
             if (Time.deltaTime <= 0f) return;
             if (targetCollider == null && GameManager.Instance != null)
                 targetCollider = GameManager.Instance.PlayerCollider;
+            if (visibilityTarget != targetCollider)
+            {
+                visibilityTarget = targetCollider;
+                targetStats = targetCollider != null ? targetCollider.GetComponent<PlayerStats>() : null;
+            }
             bool playerInArea = ContainsPlayer();
             bool targetAvailable = targetCollider != null && targetCollider.enabled
-                && targetCollider.gameObject.activeInHierarchy;
+                && targetCollider.gameObject.activeInHierarchy && (targetStats == null || !targetStats.IsHidden);
             IsTracking = targetAvailable && (followMode == ControlMode.On
                 || (followMode == ControlMode.Automatic && playerInArea));
             Quaternion desiredRotation = aimingPivot.parent != null
@@ -105,6 +112,7 @@ namespace MousePlatformer
         {
             if (trackingArea == null || !trackingArea.enabled || !trackingArea.gameObject.activeInHierarchy
                 || targetCollider == null || !targetCollider.enabled
+                || (targetStats != null && targetStats.IsHidden)
                 || !targetCollider.gameObject.activeInHierarchy) return false;
             // Custom character movement does not produce Rigidbody2D trigger callbacks.
             Physics2D.SyncTransforms();

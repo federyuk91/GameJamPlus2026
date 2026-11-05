@@ -9,7 +9,7 @@
             <game:InputPromptElement name="body-callout-1" class="body-callout body-callout-1" style="top: 90px; left: 51px;" binding="front" preview-path="&lt;Keyboard&gt;/e" preview-label="E" />
         </ui:VisualElement>
         <ui:VisualElement class="body-details">
-            <ui:Label name="body-description" text="Collect objects, press buttons, use wheels and climb ledges. Hold with a direction to push or pull crates." class="body-description" />
+            <ui:Label name="body-description" text="Collect objects, press buttons, use wheels, hide in boxes and climb ledges. Hold with a direction to push, pull or dig." class="body-description" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

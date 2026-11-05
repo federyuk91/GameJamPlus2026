@@ -18,6 +18,10 @@ namespace GameJamPlus.UI
 
         [Tooltip("Mostrato quando una cassa raggiungibile può essere spinta o tirata. Il comando viene accompagnato dalle icone direzionali.")]
         [TextArea(1, 3)] public string moveCrate = "Hold to push / pull";
+        [Tooltip("Mostrato vicino a una Snake Box disponibile, per nascondersi al suo interno.")]
+        [TextArea(1, 3)] public string enterSnakeBox = "Hide in box";
+        [Tooltip("Mostrato dentro una Snake Box. Anche il salto fa uscire, senza saltare.")]
+        [TextArea(1, 3)] public string exitSnakeBox = "Leave box";
 
         [Tooltip("Mostrato mentre il topo è appeso a un bordo. Indica il comando per tentare la salita; non garantisce che lo spazio sopra sia libero.")]
         [TextArea(1, 3)] public string climbUp = "Climb up";
@@ -43,10 +47,10 @@ namespace GameJamPlus.UI
         [Tooltip("Mostrato mentre il topo sta usando una ruota, per indicare il comando che interrompe l'utilizzo.")]
         [TextArea(1, 3)] public string leaveWheel = "Leave wheel";
 
-        [Tooltip("Mostrato quando il topo può mordere una corda raggiungibile. Il morso della corda ha precedenza sullo scavo.")]
+        [Tooltip("Mostrato quando il topo può mordere una corda raggiungibile con il comando Testa.")]
         [TextArea(1, 3)] public string gnaw = "Hold to gnaw";
 
-        [Tooltip("Mostrato quando il topo può iniziare a scavare e nessun formaggio o corda ha precedenza sul comando del morso. Include le icone direzionali.")]
+        [Tooltip("Mostrato quando le Mani possono iniziare o continuare lo scavo. Le altre interazioni delle mani hanno precedenza prima di iniziare. Include le icone direzionali.")]
         [TextArea(1, 3)] public string dig = "Hold to dig";
     }
 }

@@ -632,6 +632,9 @@ namespace GameJamPlus.UI
             }
             if ((available & AvailableGameplayActions.MoveCrate) != 0)
                 AddInteractionHint(InputPromptAction.MoveCrate, TooltipTexts.moveCrate, true);
+            if ((available & AvailableGameplayActions.SnakeBox) != 0)
+                AddInteractionHint(InputPromptAction.Interact,
+                    interactionAvailability.IsInSnakeBox ? TooltipTexts.exitSnakeBox : TooltipTexts.enterSnakeBox);
             if ((available & AvailableGameplayActions.ClimbLedge) != 0)
                 AddInteractionHint(InputPromptAction.Interact, TooltipTexts.climbUp);
             if ((available & AvailableGameplayActions.EatCheese) != 0)
@@ -650,7 +653,7 @@ namespace GameJamPlus.UI
             if ((available & AvailableGameplayActions.CutRope) != 0)
                 AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.gnaw);
             if ((available & AvailableGameplayActions.Dig) != 0)
-                AddInteractionHint(InputPromptAction.CutOrDig, TooltipTexts.dig, true);
+                AddInteractionHint(InputPromptAction.Interact, TooltipTexts.dig, true);
             bool showHints = interactionHints.childCount > 0;
             interactionHints.style.display = showHints ? DisplayStyle.Flex : DisplayStyle.None;
         }

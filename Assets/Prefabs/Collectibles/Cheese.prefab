@@ -134,7 +134,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.012045205, y: -0.1841197}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -144,7 +144,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9001969, y: 0.6317606}
   m_EdgeRadius: 0
 --- !u!114 &4546305336044527665
 MonoBehaviour:
@@ -256,7 +256,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015625, y: -0.1875}
+  m_Offset: {x: 0.0018590987, y: -0.1875}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -266,7 +266,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.90625, y: 0.625}
+  m_Size: {x: 0.6928777, y: 0.625}
   m_EdgeRadius: 0
 --- !u!114 &9100000100
 MonoBehaviour:
@@ -312,6 +312,7 @@ MonoBehaviour:
   body: {fileID: 9100000100}
   buoyancy: {fileID: 0}
   tether: {fileID: 0}
+  additionalTethers: []
   pushable: {fileID: 9800095001}
   balloon: {fileID: 0}
   initialVelocity: {x: 0, y: 0}

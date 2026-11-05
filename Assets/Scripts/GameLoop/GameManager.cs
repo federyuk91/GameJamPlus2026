@@ -30,7 +30,7 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private MousePlatformer.PlayerCrushVisual playerCrushVisual;
         [SerializeField] private MousePlatformer.PlayerStats playerStats;
         [SerializeField] private MousePlatformer.PlatformCameraController gameplayCamera;
-        [SerializeField, Tooltip("Assigned active spawn points are shuffled without replacement across retries. All are used before a new cycle, avoiding immediate repetition between cycles.")]
+        [SerializeField, Tooltip("Spawn points in this scene are automatically appended on startup without duplicating assigned entries. Active points are shuffled without replacement across retries. All are used before a new cycle, avoiding immediate repetition between cycles.")]
         private SpawnPoint[] spawnPoints = new SpawnPoint[0];
         [SerializeField] private HandReleaseIntro handReleaseIntro;
         [Header("Game loop")]
@@ -82,6 +82,7 @@ namespace GameJamPlus.Gameplay
                 enabled = false;
                 return;
             }
+            CollectSceneSpawnPoints();
             SpawnPlayer();
             // The hand's OnEnable may not have run yet at the manager's earlier execution order.
             if (handReleaseIntro != null && handReleaseIntro.enabled && handReleaseIntro.gameObject.activeInHierarchy)
@@ -105,6 +106,28 @@ namespace GameJamPlus.Gameplay
             if (State != LoopState.Spawning) return;
             State = LoopState.Playing;
             hud.CompleteSpawnPresentation();
+        }
+
+        [ContextMenu("Collect Scene Spawn Points")]
+        public void CollectSceneSpawnPoints()
+        {
+            Scene scene = gameObject.scene;
+            if (!scene.IsValid() || !scene.isLoaded) return;
+
+            List<SpawnPoint> collected = spawnPoints != null
+                ? new List<SpawnPoint>(spawnPoints) : new List<SpawnPoint>();
+            HashSet<SpawnPoint> assigned = new HashSet<SpawnPoint>(collected);
+            GameObject[] roots = scene.GetRootGameObjects();
+            foreach (GameObject root in roots)
+            {
+                SpawnPoint[] points = root.GetComponentsInChildren<SpawnPoint>(true);
+                foreach (SpawnPoint point in points)
+                {
+                    if (assigned.Add(point)) collected.Add(point);
+                }
+            }
+            if (spawnPoints == null || collected.Count != spawnPoints.Length)
+                spawnPoints = collected.ToArray();
         }
 
         private void SpawnPlayer()

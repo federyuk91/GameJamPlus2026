@@ -8,9 +8,12 @@
 | Attach to rope | W / Up | Left stick up / D-pad up |
 | Climb rope / ladder | W/S / Up/Down | Left stick / D-pad vertical |
 | Push / pull crate | Hold E + direction | Hold East + direction |
-| Eat cheese / collect photo / press button / enter or exit wheel | F | East (Xbox B / PlayStation Circle) |
-| Cut rope | Hold F | Hold East |
-| Dig | Hold F + direction | Hold East + direction |
+| Eat cheese | F | North |
+| Collect photo / press button / enter or exit wheel / Snake Box | E | East (Xbox B / PlayStation Circle) |
+| Cut rope | Hold F | Hold North |
+| Dig | Hold E + direction | Hold East + direction |
+| Sprint | Hold Left Shift | Hold West |
+| Horizontal water impulse | Press Left Shift | Press West |
 | Climb ledge | W / Up, or Space toward ledge | Up, or South toward ledge |
 | Jump vertically from a blocked ledge | Space + W / Up | South + Up |
 | Drop from ledge | S / Down | Down |
@@ -22,7 +25,7 @@ Menus retain Space / South to confirm and Esc / East to cancel. Scientist messag
 
 Main menu and pause navigation use WASD/arrows or left stick/D-pad. A/D or Left/Right adjust the selected volume slider. The main menu assigns explicit navigation, confirm and back actions to its InputSystemUIInputModule while enabled and restores the previous actions on disable. Its device-aware footer includes WASD. On the pause main page, Esc, East and Start/Options resume; Esc/East return from subpages to the pause main page, while Start/Options resumes directly.
 
-On a shared interaction key, the nearest collectible/button/wheel is selected first; while one is available it suppresses cutting/digging and, on gamepad, crate movement. Without such a target, crate movement takes priority over cutting/digging on East. Cutting takes priority over digging. Keyboard E remains independent of F. Only the selected action is executed and represented by its contextual hint. When mounted, the wheel exit is the only player action; camera height toggling is also suppressed.
+Front Paws selects the nearest collectible, button, wheel or Snake Box before pushing or digging. An active dig keeps the hand action until released. Mouth (eating or rope cutting) is independent. Tail is held for land sprint and tapped for a horizontal water impulse. Body-action bindings can be reassigned in the controls menu. While inside a Snake Box, hands or jump request exit; wheel exit uses hands. Camera height control is suppressed in both. Figures in the table are the defaults.
 
 The controls page follows device names and scrolls with the right stick, Page Up/Down or mouse wheel so the expanded instructions fit at 640 × 360. Direction hints use W / D-pad-up sprites from the existing white icon set, tinted green.
 

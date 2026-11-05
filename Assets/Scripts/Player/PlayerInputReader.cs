@@ -11,11 +11,13 @@ namespace MousePlatformer
         private float ledgeInputBuffer = 0.15f;
         private InputAction move;
         private InputAction jump;
+        private InputAction sprint;
         private InputAction bite;
         private InputAction collect;
         private bool collectionConsumed;
         private bool mouthConsumed;
         private bool jumpQueued;
+        private bool tailQueued;
         private bool ledgeInteractionQueued;
         private double ledgeInteractionExpires;
         private AvailableGameplayActions selectedInteractions = AvailableGameplayActions.All;
@@ -31,7 +33,7 @@ namespace MousePlatformer
         public void SetCameraControlsLocked(bool locked)
         {
             cameraControlsLocked = locked;
-            jumpQueued = false;
+            jumpQueued = false; tailQueued = false;
             ConsumeAllInteractions();
         }
         public bool WheelInteractionPressed => !IsParalyzed && collect != null && collect.WasPressedThisFrame() && !collectionConsumed
@@ -41,7 +43,7 @@ namespace MousePlatformer
         {
             gameplayLocked = locked;
             waitingForInteractionRelease = !locked;
-            jumpQueued = false;
+            jumpQueued = false; tailQueued = false;
             ClearLedgeInteraction();
         }
         private const AvailableGameplayActions CollectActions = AvailableGameplayActions.CollectPhoto | AvailableGameplayActions.CollectItem;
@@ -54,6 +56,7 @@ namespace MousePlatformer
         public float Horizontal => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().x;
         public float Vertical => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().y;
         public bool JumpHeld => !GameplayActionsLocked && jump != null && jump.IsPressed();
+        public bool SprintHeld => !GameplayActionsLocked && sprint != null && sprint.IsPressed();
         public bool GrabHeld => Vertical > 0.1f;
         public bool InteractionPressed => !GameplayActionsLocked && collect != null && collect.WasPressedThisFrame() && !collectionConsumed
             && (selectedInteractions & CollectActions) != 0;
@@ -61,9 +64,13 @@ namespace MousePlatformer
             && (selectedInteractions & AvailableGameplayActions.PressButton) != 0;
         public bool RawBiteHeld => !GameplayActionsLocked && bite != null && bite.IsPressed();
         public bool BiteHeld => RawBiteHeld && !mouthConsumed
-            && (selectedInteractions & (AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig)) != 0;
+            && (selectedInteractions & AvailableGameplayActions.CutRope) != 0;
+        public bool DigHeld => !GameplayActionsLocked && collect != null && collect.IsPressed() && !collectionConsumed
+            && (selectedInteractions & AvailableGameplayActions.Dig) != 0;
         public bool CrateGrabHeld => !GameplayActionsLocked && collect != null && collect.IsPressed() && !collectionConsumed
             && (selectedInteractions & AvailableGameplayActions.MoveCrate) != 0;
+        public bool SnakeBoxPressed => !GameplayActionsLocked && collect != null && collect.WasPressedThisFrame() && !collectionConsumed
+            && (selectedInteractions & AvailableGameplayActions.SnakeBox) != 0;
 
         public bool IsInteractionSelected(AvailableGameplayActions action) => (selectedInteractions & action) != 0;
 
@@ -72,9 +79,9 @@ namespace MousePlatformer
             if (!isActiveAndEnabled || GameplayActionsLocked || control == null) return false;
             bool gamepad = control.device is Gamepad;
             if (!gamepad && !(control.device is Keyboard)) return false;
-            AvailableGameplayActions mouthActions = EatActions | AvailableGameplayActions.CutRope | AvailableGameplayActions.Dig;
+            AvailableGameplayActions mouthActions = EatActions | AvailableGameplayActions.CutRope;
             AvailableGameplayActions frontPawActions = CollectActions | AvailableGameplayActions.MoveCrate
-                | AvailableGameplayActions.PressButton | AvailableGameplayActions.ClimbLedge | AvailableGameplayActions.UseWheel;
+                | AvailableGameplayActions.PressButton | AvailableGameplayActions.ClimbLedge | AvailableGameplayActions.UseWheel | AvailableGameplayActions.SnakeBox | AvailableGameplayActions.Dig;
             return ((available & mouthActions) != 0
                     && InputControlPath.Matches(PlayerControlBindings.Path(PlayerBodyAction.Mouth, gamepad), control))
                 || ((available & frontPawActions) != 0
@@ -101,6 +108,10 @@ namespace MousePlatformer
             jump.AddBinding("<Keyboard>/space");
             jump.AddBinding("<Gamepad>/buttonSouth");
             jump.performed += QueueJump;
+            sprint = new InputAction("Tail", InputActionType.Button);
+            sprint.AddBinding("<Keyboard>/leftShift");
+            sprint.AddBinding("<Gamepad>/buttonWest");
+            sprint.performed += QueueTail;
             collect = new InputAction("FrontPaws", InputActionType.Button);
             collect.AddBinding("<Keyboard>/e");
             collect.AddBinding("<Gamepad>/buttonEast");
@@ -116,10 +127,21 @@ namespace MousePlatformer
             PlayerControlBindings.Apply(jump, PlayerBodyAction.HindPaws);
             PlayerControlBindings.Apply(collect, PlayerBodyAction.FrontPaws);
             PlayerControlBindings.Apply(bite, PlayerBodyAction.Mouth);
-            jumpQueued = false;
+            PlayerControlBindings.Apply(sprint, PlayerBodyAction.Tail);
+            jumpQueued = false; tailQueued = false;
             ClearLedgeInteraction();
         }
         private void QueueJump(InputAction.CallbackContext context) { if (!GameplayActionsLocked) jumpQueued = true; }
+        private void QueueTail(InputAction.CallbackContext context)
+        {
+            if (!GameplayActionsLocked && Time.timeScale > 0f) tailQueued = true;
+        }
+        public bool ConsumeTailPress()
+        {
+            bool pressed = tailQueued;
+            tailQueued = false;
+            return pressed;
+        }
         private void QueueLedgeInteraction(InputAction.CallbackContext context)
         {
             if (GameplayActionsLocked || collectionConsumed) return;
@@ -136,6 +158,7 @@ namespace MousePlatformer
 
         public void ConsumeAllInteractions()
         {
+            tailQueued = false;
             mouthConsumed = true;
             collectionConsumed = true;
             ClearLedgeInteraction();
@@ -163,8 +186,8 @@ namespace MousePlatformer
             jumpQueued = false;
             return result;
         }
-        private void OnEnable() { move.Enable(); jump.Enable(); bite.Enable(); collect.Enable(); }
-        private void OnDisable() { move.Disable(); jump.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; collectionConsumed = false; mouthConsumed = false; ClearLedgeInteraction(); }
-        private void OnDestroy() { PlayerControlBindings.Changed -= ApplyBindings; move.Dispose(); jump.Dispose(); bite.Dispose(); collect.Dispose(); }
+        private void OnEnable() { move.Enable(); jump.Enable(); sprint.Enable(); bite.Enable(); collect.Enable(); }
+        private void OnDisable() { move.Disable(); jump.Disable(); sprint.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; tailQueued = false; collectionConsumed = false; mouthConsumed = false; ClearLedgeInteraction(); }
+        private void OnDestroy() { PlayerControlBindings.Changed -= ApplyBindings; move.Dispose(); jump.Dispose(); sprint.Dispose(); bite.Dispose(); collect.Dispose(); }
     }
 }

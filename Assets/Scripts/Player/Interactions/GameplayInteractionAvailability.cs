@@ -11,7 +11,8 @@ namespace MousePlatformer
         ClimbLedge = 128,
         UseWheel = 256,
         CollectItem = 512,
-        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton | ClimbLedge | UseWheel | CollectItem
+        SnakeBox = 1024,
+        All = EatCheese | EatGreenCheese | CutRope | Dig | CollectPhoto | MoveCrate | PressButton | ClimbLedge | UseWheel | CollectItem | SnakeBox
     }
 
     [DefaultExecutionOrder(130), DisallowMultipleComponent]
@@ -25,6 +26,8 @@ namespace MousePlatformer
         [SerializeField] private PlayerCrateInteraction crates;
         [SerializeField] private PlayerButtonInteraction buttons;
         [SerializeField] private PlayerWheelInteraction wheel;
+        [SerializeField] private PlayerSnakeBoxInteraction snakeBox;
+        public bool IsInSnakeBox => snakeBox != null && snakeBox.IsInside;
         public bool IsUsingWheel => wheel != null && wheel.IsUsing;
 
         public AvailableGameplayActions Current { get; private set; }
@@ -33,6 +36,8 @@ namespace MousePlatformer
 
         private void OnEnable()
         {
+            if (snakeBox == null && movement != null) snakeBox = movement.SnakeBoxInteraction;
+            if (snakeBox != null) snakeBox.UsageChanged += OnWheelUsageChanged;
             if (wheel != null) wheel.UsageChanged += OnWheelUsageChanged;
         }
 
@@ -50,6 +55,7 @@ namespace MousePlatformer
             if (collector != null && collector.isActiveAndEnabled) collector.RefreshInteractionTarget();
             if (buttons != null && buttons.isActiveAndEnabled) buttons.RefreshInteractionTarget();
             if (wheel != null && wheel.isActiveAndEnabled) wheel.RefreshInteractionTarget();
+            if (snakeBox != null && snakeBox.isActiveAndEnabled) snakeBox.RefreshInteractionTarget();
             Refresh();
             return Current;
         }
@@ -67,6 +73,14 @@ namespace MousePlatformer
 
         private void Refresh()
         {
+            if (IsInSnakeBox)
+            {
+                AvailableGameplayActions boxAction = input != null && !input.GameplayActionsLocked
+                    ? AvailableGameplayActions.SnakeBox : AvailableGameplayActions.None;
+                input?.SetSelectedInteractions(boxAction, usingGamepad);
+                SetAvailable(boxAction);
+                return;
+            }
             if (input != null && input.GameplayActionsLocked)
             {
                 AvailableGameplayActions lockedActions = IsUsingWheel ? AvailableGameplayActions.UseWheel : AvailableGameplayActions.None;
@@ -90,8 +104,6 @@ namespace MousePlatformer
                 if (food != null && food.CanBeCollected)
                     available |= food.Type == CollectibleType.Cheese ? AvailableGameplayActions.EatCheese : AvailableGameplayActions.EatGreenCheese;
                 else if (ropeBite != null && ropeBite.CanCutRope) available |= AvailableGameplayActions.CutRope;
-                else if (ropeBite != null && ropeBite.CanStartDiggingWithSharedInput && digging != null && digging.CanStartDigging)
-                    available |= AvailableGameplayActions.Dig;
             }
 
             AvailableGameplayActions hands = AvailableGameplayActions.None;
@@ -110,8 +122,21 @@ namespace MousePlatformer
             }
             if (wheel != null && wheel.isActiveAndEnabled && wheel.InteractionTarget != null
                 && wheel.InteractionTarget.CanUse && wheel.TargetDistanceSquared < handDistance)
+            {
                 hands = AvailableGameplayActions.UseWheel;
-            // Front-paw press actions share a key with holding props. Mouth actions are independent.
+                handDistance = wheel.TargetDistanceSquared;
+            }
+            if (snakeBox != null && snakeBox.isActiveAndEnabled)
+            {
+                snakeBox.RefreshInteractionTarget();
+                if (snakeBox.InteractionTarget != null && snakeBox.TargetDistanceSquared < handDistance)
+                    hands = AvailableGameplayActions.SnakeBox;
+            }
+            if (digging != null && digging.isActiveAndEnabled
+                && ((digging.InputClaimed && input != null && input.DigHeld)
+                    || (hands == AvailableGameplayActions.None && (available & AvailableGameplayActions.MoveCrate) == 0 && digging.CanStartDigging)))
+                hands = AvailableGameplayActions.Dig;
+            // Le mani mantengono lo scavo già iniziato; le azioni della bocca sono indipendenti.
             if (hands != AvailableGameplayActions.None)
             {
                 available &= ~AvailableGameplayActions.MoveCrate;
@@ -130,6 +155,7 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            if (snakeBox != null) snakeBox.UsageChanged -= OnWheelUsageChanged;
             if (wheel != null) wheel.UsageChanged -= OnWheelUsageChanged;
             input?.SetSelectedInteractions(AvailableGameplayActions.All);
             SetAvailable(AvailableGameplayActions.None);

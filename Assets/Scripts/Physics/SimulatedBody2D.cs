@@ -76,6 +76,7 @@ namespace MousePlatformer
         public Vector2 LimitVelocity(Vector2 velocity) => Vector2.ClampMagnitude(velocity, MaxSpeed);
         public float GroundFriction => Mathf.Max(0f, groundFriction);
         public float MaxSlopeAngle => Mathf.Clamp(maxSlopeAngle, 0f, 89f);
+        public void SetMaxSlopeAngle(float angle) => maxSlopeAngle = Mathf.Clamp(angle, 0f, 89f);
         public GroundContact2D GroundContact => groundContact != null
             ? groundContact : groundContact = GetComponent<GroundContact2D>();
         public ContactFilter2D SolidFilter
