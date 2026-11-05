@@ -142,6 +142,7 @@ namespace MousePlatformer
 
         private void UpdateColliderShape(bool useWaterShape)
         {
+            if (playerMovement != null && playerMovement.IsFlattened) return;
             if (playerShape == null || waterShapeApplied == useWaterShape || !playerShape.enabled) return;
             Vector2 size = useWaterShape
                 ? new Vector2(Mathf.Max(0.001f, waterColliderSize.x), Mathf.Max(0.001f, waterColliderSize.y))

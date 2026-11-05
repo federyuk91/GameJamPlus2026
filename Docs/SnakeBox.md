@@ -1,6 +1,6 @@
 # Snake Box
 
-Il prefab `Assets/Prefabs/SnakeBox.prefab` usa `SnakeBox`; il Player condiviso usa `PlayerSnakeBoxInteraction`. Non serve assegnare il player su ogni scatola: le scatole attive nella stessa scena si registrano e il player seleziona quella raggiungibile più vicina. L'interazione compete con ruote, pulsanti e oggetti usando lo stesso comando delle zampe anteriori.
+Il prefab `Assets/Prefabs/Props/SnakeBox.prefab` usa `SnakeBox`; il Player condiviso usa `PlayerSnakeBoxInteraction`. Non serve assegnare il player su ogni scatola: le scatole attive nella stessa scena si registrano e il player seleziona quella raggiungibile più vicina. L'interazione compete con ruote, pulsanti e oggetti usando lo stesso comando delle zampe anteriori.
 
 Premere il comando vicino alla scatola, da terra, avvia `EnterFromLeft` o `EnterFromRight` secondo il lato di arrivo. Il player normale e la sua ombra vengono nascosti; la raccolta viene sospesa. Durante ingresso e uscita il movimento è bloccato. Dentro sono disponibili soltanto spostamenti orizzontali, con `MoveToLeft` e `MoveToRight`, i nomi già presenti nel controller importato. Da fermo viene mostrata la sprite chiusa.
 

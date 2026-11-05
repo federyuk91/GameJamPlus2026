@@ -13,6 +13,8 @@
 | Cut rope | Hold F | Hold North |
 | Dig | Hold E + direction | Hold East + direction |
 | Sprint | Hold Left Shift | Hold West |
+| Flatten on land | S / Down | Left stick / D-pad down |
+| Stand up if clear | W / Up | Left stick / D-pad up |
 | Horizontal water impulse | Press Left Shift | Press West |
 | Climb ledge | W / Up, or Space toward ledge | Up, or South toward ledge |
 | Jump vertically from a blocked ledge | Space + W / Up | South + Up |

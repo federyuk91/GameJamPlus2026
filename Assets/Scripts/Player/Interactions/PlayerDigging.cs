@@ -24,7 +24,8 @@ namespace MousePlatformer
         public bool InputClaimed { get; private set; }
         public bool IsDigging { get; private set; }
         public Vector2 Direction { get; private set; }
-        public float DigSpeed => Mathf.Max(0f, playerMovement.MovementSettings.moveSpeed) * Mathf.Max(0f, digSpeedMultiplier);
+        public float DigSpeed => Mathf.Max(0f, playerMovement.MovementSettings.moveSpeed) * Mathf.Max(0f, digSpeedMultiplier)
+            * (playerMovement.IsFlattened ? 0.5f : 1f);
         public bool CanStartDigging => isActiveAndEnabled && body != null && Settings.enabled && !AttachedElsewhere()
             && (TryFindTerrain(Vector2.left, out _) || TryFindTerrain(Vector2.right, out _)
                 || TryFindTerrain(Vector2.up, out _) || TryFindTerrain(Vector2.down, out _));

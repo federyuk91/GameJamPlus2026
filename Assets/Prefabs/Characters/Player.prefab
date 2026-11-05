@@ -578,7 +578,7 @@ Transform:
   m_GameObject: {fileID: 705135350684258017}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.092663944, y: 0.5161481, z: 0}
+  m_LocalPosition: {x: -0.092663944, y: 0.4608481, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -702,6 +702,7 @@ GameObject:
   - component: {fileID: 9700001000}
   - component: {fileID: 9800091001}
   - component: {fileID: 9800561001}
+  - component: {fileID: 9800563001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -854,6 +855,7 @@ MonoBehaviour:
   platformRide: {fileID: 4147716882159431439}
   digging: {fileID: 7072776503502995229}
   snakeBox: {fileID: 9800561001}
+  flattening: {fileID: 9800563001}
 --- !u!114 &6712765668103962099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1436,3 +1438,17 @@ MonoBehaviour:
   body: {fileID: 4027669037393712695}
   collector: {fileID: 5709383898159029123}
   stats: {fileID: 9800100001}
+--- !u!114 &9800563001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76af9d7cf0ad40c6aafc452dda2c991f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 4027669037393712695}
+  flattenClip: {fileID: 7400000, guid: 305391922b114200a01487d7bd730313, type: 2}

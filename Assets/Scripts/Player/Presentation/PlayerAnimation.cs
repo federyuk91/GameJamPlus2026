@@ -5,7 +5,8 @@ namespace MousePlatformer
     [DisallowMultipleComponent, RequireComponent(typeof(PlayerMovement), typeof(SimulatedBody2D))]
     public sealed class PlayerAnimation : MonoBehaviour
     {
-        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging, Shocked }
+        private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging, Shocked,
+            Flattening, FlattenedIdle, FlattenedWalk, StandingUp }
 
         [SerializeField] private Animator animator;
         [SerializeField] private PlayerMovement movement;
@@ -99,6 +100,14 @@ namespace MousePlatformer
         private Motion ChooseMotion(bool ledgeActive, bool onLadder, bool inWater, bool climbingRope)
         {
             if (stats != null && stats.IsParalyzed) return Motion.Shocked;
+            PlayerFlattening posture = movement.Flattening;
+            if (!inWater && posture != null)
+            {
+                if (posture.IsFlattening) return Motion.Flattening;
+                if (posture.IsFlattened)
+                    return Mathf.Abs(movement.Velocity.x) > runThreshold ? Motion.FlattenedWalk : Motion.FlattenedIdle;
+                if (posture.IsStandingUp) return Motion.StandingUp;
+            }
             if (ledgeActive)
                 return ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging ? Motion.WallHanging : Motion.ClimbUp;
             if (onLadder) return Motion.LadderClimb;

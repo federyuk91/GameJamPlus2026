@@ -1,5 +1,27 @@
 # Project structure
 
+## Riordino — 5 novembre 2026
+
+Spostati 42 asset e script insieme ai rispettivi `.meta`, preservando contenuti e GUID. Le modifiche già presenti ai metadati delle immagini del topo schiacciato e di Ponte sono rimaste intatte. Non sono stati eliminati asset, modificati nomi di classi o namespace, né cambiati valori di gameplay.
+
+| Cartella | Contenuto attuale |
+| --- | --- |
+| `Assets/Animations/SnakeBox` | Controller, posa chiusa, ingressi e animazioni di movimento della Snake Box |
+| `Assets/Art/Pixel Art/Props/SnakeBox` | Sprite e sheet della Snake Box, già soggetti allo stesso importer Pixel Art |
+| `Assets/Art/Environment` | Background Elements e Foreground Elements, fuori dalle cartelle con import automatico Pixel Art per conservarne le impostazioni |
+| `Assets/Art/UI/Gameplay` | Anche i sei sheet Button Scheme e il sorgente `.ase` rimasti nella root |
+| `Assets/Prefabs/Props` | Anche SnakeBox e Anchored Balloon With Crate |
+| `Assets/Editor/Water` | Inspector, bake, setup e riparazione dei collegamenti dell'acqua |
+| `Assets/Editor/Diagnostics` | Audit di pulsanti, collezionabili e voce dello scienziato |
+| `Assets/Editor/Setup` | Strumenti per creare o predisporre scene, universi, prefab e configurazioni |
+| `Assets/Editor/Recovery` | Recupero di backup di scena |
+| `Assets/Editor/Gameplay` | Inspector e strumenti di modifica del gameplay rimasti, separati dai setup e dagli audit |
+
+Per i nuovi file usare la cartella del sistema corrispondente, evitando asset direttamente sotto `Assets`. Un asset va spostato insieme al suo `.meta`; i riferimenti tramite GUID rimangono validi, mentre i percorsi espliciti nel codice, nella UI o nella documentazione vanno aggiornati. Gli script Editor devono restare sotto una cartella `Editor`.
+
+`Resources`, `Gizmos`, pacchetti esterni, scene in lavorazione e backup sono rimasti nelle loro posizioni. Materiali dal nome provvisorio e possibili duplicati non sono stati cancellati o rinominati senza una verifica del loro utilizzo. I menu degli strumenti e il loro comportamento non sono cambiati.
+
+
 ## Follow-up organization — 23 October 2026
 
 Moved 38 recently added or misplaced art assets into existing folders, together with their original `.meta` files. No folders were created or removed. Asset and metadata file hashes were checked before and after the moves; content and GUIDs were preserved.
