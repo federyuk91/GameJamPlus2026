@@ -54,6 +54,8 @@ namespace MousePlatformer
         private float weight = 1f;
         private readonly List<RaycastHit2D> hits = new List<RaycastHit2D>(32);
         private PropsMotion propMotion;
+        private BoxCollider2D droppingThrough;
+        private OneWayPlatform2D dropPlatform;
         private double movementStepTime = double.NegativeInfinity;
         private float movementRemaining;
         private float RemainingMovementDistance => movementStepTime == Time.fixedTimeAsDouble
@@ -130,8 +132,29 @@ namespace MousePlatformer
 
         public void BeginMovementStep(float dt)
         {
+            if (dropPlatform != null && (droppingThrough == null || !dropPlatform.isActiveAndEnabled
+                || !droppingThrough.enabled || dropPlatform.HasCleared(droppingThrough, Shape, skin)))
+                ClearPlatformDrop();
             movementStepTime = Time.fixedTimeAsDouble;
             movementRemaining = MaxSpeed * Mathf.Max(0f, dt);
+        }
+
+        public bool TryDropThroughGround()
+        {
+            if (!Grounded || !(GroundCollider is BoxCollider2D platform)
+                || !platform.TryGetComponent(out OneWayPlatform2D oneWay)
+                || !oneWay.isActiveAndEnabled || !oneWay.AllowsDropThrough) return false;
+
+            droppingThrough = platform;
+            dropPlatform = oneWay;
+            RefreshGround(false);
+            return true;
+        }
+
+        public void ClearPlatformDrop()
+        {
+            droppingThrough = null;
+            dropPlatform = null;
         }
 
         private Vector2 LimitDisplacement(Vector2 displacement)
@@ -366,6 +389,7 @@ namespace MousePlatformer
             Vector2 center = (Vector2)transform.TransformPoint(shape.offset) + offset;
             Vector2 scale = transform.lossyScale;
             Vector2 size = Vector2.Scale(shape.size, new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            Vector2 halfSize = size * 0.5f;
             // Starting inside the floor can hide a wall on the same tilemap collider.
             float inset = Mathf.Min(skin, Mathf.Min(size.x, size.y) * 0.25f);
             size -= Vector2.one * (inset * 2f);
@@ -388,6 +412,10 @@ namespace MousePlatformer
                 // Ignore surfaces parallel to this axis (floor while moving horizontally).
                 float approach = -Vector2.Dot(hit.normal, direction);
                 if (approach <= minimumApproach) continue;
+                if (hit.collider is BoxCollider2D platform && platform.TryGetComponent(out OneWayPlatform2D oneWay)
+                    && oneWay.isActiveAndEnabled
+                    && (platform == droppingThrough || !oneWay.Blocks(platform, center, halfSize, right, up, direction, hit.normal, skin)))
+                    continue;
                 // Report the full body's travel distance, not the smaller query box's distance.
                 float insetAlongNormal = inset * (Mathf.Abs(Vector2.Dot(hit.normal, right))
                     + Mathf.Abs(Vector2.Dot(hit.normal, up)));

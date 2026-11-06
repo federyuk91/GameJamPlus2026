@@ -148,10 +148,25 @@ namespace MousePlatformer
             bool jumpPressed = input.ConsumeJump();
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
+            bool dropThrough = jumpPressed && input.Vertical < -0.5f && !inWater
+                && (ledgeClimb == null || !ledgeClimb.Active)
+                && (ladderInteraction == null || !ladderInteraction.Attached)
+                && (ropeInteraction == null || !ropeInteraction.Attached)
+                && (digging == null || !digging.InputClaimed)
+                && body.TryDropThroughGround();
+            if (dropThrough)
+            {
+                jumpPressed = false;
+                bufferRemaining = coyoteRemaining = 0f;
+                jumpedFromSupport = true;
+                ResetSurfaceMotion();
+                if (platformRide != null) platformRide.Release();
+                Velocity = new Vector2(Velocity.x, Mathf.Min(Velocity.y, -1f));
+            }
             if (flattening != null)
             {
                 bool wasFlattened = IsFlattened;
-                bool canFlatten = !input.GameplayActionsLocked && body.Grounded
+                bool canFlatten = !dropThrough && !input.GameplayActionsLocked && body.Grounded
                     && (ledgeClimb == null || !ledgeClimb.Active)
                     && (ladderInteraction == null || !ladderInteraction.Attached)
                     && (ropeInteraction == null || !ropeInteraction.Attached)
@@ -412,6 +427,7 @@ namespace MousePlatformer
             jumpCut = false;
             Vector3 position = transform.position;
             transform.position = new Vector3(destination.x, destination.y, position.z);
+            body.ClearPlatformDrop();
             Physics2D.SyncTransforms();
             body.RefreshGround();
             if (swimming != null)

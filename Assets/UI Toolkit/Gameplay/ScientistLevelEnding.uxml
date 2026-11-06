@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:game="GameJamPlus.UI" editor-extension-mode="False">
+    <Style src="ScientistLevelEnding.uss"/>
+    <ui:VisualElement name="ending-communication" picking-mode="Ignore" class="scientist-ending-root">
+                <ui:VisualElement name="scientist-screen" picking-mode="Ignore" class="scientist-screen scientist-ending">
+                    <ui:VisualElement name="scientist-display-viewport" picking-mode="Ignore" class="scientist-display-viewport">
+                        <ui:VisualElement name="scientist-display" picking-mode="Ignore" class="scientist-display">
+                            <ui:Image name="scientist-avatar" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Characters/Scientist/Scientist_QWO.png?fileID=21300000&amp;guid=d43949e9434a9b34ebb39592a7ac0cb6&amp;type=3#Scientist_QWO" scale-mode="ScaleToFit" class="scientist-avatar"/>
+                            <ui:VisualElement name="scientist-content" picking-mode="Ignore" class="scientist-content">
+                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript">
+                                    <ui:Label name="scientist-text" text="The trial is complete.&#10;Let us review the results." enable-rich-text="false" picking-mode="Ignore" class="scientist-text"/>
+                                </ui:ScrollView>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+        <ui:VisualElement name="scientist-ending-footer" picking-mode="Ignore" class="scientist-ending-footer">
+            <ui:Button name="scientist-advance" text="F Next" focusable="false" class="scientist-advance scientist-ending-advance"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

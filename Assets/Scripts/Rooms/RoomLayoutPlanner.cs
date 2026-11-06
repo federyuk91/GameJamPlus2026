@@ -29,11 +29,11 @@ namespace MousePlatformer
     {
         private readonly struct OpenPort
         {
-            public RoomDirection Direction { get; }
+            public RoomPort Port { get; }
             public Vector2 Position { get; }
-            public OpenPort(RoomDirection direction, Vector2 position)
+            public OpenPort(RoomPort port, Vector2 position)
             {
-                Direction = direction;
+                Port = port;
                 Position = position;
             }
         }
@@ -92,7 +92,7 @@ namespace MousePlatformer
             if (!Search(ports))
             {
                 report = steps >= limit ? "Search limit reached. Change the seed, catalog or Search Limit."
-                    : "No complete layout found: check room count, footprints and terminals for all required directions.";
+                    : "No complete layout found: check room count, footprints and terminals for the required exit directions and sizes.";
                 return false;
             }
             result = new List<RoomPlacement>(plan);
@@ -130,7 +130,7 @@ namespace MousePlatformer
             List<Candidate> candidates = new List<Candidate>();
             foreach (RoomDefinition room in catalog)
             for (int i = 0; i < room.PortCount; i++)
-                if (room.Port(i).Direction == RoomPort.Opposite(socket.Direction)) candidates.Add(new Candidate(room, i));
+                if (socket.Port.CompatibleWith(room.Port(i))) candidates.Add(new Candidate(room, i));
             for (int i = candidates.Count - 1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
@@ -179,7 +179,7 @@ namespace MousePlatformer
                 if (i == connectedPort) continue;
                 RoomPort port = placement.Prefab.Port(i);
                 Vector2 offset = placement.Prefab.PortOffset(i);
-                ports.Add(new OpenPort(port.Direction, placement.Position + offset));
+                ports.Add(new OpenPort(port, placement.Position + offset));
             }
             return ports;
         }

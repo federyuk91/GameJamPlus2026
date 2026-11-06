@@ -1,0 +1,26 @@
+@import url("InputPrompts.uss");
+.scientist-gameplay-root { --scientist-green: rgb(92, 255, 123); --hud-gold: rgb(255, 226, 164); flex-grow: 1; color: var(--hud-gold); font-size: 12px; }
+.scientist-gameplay-root .scientist-advance { flex-direction: row; align-items: center; justify-content: center; }
+.scientist-gameplay-root .scientist-advance .input-key-icon { width: 12px; height: 12px; margin-right: 3px; }
+.scientist-gameplay-root .scientist-advance-label { color: var(--hud-gold); font-size: 8px; margin: 0; }
+.scientist-gameplay-root .scientist-screen { position: absolute; bottom: 8px; right: auto; width: 240px; height: 60px; overflow: hidden; background-image: url("../../Art/UI/Gameplay/Frames/CommunicationTerminal_Background.png"); -unity-background-scale-mode: stretch-to-fill; color: var(--scientist-green); -unity-slice-left: 6; -unity-slice-right: 6; -unity-slice-top: 6; -unity-slice-bottom: 6; -unity-slice-scale: 1; -unity-slice-type: sliced; left: 8px; }
+.scientist-gameplay-root .scientist-content { position: absolute; left: 0; top: 0; width: 100%; height: 100%; flex-direction: column; opacity: 1; }
+.scientist-gameplay-root .scientist-display-viewport { position: absolute; left: 8px; right: 8px; top: 7px; bottom: 7px; overflow: hidden; }
+.scientist-gameplay-root .scientist-display { display: flex; position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
+.scientist-gameplay-root .scientist-signal { position: absolute; left: 27px; bottom: 7px; width: 5px; height: 5px; border-radius: 3px; background-color: rgb(225, 66, 56); }
+.scientist-gameplay-root .scientist-signal.signal-active { background-color: var(--scientist-green); }
+.scientist-gameplay-root .scientist-transcript { flex-grow: 1; flex-basis: 0; min-height: 0; min-width: 0; margin: 0; padding: 0; overflow: visible; }
+.scientist-gameplay-root .scientist-text { font-size: 16px; color: var(--scientist-green); white-space: normal; margin: 0; padding: 0; }
+.scientist-gameplay-root .scientist-advance { position: absolute; bottom: 4px; right: 2px; height: 12px; min-height: 12px; min-width: 48px; padding: 0 2px; margin: 0; font-size: 8px; color: var(--hud-gold); background-color: rgb(2, 16, 26); border-width: 0; border-radius: 1px; }
+.scientist-gameplay-root .scientist-advance:hover { background-color: rgb(19, 39, 45); }
+.scientist-gameplay-root .scientist-advance:active { background-color: rgb(29, 54, 58); }
+.scientist-gameplay-root .scientist-power-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(207, 255, 218); opacity: 0; }
+.scientist-gameplay-root .scientist-transcript .unity-scroll-view__content-viewport { min-width: 0; overflow: visible; }
+.scientist-gameplay-root .scientist-transcript .unity-scroll-view__content-container { width: 100%; flex-grow: 1; }
+.scientist-gameplay-root .scientist-text { flex-shrink: 0; }
+.scientist-gameplay-root .scientist-screen { -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
+.scientist-gameplay-root .scientist-screen * { -unity-font: url("../../Art/UI/Gameplay/Fonts/m5x7.ttf"); }
+.scientist-gameplay-root #scientist-text { -unity-font: url("../../Art/UI/Gameplay/Fonts/MonkeyIsland-1991-refined.ttf"); -unity-font-style: normal; }
+.scientist-gameplay-root .scientist-avatar { position: absolute; left: 14px; top: 14px; right: auto; bottom: auto; width: 32px; height: 32px; -unity-background-scale-mode: scale-to-fit; scale: -1 1; }
+.scientist-gameplay-root #scientist-transcript { width: 100%; padding-right: 0; }
+.scientist-gameplay-root #scientist-text { min-height: 0; max-height: none; width: 100%; padding: 2px 0; }

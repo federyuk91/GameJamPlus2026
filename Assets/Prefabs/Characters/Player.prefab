@@ -1014,6 +1014,8 @@ MonoBehaviour:
   digging: {fileID: 7072776503502995229}
   facing: {fileID: 6712765668103962099}
   swimming: {fileID: 7210179708085743803}
+  playerAnimation: {fileID: 5627324773313564303}
+  swimmingVisualOffsetY: 0.0553
 --- !u!114 &4147716882159431439
 MonoBehaviour:
   m_ObjectHideFlags: 0

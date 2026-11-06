@@ -64,6 +64,8 @@ namespace GameJamPlus.UI
         private Label cameraLockReminder;
         private float cameraReminderUntil;
         private ScientistCommentView scientistView;
+        private ScientistCommentView endingScientistView;
+        private ScientistCommentView activeScientistView;
         private Coroutine scientistRoutine;
         private InputAction advanceScientistComment;
         private InputAction scrollScientistComment;
@@ -170,7 +172,9 @@ namespace GameJamPlus.UI
                 RefreshCounter(index);
             }
 
-            scientistView = new ScientistCommentView(root, scientistSpeech);
+            scientistView = new ScientistCommentView(root.Q("gameplay-communication-host"), scientistSpeech);
+            endingScientistView = new ScientistCommentView(root.Q("ending-communication-host"), scientistSpeech);
+            endingScientistView.CharacterRevealed += OnScientistCharacterRevealed;
             scientistView.CharacterRevealed += OnScientistCharacterRevealed;
             testResultView = new TestResultView(root, OnTestContinueRequested, exitTunnel);
             photoView = new PhotoView(root, ContinuePhoto);
@@ -256,8 +260,8 @@ namespace GameJamPlus.UI
                 hintsPaused = paused;
                 RefreshInteractionHints();
             }
-            if (scientistView.IsOpen)
-                scientistView.ScrollText(-scrollScientistComment.ReadValue<float>() * 60f * Time.unscaledDeltaTime);
+            if (activeScientistView != null && activeScientistView.IsOpen)
+                activeScientistView.ScrollText(-scrollScientistComment.ReadValue<float>() * 60f * Time.unscaledDeltaTime);
             if (testResultView.IsVisible)
                 testResultView.ScrollNotes(-scrollScientistComment.ReadValue<float>() * 60f * Time.unscaledDeltaTime);
             if (!timerRunning) return;
@@ -276,6 +280,7 @@ namespace GameJamPlus.UI
         private void OnPauseChanged(bool paused)
         {
             scientistView.SetSuspended(paused);
+            endingScientistView.SetSuspended(paused);
             if (paused) scientistVoice?.StopSpeaking();
             if (paused)
             {
@@ -360,9 +365,8 @@ namespace GameJamPlus.UI
         {
             if (portrait == null) portrait = scientistPortrait;
             HideScientistComment();
-            scientistView.SetEndingPresentation(true);
             communicationInProgress = true;
-            scientistRoutine = StartCoroutine(RunScientistComment(new[] { text }, portrait, duration, true));
+            scientistRoutine = StartCoroutine(RunScientistComment(endingScientistView, new[] { text }, portrait, duration, true));
         }
 
         public void ShowTestResult(int universeNumber, double elapsed, string result)
@@ -431,22 +435,24 @@ namespace GameJamPlus.UI
 
             HideScientistComment();
             communicationInProgress = true;
-            scientistRoutine = StartCoroutine(RunScientistComment(messages.ToArray(), portrait, duration, false));
+            scientistRoutine = StartCoroutine(RunScientistComment(scientistView, messages.ToArray(), portrait, duration, false));
             RefreshInteractionHints();
         }
 
         private void OnScientistCharacterRevealed(char character)
         {
-            if (scientistView != null && scientistView.IsScientistSpeaking)
+            if (activeScientistView != null && activeScientistView.IsScientistSpeaking)
                 scientistVoice?.Speak(character);
             if (char.IsWhiteSpace(character) || typingAudio == null || typingClip == null) return;
             typingAudio.volume = typingVolume * GameAudioSettings.EffectsVolume;
             typingAudio.PlayOneShot(typingClip);
         }
 
-        private IEnumerator RunScientistComment(string[] texts, Sprite portrait, float duration, bool waitForAdvance)
+        private IEnumerator RunScientistComment(ScientistCommentView view, string[] texts, Sprite portrait, float duration, bool waitForAdvance)
         {
-            yield return scientistView.Show(texts, portrait, duration, waitForAdvance);
+            activeScientistView = view;
+            yield return view.Show(texts, portrait, duration, waitForAdvance);
+            activeScientistView = null;
             scientistRoutine = null;
             communicationInProgress = false;
             if (waitForAdvance) TestCommentCompleted?.Invoke();
@@ -465,14 +471,14 @@ namespace GameJamPlus.UI
                 if (playerInput.HasAvailableInteractionOnControl(context.control, available)) return;
             }
             if ((photoView != null && photoView.IsVisible) || (testResultView != null && testResultView.IsVisible)
-                || communicationInProgress || (scientistView != null && scientistView.IsVisible))
+                || communicationInProgress || (activeScientistView != null && activeScientistView.IsVisible))
                 collectibleCollector?.ConsumeInteractionInput();
             if (photoView != null && photoView.IsVisible) ContinuePhoto();
             else if (testResultView != null && testResultView.IsVisible) testResultView.Continue();
             else
             {
                 scientistVoice?.StopSpeaking();
-                scientistView?.Advance();
+                activeScientistView?.Advance();
             }
         }
 
@@ -489,6 +495,8 @@ namespace GameJamPlus.UI
                 scientistRoutine = null;
             }
             scientistView?.Hide();
+            endingScientistView?.Hide();
+            activeScientistView = null;
         }
 
         private void RefreshCounter(int index)
@@ -515,6 +523,7 @@ namespace GameJamPlus.UI
             interactionAvailability?.SetUsingGamepad(devicePrompts.UsingGamepad);
             InputPromptBinding advancePrompt = devicePrompts.PromptForAction(InputPromptAction.Advance);
             scientistView.SetAdvanceKey(advancePrompt);
+            endingScientistView.SetAdvanceKey(advancePrompt);
             testResultView.SetAdvanceKey(advancePrompt);
             photoView.SetCloseKey(devicePrompts.Advance);
             RefreshCameraHeightLock();
@@ -755,6 +764,10 @@ namespace GameJamPlus.UI
             if (scientistView != null) scientistView.CharacterRevealed -= OnScientistCharacterRevealed;
             scientistView?.Dispose();
             scientistView = null;
+            if (endingScientistView != null) endingScientistView.CharacterRevealed -= OnScientistCharacterRevealed;
+            endingScientistView?.Dispose();
+            endingScientistView = null;
+            activeScientistView = null;
             testResultView?.Dispose();
             testResultView = null;
             photoView?.Dispose();

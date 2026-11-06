@@ -14,7 +14,7 @@ namespace GameJamPlus.UI
         private float displayWidth = 160f;
         private float displayHeight = 46f;
         private readonly VisualElement screen;
-        private readonly ScientistEndingLayout endingLayout;
+        private readonly VisualElement presentationRoot;
         private readonly VisualElement displayViewport;
         private readonly VisualElement display;
         private readonly VisualElement displayAperture;
@@ -59,14 +59,13 @@ namespace GameJamPlus.UI
 
         public void SetSuspended(bool value) => suspended = value;
 
-        public void SetEndingPresentation(bool value) => endingLayout.SetActive(value);
 
         public ScientistCommentView(VisualElement root, ScientistSpeechSettings speechSettings = null)
         {
             this.speechSettings = speechSettings;
             speechAnimator = new ScientistSpeechAnimator(speechSettings);
             screen = root.Q("scientist-screen");
-            endingLayout = new ScientistEndingLayout(root, screen);
+            presentationRoot = root;
             displayViewport = root.Q("scientist-display-viewport");
             display = root.Q("scientist-display");
             displayAperture = root.Q("scientist-display-aperture")
@@ -145,8 +144,11 @@ namespace GameJamPlus.UI
                 yield break;
             }
 
-            // Let UI Toolkit measure the enlarged viewport before starting the CRT aperture animation.
-            if (endingLayout.IsActive) yield return null;
+            // Ogni vista possiede il proprio layout: si attende soltanto la misura del viewport.
+            presentationRoot.style.display = DisplayStyle.Flex;
+            presentationRoot.BringToFront();
+            screen.style.display = DisplayStyle.Flex;
+            yield return null;
 
             communicationVisible = true;
             message.style.display = DisplayStyle.Flex;
@@ -255,7 +257,7 @@ namespace GameJamPlus.UI
             advanceButton.SetEnabled(false);
             content.style.opacity = 0f;
             powerGlow.style.opacity = 0f;
-            if (endingLayout.IsActive) endingLayout.SetActive(false);
+            presentationRoot.style.display = DisplayStyle.None;
         }
 
         public void Dispose()

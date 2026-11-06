@@ -23,6 +23,7 @@ namespace MousePlatformer
         [SerializeField] private AnimationClip pressButtonClip;
         [SerializeField, Min(0.01f)] private float pressButtonAnimationSpeed = 1f;
         private float buttonPressRemaining;
+        public bool IsSwimmingPose { get; private set; }
         [SerializeField, Min(0f)] private float swimmingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float ladderAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float ropeAnimationSpeed = 1f;
@@ -94,7 +95,9 @@ namespace MousePlatformer
             animator.SetFloat(ClimbUpSpeed, climbUpAnimationSpeed);
             animator.SetFloat(DiggingSpeed, diggingAnimationSpeed);
             animator.SetFloat(PushingSpeed, Mathf.Abs(movement.Velocity.x) > runThreshold ? pushingAnimationSpeed : 0f);
-            animator.SetInteger(MotionState, (int)ChooseMotion(ledgeActive, onLadder, inWater, climbingRope));
+            Motion motion = ChooseMotion(ledgeActive, onLadder, inWater, climbingRope);
+            IsSwimmingPose = motion == Motion.Swimming;
+            animator.SetInteger(MotionState, (int)motion);
         }
 
         private Motion ChooseMotion(bool ledgeActive, bool onLadder, bool inWater, bool climbingRope)
@@ -122,6 +125,7 @@ namespace MousePlatformer
 
         private void OnDisable()
         {
+            IsSwimmingPose = false;
             if (buttonInteraction != null) buttonInteraction.ButtonPressed -= OnButtonPressed;
             buttonPressRemaining = 0f;
             if (animator != null)

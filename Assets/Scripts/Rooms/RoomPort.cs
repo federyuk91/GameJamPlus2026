@@ -8,7 +8,11 @@ namespace MousePlatformer
     public sealed class RoomPort : MonoBehaviour
     {
         [SerializeField] private RoomDirection direction;
+        [SerializeField, Range(1, 10), Tooltip("Only connects to an opposite-facing exit of the same size.")]
+        private int size = 1;
+
         public RoomDirection Direction => direction;
+        public int Size => Mathf.Clamp(size, 1, 10);
         public Vector2 Position => transform.position;
 
         public static RoomDirection Opposite(RoomDirection value)
@@ -33,7 +37,8 @@ namespace MousePlatformer
             }
         }
 
-        public bool CompatibleWith(RoomPort other) => other != null && other.Direction == Opposite(direction);
+        public bool CompatibleWith(RoomPort other) =>
+            other != null && other.Direction == Opposite(direction) && other.Size == Size;
 
         private void OnDrawGizmosSelected()
         {

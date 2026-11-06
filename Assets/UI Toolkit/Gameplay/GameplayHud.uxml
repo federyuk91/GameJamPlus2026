@@ -1,25 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:game="GameJamPlus.UI" editor-extension-mode="False">
+    <ui:Template name="ScientistGameplay" src="ScientistGameplay.uxml"/>
+    <ui:Template name="ScientistLevelEnding" src="ScientistLevelEnding.uxml"/>
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/GameplayHud.uss?fileID=7433441132597879392&amp;guid=e3953661930f48a484f21a438b7da774&amp;type=3#GameplayHud"/>
     <Style src="project://database/Assets/UI%20Toolkit/Gameplay/BodyControls.uss?fileID=7433441132597879392&amp;guid=056f96dec8874d57a665337c7a64ed12&amp;type=3#BodyControls"/>
     <Style src="project://database/Assets/UI%20Toolkit/UserInterfaceSprites.uss?fileID=7433441132597879392&amp;guid=a0500b9bcb6f4d5fa18f80cf6264303f&amp;type=3#UserInterfaceSprites"/>
     <ui:VisualElement name="gameplay-hud" picking-mode="Ignore" class="gameplay-hud" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
         <ui:VisualElement name="hud-frame" picking-mode="Ignore" class="hud-frame">
             <ui:VisualElement picking-mode="Ignore" class="black-band black-band-bottom">
-                <ui:VisualElement name="scientist-screen" picking-mode="Ignore" class="scientist-screen" style="bottom: 8px; left: 8px;">
-                    <ui:VisualElement name="scientist-display-viewport" picking-mode="Ignore" class="scientist-display-viewport">
-                        <ui:VisualElement name="scientist-display" picking-mode="Ignore" class="scientist-display">
-                            <ui:Image name="scientist-avatar" picking-mode="Ignore" source="project://database/Assets/Art/Pixel%20Art/Characters/Scientist/Scientist_QWO.png?fileID=21300000&amp;guid=d43949e9434a9b34ebb39592a7ac0cb6&amp;type=3#Scientist_QWO" scale-mode="ScaleToFit" class="scientist-avatar" style="width: 64px; height: 64px; left: -8px; top: auto; right: auto; bottom: -10px;"/>
-                            <ui:VisualElement name="scientist-content" picking-mode="Ignore" class="scientist-content" style="width: 171px; left: 53px;">
-                                <ui:ScrollView name="scientist-transcript" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" focusable="false" class="scientist-transcript" style="width: 168px; top: 3%; bottom: 3%; left: 0%; right: 0;">
-                                    <ui:Label name="scientist-text" text="Welcome to Universe-10.&#10;Relax and enjoy your stay." enable-rich-text="false" picking-mode="Ignore" class="scientist-text" style="font-size: 12px; width: 143px; height: 44px; left: -8px;"/>
-                                </ui:ScrollView>
-                                <ui:Button name="scientist-advance" text="F Close" focusable="false" class="scientist-advance" style="bottom: 4px; height: auto; right: 4px; justify-content: flex-start; width: auto; min-width: 25px; align-self: flex-end; min-height: 10px; max-width: 70px; max-height: 15px; align-content: flex-end;"/>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="scientist-power-glow" picking-mode="Ignore" class="scientist-power-glow" style="top: 0; bottom: 0; right: 0; left: 1px;"/>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="scientist-signal" picking-mode="Ignore" class="scientist-signal signal-active" style="left: auto; bottom: auto; top: 4px; right: 4px;"/>
-                    </ui:VisualElement>
-                </ui:VisualElement>
+                <ui:Instance template="ScientistGameplay" name="gameplay-communication-host" picking-mode="Ignore" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;"/>
             </ui:VisualElement>
             <ui:VisualElement name="resource-dashboard" picking-mode="Ignore" class="resource-dashboard" style="width: 129px;">
                 <ui:VisualElement class="health-panel">
@@ -106,7 +94,7 @@
                 </ui:VisualElement>
                 <ui:Label name="elapsed-time" text="00:00:00" picking-mode="Ignore" class="elapsed-time" style="-unity-text-align: middle-right; height: 7px; bottom: 0; align-items: flex-end; font-size: 8px; padding-left: 0;"/>
             </ui:VisualElement>
-            <ui:VisualElement name="scientist-ending-footer" picking-mode="Ignore" class="scientist-ending-footer"/>
+            <ui:Instance template="ScientistLevelEnding" name="ending-communication-host" picking-mode="Ignore" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;"/>
             <ui:Label name="camera-height-lock" text="CAMERA HEIGHT LOCKED — C TO UNLOCK" picking-mode="Ignore" class="camera-height-lock"/>
             <ui:Label name="camera-lock-reminder" picking-mode="Ignore" class="camera-lock-reminder"/>
             <ui:VisualElement name="test-white-cover" picking-mode="Ignore" class="test-white-cover"/>
