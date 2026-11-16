@@ -47,15 +47,7 @@ namespace MousePlatformer
                     visualPivot.localPosition += Vector3.up * swimmingVisualOffsetY;
                 return;
             }
-            if (!body.HasGroundContact) return;
-
-            Vector2 normal = body.GroundNormal;
-            Vector2 feet = visualPivot.position;
-            // Anchor the visual feet to the surface while the collision box stays upright.
-            feet += normal * (body.Skin - Vector2.Dot(feet - body.GroundPoint, normal));
-            visualPivot.position = new Vector3(feet.x, feet.y, visualPivot.position.z);
-            float angle = Vector2.SignedAngle(Vector2.up, normal);
-            visualPivot.rotation = Quaternion.AngleAxis(angle, Vector3.forward) * restLocalRotation;
+            GroundSurfaceAlignment.Align(body, visualPivot, Vector3.zero);
         }
 
         private void OnDisable()

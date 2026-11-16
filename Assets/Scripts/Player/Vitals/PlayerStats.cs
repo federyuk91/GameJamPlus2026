@@ -74,6 +74,7 @@ namespace MousePlatformer
         public bool LastSatietyLossWasPoison { get; private set; }
         public event Action<int, int> SatietyChanged;
         public event Action SatietyLost;
+        public event Action PoisonStarted;
 
         [Header("Electricity")]
         [SerializeField, Min(1), Tooltip("Accumulated lightning charges that kill this animal.")]
@@ -206,6 +207,7 @@ namespace MousePlatformer
             poisonTicksRemaining = Mathf.Max(1, poisonTicks);
             poisonElapsed = 0f;
             Refill();
+            PoisonStarted?.Invoke();
             if (ApplyDamage(1) && IsDead)
             {
                 StageEndCase ending = poisonEnding != StageEndCase.None ? poisonEnding : starvationEnding;

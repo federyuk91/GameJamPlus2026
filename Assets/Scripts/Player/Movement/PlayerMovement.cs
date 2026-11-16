@@ -5,6 +5,8 @@ namespace MousePlatformer
     [DefaultExecutionOrder(100), DisallowMultipleComponent, RequireComponent(typeof(PlayerInputReader), typeof(SimulatedBody2D))]
     public sealed class PlayerMovement : MonoBehaviour
     {
+        private const float GroundInputThreshold = 0.2f;
+
         [SerializeField] private PlayerInputReader input;
         [SerializeField] private SimulatedBody2D body;
         [SerializeField] private PlayerCrateInteraction crateInteraction;
@@ -38,6 +40,15 @@ namespace MousePlatformer
         public bool IsSliding { get; private set; }
         public bool IsMovingOnGround { get; private set; }
         public bool IsSprinting { get; private set; }
+        public float MoveInputMagnitude => input != null ? input.MoveInput.magnitude : 0f;
+        private float GroundHorizontalInput
+        {
+            get
+            {
+                float horizontal = input.Horizontal;
+                return Mathf.Abs(horizontal) > GroundInputThreshold ? horizontal : 0f;
+            }
+        }
         public bool CanInteractWithCrates { get; private set; }
         public bool IsHangingFromLedge => ledgeClimb != null && ledgeClimb.State == PlayerLedgeClimb.LedgeState.Hanging;
         private bool cameraControlActive;
@@ -271,6 +282,7 @@ namespace MousePlatformer
             }
             bool onSteepSlope = body.OnSteepSlope;
             bool surfaceMotion = body.HasGroundContact;
+            float groundInput = walkingUnderwater ? input.Horizontal : GroundHorizontalInput;
             bufferRemaining = walkingUnderwater ? 0f
                 : jumpPressed ? Movement.jumpBuffer : Mathf.Max(0f, bufferRemaining - dt);
             coyoteRemaining = onSteepSlope || walkingUnderwater ? 0f
@@ -288,7 +300,7 @@ namespace MousePlatformer
                 if (!followingGround)
                     groundSpeed = Mathf.Clamp(velocity.x / Mathf.Max(0.01f, tangent.x), -targetSpeed, targetSpeed);
                 if (walkingUnderwater || IsFlattened) groundSpeed = Mathf.Clamp(groundSpeed, -walkSpeed, walkSpeed);
-                float requestedSpeed = input.Horizontal * targetSpeed;
+                float requestedSpeed = groundInput * targetSpeed;
                 if (onSteepSlope) groundSpeed = 0f;
                 else if (sprinting && Mathf.Abs(requestedSpeed) > walkSpeed
                     && groundSpeed * Mathf.Sign(requestedSpeed) < Mathf.Abs(requestedSpeed))
@@ -313,9 +325,9 @@ namespace MousePlatformer
                     body.Weight, normal, body.GroundFriction, body.MaxSpeed, dt);
                 slopeVelocity = Vector2.Dot(passiveVelocity, tangent);
                 // Uphill control can brake the passive slide without reversing it into an extra motor.
-                if (!onSteepSlope && input.Horizontal * downhillSign < 0f)
+                if (!onSteepSlope && groundInput * downhillSign < 0f)
                     slopeVelocity = Mathf.MoveTowards(slopeVelocity, 0f,
-                        movementSettings.groundAcceleration * Mathf.Abs(input.Horizontal) * dt);
+                        movementSettings.groundAcceleration * Mathf.Abs(groundInput) * dt);
                 IsSliding = Mathf.Abs(slopeVelocity) > 0.0001f;
                 velocity = body.LimitVelocity(tangent * (groundSpeed + slopeVelocity));
             }
@@ -356,31 +368,39 @@ namespace MousePlatformer
                 : JumpPhysics.Integrate(ref velocity.y, currentGravity, body.MaxSpeed, dt);
             velocity = body.LimitVelocity(velocity);
             Vector2 displacement = Vector2.ClampMagnitude(new Vector2(velocity.x * dt, verticalDisplacement), body.MaxSpeed * dt);
+            Vector2 start = transform.position;
+            bool groundedApproach = surfaceMotion && body.Grounded;
+            bool surfacePush = false;
             if (crateInteraction != null)
             {
                 if (walkingUnderwater && !IsFlattened)
                     displacement = crateInteraction.ResolveSwimming(displacement, dt);
                 else
-                    displacement.x = crateInteraction.ResolveHorizontal(displacement.x, !IsFlattened && input.CrateGrabHeld,
-                        body.Grounded && surfaceMotion && !IsSliding);
+                {
+                    bool grab = !IsFlattened && input.CrateGrabHeld;
+                    surfacePush = crateInteraction.TrySurfacePush(displacement.x, grab, surfaceMotion || velocity.y <= 0f);
+                    if (!surfacePush)
+                        displacement.x = crateInteraction.ResolveHorizontal(displacement.x, grab, groundedApproach && !IsSliding);
+                }
                 velocity.x = displacement.x / dt;
             }
             Collider2D heldShape = crateInteraction != null && crateInteraction.HeldCrate != null
                 ? crateInteraction.HeldCrate.Body.Shape : null;
-            Vector2 start = transform.position;
-            bool groundedApproach = surfaceMotion && body.Grounded;
-            body.MovePlayer(displacement, Movement.maxStepHeight, heldShape, surfaceMotion);
-            followingGround = surfaceMotion && body.HasGroundContact;
-            if (!body.Grounded && crateInteraction != null) crateInteraction.Release();
-            if (surfaceMotion) velocity = ((Vector2)transform.position - start) / dt;
+            if (!surfacePush) body.MovePlayer(displacement, Movement.maxStepHeight, heldShape, surfaceMotion);
+            followingGround = (surfaceMotion || surfacePush) && body.HasGroundContact;
+            if (!body.Grounded && !surfacePush && crateInteraction != null) crateInteraction.Release();
+            if (surfaceMotion || surfacePush) velocity = ((Vector2)transform.position - start) / dt;
             if (TryStartLedgeClimb(groundedApproach, velocity.x)) return;
             if (body.HitWall && !surfaceMotion) velocity.x = 0f;
             if (body.HitWall && surfaceMotion && !onSteepSlope) groundSpeed = 0f;
             if (body.HitCeiling || (!surfaceMotion && body.Grounded && velocity.y < 0f)) velocity.y = 0f;
             Velocity = velocity;
-            CanInteractWithCrates = !IsFlattened && surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding;
+            bool canGrabWhileSliding = crateInteraction != null && IsSliding && crateInteraction.HasReachableSurfaceCrate;
+            CanInteractWithCrates = !IsFlattened && !walkingUnderwater
+                && ((surfaceMotion && body.Grounded && (!IsSliding || canGrabWhileSliding))
+                    || (crateInteraction != null && crateInteraction.HasSurfaceGrab));
             IsMovingOnGround = surfaceMotion && body.Grounded && !walkingUnderwater && !IsSliding
-                && Mathf.Abs(input.Horizontal) > 0.1f && Mathf.Abs(velocity.x) > 0.05f;
+                && groundInput != 0f && Mathf.Abs(velocity.x) > 0.05f;
             IsSprinting = !IsFlattened && IsMovingOnGround && input.SprintHeld && !input.CrateGrabHeld;
         }
         private bool TryStartLedgeClimb(bool fromGround, float horizontalVelocity)
@@ -393,7 +413,8 @@ namespace MousePlatformer
             bool touchingWater = swimming != null && swimming.CheckWater();
             if (touchingWater && (input.GameplayActionsLocked || !swimming.CanGrabLedge)) return false;
             if (touchingWater) fromGround = false;
-            float direction = Mathf.Abs(input.Horizontal) >= 0.1f ? input.Horizontal : fromGround ? 0f : horizontalVelocity;
+            float direction = fromGround ? GroundHorizontalInput : input.Horizontal;
+            if (!fromGround && Mathf.Abs(direction) < 0.1f) direction = horizontalVelocity;
             // Vicino alla superficie si cerca automaticamente un bordo davanti al muso,
             // anche da fermi. Portata e verifiche della presa restano quelle ordinarie.
             if (touchingWater && Mathf.Abs(direction) < 0.1f && facing != null)

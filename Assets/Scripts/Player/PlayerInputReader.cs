@@ -53,8 +53,9 @@ namespace MousePlatformer
         public bool LedgeInteractionPressed => !GameplayActionsLocked && ledgeInteractionQueued
             && Time.timeAsDouble <= ledgeInteractionExpires && !collectionConsumed
             && (selectedInteractions & AvailableGameplayActions.ClimbLedge) != 0;
-        public float Horizontal => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().x;
-        public float Vertical => GameplayActionsLocked || move == null ? 0f : move.ReadValue<Vector2>().y;
+        public Vector2 MoveInput => GameplayActionsLocked || move == null ? Vector2.zero : move.ReadValue<Vector2>();
+        public float Horizontal => MoveInput.x;
+        public float Vertical => MoveInput.y;
         public bool JumpHeld => !GameplayActionsLocked && jump != null && jump.IsPressed();
         public bool SprintHeld => !GameplayActionsLocked && sprint != null && sprint.IsPressed();
         public bool GrabHeld => Vertical > 0.1f;

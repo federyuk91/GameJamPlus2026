@@ -41,6 +41,18 @@ namespace MousePlatformer
             }
         }
         public bool ShowGizmos => showGizmos;
+        internal bool UsesSupportPivot => Motion.UsesSupportPivot;
+
+        internal void AccumulateStackMass(ref float mass, ref float moment)
+        {
+            CollectCarriedCrates(true);
+            for (int i = 1; i < carriedCrates.Count; i++)
+            {
+                Pushable crate = carriedCrates[i];
+                mass += crate.Weight;
+                moment += crate.Body.Shape.bounds.center.x * crate.Weight;
+            }
+        }
 
         public void EnableStacking() => Motion.EnableStacking();
 
@@ -67,8 +79,24 @@ namespace MousePlatformer
         {
             if (Mathf.Approximately(amount, 0f)) return 0f;
             CollectCarriedCrates();
+            float moved = Body.MoveHorizontal(amount, ignored, maxStepHeight, followSlope: true);
+            CarryCrates(moved);
+            return moved;
+        }
+
+        internal SimulatedBody2D.GroundTravel PlanSurfacePush(float amount, Collider2D ignored, Vector2 normal)
+            => Body.PlanSurfacePush(amount, ignored, maxPushStepHeight, normal);
+
+        internal void ApplySurfacePush(SimulatedBody2D.GroundTravel travel, Collider2D ignored)
+        {
+            CollectCarriedCrates();
+            Body.ApplyGroundTravel(travel, ignored);
+            CarryCrates(travel.Displacement.x);
+        }
+
+        private void CarryCrates(float moved)
+        {
             displacements.Clear();
-            float moved = Body.MoveHorizontal(amount, ignored, maxStepHeight);
             displacements.Add(moved);
             for (int i = 1; i < carriedCrates.Count; i++)
             {
@@ -78,7 +106,6 @@ namespace MousePlatformer
                 float carried = carriedCrates[i].Body.MoveHorizontal(displacements[supportIndex], supportBody.Shape);
                 displacements.Add(carried);
             }
-            return moved;
         }
 
         private void CollectCarriedCrates(bool includeDisabled = false)
@@ -91,21 +118,26 @@ namespace MousePlatformer
             for (int i = 0; i < carriedCrates.Count; i++)
             {
                 SimulatedBody2D supportBody = carriedCrates[i].Body;
-                Bounds bounds = supportBody.Shape.bounds;
+                BoxCollider2D supportShape = supportBody.Shape;
+                Transform supportTransform = supportShape.transform;
+                Vector2 normal = supportTransform.up;
+                Vector2 top = supportTransform.TransformPoint(supportShape.offset + Vector2.up * (supportShape.size.y * 0.5f));
+                float width = supportTransform.TransformVector(Vector3.right * supportShape.size.x).magnitude;
                 float tolerance = supportBody.Skin * 4f;
-                Vector2 center = new Vector2(bounds.center.x, bounds.max.y + tolerance * 0.5f);
-                Vector2 size = new Vector2(bounds.size.x, tolerance);
-                Physics2D.OverlapBox(center, size, 0f, supportBody.MotionFilter, overlaps);
+                Vector2 center = top + normal * (tolerance * 0.5f);
+                Vector2 size = new Vector2(width, tolerance);
+                Physics2D.OverlapBox(center, size, supportTransform.eulerAngles.z, supportBody.MotionFilter, overlaps);
                 foreach (Collider2D hit in overlaps)
                 {
                     if (!supportBody.IsMotionObstacle(hit)) continue;
                     if (!hit.TryGetComponent(out Pushable candidate) || !candidate.gameObject.activeInHierarchy
                         || (!includeDisabled && !candidate.enabled)
                         || carriedCrates.Contains(candidate) || hit != candidate.Body.Shape) continue;
-                    float overlapWidth = Mathf.Min(bounds.max.x, hit.bounds.max.x) - Mathf.Max(bounds.min.x, hit.bounds.min.x);
-                    if (overlapWidth <= supportBody.Skin || hit.bounds.min.y < bounds.max.y - supportBody.Skin) continue;
-                    Collider2D support = candidate.Body.Probe(Vector2.down, tolerance + candidate.Body.Skin, out float distance);
-                    if (support != supportBody.Shape || distance > supportBody.Skin + candidate.Body.Skin) continue;
+                    if (Vector2.Dot((Vector2)hit.bounds.center - top, normal) <= 0f) continue;
+                    float gap = supportBody.Skin + candidate.Body.Skin;
+                    Collider2D support = candidate.Body.Probe(Vector2.down, gap / Mathf.Max(0.01f, normal.y),
+                        out float distance, out Vector2 hitNormal);
+                    if (support != supportShape || Vector2.Dot(hitNormal, normal) < 0.99f || distance * hitNormal.y > gap) continue;
                     carriedCrates.Add(candidate);
                     supportIndices.Add(i);
                 }

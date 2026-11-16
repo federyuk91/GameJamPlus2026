@@ -3478,6 +3478,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 01 Free Floating Crate (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9812010003, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
+      propertyPath: useSupportPivot
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3869527096679021882, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: shape
       value: 
@@ -3548,6 +3552,10 @@ PrefabInstance:
     - target: {fileID: 1085378895257011694, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: m_Name
       value: 01 Free Floating Crate
+      objectReference: {fileID: 0}
+    - target: {fileID: 9812010003, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
+      propertyPath: useSupportPivot
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3869527096679021882, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: shape

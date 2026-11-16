@@ -34,10 +34,11 @@ public static class InteractionAreaGizmos
         Vector3 scale = box.transform.lossyScale;
         Vector2 size = Vector2.Scale(box.size, new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
         bool available = crate.isActiveAndEnabled && (!Application.isPlaying || crate.Body.Grounded);
-        using (new Handles.DrawingScope(available ? GrabColor : Color.gray))
+        Matrix4x4 pose = Matrix4x4.TRS(center, box.transform.rotation, Vector3.one);
+        using (new Handles.DrawingScope(available ? GrabColor : Color.gray, pose))
         {
-            Handles.DrawWireCube(center + Vector3.left * ((size.x + reach) * 0.5f), new Vector3(reach, size.y, 0f));
-            Handles.DrawWireCube(center + Vector3.right * ((size.x + reach) * 0.5f), new Vector3(reach, size.y, 0f));
+            Handles.DrawWireCube(Vector3.left * ((size.x + reach) * 0.5f), new Vector3(reach, size.y, 0f));
+            Handles.DrawWireCube(Vector3.right * ((size.x + reach) * 0.5f), new Vector3(reach, size.y, 0f));
         }
     }
 

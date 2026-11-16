@@ -40,9 +40,30 @@ Regenerate them with `python Tools/Audio/generate_scientist_voice.py`.
 
 ### Voice preview
 
-In Scientist Voice, enter Test Text and click Test Voice to hear the phrase in
-Edit Mode or Play Mode, including on the prefab. Test Characters Per Second
-controls the preview typing speed (default 30, matching the speech profile).
-Stop Test Voice interrupts playback. Preview uses the same letter mapping,
-pitch, spacing and volume settings, through a temporary source that is removed
-when playback finishes, the Inspector closes or Play Mode changes.
+In Scientist Voice, enter Test Text and click **Test Voice** in Edit Mode or
+Play Mode, including on the prefab. The preview shows the revealed text and
+uses the assigned clips, base pitch and volume. It does not play keyboard
+audio. Test Characters Per Second controls the base reveal speed (default 30).
+**Test Tone** selects the delivery: **Neutral** preserves the default cadence,
+**Reassuring** slows it down and softens the ending, and **Warning** shortens
+pauses and emphasizes the start of each phrase. All three use the same clips.
+
+The preview plays the first vowel of each consecutive vowel group. Text and
+voice share a brief pause after commas and a longer one at sentence breaks.
+Pitch Variation controls a falling phrase contour and a rise on the final vowel
+cue of questions. An ellipsis softens the last two vowel cues. Up to two clips
+can overlap. Timing follows the text reveal.
+
+**Test Combinations** assigns a clip to a sequence of letters. The longest
+match plays once at its first letter. **Voiced** combinations follow vowel
+intonation and volume; the others are quieter accents.
+The HUD prefab includes **MM** (hum), **SH** (soft hiss), **TH** (breathy
+accent) and **WE** (a voiced W-to-E glide in “Welcome”).
+Try “Hmm… welcome to Universe-10.” Use
+`python Tools/Audio/generate_scientist_voice.py --combinations-only` to
+regenerate the combination clips without rewriting the existing syllables.
+
+Try: “Benvenuto in Universe-10, il tuo ambiente è pronto. Ti senti a tuo agio?”
+Stop Test Voice interrupts playback. Temporary sources are removed when
+playback finishes, the Inspector closes or Play Mode changes. The expressive
+cadence is currently available only in the Inspector preview.

@@ -26,8 +26,12 @@ namespace MousePlatformer
         public Pushable HeldCrate => held;
         public bool SuppressAutomaticClimb => suppressAutomaticClimb;
         public float GrabReach => Mathf.Max(0f, LocalMovement.horizontalHandInteraction);
+        internal bool HasSurfaceGrab => held != null && held.UsesSupportPivot && CanKeepSurfaceGrab(held)
+            && body.TryGetPushSurface(crateGroundTolerance, held.Body.Shape, out _);
+        internal bool HasReachableSurfaceCrate => NearbyCrate(1f, GrabReach, out _)?.UsesSupportPivot == true
+            || NearbyCrate(-1f, GrabReach, out _)?.UsesSupportPivot == true;
         public bool HasReachableCrate => isActiveAndEnabled && body != null
-            && (NearbyCrate(1f, GrabReach, out _) != null
+            && (HasSurfaceGrab || NearbyCrate(1f, GrabReach, out _) != null
                 || NearbyCrate(-1f, GrabReach, out _) != null);
         public void Release()
         {
@@ -69,13 +73,7 @@ namespace MousePlatformer
                     Release();
                     return 0f;
                 }
-                if (!interactionStarted && Mathf.Abs(requested) > 0.0001f)
-                {
-                    interactionStarted = true;
-                    InteractionStarted?.Invoke();
-                }
-                float maxDisplacement = Settings.crateMoveSpeed / Mathf.Max(0.01f, weight) * Time.fixedDeltaTime;
-                float limited = Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
+                float limited = LimitPush(requested, weight);
                 float playerAllowed = body.AllowedHorizontal(limited, held.Body.Shape, PlayerStepHeight);
                 float crateAllowed = held.AllowedHorizontalByPlayer(limited, body.Shape);
                 float shared = Mathf.Sign(limited) * Mathf.Min(Mathf.Abs(playerAllowed), Mathf.Abs(crateAllowed));
@@ -83,6 +81,69 @@ namespace MousePlatformer
             }
 
             return requested;
+        }
+
+        internal bool TrySurfacePush(float requested, bool grab, bool canPush)
+        {
+            if (!grab || !canPush) return false;
+            Pushable crate = held != null && held.UsesSupportPivot && CanKeepSurfaceGrab(held) ? held : null;
+            if (crate == null && body.Grounded)
+            {
+                float direction = Mathf.Sign(requested);
+                crate = NearbyCrate(direction, GrabReach, out _) ?? NearbyCrate(-direction, GrabReach, out _);
+            }
+            if (crate == null || !crate.UsesSupportPivot || body.GroundCollider == crate.Body.Shape
+                || !body.TryGetPushSurface(crateGroundTolerance, crate.Body.Shape, out Vector2 playerNormal)
+                || !crate.Body.TryGetPushSurface(crateGroundTolerance, body.Shape, out Vector2 crateNormal)) return false;
+
+            float weight = crate.StackWeight;
+            if (weight >= MaximumPushWeight) return false;
+            if (held != crate) interactionStarted = false;
+            held = crate;
+            suppressAutomaticClimb = true;
+            float amount = LimitPush(requested, weight);
+            float directionSign = Mathf.Sign(amount);
+            const float tolerance = 0.0001f;
+            for (int attempt = 0; attempt < 4 && Mathf.Abs(amount) > tolerance; attempt++)
+            {
+                SimulatedBody2D.GroundTravel playerTravel = body.PlanSurfacePush(amount, crate.Body.Shape, PlayerStepHeight, playerNormal);
+                SimulatedBody2D.GroundTravel crateTravel = crate.PlanSurfacePush(amount, body.Shape, crateNormal);
+                float shared = Mathf.Min(playerTravel.Displacement.x * directionSign, crateTravel.Displacement.x * directionSign);
+                if (shared <= tolerance) break;
+                if (Mathf.Abs(playerTravel.Displacement.x - crateTravel.Displacement.x) <= tolerance)
+                {
+                    crate.ApplySurfacePush(crateTravel, body.Shape);
+                    body.ApplyGroundTravel(playerTravel, crate.Body.Shape);
+                    return true;
+                }
+                amount = shared * directionSign;
+            }
+            SimulatedBody2D.GroundTravel settle = body.PlanSurfacePush(0f, crate.Body.Shape, PlayerStepHeight, playerNormal);
+            body.ApplyGroundTravel(settle, crate.Body.Shape);
+            return true;
+        }
+
+        private float LimitPush(float requested, float weight)
+        {
+            if (!interactionStarted && Mathf.Abs(requested) > 0.0001f)
+            {
+                interactionStarted = true;
+                InteractionStarted?.Invoke();
+            }
+            float maxDisplacement = Settings.crateMoveSpeed / Mathf.Max(0.01f, weight) * Time.fixedDeltaTime;
+            return Mathf.Clamp(requested, -maxDisplacement, maxDisplacement);
+        }
+
+        private bool CanKeepSurfaceGrab(Pushable crate)
+        {
+            if (!crate.isActiveAndEnabled || !crate.Body.Shape.enabled || body.GroundCollider == crate.Body.Shape
+                || !crate.Body.TryGetPushSurface(crateGroundTolerance, body.Shape, out _)) return false;
+
+            ColliderDistance2D separation = body.Shape.Distance(crate.Body.Shape);
+            if (!separation.isValid || separation.distance > GrabReach + crateGroundTolerance) return false;
+            Vector2 gap = separation.pointB - separation.pointA;
+            if (separation.distance <= body.Skin || gap.sqrMagnitude <= 0f) return true;
+            return body.Probe(gap.normalized, separation.distance, out _, crate.Body.Shape) == null;
         }
 
         private Pushable NearbyCrate(float direction, float reach, out float distance)
@@ -98,16 +159,13 @@ namespace MousePlatformer
             triggerHits.Clear();
             Physics2D.BoxCast(shape.transform.TransformPoint(shape.offset), size,
                 shape.transform.eulerAngles.z, axis, filter, triggerHits, reach);
-            Bounds playerBounds = shape.bounds;
             foreach (RaycastHit2D candidateHit in triggerHits)
             {
                 Collider2D candidateShape = candidateHit.collider;
                 if (candidateShape == null || !candidateShape.isTrigger) continue;
                 Pushable candidate = GetReachablePushable(candidateShape);
                 if (candidate == null || candidateShape != candidate.Body.Shape) continue;
-                Bounds bounds = candidateShape.bounds;
-                float gap = Mathf.Max(0f, direction > 0f
-                    ? bounds.min.x - playerBounds.max.x : playerBounds.min.x - bounds.max.x);
+                float gap = candidateHit.distance;
                 // Solid casts still bound reach, preventing grabs through walls or other crates.
                 if (gap > distance || (nearest != null && gap >= distance)) continue;
                 nearest = candidate;

@@ -94,6 +94,7 @@ namespace GameJamPlus.UI
         public event Action PhotoShown;
 
         public double ElapsedSeconds => elapsedSeconds;
+        public GameplayInteractionAvailability InteractionAvailability => interactionAvailability;
         public float ExitTransitionDuration => exitTunnel != null ? exitTunnel.Duration : 4f;
 
         private void Awake()

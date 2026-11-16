@@ -6,7 +6,7 @@ namespace MousePlatformer
     public sealed class PlayerAnimation : MonoBehaviour
     {
         private enum Motion { Idle, Run, Hanging, ClimbUp, LadderClimb, Swimming, Jump, Dig, Push, RopeClimb, PressButton, WallHanging, Shocked,
-            Flattening, FlattenedIdle, FlattenedWalk, StandingUp }
+            Flattening, FlattenedIdle, FlattenedWalk, StandingUp, Walk }
 
         [SerializeField] private Animator animator;
         [SerializeField] private PlayerMovement movement;
@@ -31,6 +31,7 @@ namespace MousePlatformer
         [SerializeField, Min(0f)] private float diggingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float pushingAnimationSpeed = 1f;
         [SerializeField, Min(0f)] private float runThreshold = 0.05f;
+        [SerializeField, Range(0.1f, 1f)] private float runInputThreshold = 0.8f;
 
         private static readonly int IsRunning = Animator.StringToHash("IsRunning");
         private static readonly int LedgeState = Animator.StringToHash("LedgeState");
@@ -120,7 +121,12 @@ namespace MousePlatformer
             if (inWater) return Motion.Swimming;
             if (!body.Grounded) return Motion.Jump;
             if (movement.CanInteractWithCrates && crateInteraction != null && crateInteraction.HeldCrate != null) return Motion.Push;
-            return Mathf.Abs(movement.Velocity.x) > runThreshold ? Motion.Run : Motion.Idle;
+            if (Mathf.Abs(movement.Velocity.x) <= runThreshold) return Motion.Idle;
+
+            float moveInputMagnitude = movement.MoveInputMagnitude;
+            return !movement.IsSprinting && !movement.IsSliding && moveInputMagnitude > 0f && moveInputMagnitude < runInputThreshold
+                ? Motion.Walk
+                : Motion.Run;
         }
 
         private void OnDisable()

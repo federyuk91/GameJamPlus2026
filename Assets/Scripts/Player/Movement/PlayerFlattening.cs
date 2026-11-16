@@ -11,7 +11,6 @@ namespace MousePlatformer
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         private Vector2 standingSize;
         private Vector2 standingOffset;
-        private bool downHeld;
         private float transitionRemaining;
         private bool standingUp;
         public bool IsFlattened { get; private set; }
@@ -26,15 +25,14 @@ namespace MousePlatformer
         public void Tick(float vertical, bool inWater, bool canFlatten, float dt)
         {
             transitionRemaining = Mathf.Max(0f, transitionRemaining - dt);
-            bool pressedDown = vertical < -0.5f && !downHeld;
-            downHeld = vertical < -0.5f;
+            bool downHeld = vertical < -0.5f;
             if (IsFlattened)
             {
                 // Entrando in acqua si tenta il ripristino, senza espandere il corpo dentro un soffitto.
-                if (vertical > 0.5f || inWater) TryStand();
+                if (!downHeld || inWater) TryStand();
                 return;
             }
-            if (!pressedDown || inWater || !canFlatten) return;
+            if (!downHeld || inWater || !canFlatten) return;
             BoxCollider2D shape = body.Shape;
             standingSize = shape.size;
             standingOffset = shape.offset;
@@ -81,7 +79,6 @@ namespace MousePlatformer
             }
             IsFlattened = false;
             standingUp = false;
-            downHeld = false;
             transitionRemaining = 0f;
         }
         private void OnDisable() => ResetPosture();

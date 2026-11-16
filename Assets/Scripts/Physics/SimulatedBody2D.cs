@@ -191,38 +191,67 @@ namespace MousePlatformer
 
         private void SweepMove(Vector2 displacement, float maxStepHeight, Collider2D ignored, bool followGround, float maxStepDownHeight = 0f)
         {
+            GroundTravel travel = TraceSweep(displacement, maxStepHeight, ignored, followGround,
+                HasGroundContact && followGround, GroundNormal, maxStepDownHeight);
+            ApplyGroundTravel(travel, ignored);
+        }
+
+        internal struct GroundTravel
+        {
+            public Vector2 Displacement;
+            public float Distance;
+            public bool HitWall;
+            public bool HitCeiling;
+            public bool CanGround;
+
+            public void Add(Vector2 movement)
+            {
+                Displacement += movement;
+                Distance += movement.magnitude;
+            }
+        }
+
+        private GroundTravel TraceSweep(Vector2 displacement, float maxStepHeight, Collider2D ignored, bool followGround,
+            bool wasGrounded, Vector2 groundNormal, float maxStepDownHeight, bool preserveHorizontal = false)
+        {
             float maxSlopeAngle = MaxSlopeAngle;
-            bool wasGrounded = HasGroundContact && followGround;
-            float descent = Mathf.Abs(displacement.x) * Mathf.Abs(GroundNormal.x) / Mathf.Max(0.01f, GroundNormal.y);
+            float descent = Mathf.Abs(displacement.x) * Mathf.Abs(groundNormal.x) / Mathf.Max(0.01f, groundNormal.y);
             descent = Mathf.Min(descent, displacement.magnitude + maxStepHeight);
             if (wasGrounded) descent = Mathf.Max(descent, Mathf.Max(0f, maxStepDownHeight));
-            HitWall = HitCeiling = false;
+            GroundTravel travel = new GroundTravel { CanGround = followGround || displacement.y <= 0f };
+            float budget = RemainingMovementDistance;
+            if (preserveHorizontal) budget = Mathf.Min(budget, MaxSpeed * Time.fixedDeltaTime);
             Vector2 remaining = displacement;
             for (int i = 0; i < 4 && remaining.sqrMagnitude > 0.0000000001f; i++)
             {
-                remaining = Vector2.ClampMagnitude(remaining, RemainingMovementDistance);
+                remaining = Vector2.ClampMagnitude(remaining, Mathf.Max(0f, budget - travel.Distance));
                 float requested = remaining.magnitude;
                 if (requested <= 0.00001f) break;
                 Vector2 direction = remaining / requested;
-                Collider2D obstacle = Probe(direction, requested + skin, out float distance, out Vector2 normal, ignored);
+                Collider2D obstacle = ProbeFromOffset(travel.Displacement, direction, requested + skin,
+                    out float distance, out Vector2 normal, ignored);
                 float separation = skin / Mathf.Max(0.01f, -Vector2.Dot(direction, normal));
                 float allowed = obstacle != null ? Mathf.Min(requested, Mathf.Max(0f, distance - separation)) : requested;
-                remaining -= Translate(direction * allowed);
+                Vector2 moved = direction * allowed;
+                travel.Add(moved);
+                remaining -= moved;
                 if (obstacle == null || allowed >= requested) break;
 
                 bool walkable = IsWalkable(normal, maxSlopeAngle);
                 if (wasGrounded && !walkable && Mathf.Abs(normal.x) > 0.01f && maxStepHeight > 0f
-                    && TryStep(remaining.x, maxStepHeight, maxSlopeAngle, ignored))
+                    && TryGetStep(travel.Displacement, remaining.x, maxStepHeight, maxSlopeAngle, ignored,
+                        budget - travel.Distance, out Vector2 step))
                 {
+                    travel.Add(step);
                     remaining.x = 0f;
                     continue;
                 }
 
-                if (normal.y < -0.01f) HitCeiling = true;
-                if (!walkable && Mathf.Abs(normal.x) > 0.01f) HitWall = true;
-                if (walkable && !followGround && remaining.y < 0f)
+                if (normal.y < -0.01f) travel.HitCeiling = true;
+                if (!walkable && Mathf.Abs(normal.x) > 0.01f) travel.HitWall = true;
+                if (walkable && (preserveHorizontal || (!followGround && remaining.y < 0f)))
                 {
-                    // Landing absorbs the fall instead of converting it into downhill motion.
+                    // A shared push keeps its requested X as the surface changes beneath either body.
                     Vector2 tangent = new Vector2(normal.y, -normal.x);
                     remaining = tangent * (remaining.x / normal.y);
                 }
@@ -236,12 +265,23 @@ namespace MousePlatformer
 
             if (wasGrounded)
             {
-                Collider2D support = Probe(Vector2.down, descent + skin * 2f, out float distance, out Vector2 normal, ignored);
+                Collider2D support = ProbeFromOffset(travel.Displacement, Vector2.down, descent + skin * 2f,
+                    out float distance, out Vector2 normal, ignored);
                 if (support != null && normal.y > 0.01f && (maxStepDownHeight <= 0f
                     || (IsWalkable(normal, maxSlopeAngle) && distance - skin <= descent + 0.00001f)))
-                    Translate(Vector2.down * Mathf.Max(0f, distance - skin));
+                    travel.Add(Vector2.down * Mathf.Min(Mathf.Max(0f, distance - skin), Mathf.Max(0f, budget - travel.Distance)));
             }
-            RefreshGround(followGround || displacement.y <= 0f, ignored);
+            return travel;
+        }
+
+        internal void ApplyGroundTravel(GroundTravel travel, Collider2D ignored)
+        {
+            transform.position += (Vector3)travel.Displacement;
+            if (movementStepTime == Time.fixedTimeAsDouble)
+                movementRemaining = Mathf.Max(0f, movementRemaining - travel.Distance);
+            HitWall = travel.HitWall;
+            HitCeiling = travel.HitCeiling;
+            RefreshGround(travel.CanGround, ignored);
             Physics2D.SyncTransforms();
         }
 
@@ -267,23 +307,17 @@ namespace MousePlatformer
             Physics2D.SyncTransforms();
         }
 
-        private bool TryStep(float horizontal, float maxHeight, float maxSlopeAngle, Collider2D ignored = null)
-        {
-            if (!TryGetStep(horizontal, maxHeight, maxSlopeAngle, ignored, out Vector2 step)) return false;
-            Translate(step);
-            return true;
-        }
-
-        private bool TryGetStep(float horizontal, float maxHeight, float maxSlopeAngle, Collider2D ignored, out Vector2 step)
+        private bool TryGetStep(Vector2 origin, float horizontal, float maxHeight, float maxSlopeAngle,
+            Collider2D ignored, float budget, out Vector2 step)
         {
             step = Vector2.zero;
             if (Mathf.Approximately(horizontal, 0f)) return false;
-            Probe(Vector2.up, maxHeight + skin, out float ceilingDistance, ignored);
+            ProbeFromOffset(origin, Vector2.up, maxHeight + skin, out float ceilingDistance, ignored);
             float lift = Mathf.Min(maxHeight, Mathf.Max(0f, ceilingDistance - skin));
             if (lift <= 0f) return false;
 
             // Query an up-across-down route before committing any vertical movement.
-            Vector2 raisedOffset = Vector2.up * lift;
+            Vector2 raisedOffset = origin + Vector2.up * lift;
             Vector2 direction = Vector2.right * Mathf.Sign(horizontal);
             float requested = Mathf.Abs(horizontal);
             Collider2D wall = ProbeFromOffset(raisedOffset, direction, requested + skin, out float wallDistance, ignored);
@@ -296,7 +330,7 @@ namespace MousePlatformer
             if (rise <= 0f || rise > maxHeight) return false;
 
             step = new Vector2(horizontal, rise);
-            if (step.magnitude > RemainingMovementDistance) return false;
+            if (step.magnitude > budget) return false;
             return true;
         }
 
@@ -305,9 +339,25 @@ namespace MousePlatformer
             Vector2 desired = HorizontalDisplacement(amount);
             float allowed = AllowedDisplacement(desired, ignored).x;
             if (Grounded && maxStepHeight > 0f && Mathf.Abs(allowed) + 0.00001f < Mathf.Abs(desired.x)
-                && TryGetStep(amount, maxStepHeight, MaxSlopeAngle, ignored, out Vector2 step)
+                && TryGetStep(Vector2.zero, amount, maxStepHeight, MaxSlopeAngle, ignored, RemainingMovementDistance, out Vector2 step)
                 && step.magnitude <= MaxSpeed * Time.fixedDeltaTime) return amount;
             return allowed;
+        }
+
+        internal bool TryGetPushSurface(float tolerance, Collider2D ignored, out Vector2 normal)
+        {
+            if (Grounded && GroundCollider != ignored && GroundSurfaceAlignment.TryGetSurface(this, out normal, out _)
+                && IsWalkable(normal, MaxSlopeAngle)) return true;
+            Collider2D support = Probe(Vector2.down, tolerance + skin, out _, out normal, ignored);
+            return support != null && IsWalkable(normal, MaxSlopeAngle);
+        }
+
+        internal GroundTravel PlanSurfacePush(float amount, Collider2D ignored, float maxStepHeight, Vector2 normal)
+        {
+            Vector2 tangent = new Vector2(normal.y, -normal.x);
+            Vector2 displacement = LimitDisplacement(tangent * (amount / normal.y));
+            float stepDown = Mathf.Max(maxStepHeight, Mathf.Abs(displacement.x));
+            return TraceSweep(displacement, maxStepHeight, ignored, true, true, normal, stepDown, preserveHorizontal: true);
         }
 
         private Vector2 HorizontalDisplacement(float amount)
@@ -327,12 +377,18 @@ namespace MousePlatformer
             return direction * allowed;
         }
 
-        public float MoveHorizontal(float amount, Collider2D ignored = null, float maxStepHeight = 0f)
+        public float MoveHorizontal(float amount, Collider2D ignored = null, float maxStepHeight = 0f,
+            bool followSlope = false)
         {
             float startX = transform.position.x;
             Vector2 displacement = HorizontalDisplacement(amount);
-            if (Grounded && maxStepHeight > 0f)
-                SweepMove(LimitDisplacement(displacement), maxStepHeight, ignored, true, maxStepHeight);
+            if (Grounded && (followSlope || maxStepHeight > 0f))
+            {
+                displacement = LimitDisplacement(displacement);
+                // Allow a 45-degree descent when leaving flat ground before the normal updates.
+                float maxStepDownHeight = followSlope ? Mathf.Max(maxStepHeight, Mathf.Abs(displacement.x)) : maxStepHeight;
+                SweepMove(displacement, maxStepHeight, ignored, true, maxStepDownHeight);
+            }
             else Move(displacement, ignored: ignored);
             return transform.position.x - startX;
         }

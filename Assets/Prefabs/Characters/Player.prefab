@@ -551,6 +551,97 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &9800570003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9800570004}
+  - component: {fileID: 9800570005}
+  m_Layer: 0
+  m_Name: Thought Balloon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9800570004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9800570003}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 887508910703741189}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &9800570005
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9800570003}
+  m_Enabled: 0
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 300
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &705135350684258017
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,6 +794,8 @@ GameObject:
   - component: {fileID: 9800091001}
   - component: {fileID: 9800561001}
   - component: {fileID: 9800563001}
+  - component: {fileID: 9800570001}
+  - component: {fileID: 9800570002}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -726,6 +819,7 @@ Transform:
   - {fileID: 7794391598910971669}
   - {fileID: 9800200001}
   - {fileID: 5355322660398281183}
+  - {fileID: 9800570004}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &5067529301207272031
@@ -835,6 +929,8 @@ MonoBehaviour:
   ropeInteraction: {fileID: 4776370160298788677}
   swimming: {fileID: 7210179708085743803}
   facing: {fileID: 6712765668103962099}
+  snakeBox: {fileID: 9800561001}
+  flattening: {fileID: 9800563001}
   movementSettings:
     moveSpeed: 5
     maxRunSpeed: 6
@@ -854,8 +950,6 @@ MonoBehaviour:
   ledgeClimb: {fileID: 922162904946277516}
   platformRide: {fileID: 4147716882159431439}
   digging: {fileID: 7072776503502995229}
-  snakeBox: {fileID: 9800561001}
-  flattening: {fileID: 9800563001}
 --- !u!114 &6712765668103962099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -920,8 +1014,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 4027669037393712695}
   playerMovement: {fileID: 3818418520059698947}
-  facing: {fileID: 6712765668103962099}
   ledgeClimb: {fileID: 922162904946277516}
+  facing: {fileID: 6712765668103962099}
   useWaterCollider: 1
   waterColliderSize: {x: 0.25, y: 0.5}
   waterColliderOffset: {x: 0, y: -0.5}
@@ -1328,6 +1422,77 @@ MonoBehaviour:
   playerCollider: {fileID: 5067529301207272031}
   crushDuration: 0.25
   crushedHoldDuration: 0.1
+--- !u!114 &9800561001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ae061d34bd3457386eb7069081ad494, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: {fileID: 7712171590627343095}
+  movement: {fileID: 3818418520059698947}
+  body: {fileID: 4027669037393712695}
+  collector: {fileID: 5709383898159029123}
+  stats: {fileID: 9800100001}
+  lastExitAttempt: 
+  exitBlocker: {fileID: 0}
+--- !u!114 &9800563001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76af9d7cf0ad40c6aafc452dda2c991f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 4027669037393712695}
+  flattenClip: {fileID: 7400000, guid: 305391922b114200a01487d7bd730313, type: 2}
+--- !u!114 &9800570001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e408af81df249a4b71ea24b8a374093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerThoughtBalloons
+  playerVisual: {fileID: 8503429192877497323}
+  balloonVisual: {fileID: 9800570005}
+  movement: {fileID: 3818418520059698947}
+  facing: {fileID: 6712765668103962099}
+  offset: {x: 0.6, y: -0.1}
+--- !u!114 &9800570002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681965045980687389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29368aba35464e95b63eb85b426945b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.PlayerThoughtTriggers
+  stats: {fileID: 9800100001}
+  balloons: {fileID: 9800570001}
+  interactionAvailability: {fileID: 0}
+  airLosses: {fileID: 21300000, guid: ad1bfc7a236e92140b3e0db552d7b4a9, type: 3}
+  poison: {fileID: 21300000, guid: 3596931a1bed8054c8a481114bc98d0f, type: 3}
+  cheese: {fileID: 21300000, guid: fe97846e304133a40bd1976f4766b844, type: 3}
+  interactionLeft: {fileID: 21300000, guid: f44e50b1b5f81904dba7faa919a7cb15, type: 3}
+  interactionRight: {fileID: 21300000, guid: c57de72b22c8456a99226bdaa0e79341, type: 3}
+  interactionDelay: 3
 --- !u!1 &8026293878368258149
 GameObject:
   m_ObjectHideFlags: 0
@@ -1422,35 +1587,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7794391606291081973, guid: 57f50ce83bd55864599cc89e21c2cc78, type: 3}
   m_PrefabInstance: {fileID: 9800300000}
   m_PrefabAsset: {fileID: 0}
-
---- !u!114 &9800561001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ae061d34bd3457386eb7069081ad494, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  input: {fileID: 7712171590627343095}
-  movement: {fileID: 3818418520059698947}
-  body: {fileID: 4027669037393712695}
-  collector: {fileID: 5709383898159029123}
-  stats: {fileID: 9800100001}
---- !u!114 &9800563001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681965045980687389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76af9d7cf0ad40c6aafc452dda2c991f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  body: {fileID: 4027669037393712695}
-  flattenClip: {fileID: 7400000, guid: 305391922b114200a01487d7bd730313, type: 2}

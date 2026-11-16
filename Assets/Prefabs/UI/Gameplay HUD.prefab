@@ -79,6 +79,7 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   collectibleCollector: {fileID: 0}
   interactionAvailability: {fileID: 2100003100}
+  tooltipSettings: {fileID: 11400000, guid: 77f7b2a28ba34dc9b0ba343c3dc4da36, type: 2}
   controlsSettings: {fileID: 11400000, guid: b6170aea18814f6cacadbdbd476e7592, type: 2}
   viewport: {fileID: 0}
   cameraController: {fileID: 0}
@@ -117,7 +118,6 @@ MonoBehaviour:
   pauseWhilePhotoOpen: 1
   shockLowFrequencyMotor: 0.45
   shockHighFrequencyMotor: 0.75
-  tooltipSettings: {fileID: 11400000, guid: 77f7b2a28ba34dc9b0ba343c3dc4da36, type: 2}
 --- !u!114 &2100003100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +138,7 @@ MonoBehaviour:
   crates: {fileID: 0}
   buttons: {fileID: 0}
   wheel: {fileID: 0}
+  snakeBox: {fileID: 0}
 --- !u!114 &2100004700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.SatietyHud
   document: {fileID: 2100002202}
+  stats: {fileID: 0}
   oxygenBubbles: {fileID: 0}
   gameplayCamera: {fileID: 0}
   flashColor: {r: 1, g: 0.85, b: 0.1, a: 0.25}
@@ -182,7 +184,6 @@ MonoBehaviour:
   oxygenFlashDuration: 0.25
   shakeDuration: 0.2
   shakeAmplitude: 0.06
-  stats: {fileID: 0}
 --- !u!82 &2100006400
 AudioSource:
   m_ObjectHideFlags: 0
@@ -397,9 +398,9 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 9f0cc376458b4b168bdc1d24a07c2770, type: 3}
   - letters: IY
     clip: {fileID: 8300000, guid: 4fc0df43e71c45c2b6064f6a0eb8941f, type: 3}
-  - letters: OQW
+  - letters: OQ
     clip: {fileID: 8300000, guid: b468e40e1aa746608db9236fc8f22901, type: 3}
-  - letters: U
+  - letters: WU
     clip: {fileID: 8300000, guid: 7850280a9bb4491d8f7921d15f272c9b, type: 3}
   - letters: MN
     clip: {fileID: 8300000, guid: e552efcf29cc460c9e67f43bc5e6cbdc, type: 3}
@@ -411,5 +412,19 @@ MonoBehaviour:
   pitchVariation: 0.1985
   minimumInterval: 0.085
   punctuationPause: 0.15
-  testText: Welcome to Universe-10. Relax and enjoy your stay.
+  testText: Welcome to Universe-10
   testCharactersPerSecond: 15
+  testTone: 0
+  testCombinations:
+  - letters: MM
+    clip: {fileID: 8300000, guid: e552efcf29cc460c9e67f43bc5e6cbdc, type: 3}
+    voiced: 0
+  - letters: SH
+    clip: {fileID: 8300000, guid: 5de0c57f54a5459f88ee6acd0bc9d8dd, type: 3}
+    voiced: 0
+  - letters: TH
+    clip: {fileID: 8300000, guid: 71be60df7f00434f9a5d68a9e8f757e6, type: 3}
+    voiced: 0
+  - letters: WE
+    clip: {fileID: 8300000, guid: 63eb217decff45a0a3c0d6a432e61c2d, type: 3}
+    voiced: 1

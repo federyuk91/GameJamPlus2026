@@ -7,7 +7,8 @@ namespace MousePlatformer
     {
         [SerializeField] private SimulatedBody2D body;
         private PropsMotion support;
-        private Vector2 previousPosition;
+        private Vector3 supportLocalPoint;
+        private Vector2 supportWorldPoint;
         public bool HasSupport => support != null;
         public Vector2 SupportVelocity => support != null ? support.FrameVelocity : Vector2.zero;
 
@@ -24,9 +25,9 @@ namespace MousePlatformer
                 Release();
                 return;
             }
-            Vector2 position = support.transform.position;
-            body.Move(position - previousPosition, ignored: support.Body.Shape);
-            previousPosition = position;
+            Vector2 position = support.transform.TransformPoint(supportLocalPoint);
+            body.Move(position - supportWorldPoint, ignored: support.Body.Shape);
+            supportWorldPoint = position;
         }
 
         public Vector2 UpdateSupport(bool canRide, bool inheritOnRelease)
@@ -45,7 +46,13 @@ namespace MousePlatformer
                 support = candidate;
                 if (support != null) support.SetPassenger(body);
             }
-            if (support != null) previousPosition = support.transform.position;
+            if (support != null)
+            {
+                Bounds bounds = body.Shape.bounds;
+                supportWorldPoint = new Vector2(bounds.center.x, bounds.min.y);
+                supportLocalPoint = support.transform.InverseTransformPoint(
+                    new Vector3(supportWorldPoint.x, supportWorldPoint.y, transform.position.z));
+            }
             return detachedVelocity;
         }
 

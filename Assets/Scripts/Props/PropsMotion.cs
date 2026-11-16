@@ -23,6 +23,7 @@ namespace MousePlatformer
         private readonly List<RopeAttachment> ropeAttachments = new List<RopeAttachment>(2);
         private bool attachmentsInitialized;
         [SerializeField] private Pushable pushable;
+        [SerializeField] private CrateSurfaceAlignment surfaceAlignment;
         [SerializeField] private BalloonLift balloon;
         [SerializeField] private Vector2 initialVelocity;
         [SerializeField, Tooltip("Follow the translation/rotation of the current solid support. Simulated after ordinary props; suitable for non-blocking props such as pickups and empty plates. These followers do not join load-bearing stack groups.")]
@@ -72,6 +73,32 @@ namespace MousePlatformer
             + RopePassengerWeight
             + (Airborne ? balloon.RopePassengerWeight : 0f);
         private float InertialWeight => Weight + PassengerWeight;
+        internal bool UsesSupportPivot
+        {
+            get
+            {
+                if (surfaceAlignment == null || !surfaceAlignment.UseSupportPivot || InWater || Airborne) return false;
+                foreach (RopeAttachment attachment in RopeAttachments)
+                    if (attachment != null && attachment.ConstrainsMotion) return false;
+                return true;
+            }
+        }
+
+        internal float CenterOfMassX
+        {
+            get
+            {
+                float mass = Weight;
+                float moment = body.Shape.bounds.center.x * mass;
+                if (HasStandingPassenger)
+                {
+                    mass += passenger.Weight;
+                    moment += passenger.Shape.bounds.center.x * passenger.Weight;
+                }
+                if (pushable != null) pushable.AccumulateStackMass(ref mass, ref moment);
+                return moment / mass;
+            }
+        }
 
         private float RopePassengerWeight
         {
@@ -243,6 +270,11 @@ namespace MousePlatformer
                 velocity = ((Vector2)transform.position - start) / dt;
                 if (coordinatedVertical) velocity.y = sharedVerticalVelocity;
                 Velocity = ConstrainVelocity(velocity);
+            }
+            if (surfaceAlignment != null && !coordinatedVertical)
+            {
+                if (UsesSupportPivot) surfaceAlignment.TipOnSupport(this, Time.fixedDeltaTime);
+                else surfaceAlignment.AlignToGround();
             }
             FrameVelocity = ((Vector2)transform.position - frameStart) / Time.fixedDeltaTime;
             FrameVelocity += Vector2.up * (verticalFrameDisplacement / Time.fixedDeltaTime);
@@ -567,8 +599,12 @@ namespace MousePlatformer
             {
                 float startY = transform.position.y;
                 pushable.MoveHorizontal(displacement.x, excluded);
-                float slopeRise = transform.position.y - startY;
-                body.Move(Vector2.up * (displacement.y - slopeRise), ignored: excluded);
+                float slopeTravelY = transform.position.y - startY;
+                float remainingY = displacement.y - slopeTravelY;
+                // Keep the crate on the descent unless the requested motion was already upward.
+                if (slopeTravelY < 0f && displacement.y <= 0f && body.Grounded)
+                    remainingY = Mathf.Min(0f, remainingY);
+                body.Move(Vector2.up * remainingY, ignored: excluded);
             }
             else body.Move(displacement, ignored: excluded);
             frameTravel += Vector2.Distance(beforeMove, transform.position);
