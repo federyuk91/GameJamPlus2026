@@ -56,6 +56,7 @@ namespace MousePlatformer
         private PropsMotion propMotion;
         private BoxCollider2D droppingThrough;
         private OneWayPlatform2D dropPlatform;
+        private BridgeSimulation droppingThroughBridge;
         private double movementStepTime = double.NegativeInfinity;
         private float movementRemaining;
         private float RemainingMovementDistance => movementStepTime == Time.fixedTimeAsDouble
@@ -132,8 +133,9 @@ namespace MousePlatformer
 
         public void BeginMovementStep(float dt)
         {
-            if (dropPlatform != null && (droppingThrough == null || !dropPlatform.isActiveAndEnabled
-                || !droppingThrough.enabled || dropPlatform.HasCleared(droppingThrough, Shape, skin)))
+            if (droppingThroughBridge != null ? droppingThroughBridge.HasClearedDeck(Shape, skin)
+                : droppingThrough != null && (dropPlatform == null || !dropPlatform.isActiveAndEnabled
+                    || !droppingThrough.enabled || dropPlatform.HasCleared(droppingThrough, Shape, skin)))
                 ClearPlatformDrop();
             movementStepTime = Time.fixedTimeAsDouble;
             movementRemaining = MaxSpeed * Mathf.Max(0f, dt);
@@ -147,6 +149,9 @@ namespace MousePlatformer
 
             droppingThrough = platform;
             dropPlatform = oneWay;
+            Transform parent = platform.transform.parent;
+            droppingThroughBridge = parent != null && parent.TryGetComponent(out BridgeSimulation bridge)
+                && bridge.HasSurface(platform) ? bridge : null;
             RefreshGround(false);
             return true;
         }
@@ -155,6 +160,7 @@ namespace MousePlatformer
         {
             droppingThrough = null;
             dropPlatform = null;
+            droppingThroughBridge = null;
         }
 
         private Vector2 LimitDisplacement(Vector2 displacement)
@@ -470,7 +476,9 @@ namespace MousePlatformer
                 if (approach <= minimumApproach) continue;
                 if (hit.collider is BoxCollider2D platform && platform.TryGetComponent(out OneWayPlatform2D oneWay)
                     && oneWay.isActiveAndEnabled
-                    && (platform == droppingThrough || !oneWay.Blocks(platform, center, halfSize, right, up, direction, hit.normal, skin)))
+                    && (platform == droppingThrough
+                        || (droppingThroughBridge != null && oneWay.AllowsDropThrough && droppingThroughBridge.HasSurface(platform))
+                        || !oneWay.Blocks(platform, center, halfSize, right, up, direction, hit.normal, skin)))
                     continue;
                 // Report the full body's travel distance, not the smaller query box's distance.
                 float insetAlongNormal = inset * (Mathf.Abs(Vector2.Dot(hit.normal, right))

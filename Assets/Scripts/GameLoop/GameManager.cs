@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameJamPlus.UI;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace GameJamPlus.Gameplay
@@ -38,6 +39,17 @@ namespace GameJamPlus.Gameplay
         [SerializeField, Range(1, 10)] private int startingUniverse = 10;
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
+        [Header("Testing")]
+        [SerializeField, Tooltip("Enable F5 to restart the initial Play Mode scene in the Editor and F6 to restart the current scene, including builds. Both reset session progress.")]
+        private bool testingFunction = true;
+        private static bool testingFunctionEnabled = true;
+        private static bool testingRestartPending;
+        private static int lastTestingRestartFrame = -1;
+        private static InputAction restartCurrentSceneAction;
+#if UNITY_EDITOR
+        private static string playStartScenePath;
+        private static InputAction restartPlayStartSceneAction;
+#endif
         public static GameManager Instance { get; private set; }
         public LoopState State { get; private set; } = LoopState.Playing;
         public int Universe => GameSession.Universe;
@@ -51,6 +63,7 @@ namespace GameJamPlus.Gameplay
         public int SurvivingHealth => playerStats != null ? playerStats.Health : MousePlatformer.PlayerStats.MaximumHealth;
         internal void SetStageState(LoopState state) => State = state;
         public Collider2D PlayerCollider => playerCollider;
+        public MousePlatformer.PlayerStats PlayerStats => playerStats;
         public MousePlatformer.PlayerRecovery PlayerRecovery => playerRecovery;
         public MousePlatformer.PlayerCrushVisual PlayerCrushVisual => playerCrushVisual;
         public IReadOnlyList<SpawnPoint> SpawnPoints => spawnPoints;
@@ -58,7 +71,112 @@ namespace GameJamPlus.Gameplay
         public void SnapCameraToPlayer() => gameplayCamera?.SnapToTarget();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetInstance() => Instance = null;
+        private static void ResetInstance()
+        {
+            Instance = null;
+            DisposeTestingActions();
+            testingFunctionEnabled = true;
+            testingRestartPending = false;
+            lastTestingRestartFrame = -1;
+#if UNITY_EDITOR
+            playStartScenePath = null;
+#endif
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void InitializeTestingActions()
+        {
+            // Static actions survive scene changes without keeping a scene GameManager alive.
+            SceneManager.sceneLoaded += OnTestingSceneLoaded;
+            Application.quitting += DisposeTestingActions;
+            restartCurrentSceneAction = new InputAction("Testing Restart Current Scene", InputActionType.Button, "<Keyboard>/f6");
+            restartCurrentSceneAction.performed += OnRestartCurrentScene;
+            restartCurrentSceneAction.Enable();
+#if UNITY_EDITOR
+            restartPlayStartSceneAction = new InputAction("Testing Restart Play Start Scene", InputActionType.Button, "<Keyboard>/f5");
+            restartPlayStartSceneAction.performed += OnRestartPlayStartScene;
+            restartPlayStartSceneAction.Enable();
+#endif
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void CaptureTestingStartScene()
+        {
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(playStartScenePath))
+                playStartScenePath = SceneManager.GetActiveScene().path;
+#endif
+        }
+
+        private static void OnTestingSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(playStartScenePath)) playStartScenePath = scene.path;
+#endif
+            if (!testingRestartPending) return;
+            testingRestartPending = false;
+            // Old scene pause owners have now released their state.
+            Time.timeScale = 1f;
+        }
+
+        private static void OnRestartCurrentScene(InputAction.CallbackContext context)
+        {
+            RestartTestingScene(SceneManager.GetActiveScene().path);
+        }
+
+#if UNITY_EDITOR
+        private static void OnRestartPlayStartScene(InputAction.CallbackContext context)
+        {
+            RestartTestingScene(playStartScenePath);
+        }
+#endif
+
+        private static void RestartTestingScene(string scenePath)
+        {
+            bool enabledForScene = Instance != null ? Instance.testingFunction : testingFunctionEnabled;
+            if (!Application.isPlaying || !enabledForScene || testingRestartPending
+                || lastTestingRestartFrame == Time.frameCount) return;
+            if (string.IsNullOrEmpty(scenePath))
+            {
+                Debug.LogWarning("Save the scene before using testing restart shortcuts.");
+                return;
+            }
+#if !UNITY_EDITOR
+            if (!Application.CanStreamedLevelBeLoaded(scenePath))
+            {
+                Debug.LogWarning("Include the scene in Build Profiles to restart it: " + scenePath);
+                return;
+            }
+#endif
+            testingRestartPending = true;
+            lastTestingRestartFrame = Time.frameCount;
+            if (Instance != null)
+            {
+                Instance.State = LoopState.Loading;
+                Instance.stageEnds?.Cancel();
+                Instance.hud?.HidePhoto();
+            }
+            GameSession.Reset();
+            Time.timeScale = 1f;
+#if UNITY_EDITOR
+            UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(scenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+#else
+            SceneManager.LoadScene(scenePath, LoadSceneMode.Single);
+#endif
+        }
+
+        private static void DisposeTestingActions()
+        {
+            SceneManager.sceneLoaded -= OnTestingSceneLoaded;
+            Application.quitting -= DisposeTestingActions;
+            restartCurrentSceneAction?.Dispose();
+            restartCurrentSceneAction = null;
+#if UNITY_EDITOR
+            restartPlayStartSceneAction?.Dispose();
+            restartPlayStartSceneAction = null;
+#endif
+        }
 
         private void Awake()
         {
@@ -69,6 +187,7 @@ namespace GameJamPlus.Gameplay
                 return;
             }
             Instance = this;
+            testingFunctionEnabled = testingFunction;
             if (playerCrushVisual == null && player != null)
                 player.TryGetComponent(out playerCrushVisual);
             if (playerStats == null && player != null) player.TryGetComponent(out playerStats);
@@ -191,7 +310,11 @@ namespace GameJamPlus.Gameplay
 
         private void OnDestroy()
         {
-            if (Instance == this) Instance = null;
+            if (Instance == this)
+            {
+                testingFunctionEnabled = testingFunction;
+                Instance = null;
+            }
         }
     }
 }

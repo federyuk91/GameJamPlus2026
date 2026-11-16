@@ -243,6 +243,15 @@ namespace MousePlatformer
             return true;
         }
 
+        public void RestoreOxygenNotch()
+        {
+            if (!oxygenEnabled || !isActiveAndEnabled || IsDead || Oxygen <= 0 || IsOxygenFull) return;
+            if (Oxygen < MaximumOxygen) Oxygen++;
+            else drainElapsed = 0f;
+            if (IsOxygenFull) warningIssued = false;
+            OxygenChanged?.Invoke(Oxygen, MaximumOxygen);
+        }
+
         public bool ConsumeOxygenNotch()
         {
             GameManager manager = GameManager.Instance;

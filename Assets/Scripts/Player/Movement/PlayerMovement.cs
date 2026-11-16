@@ -159,14 +159,15 @@ namespace MousePlatformer
             bool jumpPressed = input.ConsumeJump();
             if (swimming != null) swimming.UpdateControlTimers(dt);
             bool inWater = swimming != null && swimming.CheckWater();
-            bool dropThrough = jumpPressed && input.Vertical < -0.5f && !inWater
+            bool dropThrough = input.PlatformDropRequested && (followingGround || Velocity.y <= 0f)
                 && (ledgeClimb == null || !ledgeClimb.Active)
                 && (ladderInteraction == null || !ladderInteraction.Attached)
                 && (ropeInteraction == null || !ropeInteraction.Attached)
                 && (digging == null || !digging.InputClaimed)
-                && body.TryDropThroughGround();
+                && TryDropThroughPlatform();
             if (dropThrough)
             {
+                input.ClearPlatformDropRequest();
                 jumpPressed = false;
                 bufferRemaining = coyoteRemaining = 0f;
                 jumpedFromSupport = true;
@@ -215,7 +216,7 @@ namespace MousePlatformer
             ropeLaunchRemaining = Mathf.Max(0f, ropeLaunchRemaining - dt);
             Vector2 ladderVelocity = Velocity;
             bool ladderReleased = false;
-            bool ladderHandled = !IsFlattened && !traversalReleased && ladderInteraction != null && (digging == null || !digging.InputClaimed)
+            bool ladderHandled = !dropThrough && !IsFlattened && !traversalReleased && ladderInteraction != null && (digging == null || !digging.InputClaimed)
                 && (ropeInteraction == null || !ropeInteraction.Attached)
                 && ladderInteraction.Tick(input.Horizontal, input.Vertical, jumpPressed, Velocity, dt,
                     out ladderVelocity, out ladderReleased);
@@ -232,7 +233,7 @@ namespace MousePlatformer
                 ropeLaunchRemaining = Movement.launchControlTime;
                 jumpPressed = false;
             }
-            if (!IsFlattened && !traversalReleased && !ladderHandled && (digging == null || !digging.InputClaimed)
+            if (!dropThrough && !IsFlattened && !traversalReleased && !ladderHandled && (digging == null || !digging.InputClaimed)
                 && ropeInteraction != null && ropeInteraction.Tick(input.Horizontal, input.Vertical, input.GrabHeld,
                 jumpPressed, Velocity, dt, out Vector2 ropeVelocity, out bool released))
             {
@@ -427,12 +428,19 @@ namespace MousePlatformer
             Velocity = Vector2.zero;
             return true;
         }
+        private bool TryDropThroughPlatform()
+        {
+            body.RefreshGround();
+            return body.TryDropThroughGround();
+        }
+
         public void TeleportTo(Vector2 destination)
         {
             if (flattening != null) flattening.ResetPosture();
             if (input != null) input.ConsumeTailPress();
             if (snakeBox != null) snakeBox.Cancel();
             if (input != null) input.ClearLedgeInteraction();
+            if (input != null) input.ClearPlatformDropRequest();
             if (crateInteraction != null) crateInteraction.Release();
             if (ropeInteraction != null) ropeInteraction.Detach();
             if (ladderInteraction != null) ladderInteraction.Detach();

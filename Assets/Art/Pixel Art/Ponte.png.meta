@@ -137,7 +137,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 15
+        width: 14
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -157,9 +157,9 @@ TextureImporter:
       name: Ponte_1
       rect:
         serializedVersion: 2
-        x: 15
+        x: 14
         y: 0
-        width: 14
+        width: 15
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -167,9 +167,9 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c0e3c965bc22dfbd0800000000000000
+      spriteID: 72ff89126c9593844831652ebb4b7f00
       internalID: -2594879553568752116
       vertices: []
       indices: 
@@ -181,7 +181,7 @@ TextureImporter:
         serializedVersion: 2
         x: 29
         y: 0
-        width: 13
+        width: 11
         height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -191,7 +191,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a052a0103aa5ca74c97c7b06f8d812c7
+      spriteID: 606ea4b478ba6ae4c950bd63453ead1f
       internalID: 576988771
       vertices: []
       indices: 

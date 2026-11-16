@@ -1,5 +1,7 @@
 # Breath-holding and oxygen
 
+`Assets/Prefabs/Collectibles/AirBubbles.prefab` is an animated contact pickup. It restores one oxygen notch, capped at the maximum, then disappears for the current scene load, even if oxygen was already full. Room3 - Swimm uses a nested instance at the original AirBubbles position. Adjust the pickup BoxCollider2D in the prefab if the contact area needs tuning.
+
 Player.prefab includes Player Oxygen with an independent five-notch reserve. When the breathing point is submerged in a Water Volume, the satiety bar displays OXYGEN with cyan notches.
 
 - Maximum Notches: 5.

@@ -1,5 +1,13 @@
 # Test loop
 
+## Testing restart shortcuts
+
+GameManager exposes **Testing Function** (enabled by default). F5 in the Unity Editor reloads the scene from which this Play Mode session started, even after normal scene transitions. F6 reloads the currently active scene in both the Editor and builds. Both reset GameSession progress, collected items and checkpoints, and restore normal time before starting again. They also work while paused or displaying results.
+
+The Input System actions are managed in GameManager and survive scene changes without keeping a scene manager alive. A scene GameManager's flag controls them; after leaving that scene, its last flag value remains in effect until another GameManager supplies its setting. Before any GameManager loads, shortcuts default to enabled. Static state/actions are cleaned up between Play Mode sessions, including when domain reload is disabled. Editor restarts support saved scenes outside Build Profiles; F5 requires a saved initial scene. The Game view must have keyboard focus.
+
+Manual checks: start Play in one scene, move to another, press F5 to return to the initial scene, and press F6 to restart the current scene. Repeat during pause/results and with Testing Function disabled. Check F6 in a build; F5 is Editor-only.
+
 LoopScene contains Game Manager assigned to Gameplay HUD. Sessions start at Universe-10. GameSession keeps the universe across scene loads for the run; New Game resets it before starting again.
 
 ## Ending a test

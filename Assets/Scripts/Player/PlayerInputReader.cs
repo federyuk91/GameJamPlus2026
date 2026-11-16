@@ -6,6 +6,7 @@ namespace MousePlatformer
     [DisallowMultipleComponent]
     public sealed class PlayerInputReader : MonoBehaviour
     {
+        private const float PlatformDropBufferSeconds = 0.15f;
         [SerializeField] private PlayerStats stats;
         [SerializeField, Min(0.01f), Tooltip("Time in seconds that a front-paw press remains available to start climbing a ledge.")]
         private float ledgeInputBuffer = 0.15f;
@@ -17,6 +18,8 @@ namespace MousePlatformer
         private bool collectionConsumed;
         private bool mouthConsumed;
         private bool jumpQueued;
+        private bool downHeld;
+        private double platformDropExpires = double.NegativeInfinity;
         private bool tailQueued;
         private bool ledgeInteractionQueued;
         private double ledgeInteractionExpires;
@@ -45,6 +48,7 @@ namespace MousePlatformer
             waitingForInteractionRelease = !locked;
             jumpQueued = false; tailQueued = false;
             ClearLedgeInteraction();
+            ClearPlatformDropRequest();
         }
         private const AvailableGameplayActions CollectActions = AvailableGameplayActions.CollectPhoto | AvailableGameplayActions.CollectItem;
         private const AvailableGameplayActions EatActions = AvailableGameplayActions.EatCheese | AvailableGameplayActions.EatGreenCheese;
@@ -98,6 +102,8 @@ namespace MousePlatformer
         {
             if (stats == null) stats = GetComponent<PlayerStats>();
             move = new InputAction("Move", InputActionType.Value, expectedControlType: "Vector2");
+            move.performed += QueuePlatformDrop;
+            move.canceled += QueuePlatformDrop;
             move.AddBinding("<Gamepad>/leftStick").WithProcessor("stickDeadzone");
             move.AddBinding("<Gamepad>/dpad");
             move.AddCompositeBinding("2DVector")
@@ -133,6 +139,18 @@ namespace MousePlatformer
             ClearLedgeInteraction();
         }
         private void QueueJump(InputAction.CallbackContext context) { if (!GameplayActionsLocked) jumpQueued = true; }
+        private void QueuePlatformDrop(InputAction.CallbackContext context)
+        {
+            float vertical = context.ReadValue<Vector2>().y;
+            if (vertical >= -0.3f) downHeld = false;
+            if (downHeld || vertical > -0.5f) return;
+            downHeld = true;
+            if (!GameplayActionsLocked && Time.timeScale > 0f)
+                platformDropExpires = Time.timeAsDouble + PlatformDropBufferSeconds;
+        }
+
+        public bool PlatformDropRequested => !GameplayActionsLocked && Time.timeAsDouble <= platformDropExpires;
+        public void ClearPlatformDropRequest() => platformDropExpires = double.NegativeInfinity;
         private void QueueTail(InputAction.CallbackContext context)
         {
             if (!GameplayActionsLocked && Time.timeScale > 0f) tailQueued = true;
@@ -160,6 +178,7 @@ namespace MousePlatformer
         public void ConsumeAllInteractions()
         {
             tailQueued = false;
+            ClearPlatformDropRequest();
             mouthConsumed = true;
             collectionConsumed = true;
             ClearLedgeInteraction();
@@ -172,6 +191,7 @@ namespace MousePlatformer
         }
         private void Update()
         {
+            if (GameplayActionsLocked) ClearPlatformDropRequest();
             if (GameplayActionsLocked || Time.timeAsDouble > ledgeInteractionExpires) ClearLedgeInteraction();
             if (collect == null || !collect.IsPressed())
             {
@@ -188,7 +208,7 @@ namespace MousePlatformer
             return result;
         }
         private void OnEnable() { move.Enable(); jump.Enable(); sprint.Enable(); bite.Enable(); collect.Enable(); }
-        private void OnDisable() { move.Disable(); jump.Disable(); sprint.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; tailQueued = false; collectionConsumed = false; mouthConsumed = false; ClearLedgeInteraction(); }
+        private void OnDisable() { move.Disable(); jump.Disable(); sprint.Disable(); bite.Disable(); collect.Disable(); jumpQueued = false; tailQueued = false; downHeld = false; collectionConsumed = false; mouthConsumed = false; ClearLedgeInteraction(); ClearPlatformDropRequest(); }
         private void OnDestroy() { PlayerControlBindings.Changed -= ApplyBindings; move.Dispose(); jump.Dispose(); sprint.Dispose(); bite.Dispose(); collect.Dispose(); }
     }
 }
