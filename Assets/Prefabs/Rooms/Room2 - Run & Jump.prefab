@@ -2672,7 +2672,7 @@ GameObject:
   - component: {fileID: 1856878090529410720}
   - component: {fileID: 1445377368632588548}
   m_Layer: 0
-  m_Name: Pipes - Solid
+  m_Name: Pipes - Decorative
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3351,10 +3351,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3007158176897984103}
-  - {fileID: 8167400641791642428}
-  - {fileID: 7849230316317029922}
   - {fileID: 446568026090721313}
+  - {fileID: 8167400641791642428}
+  - {fileID: 3007158176897984103}
+  - {fileID: 7849230316317029922}
   m_Father: {fileID: 4360134463982798238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &3618163467963032785
@@ -3474,13 +3474,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4490982415605924829}
     m_Modifications:
-    - target: {fileID: 1085378895257011694, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
-      propertyPath: m_Name
-      value: 01 Free Floating Crate (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 9812010003, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: useSupportPivot
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1085378895257011694, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
+      propertyPath: m_Name
+      value: 01 Free Floating Crate (1)
       objectReference: {fileID: 0}
     - target: {fileID: 3869527096679021882, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: shape
@@ -3549,13 +3549,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4490982415605924829}
     m_Modifications:
-    - target: {fileID: 1085378895257011694, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
-      propertyPath: m_Name
-      value: 01 Free Floating Crate
-      objectReference: {fileID: 0}
     - target: {fileID: 9812010003, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: useSupportPivot
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1085378895257011694, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
+      propertyPath: m_Name
+      value: 01 Free Floating Crate
       objectReference: {fileID: 0}
     - target: {fileID: 3869527096679021882, guid: 9d78fdf8e2934914eb4bd3f62bad3c08, type: 3}
       propertyPath: shape
