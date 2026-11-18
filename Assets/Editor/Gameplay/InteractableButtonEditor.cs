@@ -8,7 +8,7 @@ public sealed class InteractableButtonEditor : Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        EditorGUILayout.HelpBox("Input and weight always work together. On Pressed fires once at the bottom; On Release fires when fully raised. The button stays down while a simulated body rests on the surface. Single Use stays locked down until ActivateButton.", MessageType.Info);
+        EditorGUILayout.HelpBox("Use Allow Manual Press to enable interaction input. The button stays down while a simulated body rests on the surface. On Pressed fires once at the bottom and On Release fires when fully raised. Single Use stays locked down until ActivateButton.", MessageType.Info);
     }
 
     private void OnSceneGUI()

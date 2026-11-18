@@ -85,8 +85,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1686781163
+  m_SortingLayer: 1
   m_SortingOrder: 100
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 3c952d4f5499c5f448a05e1f3027d402, type: 3}
@@ -157,9 +157,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143b5182dcc3467eb4a44b01d69f8c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectionId: 
   type: 1
   requiresInteraction: 1
+  collectionId: 
   pickupArea: {fileID: 5718437077508530872}
   showGizmos: 1
   remains: {fileID: 8300000001}
@@ -196,25 +196,6 @@ MonoBehaviour:
     height: 0.5625
   - sprite: {fileID: 21300000, guid: d9ff59efbc83de24a84e2afc0c88a3c7, type: 3}
     height: 0.65625
---- !u!114 &8300000002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5539735911339432288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8306221604146f39dc3f7e31e3d2789, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  body: {fileID: 9100000100}
-  buoyancy: {fileID: 0}
-  tether: {fileID: 0}
-  pushable: {fileID: 9800095001}
-  balloon: {fileID: 0}
-  initialVelocity: {x: 0, y: 0}
-  followSupport: 1
 --- !u!61 &9100000101
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -275,7 +256,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsSettings: {fileID: 11400000, guid: dc84cca46c424071a4fe3323bae4dba0, type: 2}
   airDrag: 0
-  waterDragMultiplier: 3.33333333
+  waterDragMultiplier: 3.3333333
+  groundFriction: 1
+  maxSlopeAngle: 89
+  groundContact: {fileID: 9700001000}
   overrideMaxSpeed: 0
   maxSpeed: 8
   gravityScale: 1
@@ -287,9 +271,27 @@ MonoBehaviour:
     m_Bits: 65
   skin: 0.002
   weight: 0.51
-  groundFriction: 1
-  maxSlopeAngle: 89
-  groundContact: {fileID: 9700001000}
+--- !u!114 &8300000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539735911339432288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8306221604146f39dc3f7e31e3d2789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: 9100000100}
+  buoyancy: {fileID: 0}
+  tether: {fileID: 0}
+  additionalTethers: []
+  pushable: {fileID: 9800095001}
+  surfaceAlignment: {fileID: 0}
+  balloon: {fileID: 0}
+  initialVelocity: {x: 0, y: 0}
+  followSupport: 1
 --- !u!114 &9700001000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,9 +315,10 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49102a13ae0c461c9e85dcebda833fe1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MousePlatformer.Pushable
   body: {fileID: 9100000100}
   motion: {fileID: 8300000002}
   ropeAttachment: {fileID: 0}
   showGizmos: 1
+  maxPushStepHeight: 0.0625

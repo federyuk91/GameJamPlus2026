@@ -21,6 +21,8 @@ namespace MousePlatformer
         private bool singleUse;
         [SerializeField, Tooltip("Starts pressed and unavailable until ActivateButton is called. Activation preserves Single Use and On Pressed settings.")]
         private bool startsLocked;
+        [SerializeField, Tooltip("Allow the player to press this button via the interaction input.")]
+        private bool allowManualPress = true;
         [SerializeField] private bool showGizmos = true;
         // Keep the serialized name so existing prefab and scene event bindings remain intact.
         [SerializeField] private UnityEvent onPressed = new UnityEvent();
@@ -53,7 +55,7 @@ namespace MousePlatformer
         public bool IsLocked => initialized ? locked : startsLocked;
         private bool CanStartPress => isActiveAndEnabled && !IsLocked && !busy && (!singleUse || !used)
             && interactionArea != null && interactionArea.enabled;
-        public bool CanPress => CanStartPress && !fullyPressed;
+        public bool CanPress => allowManualPress && CanStartPress && !fullyPressed;
         public Vector2 InteractionPoint => visual != null ? visual.bounds.center : transform.position;
         public bool ShowGizmos => showGizmos;
         public ButtonSpawnPositionMode SpawnPositionMode => spawnPositionMode;
