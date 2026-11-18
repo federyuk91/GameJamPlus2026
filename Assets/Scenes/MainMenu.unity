@@ -326,7 +326,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameJamPlus.UI.MainMenuController
   document: {fileID: 528639516}
   uiInputModule: {fileID: 1957430536}
-  gameplaySceneName: Universo_10
+  gameplaySceneName: Sequence Room Test1
+  showControlsBeforeGameplay: 0
   designerProgrammerName: Federico Bachis
   artistName: Roberta Piredda
   pixelArtistName: Andrea Serra

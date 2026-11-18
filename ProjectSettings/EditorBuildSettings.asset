@@ -59,6 +59,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sequence Room Test.unity
     guid: 01963fb9d20fe5a4b89ef9d50dfc9560
+  - enabled: 1
+    path: Assets/Scenes/Sequence Room Test1.unity
+    guid: 6117e5fbb1429dc40b7a05dd6b60321f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

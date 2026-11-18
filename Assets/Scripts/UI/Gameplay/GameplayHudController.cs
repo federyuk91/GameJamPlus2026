@@ -304,9 +304,9 @@ namespace GameJamPlus.UI
 
         public void SetUniverse(int value) => universe = value;
 
-        public void SetSubjectIdentity(string subjectId, int attempt, int maximumAttempts)
+        public void SetSubjectIdentity(string subjectId, string attemptLabel)
         {
-            if (campaignProgress != null) campaignProgress.text = $"UNIVERSE {universe} / ATTEMPT {attempt}/{maximumAttempts}";
+            if (campaignProgress != null) campaignProgress.text = $"UNIVERSE {universe} / ATTEMPT {attemptLabel}";
             if (subjectIdentity != null) subjectIdentity.text = "SUBJECT " + subjectId;
         }
 

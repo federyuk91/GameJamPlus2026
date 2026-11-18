@@ -33,6 +33,7 @@ namespace GameJamPlus.Gameplay
         private float transitionDuration;
         private float previousTimeScale;
         private bool ownsPause;
+        private StageEndCase acceptedEnding;
         public StageEndDefinition Outcome { get; private set; }
 
         public static bool Request(StageEndCase ending, Object source = null)
@@ -84,6 +85,7 @@ namespace GameJamPlus.Gameplay
                 || gameManager.State != GameManager.LoopState.Playing || definition == null || hud == null) return false;
             // Claim the conclusion before UI callbacks or session changes can request another ending.
             gameManager.SetStageState(waitForAnimation ? GameManager.LoopState.DeathAnimation : GameManager.LoopState.Flash);
+            acceptedEnding = ending;
             Outcome = definition;
             hud.HidePhoto();
             completedTime = hud.ElapsedSeconds;
@@ -91,7 +93,8 @@ namespace GameJamPlus.Gameplay
             transitionDuration = definition.TransitionDurationOverride >= 0f ? definition.TransitionDurationOverride
                 : definition.UseExitImage ? hud.ExitTransitionDuration : defaultTransitionDuration;
             GameSession.RecordObservation(definition.CompletionObservations);
-            GameSession.RecordTestResult(definition.SubjectDied, completedTime, gameManager.SurvivingHealth);
+            GameSession.RecordTestResult(definition.SubjectDied, completedTime, gameManager.SurvivingHealth,
+                gameManager.CountsAsUniverseCompletion(ending));
             previousTimeScale = Time.timeScale;
             ownsPause = true;
             Time.timeScale = 0f;
@@ -145,7 +148,7 @@ namespace GameJamPlus.Gameplay
 
         private void OnContinueRequested()
         {
-            if (gameManager != null && gameManager.isActiveAndEnabled) gameManager.ContinueAfterStage();
+            if (gameManager != null && gameManager.isActiveAndEnabled) gameManager.ContinueAfterStage(acceptedEnding);
         }
 
         internal void ReleasePause()

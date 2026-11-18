@@ -40,6 +40,8 @@ namespace GameJamPlus.Gameplay
         [SerializeField] private string gameplaySceneName = "LoopScene";
         [SerializeField] private string endGameSceneName = "EndGame";
         [Header("Testing")]
+        [SerializeField, Tooltip("Repeat this scene after every test result except reaching the exit, which loads End Game.")]
+        private bool loopUntilExit;
         [SerializeField, Tooltip("Enable F5 to restart the initial Play Mode scene in the Editor and F6 to restart the current scene, including builds. Both reset session progress.")]
         private bool testingFunction = true;
         private static bool testingFunctionEnabled = true;
@@ -55,6 +57,7 @@ namespace GameJamPlus.Gameplay
         public int Universe => GameSession.Universe;
         public string SubjectId => GameSession.SubjectId;
         public int Attempt => GameSession.Attempt;
+        internal string AttemptLabel => loopUntilExit ? Attempt.ToString() : $"{Attempt}/{GameSession.AttemptsPerUniverse}";
         public GameplayHudController Hud => hud;
         public DialogueManager Dialogues => dialogues;
         public StageEndManager StageEnds => stageEnds;
@@ -211,7 +214,7 @@ namespace GameJamPlus.Gameplay
         private void Start()
         {
             hud.SetUniverse(Universe);
-            hud.SetSubjectIdentity(SubjectId, Attempt, GameSession.AttemptsPerUniverse);
+            hud.SetSubjectIdentity(SubjectId, AttemptLabel);
             if (gameplayCamera != null) gameplayCamera.SnapToTarget();
             if (State == LoopState.Spawning)
             {
@@ -283,25 +286,30 @@ namespace GameJamPlus.Gameplay
             Physics2D.SyncTransforms();
         }
 
-        internal void ContinueAfterStage()
+        internal bool CountsAsUniverseCompletion(StageEndCase ending) => !loopUntilExit || ending == StageEndCase.Goal;
+
+        internal void ContinueAfterStage(StageEndCase ending)
         {
             if (State != LoopState.Results) return;
+            bool repeatScene = loopUntilExit && ending != StageEndCase.Goal;
             string scene;
-            if (campaign != null)
+            if (loopUntilExit) scene = repeatScene ? gameObject.scene.path : endGameSceneName;
+            else if (campaign != null)
             {
                 int nextUniverse = Universe - (GameSession.WillAdvanceUniverse ? 1 : 0);
                 scene = GameSession.WillEndCampaign ? campaign.EndGameScene : campaign.SceneForUniverse(nextUniverse);
             }
-            else scene = Universe <= 1 ? endGameSceneName : gameplaySceneName;
-            if (campaign == null && Universe > 1 && GameSession.TryGetCheckpoint(out string checkpointScene, out _, out _))
+            else if (Universe <= 1) scene = endGameSceneName;
+            else if (GameSession.TryGetCheckpoint(out string checkpointScene, out _, out _))
                 scene = checkpointScene;
+            else scene = gameplaySceneName;
             if (string.IsNullOrWhiteSpace(scene) || !Application.CanStreamedLevelBeLoaded(scene))
             {
                 Debug.LogError("The next test or ending scene is not included in Build Profiles: " + scene, this);
                 return;
             }
             State = LoopState.Loading;
-            GameSession.Advance(campaign != null);
+            GameSession.Advance(!loopUntilExit && campaign != null, repeatScene);
             stageEnds?.ReleasePause();
             SceneManager.LoadScene(scene);
         }

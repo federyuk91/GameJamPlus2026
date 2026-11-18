@@ -16,6 +16,7 @@ namespace GameJamPlus.UI
         [SerializeField] private UIDocument document;
         [SerializeField] private InputSystemUIInputModule uiInputModule;
         [SerializeField] private string gameplaySceneName = "Universo_10";
+        [SerializeField] private bool showControlsBeforeGameplay = true;
         [Header("Channel transition")]
         [SerializeField, Range(0.05f, 0.4f)] private float channelSwitchDelay = 0.12f;
         [Header("Credits")]
@@ -421,14 +422,15 @@ namespace GameJamPlus.UI
                 status.text = "The next session is currently unavailable.";
                 return;
             }
-            if (!Application.CanStreamedLevelBeLoaded(ControlsSceneController.SceneName))
+            if (showControlsBeforeGameplay && !Application.CanStreamedLevelBeLoaded(ControlsSceneController.SceneName))
             {
                 status.text = "The controls screen is currently unavailable.";
                 return;
             }
             GameJamPlus.Gameplay.GameSession.Reset();
             Time.timeScale = 1f;
-            ControlsSceneController.OpenBeforeGameplay(gameplaySceneName);
+            if (showControlsBeforeGameplay) ControlsSceneController.OpenBeforeGameplay(gameplaySceneName);
+            else SceneManager.LoadScene(gameplaySceneName);
         }
 
         private void OpenOptions()

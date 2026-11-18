@@ -139,11 +139,11 @@ namespace GameJamPlus.Gameplay
             clearObservationsOnAdvance = false;
         }
 
-        public static void Advance(bool campaignProgression = true)
+        public static void Advance(bool campaignProgression = true, bool repeatUniverse = false)
         {
             if (!HasPendingResult) return;
-            bool ending = campaignProgression && WillEndCampaign;
-            bool nextUniverse = !campaignProgression || WillAdvanceUniverse;
+            bool ending = !repeatUniverse && campaignProgression && WillEndCampaign;
+            bool nextUniverse = !repeatUniverse && (!campaignProgression || WillAdvanceUniverse);
             if (ending) Universe = 0;
             else if (nextUniverse) Universe = Mathf.Max(0, Universe - 1);
             if (nextUniverse)
@@ -193,7 +193,8 @@ namespace GameJamPlus.Gameplay
             return count;
         }
 
-        public static void RecordTestResult(bool subjectDied, double elapsedSeconds = 0d, int survivingHealth = PlayerStats.MaximumHealth)
+        public static void RecordTestResult(bool subjectDied, double elapsedSeconds = 0d,
+            int survivingHealth = PlayerStats.MaximumHealth, bool completesUniverse = true)
         {
             if (!active || HasPendingResult) return;
             testObservations = GetTestObservations(elapsedSeconds);
@@ -202,7 +203,7 @@ namespace GameJamPlus.Gameplay
             LastSubjectDied = subjectDied;
             HasPendingResult = true;
             SubjectHealth = subjectDied ? 0 : Mathf.Clamp(survivingHealth, 1, PlayerStats.MaximumHealth);
-            if (!subjectDied) CompletedUniverses++;
+            if (!subjectDied && completesUniverse) CompletedUniverses++;
             if (subjectDied) DeceasedSubjects++;
         }
     }

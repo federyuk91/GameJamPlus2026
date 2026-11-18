@@ -140,7 +140,12 @@ namespace GameJamPlus.UI
             SetObservations(GameSession.GetTestObservations(elapsedSeconds));
             notes.scrollOffset = Vector2.zero;
             universe.text = "Universe-" + universeNumber;
-            if (subject != null) subject.text = $"Subject: {GameSession.SubjectId} / Attempt {GameSession.Attempt}/{GameSession.AttemptsPerUniverse}";
+            if (subject != null)
+            {
+                string attemptLabel = GameManager.Instance != null ? GameManager.Instance.AttemptLabel
+                    : $"{GameSession.Attempt}/{GameSession.AttemptsPerUniverse}";
+                subject.text = $"Subject: {GameSession.SubjectId} / Attempt {attemptLabel}";
+            }
             resultScreen.style.display = DisplayStyle.Flex;
             resultScreen.BringToFront();
         }
