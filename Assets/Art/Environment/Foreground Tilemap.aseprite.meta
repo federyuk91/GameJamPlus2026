@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c6ca2ca63caccb64cb27235fd9f903da
+guid: d6259121239d998498b6c31fce579380
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -129,7 +129,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Foreground Tilemap
     originalName: 
-    pivot: {x: 0.5, y: -0.0711297}
+    pivot: {x: 0.5, y: -0.06666667}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -138,8 +138,8 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 512
-      height: 478
-    spriteID: 1b7c777cc8c2d2940b65eac90dc70c96
+      height: 480
+    spriteID: 72b25c3710b435a40acd92a691e36a08
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -168,10 +168,10 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 0
-        y: 34
+        y: 32
         width: 512
-        height: 478
-      spriteId: 1b7c777cc8c2d2940b65eac90dc70c96
+        height: 480
+      spriteId: 72b25c3710b435a40acd92a691e36a08
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
