@@ -231,6 +231,7 @@ namespace MousePlatformer
         {
             activeRopes.Remove(this);
             if (load != null) load.Detach();
+            rider?.Detach();
             rider = null;
             drive = 0f;
             gripDistance = -1f;

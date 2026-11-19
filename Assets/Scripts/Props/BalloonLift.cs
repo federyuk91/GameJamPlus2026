@@ -33,6 +33,16 @@ namespace MousePlatformer
             if (motion == null) motion = GetComponent<PropsMotion>();
         }
 
+        public void Pop()
+        {
+            if (!isActiveAndEnabled) return;
+            enabled = false;
+            if (attachment != null) attachment.Detach();
+            if (rope != null && rope.BalloonAnchor == this) rope.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+
         public Vector2 ConstrainPosition(Vector2 position)
         {
             RopeAttachment payload = Payload;
