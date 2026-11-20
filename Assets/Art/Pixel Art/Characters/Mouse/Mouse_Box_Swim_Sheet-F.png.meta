@@ -1,58 +1,25 @@
 fileFormatVersion: 2
-guid: 082361d3d5b95514bad3508bdd677d16
+guid: f23bff1d850ef83489478b19dddae9d9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5182622118922807979
-    second: BubblesSheet_0
+      213: -3156319872342184605
+    second: Mouse_Box_Swim_Sheet-F_0
   - first:
-      213: 7043159336210839875
-    second: BubblesSheet_1
+      213: 7680534625399823873
+    second: Mouse_Box_Swim_Sheet-F_1
   - first:
-      213: 7839069455000687017
-    second: BubblesSheet_2
+      213: -4375913199867284295
+    second: Mouse_Box_Swim_Sheet-F_2
   - first:
-      213: 2256298555274934718
-    second: BubblesSheet_3
+      213: 4302570009118277589
+    second: Mouse_Box_Swim_Sheet-F_3
   - first:
-      213: -1608348570267998642
-    second: BubblesSheet_4
+      213: 6767766306903196625
+    second: Mouse_Box_Swim_Sheet-F_4
   - first:
-      213: 6361033214172598727
-    second: BubblesSheet_5
-  - first:
-      213: 665836851759114738
-    second: BubblesSheet_6
-  - first:
-      213: 5932527095173835130
-    second: BubblesSheet_7
-  - first:
-      213: 2183726665769223910
-    second: BubblesSheet_8
-  - first:
-      213: -5700402760494369940
-    second: BubblesSheet_9
-  - first:
-      213: 5653014676219997397
-    second: BubblesSheet_10
-  - first:
-      213: -1195207733572187993
-    second: BubblesSheet_11
-  - first:
-      213: 2141147971587941273
-    second: BubblesSheet_12
-  - first:
-      213: -6172501947532170122
-    second: BubblesSheet_13
-  - first:
-      213: 7085344723306058318
-    second: BubblesSheet_14
-  - first:
-      213: -1182974572689407244
-    second: BubblesSheet_15
-  - first:
-      213: -772746999761616404
-    second: BubblesSheet_16
+      213: -151740097521455318
+    second: Mouse_Box_Swim_Sheet-F_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -86,7 +53,7 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: 1
+    aniso: 0
     mipBias: 0
     wrapU: 1
     wrapV: 1
@@ -97,8 +64,8 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  alignment: 2
+  spritePivot: {x: 0.5, y: 1}
   spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -174,133 +141,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BubblesSheet_0
+      name: Mouse_Box_Swim_Sheet-F_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: baae973cb5f5ce740800000000000000
-      internalID: 5182622118922807979
+      spriteID: c6fe1158e73da5548adcdb0c27c00d35
+      internalID: -852928136
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BubblesSheet_1
+      name: Mouse_Box_Swim_Sheet-F_1
       rect:
         serializedVersion: 2
         x: 32
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 349b25b99145eb160800000000000000
-      internalID: 7043159336210839875
+      spriteID: a8a53b1f8ccd6d64aa4ff37c971a72c7
+      internalID: -169681487
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BubblesSheet_2
+      name: Mouse_Box_Swim_Sheet-F_2
       rect:
         serializedVersion: 2
         x: 64
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9a15eead228f9cc60800000000000000
-      internalID: 7839069455000687017
+      spriteID: 20c72332d34892046927a3070c8db1f5
+      internalID: -1085354935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BubblesSheet_3
+      name: Mouse_Box_Swim_Sheet-F_3
       rect:
         serializedVersion: 2
         x: 96
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: eb9b366e49bff4f10800000000000000
-      internalID: 2256298555274934718
+      spriteID: 3633850be8a4be84f8df410e9da6d74e
+      internalID: 1055620587
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BubblesSheet_4
+      name: Mouse_Box_Swim_Sheet-F_4
       rect:
         serializedVersion: 2
         x: 128
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e462b2a2f7ffda9e0800000000000000
-      internalID: -1608348570267998642
+      spriteID: f8bf458b8f3f5694abecbda95fda8032
+      internalID: 1426656372
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BubblesSheet_5
+      name: Mouse_Box_Swim_Sheet-F_5
       rect:
         serializedVersion: 2
         x: 160
         y: 0
         width: 32
         height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c1183f810ee64850800000000000000
-      internalID: 6361033214172598727
+      spriteID: dd33e2e5bfdc3ee438b43c2e56bb0eb4
+      internalID: 13730528
       vertices: []
       indices: 
       edges: []
@@ -309,7 +276,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1eba5d814ec47314084edebb80ddbd8a
+    spriteID: 8391578cc69b80e4ea35f1aae0b18f8f
     internalID: 0
     vertices: []
     indices: 
@@ -321,12 +288,12 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      BubblesSheet_0: 5182622118922807979
-      BubblesSheet_1: 7043159336210839875
-      BubblesSheet_2: 7839069455000687017
-      BubblesSheet_3: 2256298555274934718
-      BubblesSheet_4: -1608348570267998642
-      BubblesSheet_5: 6361033214172598727
+      Mouse_Box_Swim_Sheet-F_0: -852928136
+      Mouse_Box_Swim_Sheet-F_1: -169681487
+      Mouse_Box_Swim_Sheet-F_2: -1085354935
+      Mouse_Box_Swim_Sheet-F_3: 1055620587
+      Mouse_Box_Swim_Sheet-F_4: 1426656372
+      Mouse_Box_Swim_Sheet-F_5: 13730528
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

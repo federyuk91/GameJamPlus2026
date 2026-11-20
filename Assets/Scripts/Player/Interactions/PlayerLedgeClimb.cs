@@ -17,6 +17,8 @@ namespace MousePlatformer
         private readonly List<RaycastHit2D> hits = new List<RaycastHit2D>(8);
         private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
         private Collider2D support;
+        private PropsMotion floatingSupport;
+        private bool paddlingFloatingObject;
         private Vector3 localDestination;
         private Vector3 localHangPosition;
         private Vector2 lastHangTarget;
@@ -27,6 +29,8 @@ namespace MousePlatformer
         public LedgeState State { get; private set; }
         public bool Active => State != LedgeState.None;
         public float Direction { get; private set; }
+        public bool IsPaddlingFloatingObject => State == LedgeState.Hanging && paddlingFloatingObject
+            && floatingSupport != null && floatingSupport.InWater;
         public event Action ClimbStarted;
         private LedgeClimbSettings Settings => WorldSettings != null ? WorldSettings.ledgeClimb : PhysicsSettings.DefaultLedgeClimb;
         private SharedPlayerMovementSettings Movement => WorldSettings != null ? WorldSettings.player : PhysicsSettings.DefaultPlayer;
@@ -99,6 +103,8 @@ namespace MousePlatformer
                 body.Move(adjustment);
             }
             support = top.collider;
+            floatingSupport = support.GetComponentInParent<PropsMotion>();
+            paddlingFloatingObject = false;
             localDestination = support.transform.InverseTransformPoint(originalPosition + shift);
             lastClimbTarget = support.transform.TransformPoint(localDestination);
             localHangPosition = support.transform.InverseTransformPoint(transform.position);
@@ -324,8 +330,32 @@ namespace MousePlatformer
             return true;
         }
 
+        public void PaddleFloatingObject(bool paddle, float direction, float speed, float dt)
+        {
+            paddlingFloatingObject = false;
+            if (!paddle || State != LedgeState.Hanging || support == null || floatingSupport == null
+                || !floatingSupport.isActiveAndEnabled || !floatingSupport.InWater
+                || floatingSupport.Body.HasGroundContact || dt <= 0f || speed <= 0f
+                || floatingSupport.PushWeight >= LocalMovement.maximumPushWeight) return;
+
+            PlayerInteractionSettings interactions = WorldSettings != null
+                ? WorldSettings.interactions : PhysicsSettings.DefaultInteractions;
+            speed = Mathf.Min(speed, interactions.crateMoveSpeed / Mathf.Max(0.01f, floatingSupport.PushWeight));
+            Vector2 displacement = Vector2.right * (Mathf.Sign(direction) * speed * dt);
+            displacement = body.AllowedDisplacement(displacement, support);
+            floatingSupport.PushBySwimming(displacement, body, LocalMovement.maximumPushWeight, dt);
+            paddlingFloatingObject = true;
+        }
+
         public void Cancel() => Stop();
-        private void Stop() { State = LedgeState.None; support = null; cooldown = Settings.retryDelay; }
+        private void Stop()
+        {
+            State = LedgeState.None;
+            support = null;
+            floatingSupport = null;
+            paddlingFloatingObject = false;
+            cooldown = Settings.retryDelay;
+        }
         private void OnDisable() => Stop();
     }
 }

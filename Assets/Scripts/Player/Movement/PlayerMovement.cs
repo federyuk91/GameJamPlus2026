@@ -196,6 +196,13 @@ namespace MousePlatformer
             bool traversalReleased = false;
             // Una presa già acquisita ha precedenza sul nuoto, anche con i piedi immersi.
             bool ledgeInteractionPressed = input.LedgeInteractionPressed;
+            if (ledgeClimb != null)
+            {
+                float paddleDirection = ledgeClimb.Direction;
+                if (facing != null) paddleDirection = facing.FacingRight ? 1f : -1f;
+                bool paddle = inWater && input.SprintHeld && !jumpPressed && !ledgeInteractionPressed;
+                ledgeClimb.PaddleFloatingObject(paddle, paddleDirection, swimming != null ? swimming.SwimSpeed : 0f, dt);
+            }
             if (ledgeClimb != null && ledgeClimb.Tick(dt, input.Horizontal, input.Vertical, jumpPressed, ledgeInteractionPressed,
                 out Vector2 climbVelocity, out bool ledgeReleased))
             {
