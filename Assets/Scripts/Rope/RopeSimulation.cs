@@ -57,6 +57,8 @@ namespace MousePlatformer
         public bool ShowGizmos => showGizmos;
         public bool HasBeenCut { get; private set; }
         public BalloonLift BalloonAnchor => balloonAnchor;
+        public bool IsBottomAnchored => balloonAnchor == null && !retainCrateSide
+            && transform.TransformDirection(restDirection).y > 0.01f;
         public RopeAttachment Load => load;
         public bool HasIntactLoadConnection => load != null && load.Attached && !HasBeenCut
             && chain != null && chain.ConnectedSegmentCount == chain.SegmentCount;
@@ -153,9 +155,12 @@ namespace MousePlatformer
         private void FixedUpdate()
         {
             float gravity = GravityAcceleration;
+            bool tautSubmergedLoad = IsBottomAnchored && HasIntactLoadConnection
+                && load.Motion != null && load.InWater && !load.Motion.UsesAirLift;
             chain.Step(transform.position, Time.fixedDeltaTime, gravity, damping, gripDistance, drive,
                 ConstraintIterations, SimulationSubsteps,
-                swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null);
+                swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null,
+                solveTautSpan: tautSubmergedLoad);
             UpdatePieces();
         }
 

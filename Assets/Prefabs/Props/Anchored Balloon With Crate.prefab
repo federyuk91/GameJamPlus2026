@@ -537,6 +537,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c9f36000fc47f2802b6f38b420b14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 2703816013575676861}
+  explosionClip: {fileID: 7400000, guid: ab4fd335ae4748669d6aa4a95d68258f, type: 2}
   rope: {fileID: 2703816013575677855}
   attachment: {fileID: 0}
   motion: {fileID: 2703816013575676835}

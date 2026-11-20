@@ -90,7 +90,7 @@ namespace MousePlatformer
             if (!isActiveAndEnabled || dt <= 0f) return false;
             cooldown = Mathf.Max(0f, cooldown - dt);
             if (rope != null && (!rope.isActiveAndEnabled || rope.ClimbableEndSegment <= rope.ClimbableFirstSegment
-                || distance < rope.ClimbableStart || distance > rope.ClimbableLength))
+                || distance < rope.ClimbableStart || distance > rope.ClimbableLength || !CanHoldRope(rope, distance)))
             {
                 velocity = body.LimitVelocity(carrierVelocity);
                 Detach();
@@ -171,6 +171,7 @@ namespace MousePlatformer
                 float along = candidate.Chain.ClosestDistance(hand, out _,
                     candidate.ClimbableFirstSegment, candidate.ClimbableEndSegment);
                 along = Mathf.Clamp(along, candidate.MinimumGripDistance, candidate.ClimbableLength);
+                if (!CanHoldRope(candidate, along)) continue;
                 float separation = Vector2.Distance(hand, candidate.Chain.Point(along));
                 if (separation > best) continue;
                 Vector2 alignment = candidate.Chain.Point(along) - hand;
@@ -184,13 +185,22 @@ namespace MousePlatformer
 
         private bool AttachTo(RopeSimulation target, float grip, Vector2 incomingVelocity)
         {
-            if (target == null || !target.Attach(this, grip, body.LimitVelocity(incomingVelocity))) return false;
+            if (target == null || !CanHoldRope(target, grip)
+                || !target.Attach(this, grip, body.LimitVelocity(incomingVelocity))) return false;
             rope = target;
             distance = grip;
             cooldown = 0f;
             previousGrip = target.Chain.Point(grip);
             carrierVelocity = Vector2.zero;
             return true;
+        }
+
+        private bool CanHoldRope(RopeSimulation target, float grip)
+        {
+            if (target.Chain == null) return false;
+            if (!target.IsBottomAnchored) return true;
+            return !WaterVolume.ContainsPoint(target.Chain.Point(grip))
+                && WaterVolume.SubmergedFraction(body.Shape.bounds) <= 0f;
         }
 
         public void Detach()

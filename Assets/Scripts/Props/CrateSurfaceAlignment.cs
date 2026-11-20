@@ -47,12 +47,14 @@ namespace MousePlatformer
             if (centerOfMassX >= left.point.x - margin && centerOfMassX <= right.point.x + margin)
             {
                 angularSpeed = 0f;
+                SettleOnSupport(shape, left, right, dt);
                 return;
             }
             bool tipRight = centerOfMassX > right.point.x;
             RaycastHit2D support = tipRight ? right : left;
             angularSpeed = tippingSpeed * (tipRight ? -1f : 1f);
             RotateAround(shape, support.point, support.collider, angularSpeed * dt);
+            if (angularSpeed == 0f) SettleOnSupport(shape, left, right, dt);
         }
 
         private void SampleFace(BoxCollider2D shape, Vector2 face, Vector2 halfSize, ContactFilter2D filter,
@@ -115,7 +117,8 @@ namespace MousePlatformer
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.collider == shape || hit.collider.transform.IsChildOf(transform)
-                    || hit.distance <= 0f || hit.normal.y <= 0.01f) continue;
+                    || hit.distance <= 0f || hit.normal.y <= 0.01f
+                    || hit.point.y > point.y + body.Skin * 2f) continue;
                 return hit;
             }
             return default;
@@ -126,6 +129,89 @@ namespace MousePlatformer
             if (hit.collider == null) return;
             if (left.collider == null || hit.point.x < left.point.x) left = hit;
             if (right.collider == null || hit.point.x > right.point.x) right = hit;
+        }
+
+        private void SettleOnSupport(BoxCollider2D shape, RaycastHit2D left, RaycastHit2D right, float dt)
+        {
+            if (TrySettleOnFace(shape, left.normal, left.point, dt)) return;
+            TrySettleOnFace(shape, right.normal, right.point, dt);
+        }
+
+        private bool TrySettleOnFace(BoxCollider2D shape, Vector2 normal, Vector2 point, float dt)
+        {
+            if (normal.y <= 0.01f || dt <= 0f) return false;
+            float surfaceAngle = Vector2.SignedAngle(Vector2.up, normal);
+            float currentAngle = transform.eulerAngles.z;
+            float relative = Mathf.DeltaAngle(surfaceAngle, currentAngle);
+            // Una cassa può appoggiarsi su ciascuna delle quattro facce, anche su una rampa.
+            float targetAngle = surfaceAngle + Mathf.Round(relative / 90f) * 90f;
+            Vector3 scale = shape.transform.lossyScale;
+            Vector2 size = Vector2.Scale(shape.size, new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            Vector2 center = shape.transform.TransformPoint(shape.offset);
+            Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetAngle);
+            Vector2 targetCenter = CenterOnSurface(center, size, targetRotation, normal, point);
+            if (Mathf.Abs(targetCenter.y - center.y) > size.magnitude * 0.5f) return false;
+            if (!FaceHasSupport(shape, targetCenter, size, targetRotation, normal, point)) return false;
+
+            float turn = Mathf.Clamp(Mathf.DeltaAngle(currentAngle, targetAngle), -tippingSpeed * dt, tippingSpeed * dt);
+            if (Mathf.Abs(turn) < 0.01f) return true;
+            Vector3 position = transform.position;
+            Quaternion rotation = transform.rotation;
+            int steps = Mathf.Max(1, Mathf.CeilToInt(Mathf.Abs(turn)));
+            for (int i = 1; i <= steps; i++)
+            {
+                Quaternion nextRotation = Quaternion.Euler(0f, 0f, currentAngle + turn * i / steps);
+                Vector2 nextCenter = CenterOnSurface(center, size, nextRotation, normal, point);
+                if (FindObstacle(shape, nextCenter, nextRotation) != null) break;
+                Vector3 offset = nextRotation * Vector3.Scale(shape.offset, scale);
+                position = new Vector3(nextCenter.x, nextCenter.y, transform.position.z) - offset;
+                rotation = nextRotation;
+            }
+            if (rotation == transform.rotation) return false;
+            transform.SetPositionAndRotation(position, rotation);
+            body.RefreshGround();
+            return true;
+        }
+
+        private Vector2 CenterOnSurface(Vector2 center, Vector2 size, Quaternion rotation, Vector2 normal, Vector2 point)
+        {
+            Vector2 right = rotation * Vector3.right;
+            Vector2 up = rotation * Vector3.up;
+            float extent = (Mathf.Abs(Vector2.Dot(normal, right)) * size.x
+                + Mathf.Abs(Vector2.Dot(normal, up)) * size.y) * 0.5f;
+            center.y += (extent + body.Skin - Vector2.Dot(center - point, normal)) / normal.y;
+            return center;
+        }
+
+        private bool FaceHasSupport(BoxCollider2D shape, Vector2 center, Vector2 size, Quaternion rotation,
+            Vector2 normal, Vector2 point)
+        {
+            Vector2 right = rotation * Vector3.right;
+            Vector2 up = rotation * Vector3.up;
+            bool horizontalFace = Mathf.Abs(Vector2.Dot(normal, up)) > 0.707f;
+            Vector2 faceNormal = horizontalFace ? up * Mathf.Sign(Vector2.Dot(normal, up))
+                : right * Mathf.Sign(Vector2.Dot(normal, right));
+            Vector2 tangent = horizontalFace ? right : up;
+            float depth = (horizontalFace ? size.y : size.x) * 0.5f;
+            float halfWidth = (horizontalFace ? size.x : size.y) * 0.5f;
+            float inset = Mathf.Min(halfWidth * 0.1f, Mathf.Max(body.Skin * 2f, 0.01f));
+            float tolerance = Mathf.Max(body.Skin * 2f, supportContactTolerance);
+            Vector2 faceCenter = center - faceNormal * depth;
+            for (int sample = -1; sample <= 1; sample++)
+            {
+                Vector2 origin = faceCenter + tangent * (sample * (halfWidth - inset)) + normal * tolerance;
+                Physics2D.Raycast(origin, -normal, body.SolidFilter, hits, tolerance * 2f + body.Skin);
+                bool supported = false;
+                foreach (RaycastHit2D hit in hits)
+                {
+                    if (hit.collider == shape || hit.collider.transform.IsChildOf(transform)) continue;
+                    supported = hit.distance > 0f && Vector2.Dot(hit.normal, normal) > 0.98f
+                        && Mathf.Abs(Vector2.Dot(hit.point - point, normal)) <= tolerance;
+                    break;
+                }
+                if (!supported) return false;
+            }
+            return true;
         }
 
         private void RotateAround(BoxCollider2D shape, Vector2 pivot, Collider2D support, float angle)

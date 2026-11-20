@@ -8,6 +8,9 @@ namespace MousePlatformer
         [SerializeField] private RopeSimulation rope;
         [SerializeField] private RopeAttachment attachment;
         [SerializeField] private PropsMotion motion;
+        [SerializeField] private Animator animator;
+        [SerializeField] private AnimationClip explosionClip;
+        private static readonly int ExplosionState = Animator.StringToHash("Base Layer.Explosion");
         [SerializeField, Min(0.01f), Tooltip("Payload weight neutralized by this balloon, with Hover Weight Tolerance around it.")]
         private float liftCapacity = 0.5f;
         [SerializeField, Min(0f), Tooltip("Neutral weight margin on either side of Lift Capacity. Default 0.1 gives a 0.4-0.6 hover band.")]
@@ -31,6 +34,7 @@ namespace MousePlatformer
         private void Awake()
         {
             if (motion == null) motion = GetComponent<PropsMotion>();
+            if (animator == null) animator = GetComponent<Animator>();
         }
 
         public void Pop()
@@ -39,6 +43,18 @@ namespace MousePlatformer
             enabled = false;
             if (attachment != null) attachment.Detach();
             if (rope != null && rope.BalloonAnchor == this) rope.gameObject.SetActive(false);
+            motion.enabled = false;
+            motion.Body.Shape.enabled = false;
+            if (animator != null && explosionClip != null && animator.HasState(0, ExplosionState))
+            {
+                animator.enabled = true;
+                animator.speed = 1f;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                animator.Play(ExplosionState, 0, 0f);
+                animator.Update(0f);
+                Destroy(gameObject, explosionClip.length);
+                return;
+            }
             gameObject.SetActive(false);
             Destroy(gameObject);
         }

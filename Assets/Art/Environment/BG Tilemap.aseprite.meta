@@ -129,7 +129,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: BG Tilemap
     originalName: 
-    pivot: {x: 0.5, y: -0.00589391}
+    pivot: {x: 0.5, y: -0.0019569471}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -138,7 +138,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 512
-      height: 509
+      height: 511
     spriteID: ebe3706fb379f8e4886ac832c4afd1d2
     spriteBone: []
     spriteOutline: []
@@ -168,9 +168,9 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 0
-        y: 3
+        y: 1
         width: 512
-        height: 509
+        height: 511
       spriteId: ebe3706fb379f8e4886ac832c4afd1d2
     linkedCells: []
     tileCells: []

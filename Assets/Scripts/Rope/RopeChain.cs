@@ -91,11 +91,17 @@ namespace MousePlatformer
 
         public void Step(Vector2 anchor, float dt, float gravity, float damping,
             float gripDistance, float driveAcceleration, int iterations, int substeps,
-            RopeSwingConstraint swingLimits = null, Vector2? endpoint = null)
+            RopeSwingConstraint swingLimits = null, Vector2? endpoint = null, bool solveTautSpan = false)
         {
             if (dt <= 0f) return;
             substeps = Mathf.Max(1, substeps);
             iterations = Mathf.Max(1, iterations);
+            if (solveTautSpan && endpoint.HasValue && ConnectedSegmentCount == SegmentCount
+                && Vector2.Distance(anchor, endpoint.Value) >= Length - 0.001f)
+            {
+                StepTautSpan(anchor, endpoint.Value, dt, substeps);
+                return;
+            }
             if (endpoint.HasValue || ConnectedSegmentCount != SegmentCount) swingLimits = null;
             swingLimits?.Sanitize();
             for (int i = 0; i < points.Length; i++) stepStart[i] = points[i];
@@ -149,6 +155,21 @@ namespace MousePlatformer
         }
 
         public Vector2 Point(float distance) => Sample(points, distance);
+
+        private void StepTautSpan(Vector2 anchor, Vector2 endpoint, float dt, int substeps)
+        {
+            Vector2 anchorVelocity = (anchor - points[0]) / dt;
+            Vector2 endpointVelocity = (endpoint - points[SegmentCount]) / dt;
+            float h = dt / substeps;
+            // A piena tensione la soluzione è rettilinea. La storia Verlet segue il moto degli estremi.
+            for (int i = 0; i < points.Length; i++)
+            {
+                float fraction = (float)i / SegmentCount;
+                points[i] = Vector2.Lerp(anchor, endpoint, fraction);
+                velocities[i] = Vector2.Lerp(anchorVelocity, endpointVelocity, fraction);
+                previous[i] = points[i] - velocities[i] * h;
+            }
+        }
 
         private float FilterSwingDrive(Vector2 anchor, Vector2 anchorVelocity, int driven, float dt,
             float gravity, float drive)
