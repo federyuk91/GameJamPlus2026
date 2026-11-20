@@ -2,6 +2,12 @@ using UnityEngine;
 
 namespace MousePlatformer
 {
+    public interface IRopeGripConstraint
+    {
+        Vector2 LimitGrip(Vector2 proposed);
+        Vector2 LimitSegmentPoint(Vector2 start, Vector2 proposed);
+    }
+
     // Position based distance joints. No scene objects or Rigidbody dependencies.
     public sealed class RopeChain
     {
@@ -91,7 +97,8 @@ namespace MousePlatformer
 
         public void Step(Vector2 anchor, float dt, float gravity, float damping,
             float gripDistance, float driveAcceleration, int iterations, int substeps,
-            RopeSwingConstraint swingLimits = null, Vector2? endpoint = null, bool solveTautSpan = false)
+            RopeSwingConstraint swingLimits = null, Vector2? endpoint = null, bool solveTautSpan = false,
+            IRopeGripConstraint gripConstraint = null)
         {
             if (dt <= 0f) return;
             substeps = Mathf.Max(1, substeps);
@@ -123,38 +130,81 @@ namespace MousePlatformer
                     points[i] += (points[i] - previous[i]) * Mathf.Exp(-damping * h) + acceleration * (h * h);
                     previous[i] = position;
                 }
-                for (int pass = 0; pass < iterations; pass++)
-                {
-                    points[0] = anchor;
-                    if (endpoint.HasValue) points[SegmentCount] = endpoint.Value;
-                    for (int i = 0; i < SegmentCount; i++)
-                    {
-                        if (!intact[i]) continue;
-                        Vector2 delta = points[i + 1] - points[i];
-                        float length = delta.magnitude;
-                        if (length < 0.00001f) continue;
-                        Vector2 correction = delta * ((length - SegmentLength) / length);
-                        float a = i == 0 ? 0f : i == driven && gripDistance >= 0f ? 0.25f : 1f;
-                        float b = endpoint.HasValue && i + 1 == SegmentCount ? 0f
-                            : i + 1 == driven && gripDistance >= 0f ? 0.25f : 1f;
-                        if (a + b > 0f)
-                        {
-                            points[i] += correction * (a / (a + b));
-                            points[i + 1] -= correction * (b / (a + b));
-                        }
-                    }
-                }
+                SolveConstraints(anchor, endpoint, driven, gripDistance, iterations, gripConstraint);
                 points[0] = previous[0] = anchor;
                 if (endpoint.HasValue) points[SegmentCount] = previous[SegmentCount] = endpoint.Value;
                 // Stop for the rest of this tick so zero velocity is observable before reversal.
                 float returnAcceleration = gravity / Length * Mathf.Rad2Deg * Mathf.Abs(Mathf.Sin(startAngle * Mathf.Deg2Rad));
-                if (swingLimits != null && swingLimits.Apply(points, previous, anchor, startAngle, h, returnAcceleration)) break;
+                float angleBeforeLimits = RopeSwingConstraint.Angle(points[SegmentCount] - anchor);
+                bool stopped = swingLimits != null && swingLimits.Apply(points, previous, anchor, startAngle, h, returnAcceleration);
+                if (gripConstraint != null && Mathf.Abs(Mathf.DeltaAngle(angleBeforeLimits,
+                    RopeSwingConstraint.Angle(points[SegmentCount] - anchor))) > 0.0001f)
+                    SolveConstraints(anchor, endpoint, driven, gripDistance, iterations, gripConstraint);
+                if (stopped) break;
             }
             for (int i = 0; i < points.Length; i++)
                 velocities[i] = swingLimits != null ? (points[i] - previous[i]) / h : (points[i] - stepStart[i]) / dt;
         }
 
         public Vector2 Point(float distance) => Sample(points, distance);
+
+        private void SolveConstraints(Vector2 anchor, Vector2? endpoint, int driven, float gripDistance,
+            int iterations, IRopeGripConstraint gripConstraint)
+        {
+            for (int pass = 0; pass < iterations; pass++)
+            {
+                points[0] = anchor;
+                if (endpoint.HasValue) points[SegmentCount] = endpoint.Value;
+                for (int i = 0; i < SegmentCount; i++)
+                {
+                    if (!intact[i]) continue;
+                    Vector2 delta = points[i + 1] - points[i];
+                    float length = delta.magnitude;
+                    if (length < 0.00001f) continue;
+                    Vector2 correction = delta * ((length - SegmentLength) / length);
+                    float a = i == 0 ? 0f : i == driven && gripDistance >= 0f ? 0.25f : 1f;
+                    float b = endpoint.HasValue && i + 1 == SegmentCount ? 0f
+                        : i + 1 == driven && gripDistance >= 0f ? 0.25f : 1f;
+                    if (a + b > 0f)
+                    {
+                        points[i] += correction * (a / (a + b));
+                        points[i + 1] -= correction * (b / (a + b));
+                    }
+                }
+                if (gripConstraint != null && gripDistance >= 0f)
+                    ResolveGrip(gripDistance, endpoint.HasValue, gripConstraint);
+            }
+        }
+
+        private void ResolveGrip(float distance, bool hasEndpoint, IRopeGripConstraint constraint)
+        {
+            float coordinate = Mathf.Clamp(distance / SegmentLength, 0f, SegmentCount);
+            int first = Mathf.Clamp(Mathf.CeilToInt(coordinate) - 1, 0, SegmentCount - 1);
+            int second = first + 1;
+            if (!intact[first]) return;
+            ConstrainNode(first, hasEndpoint, constraint);
+            ConstrainNode(second, hasEndpoint, constraint);
+            float fraction = coordinate - first;
+            Vector2 grip = Vector2.Lerp(points[first], points[second], fraction);
+            Vector2 correction = constraint.LimitGrip(grip) - grip;
+            float a = first == 0 ? 0f : 1f - fraction;
+            float b = hasEndpoint && second == SegmentCount ? 0f : fraction;
+            float denominator = a * a + b * b;
+            if (denominator <= 0.00001f || correction.sqrMagnitude <= 0.0000000001f) return;
+            points[first] += correction * (a / denominator);
+            points[second] += correction * (b / denominator);
+            // Il contatto assorbe la velocità dei nodi della presa senza creare un rimbalzo Verlet.
+            if (a > 0f) previous[first] = points[first];
+            if (b > 0f) previous[second] = points[second];
+        }
+
+        private void ConstrainNode(int index, bool hasEndpoint, IRopeGripConstraint constraint)
+        {
+            if (index == 0 || (hasEndpoint && index == SegmentCount)) return;
+            Vector2 limited = constraint.LimitSegmentPoint(stepStart[index], points[index]);
+            if ((limited - points[index]).sqrMagnitude <= 0.0000000001f) return;
+            points[index] = previous[index] = limited;
+        }
 
         private void StepTautSpan(Vector2 anchor, Vector2 endpoint, float dt, int substeps)
         {

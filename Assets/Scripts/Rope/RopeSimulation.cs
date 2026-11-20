@@ -155,12 +155,13 @@ namespace MousePlatformer
         private void FixedUpdate()
         {
             float gravity = GravityAcceleration;
+            if (rider != null && rider.isActiveAndEnabled) Physics2D.SyncTransforms();
             bool tautSubmergedLoad = IsBottomAnchored && HasIntactLoadConnection
                 && load.Motion != null && load.InWater && !load.Motion.UsesAirLift;
             chain.Step(transform.position, Time.fixedDeltaTime, gravity, damping, gripDistance, drive,
                 ConstraintIterations, SimulationSubsteps,
                 swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null,
-                solveTautSpan: tautSubmergedLoad);
+                solveTautSpan: tautSubmergedLoad, gripConstraint: rider != null && rider.isActiveAndEnabled ? rider : null);
             UpdatePieces();
         }
 

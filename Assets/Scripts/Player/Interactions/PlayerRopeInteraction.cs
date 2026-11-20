@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MousePlatformer
 {
     [DisallowMultipleComponent, RequireComponent(typeof(SimulatedBody2D), typeof(PlayerMovement))]
-    public sealed class PlayerRopeInteraction : MonoBehaviour
+    public sealed class PlayerRopeInteraction : MonoBehaviour, IRopeGripConstraint
     {
         [SerializeField] private SimulatedBody2D body;
         [SerializeField, Tooltip("Optional rope to grab automatically at scene start. Leave empty for normal manual grabbing.")]
@@ -22,12 +23,43 @@ namespace MousePlatformer
         private float cooldown;
         private Vector2 previousGrip;
         private Vector2 carrierVelocity;
+        private readonly List<RaycastHit2D> contactHits = new List<RaycastHit2D>(8);
         public bool Attached => rope != null;
         public float WeightKg => body != null && body.isActiveAndEnabled ? body.Weight : 0f;
         public float ClimbSpeed { get; private set; }
         public float GrabRadius => Mathf.Max(0f, LocalMovement.handGrabReach);
         public event Action JumpedFromRope;
         public event Action<Vector2> JumpLaunched;
+
+        public Vector2 LimitGrip(Vector2 proposed)
+        {
+            Vector2 hand = (Vector2)transform.position + HandOffset;
+            return hand + body.AllowedDisplacement(proposed - hand);
+        }
+
+        public Vector2 LimitSegmentPoint(Vector2 start, Vector2 proposed)
+        {
+            Vector2 displacement = proposed - start;
+            float distance = displacement.magnitude;
+            if (distance <= 0.00001f) return proposed;
+            const float radius = 0.01f;
+            Vector2 direction = displacement / distance;
+            Physics2D.CircleCast(start, radius, direction, body.SolidFilter, contactHits, distance + radius);
+            float allowed = distance;
+            foreach (RaycastHit2D hit in contactHits)
+            {
+                Collider2D obstacle = hit.collider;
+                if (hit.distance <= 0f || Vector2.Dot(hit.normal, direction) >= -0.01f
+                    || obstacle.transform.IsChildOf(transform)
+                    || (rope != null && rope.BalloonAnchor != null && obstacle.transform.IsChildOf(rope.BalloonAnchor.transform))
+                    || (rope != null && rope.Load != null && obstacle.transform.IsChildOf(rope.Load.transform))) continue;
+                if (obstacle is BoxCollider2D platform && platform.TryGetComponent(out OneWayPlatform2D oneWay)
+                    && oneWay.isActiveAndEnabled && !oneWay.Blocks(platform, start, Vector2.one * radius,
+                        Vector2.right, Vector2.up, direction, hit.normal, body.Skin)) continue;
+                allowed = Mathf.Min(allowed, Mathf.Max(0f, hit.distance - radius));
+            }
+            return start + direction * allowed;
+        }
 
         public bool TryGetGrip(out RopeSimulation heldRope, out int segment, out Vector2 point)
         {
