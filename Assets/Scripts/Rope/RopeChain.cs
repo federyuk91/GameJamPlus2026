@@ -41,6 +41,38 @@ namespace MousePlatformer
         }
         public bool IsSegmentIntact(int index) => index >= 0 && index < intact.Length && intact[index];
 
+        public int FindOverstretchedSegment(float tolerance)
+        {
+            float maximumRatio = 1f + Mathf.Max(0f, tolerance);
+            int pieceCount = 0;
+            float measuredLength = 0f;
+            float longestPiece = 0f;
+            int breakingPiece = -1;
+            for (int i = 0; i <= SegmentCount; i++)
+            {
+                if (i < SegmentCount && intact[i])
+                {
+                    float pieceLength = Vector2.Distance(points[i], points[i + 1]);
+                    measuredLength += pieceLength;
+                    pieceCount++;
+                    if (pieceLength > longestPiece)
+                    {
+                        longestPiece = pieceLength;
+                        breakingPiece = i;
+                    }
+                    continue;
+                }
+                // I vuoti lasciati dai tagli non fanno parte della lunghezza di un tratto ancora collegato.
+                if (pieceCount > 0 && measuredLength > pieceCount * SegmentLength * maximumRatio)
+                    return breakingPiece;
+                pieceCount = 0;
+                measuredLength = 0f;
+                longestPiece = 0f;
+                breakingPiece = -1;
+            }
+            return -1;
+        }
+
         public bool CutSegment(int index)
         {
             if (!IsSegmentIntact(index)) return false;

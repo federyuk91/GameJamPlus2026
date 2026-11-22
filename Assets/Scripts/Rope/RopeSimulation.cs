@@ -38,6 +38,8 @@ namespace MousePlatformer
         [SerializeField, Min(0f)] private float damping = 0.35f;
         [SerializeField] private RopeSwingConstraint swingLimits = new RopeSwingConstraint();
         [SerializeField] private bool canBeCut = true;
+        [SerializeField, Min(0f), Tooltip("Allungamento percentuale massimo della corda rispetto alla lunghezza nominale. 0 disattiva la rottura per allungamento. Con valori maggiori di 0, oltre questa soglia si spezza se Can Be Cut è attivo. Dopo un taglio, ogni tratto rimasto viene valutato separatamente.")]
+        private float stretchTolerancePercent = 20f;
         [SerializeField] private bool showGizmos = true;
         [SerializeField] private BalloonLift balloonAnchor;
         private RopeAttachment load;
@@ -162,6 +164,11 @@ namespace MousePlatformer
                 ConstraintIterations, SimulationSubsteps,
                 swingLimits: swingLimits, endpoint: load != null && load.HasRopeConnection ? load.AttachmentPoint : (Vector2?)null,
                 solveTautSpan: tautSubmergedLoad, gripConstraint: rider != null && rider.isActiveAndEnabled ? rider : null);
+            if (canBeCut && stretchTolerancePercent > 0f)
+            {
+                int overstretched = chain.FindOverstretchedSegment(Mathf.Max(0f, stretchTolerancePercent) * 0.01f);
+                if (overstretched >= 0 && TryCutSegment(overstretched)) return;
+            }
             UpdatePieces();
         }
 
@@ -246,6 +253,7 @@ namespace MousePlatformer
         {
             length = Mathf.Max(1, length);
             segmentLength = Mathf.Max(0.01f, segmentLength);
+            stretchTolerancePercent = Mathf.Max(0f, stretchTolerancePercent);
             if (swingLimits == null) swingLimits = new RopeSwingConstraint();
             swingLimits.Sanitize();
         }
